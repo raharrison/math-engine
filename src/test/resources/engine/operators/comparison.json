@@ -1,0 +1,398 @@
+{
+    "category": "Comparison Operators",
+    "description": "Comprehensive tests for comparison operators: ==, !=, <, >, <=, >=",
+    "tests": [
+        {
+            "id": "eq_001",
+            "input": "5 == 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Equality: equal values"
+        },
+        {
+            "id": "eq_002",
+            "input": "5 == 6",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Equality: unequal values"
+        },
+        {
+            "id": "eq_003",
+            "input": "0 == 0",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Zero equality"
+        },
+        {
+            "id": "eq_004",
+            "input": "-5 == -5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative number equality"
+        },
+        {
+            "id": "eq_005",
+            "input": "5 == 5.0",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Integer equals double with same value"
+        },
+        {
+            "id": "eq_006",
+            "input": "true == true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean equality"
+        },
+        {
+            "id": "eq_007",
+            "input": "true == false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean inequality"
+        },
+        {
+            "id": "neq_001",
+            "input": "5 != 5",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Inequality: equal values"
+        },
+        {
+            "id": "neq_002",
+            "input": "5 != 6",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Inequality: unequal values"
+        },
+        {
+            "id": "neq_003",
+            "input": "0 != 1",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Zero not equal to one"
+        },
+        {
+            "id": "neq_004",
+            "input": "-5 != 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative not equal to positive"
+        },
+        {
+            "id": "lt_001",
+            "input": "3 < 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than: true"
+        },
+        {
+            "id": "lt_002",
+            "input": "5 < 3",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than: false"
+        },
+        {
+            "id": "lt_003",
+            "input": "5 < 5",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than: equal values"
+        },
+        {
+            "id": "lt_004",
+            "input": "-5 < 0",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative less than zero"
+        },
+        {
+            "id": "lt_005",
+            "input": "-10 < -5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparing negatives"
+        },
+        {
+            "id": "gt_001",
+            "input": "5 > 3",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than: true"
+        },
+        {
+            "id": "gt_002",
+            "input": "3 > 5",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than: false"
+        },
+        {
+            "id": "gt_003",
+            "input": "5 > 5",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than: equal values"
+        },
+        {
+            "id": "gt_004",
+            "input": "0 > -5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Zero greater than negative"
+        },
+        {
+            "id": "lte_001",
+            "input": "5 <= 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than or equal: equal values"
+        },
+        {
+            "id": "lte_002",
+            "input": "5 <= 6",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than or equal: less value"
+        },
+        {
+            "id": "lte_003",
+            "input": "6 <= 5",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than or equal: greater value"
+        },
+        {
+            "id": "lte_004",
+            "input": "-1 <= 0",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative less than or equal to zero"
+        },
+        {
+            "id": "gte_001",
+            "input": "5 >= 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than or equal: equal values"
+        },
+        {
+            "id": "gte_002",
+            "input": "6 >= 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than or equal: greater value"
+        },
+        {
+            "id": "gte_003",
+            "input": "5 >= 6",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than or equal: less value"
+        },
+        {
+            "id": "gte_004",
+            "input": "0 >= -1",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Zero greater than or equal to negative"
+        },
+        {
+            "id": "prec_001",
+            "input": "2 + 3 < 10",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Arithmetic before comparison: (2 + 3) < 10"
+        },
+        {
+            "id": "prec_002",
+            "input": "5 * 2 > 8",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Arithmetic before comparison: (5 * 2) > 8"
+        },
+        {
+            "id": "prec_003",
+            "input": "10 - 5 == 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Arithmetic before equality: (10 - 5) == 5"
+        },
+        {
+            "id": "prec_004",
+            "input": "2^2 < 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Exponentiation before comparison"
+        },
+        {
+            "id": "prec_005",
+            "input": "3 * 4 >= 12",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiplication before comparison"
+        },
+        {
+            "id": "chain_001",
+            "input": "(5 > 3) == true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Compare comparison result to boolean"
+        },
+        {
+            "id": "chain_002",
+            "input": "(5 < 3) == false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "False comparison equals false"
+        },
+        {
+            "id": "float_001",
+            "input": "3.14 > 3.13",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Decimal comparison"
+        },
+        {
+            "id": "float_002",
+            "input": "1.5 <= 1.5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Decimal less than or equal"
+        },
+        {
+            "id": "vector_eq_001",
+            "input": "{1, 2, 3} == {1, 2, 3}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector structural equality (scalar result)"
+        },
+        {
+            "id": "vector_eq_002",
+            "input": "{1, 2, 3} == {1, 2, 4}",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector inequality"
+        },
+        {
+            "id": "vector_eq_003",
+            "input": "{1, 2} == {1, 2, 3}",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Different length vectors not equal"
+        },
+        {
+            "id": "vector_neq_001",
+            "input": "{1, 2, 3} != {4, 5, 6}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector not equal"
+        },
+        {
+            "id": "vector_neq_002",
+            "input": "{5, 5, 5} != {5, 5, 5}",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Identical vectors are equal"
+        },
+        {
+            "id": "matrix_eq_001",
+            "input": "[[1, 2], [3, 4]] == [[1, 2], [3, 4]]",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix structural equality (scalar result)"
+        },
+        {
+            "id": "matrix_eq_002",
+            "input": "[[1, 2], [3, 4]] == [[1, 2], [3, 5]]",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix inequality"
+        },
+        {
+            "id": "matrix_eq_003",
+            "input": "[[1, 2]] == [[1], [2]]",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Different shape matrices not equal"
+        },
+        {
+            "id": "matrix_neq_001",
+            "input": "[[1, 2], [3, 4]] != [[5, 6], [7, 8]]",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix not equal"
+        },
+        {
+            "id": "empty_eq_001",
+            "input": "{} == {}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Empty vectors are equal"
+        },
+        {
+            "id": "empty_eq_002",
+            "input": "{} == {1}",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Empty not equal to non-empty"
+        },
+        {
+            "id": "nested_eq_001",
+            "input": "{{1, 2}, {3, 4}} == {{1, 2}, {3, 4}}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Nested vector equality"
+        },
+        {
+            "id": "nested_eq_002",
+            "input": "{{1, 2}, {3, 4}} == {{1, 2}, {3, 5}}",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Nested vector inequality"
+        },
+        {
+            "id": "mixed_type_eq_001",
+            "input": "{1, 2, 3} == {1.0, 2.0, 3.0}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational vector equals double vector with same values"
+        },
+        {
+            "id": "mixed_type_eq_002",
+            "input": "[[1, 2], [3, 4]] == [[1.0, 2.0], [3.0, 4.0]]",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Type coercion in matrix equality"
+        },
+        {
+            "id": "boolean_eq_001",
+            "input": "true == (5 > 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean literal equals comparison result"
+        },
+        {
+            "id": "boolean_eq_002",
+            "input": "(2 + 2 == 4) == true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Nested boolean comparison"
+        },
+        {
+            "id": "complex_eq_001",
+            "input": "(2 + 3) == (10 / 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Expression equality"
+        },
+        {
+            "id": "complex_eq_002",
+            "input": "abs(-5) == sqrt(25)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Function result equality"
+        }
+    ]
+}

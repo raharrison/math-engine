@@ -1,0 +1,300 @@
+{
+    "category": "Logical Operators",
+    "description": "Comprehensive tests for logical operators: &&, ||, xor, not",
+    "tests": [
+        {
+            "id": "and_001",
+            "input": "true && true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: both true"
+        },
+        {
+            "id": "and_002",
+            "input": "true && false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: one false"
+        },
+        {
+            "id": "and_003",
+            "input": "false && true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: one false (reversed)"
+        },
+        {
+            "id": "and_004",
+            "input": "false && false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: both false"
+        },
+        {
+            "id": "and_005",
+            "input": "true && true && true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple AND: all true"
+        },
+        {
+            "id": "and_006",
+            "input": "true && true && false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple AND: one false"
+        },
+        {
+            "id": "or_001",
+            "input": "true || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: both true"
+        },
+        {
+            "id": "or_002",
+            "input": "true || false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: one true"
+        },
+        {
+            "id": "or_003",
+            "input": "false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: one true (reversed)"
+        },
+        {
+            "id": "or_004",
+            "input": "false || false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: both false"
+        },
+        {
+            "id": "or_005",
+            "input": "false || false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple OR: one true"
+        },
+        {
+            "id": "or_006",
+            "input": "false || false || false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple OR: all false"
+        },
+        {
+            "id": "xor_001",
+            "input": "true xor true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: same values (true)"
+        },
+        {
+            "id": "xor_002",
+            "input": "true xor false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: different values"
+        },
+        {
+            "id": "xor_003",
+            "input": "false xor true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: different values (reversed)"
+        },
+        {
+            "id": "xor_004",
+            "input": "false xor false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: same values (false)"
+        },
+        {
+            "id": "not_001",
+            "input": "not true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT: negate true"
+        },
+        {
+            "id": "not_002",
+            "input": "not false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT: negate false"
+        },
+        {
+            "id": "not_003",
+            "input": "not not true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double negation"
+        },
+        {
+            "id": "not_004",
+            "input": "not not false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Double negation of false"
+        },
+        {
+            "id": "not_005",
+            "input": "not not not true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Triple negation"
+        },
+        {
+            "id": "prec_001",
+            "input": "true && false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND before OR: (true && false) || true"
+        },
+        {
+            "id": "prec_002",
+            "input": "false && false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND before OR: (false && false) || true"
+        },
+        {
+            "id": "prec_003",
+            "input": "true || false && false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND before OR: true || (false && false)"
+        },
+        {
+            "id": "prec_004",
+            "input": "false || true && true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND before OR: false || (true && true)"
+        },
+        {
+            "id": "prec_005",
+            "input": "not true && true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT before AND: (not true) && true"
+        },
+        {
+            "id": "prec_006",
+            "input": "not (true && false)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT on parenthesized expression"
+        },
+        {
+            "id": "cmp_001",
+            "input": "5 > 3 && 2 < 4",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparison before AND"
+        },
+        {
+            "id": "cmp_002",
+            "input": "5 > 3 && 4 < 2",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparison before AND (one false)"
+        },
+        {
+            "id": "cmp_003",
+            "input": "5 < 3 || 2 < 4",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparison before OR"
+        },
+        {
+            "id": "cmp_004",
+            "input": "not (5 > 3)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT on comparison result"
+        },
+        {
+            "id": "short_001",
+            "input": "false && (1/0 > 0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND short-circuits when left is false"
+        },
+        {
+            "id": "short_002",
+            "input": "true || (1/0 > 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR short-circuits when left is true"
+        },
+        {
+            "id": "short_003",
+            "input": "(5 > 10) && undefined_var",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND doesn't evaluate right when left is false"
+        },
+        {
+            "id": "short_004",
+            "input": "(5 < 10) || undefined_var",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR doesn't evaluate right when left is true"
+        },
+        {
+            "id": "short_005",
+            "input": "0 && (1/0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Numeric 0 is falsy, short-circuits AND"
+        },
+        {
+            "id": "short_006",
+            "input": "1 || (1/0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Numeric 1 is truthy, short-circuits OR"
+        },
+        {
+            "id": "short_007",
+            "input": "true && false && (1/0 > 0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple AND operators short-circuit"
+        },
+        {
+            "id": "short_008",
+            "input": "false || false || true || (1/0 > 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple OR operators short-circuit"
+        },
+        {
+            "id": "paren_001",
+            "input": "(true && false) || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Parentheses with logical operators"
+        },
+        {
+            "id": "paren_002",
+            "input": "true && (false || true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Parentheses with different grouping"
+        },
+        {
+            "id": "paren_003",
+            "input": "(5 > 3) && (2 < 4)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Parenthesized comparisons"
+        }
+    ]
+}

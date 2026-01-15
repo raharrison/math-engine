@@ -1,0 +1,230 @@
+{
+    "category": "Bitwise Functions",
+    "description": "Comprehensive tests for bitand, bitor, bitxor, bitnot, lshift, rshift, urshift, popcount, clz, ctz, rotl, rotr, bitreverse",
+    "tests": [
+        {
+            "id": "bitand_001",
+            "input": "bitand(12, 10)",
+            "expected": 8,
+            "expectedType": "NodeRational",
+            "notes": "1100 & 1010 = 1000"
+        },
+        {
+            "id": "bitand_002",
+            "input": "bitand(255, 15)",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "11111111 & 00001111"
+        },
+        {
+            "id": "bitand_003",
+            "input": "bitand(7, 3, 1)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Multiple arguments"
+        },
+        {
+            "id": "bitand_004",
+            "input": "bitand(0, 255)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "AND with 0"
+        },
+        {
+            "id": "bitor_001",
+            "input": "bitor(12, 10)",
+            "expected": 14,
+            "expectedType": "NodeRational",
+            "notes": "1100 | 1010 = 1110"
+        },
+        {
+            "id": "bitor_002",
+            "input": "bitor(8, 4, 2, 1)",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Multiple arguments"
+        },
+        {
+            "id": "bitor_003",
+            "input": "bitor(0, 0)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "OR of zeros"
+        },
+        {
+            "id": "bitxor_001",
+            "input": "bitxor(12, 10)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "1100 ^ 1010 = 0110"
+        },
+        {
+            "id": "bitxor_002",
+            "input": "bitxor(255, 255)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "XOR with self is 0"
+        },
+        {
+            "id": "bitxor_003",
+            "input": "bitxor(5, 3, 1)",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "Multiple arguments"
+        },
+        {
+            "id": "bitnot_001",
+            "input": "bitnot(0)",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "NOT of 0 is -1 (all bits set)"
+        },
+        {
+            "id": "bitnot_002",
+            "input": "bitnot(-1)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "NOT of -1 is 0"
+        },
+        {
+            "id": "bitnot_003",
+            "input": "bitnot(bitnot(42))",
+            "expected": 42,
+            "expectedType": "NodeRational",
+            "notes": "Double NOT is identity"
+        },
+        {
+            "id": "lshift_001",
+            "input": "lshift(1, 4)",
+            "expected": 16,
+            "expectedType": "NodeRational",
+            "notes": "1 << 4 = 16"
+        },
+        {
+            "id": "lshift_002",
+            "input": "lshift(3, 2)",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "3 << 2 = 12"
+        },
+        {
+            "id": "lshift_003",
+            "input": "lshift(1, 10)",
+            "expected": 1024,
+            "expectedType": "NodeRational",
+            "notes": "1 << 10 = 1024"
+        },
+        {
+            "id": "rshift_001",
+            "input": "rshift(16, 4)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "16 >> 4 = 1"
+        },
+        {
+            "id": "rshift_002",
+            "input": "rshift(255, 4)",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "255 >> 4 = 15"
+        },
+        {
+            "id": "rshift_003",
+            "input": "rshift(-8, 2)",
+            "expected": -2,
+            "expectedType": "NodeRational",
+            "notes": "Arithmetic right shift preserves sign"
+        },
+        {
+            "id": "urshift_001",
+            "input": "urshift(16, 4)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Unsigned right shift"
+        },
+        {
+            "id": "popcount_001",
+            "input": "popcount(7)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "111 has 3 bits set"
+        },
+        {
+            "id": "popcount_002",
+            "input": "popcount(255)",
+            "expected": 8,
+            "expectedType": "NodeRational",
+            "notes": "11111111 has 8 bits set"
+        },
+        {
+            "id": "popcount_003",
+            "input": "popcount(0)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "0 has no bits set"
+        },
+        {
+            "id": "popcount_004",
+            "input": "popcount(1024)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Power of 2 has 1 bit set"
+        },
+        {
+            "id": "clz_001",
+            "input": "clz(1)",
+            "expected": 63,
+            "expectedType": "NodeRational",
+            "notes": "Leading zeros in 64-bit 1"
+        },
+        {
+            "id": "clz_002",
+            "input": "clz(0)",
+            "expected": 64,
+            "expectedType": "NodeRational",
+            "notes": "All zeros"
+        },
+        {
+            "id": "ctz_001",
+            "input": "ctz(8)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "1000 has 3 trailing zeros"
+        },
+        {
+            "id": "ctz_002",
+            "input": "ctz(1)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "No trailing zeros"
+        },
+        {
+            "id": "ctz_003",
+            "input": "ctz(16)",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "10000 has 4 trailing zeros"
+        },
+        {
+            "id": "rotl_001",
+            "input": "rotl(1, 1)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Rotate left by 1"
+        },
+        {
+            "id": "rotr_001",
+            "input": "rotr(2, 1)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Rotate right by 1"
+        },
+        {
+            "id": "bitreverse_001",
+            "input": "bitreverse(1)",
+            "expected": -9223372036854775808,
+            "expectedType": "NodeRational",
+            "notes": "Reverse bit pattern"
+        }
+    ]
+}

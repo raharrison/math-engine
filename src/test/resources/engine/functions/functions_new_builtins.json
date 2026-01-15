@@ -1,0 +1,117 @@
+{
+    "category": "Newly Added Builtin Functions",
+    "tests": [
+        {
+            "id": "new_001",
+            "input": "pow(2, 3)",
+            "expected": 8.0,
+            "expectedType": "NodeDouble",
+            "notes": "Power function: 2^3"
+        },
+        {
+            "id": "new_002",
+            "input": "pow(10, 2)",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "Power function: 10^2"
+        },
+        {
+            "id": "new_003",
+            "input": "pow(5, 0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Power function: 5^0 = 1"
+        },
+        {
+            "id": "new_004",
+            "input": "pow(2, -1)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Power function with negative exponent"
+        },
+        {
+            "id": "new_005",
+            "input": "pow(4, 0.5)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Power function with fractional exponent (square root)"
+        },
+        {
+            "id": "new_006",
+            "input": "log10(100)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm: log10(100) = 2"
+        },
+        {
+            "id": "new_007",
+            "input": "log10(1000)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm: log10(1000) = 3"
+        },
+        {
+            "id": "new_008",
+            "input": "log10(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm: log10(1) = 0"
+        },
+        {
+            "id": "new_009",
+            "input": "log10(10)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm: log10(10) = 1"
+        },
+        {
+            "id": "new_010",
+            "input": "log(10)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "log is an alias for log10"
+        },
+        {
+            "id": "new_011",
+            "input": "median({1, 2, 3})",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Median of odd-length vector"
+        },
+        {
+            "id": "new_012",
+            "input": "median({1, 2, 3, 4})",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Median of even-length vector (average of middle two)"
+        },
+        {
+            "id": "new_013",
+            "input": "median({5})",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Median of single-element vector"
+        },
+        {
+            "id": "new_014",
+            "input": "median({10, 1, 5, 3, 7})",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Median of unsorted vector"
+        },
+        {
+            "id": "new_015",
+            "input": "median(4, 2, 8, 1)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Median with variadic arguments"
+        },
+        {
+            "id": "new_016",
+            "input": "median(7, 3)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Median of two numbers"
+        }
+    ]
+}

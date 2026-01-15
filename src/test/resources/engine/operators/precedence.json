@@ -1,0 +1,222 @@
+{
+    "category": "Operator Precedence",
+    "description": "Tests verifying correct operator precedence rules",
+    "tests": [
+        {
+            "id": "prec_001",
+            "input": "2 + 3 * 4",
+            "expected": 14,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2 + (3 * 4)",
+            "notes": "Multiplication before addition"
+        },
+        {
+            "id": "prec_002",
+            "input": "2 * 3 + 4",
+            "expected": 10,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2 * 3) + 4",
+            "notes": "Multiplication before addition"
+        },
+        {
+            "id": "prec_003",
+            "input": "10 - 2 * 3",
+            "expected": 4,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "10 - (2 * 3)",
+            "notes": "Multiplication before subtraction"
+        },
+        {
+            "id": "prec_004",
+            "input": "8 / 2 + 2",
+            "expected": 6,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(8 / 2) + 2",
+            "notes": "Division before addition"
+        },
+        {
+            "id": "prec_005",
+            "input": "2 + 3 - 1",
+            "expected": 4,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2 + 3) - 1",
+            "notes": "Left-to-right for same precedence"
+        },
+        {
+            "id": "prec_006",
+            "input": "2 * 3^2",
+            "expected": 18,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2 * (3^2)",
+            "notes": "Exponentiation before multiplication"
+        },
+        {
+            "id": "prec_007",
+            "input": "2^3 * 4",
+            "expected": 32,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2^3) * 4",
+            "notes": "Exponentiation before multiplication"
+        },
+        {
+            "id": "prec_008",
+            "input": "2 + 3^2",
+            "expected": 11,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2 + (3^2)",
+            "notes": "Exponentiation before addition"
+        },
+        {
+            "id": "prec_009",
+            "input": "2^3 + 4",
+            "expected": 12,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2^3) + 4",
+            "notes": "Exponentiation before addition"
+        },
+        {
+            "id": "prec_010",
+            "input": "-2^2",
+            "expected": -4,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "-(2^2)",
+            "notes": "Exponentiation before unary minus"
+        },
+        {
+            "id": "prec_011",
+            "input": "(-2)^2",
+            "expected": 4,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(-2)^2",
+            "notes": "Parentheses override precedence"
+        },
+        {
+            "id": "prec_012",
+            "input": "2 + 3 < 10",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(2 + 3) < 10",
+            "notes": "Arithmetic before comparison"
+        },
+        {
+            "id": "prec_013",
+            "input": "5 * 2 > 8",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(5 * 2) > 8",
+            "notes": "Arithmetic before comparison"
+        },
+        {
+            "id": "prec_014",
+            "input": "10 - 5 == 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(10 - 5) == 5",
+            "notes": "Arithmetic before equality"
+        },
+        {
+            "id": "prec_015",
+            "input": "2 + 3 * 4^2",
+            "expected": 50,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2 + (3 * (4^2))",
+            "notes": "Multiple precedence levels"
+        },
+        {
+            "id": "prec_016",
+            "input": "5! + 1",
+            "expected": 121,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(5!) + 1",
+            "notes": "Factorial before addition"
+        },
+        {
+            "id": "prec_017",
+            "input": "2 * 3!",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "2 * (3!)",
+            "notes": "Factorial before multiplication"
+        },
+        {
+            "id": "prec_018",
+            "input": "50% of 100 + 50",
+            "expected": 100,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(50% of 100) + 50",
+            "notes": "'of' before addition"
+        },
+        {
+            "id": "prec_019",
+            "input": "5 > 3 && 2 < 4",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(5 > 3) && (2 < 4)",
+            "notes": "Comparison before logical AND"
+        },
+        {
+            "id": "prec_020",
+            "input": "true && false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(true && false) || true",
+            "notes": "AND before OR"
+        },
+        {
+            "id": "prec_021",
+            "input": "not true || false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(not true) || false",
+            "notes": "NOT before OR"
+        },
+        {
+            "id": "prec_022",
+            "input": "not true && true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(not true) && true",
+            "notes": "NOT before AND"
+        },
+        {
+            "id": "prec_023",
+            "input": "1 + 2 * 3^2 - 4 / 2",
+            "expected": 17,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "1 + (2 * (3^2)) - (4 / 2)",
+            "notes": "All arithmetic precedence levels"
+        },
+        {
+            "id": "prec_024",
+            "input": "(1 + 2) * (3 + 4)",
+            "expected": 21,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "3 * 7",
+            "notes": "Parentheses override precedence"
+        },
+        {
+            "id": "prec_025",
+            "input": "2 * (3 + 4 * (5 + 6))",
+            "expected": 94,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "2 * (3 + 4 * 11)",
+            "notes": "Nested parentheses"
+        },
+        {
+            "id": "prec_026",
+            "input": "1000 * (1 + 0.05)^10",
+            "expected": 1628.894626777442,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "1000 * ((1 + 0.05)^10)",
+            "notes": "Power before multiplication with parentheses"
+        },
+        {
+            "id": "prec_027",
+            "input": "2 * (3)^2",
+            "expected": 18,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2 * ((3)^2)",
+            "notes": "Power before multiplication with simple parentheses"
+        }
+    ]
+}

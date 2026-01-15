@@ -1,0 +1,260 @@
+{
+    "category": "Implicit Multiplication",
+    "description": "Tests for implicit multiplication parser feature (2x, sin(x)cos(x), xy, etc.)",
+    "tests": [
+        {
+            "id": "implicit_number_var_001",
+            "input": "x := 5; 2x",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "2x means 2 * x"
+        },
+        {
+            "id": "implicit_number_var_002",
+            "input": "x := 3; 10x",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Multi-digit coefficient"
+        },
+        {
+            "id": "implicit_number_var_003",
+            "input": "y := 4; 2.5y",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Decimal coefficient"
+        },
+        {
+            "id": "implicit_number_var_004",
+            "input": "x := 2; y := 3; xy",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "xy means x * y"
+        },
+        {
+            "id": "implicit_number_var_005",
+            "input": "a := 2; b := 3; c := 4; abc",
+            "expected": 24,
+            "expectedType": "NodeRational",
+            "notes": "Three variables: abc = a * b * c"
+        },
+        {
+            "id": "implicit_number_var_006",
+            "input": "x := 5; -2x",
+            "expected": -10,
+            "expectedType": "NodeRational",
+            "notes": "Negative coefficient"
+        },
+        {
+            "id": "implicit_paren_001",
+            "input": "2(3)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "2(3) means 2 * 3"
+        },
+        {
+            "id": "implicit_paren_002",
+            "input": "5(2 + 3)",
+            "expected": 25,
+            "expectedType": "NodeRational",
+            "notes": "5(expr) means 5 * (expr)"
+        },
+        {
+            "id": "implicit_paren_003",
+            "input": "(2 + 3)(4 + 5)",
+            "expected": 45,
+            "expectedType": "NodeRational",
+            "notes": "(expr1)(expr2) means (expr1) * (expr2)"
+        },
+        {
+            "id": "implicit_paren_004",
+            "input": "x := 2; x(3 + 4)",
+            "expected": 14,
+            "expectedType": "NodeRational",
+            "notes": "Variable times parenthesized expression"
+        },
+        {
+            "id": "implicit_paren_005",
+            "input": "3(2)(5)",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Chained implicit multiplication"
+        },
+        {
+            "id": "implicit_function_001",
+            "input": "x := 2; xsqrt(4)",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "xsqrt(4) splits to x * sqrt(4)"
+        },
+        {
+            "id": "implicit_function_002",
+            "input": "a := 3; asin(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Variable name splits from function name"
+        },
+        {
+            "id": "implicit_function_003",
+            "input": "x := pi; xcos(0)",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Constant times function"
+        },
+        {
+            "id": "implicit_vector_001",
+            "input": "v := {1, 2, 3}; 2v",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Implicit mult with vector"
+        },
+        {
+            "id": "implicit_vector_002",
+            "input": "v := {2, 3}; w := {4, 5}; vw",
+            "expected": [
+                8,
+                15
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Two vectors: element-wise mult"
+        },
+        {
+            "id": "implicit_matrix_001",
+            "input": "M := [[1, 2], [3, 4]]; 2M",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Implicit mult with matrix"
+        },
+        {
+            "id": "implicit_expr_001",
+            "input": "x := 2; (x + 1)(x - 1)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "(x+1)(x-1) = difference of squares pattern"
+        },
+        {
+            "id": "implicit_expr_002",
+            "input": "x := 3; x(x + 1)",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "x(x+1) = x * (x+1)"
+        },
+        {
+            "id": "implicit_expr_003",
+            "input": "a := 2; b := 3; (a + b)(a - b)",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "(a+b)(a-b) expansion"
+        },
+        {
+            "id": "implicit_precedence_001",
+            "input": "x := 2; 2x + 3",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "2x evaluated before addition"
+        },
+        {
+            "id": "implicit_precedence_002",
+            "input": "x := 3; 2x^2",
+            "expected": 18.0,
+            "expectedType": "NodeDouble",
+            "notes": "2x^2 = 2 * (x^2), power first"
+        },
+        {
+            "id": "implicit_precedence_003",
+            "input": "x := 5; 2(x + 1) + 3",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Implicit mult before addition"
+        },
+        {
+            "id": "implicit_multi_001",
+            "input": "x := 2; y := 3; 2xy",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "2xy = 2 * x * y"
+        },
+        {
+            "id": "implicit_multi_002",
+            "input": "a := 1; b := 2; c := 3; 5abc",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Coefficient and multiple vars"
+        },
+        {
+            "id": "implicit_nested_001",
+            "input": "x := 2; (2x)(3x)",
+            "expected": 24,
+            "expectedType": "NodeRational",
+            "notes": "(2x)(3x) = 2*x * 3*x"
+        },
+        {
+            "id": "implicit_nested_002",
+            "input": "x := 2; 2(x(x + 1))",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Nested implicit multiplication"
+        },
+        {
+            "id": "implicit_mixed_001",
+            "input": "x := 3; 2x + 3(x - 1)",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Multiple implicit mults in expression"
+        },
+        {
+            "id": "implicit_mixed_002",
+            "input": "x := 2; y := 3; xy + 2x + 3y",
+            "expected": 19,
+            "expectedType": "NodeRational",
+            "notes": "Polynomial-like expression"
+        },
+        {
+            "id": "implicit_negative_001",
+            "input": "x := 3; (-2)x",
+            "expected": -6,
+            "expectedType": "NodeRational",
+            "notes": "Negative parenthesized coefficient"
+        },
+        {
+            "id": "implicit_negative_002",
+            "input": "x := 2; y := -3; xy",
+            "expected": -6,
+            "expectedType": "NodeRational",
+            "notes": "Negative variable value"
+        },
+        {
+            "id": "implicit_fraction_001",
+            "input": "x := 4; x/2x",
+            "expected": 8,
+            "expectedType": "NodeRational",
+            "notes": "x/2x parsed left-to-right as (x/2)*x = 2*4 = 8 per grammar precedence"
+        },
+        {
+            "id": "implicit_power_001",
+            "input": "x := 2; (2x)^2",
+            "expected": 16.0,
+            "expectedType": "NodeDouble",
+            "notes": "(2x)^2 = (2*2)^2 = 16"
+        },
+        {
+            "id": "implicit_power_002",
+            "input": "x := 3; 2x^2",
+            "expected": 18.0,
+            "expectedType": "NodeDouble",
+            "notes": "2x^2 = 2 * 3^2 = 18"
+        }
+    ]
+}

@@ -423,8 +423,8 @@ class TrapeziumIntegratorTest {
         TrapeziumIntegrator integrator = TrapeziumIntegrator.of(f, -1.0, 1.0, 100);
 
         assertThatThrownBy(() -> integrator.integrate())
-                .isInstanceOf(ArithmeticException.class)
-                .hasMessageContaining("non-finite");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("log is not defined");
     }
 
     @Test
@@ -433,8 +433,8 @@ class TrapeziumIntegratorTest {
         TrapeziumIntegrator integrator = TrapeziumIntegrator.of(f, 0.0, 1.0, 10);
 
         assertThatThrownBy(() -> integrator.integrate())
-                .isInstanceOf(ArithmeticException.class)
-                .hasMessageContaining("non-finite");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("log is not defined");
     }
 
     // ==================== Equality and hashCode ====================

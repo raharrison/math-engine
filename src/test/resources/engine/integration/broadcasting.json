@@ -1,0 +1,273 @@
+{
+    "category": "Broadcasting Semantics",
+    "description": "Zero-padding, single-element broadcasting, and mixed-dimension operations",
+    "tests": [
+        {
+            "id": "vector_zeropad_add_001",
+            "input": "{1, 2} + {10, 20, 30}",
+            "expected": [
+                11,
+                22,
+                30
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Zero-pad shorter: {1,2,0} + {10,20,30}"
+        },
+        {
+            "id": "vector_zeropad_add_002",
+            "input": "{1, 2, 3, 4} + {10}",
+            "expected": [
+                11,
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Zero-pad: {1,2,3,4} + {10,0,0,0}"
+        },
+        {
+            "id": "vector_zeropad_sub_001",
+            "input": "{5, 10, 15} - {1, 2}",
+            "expected": [
+                4,
+                8,
+                15
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Zero-pad on subtraction"
+        },
+        {
+            "id": "vector_zeropad_mult_001",
+            "input": "{2, 3} * {4, 5, 6}",
+            "expected": [
+                8,
+                15,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Zero-pad: {2,3,0} * {4,5,6} = {8,15,0}"
+        },
+        {
+            "id": "matrix_zeropad_001",
+            "input": "[[1, 2]] + [[1, 2, 3], [4, 5, 6]]",
+            "expected": [
+                [
+                    2,
+                    4,
+                    3
+                ],
+                [
+                    4,
+                    5,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Zero-pad rows and columns"
+        },
+        {
+            "id": "matrix_zeropad_002",
+            "input": "[[1], [2]] + [[10, 20, 30]]",
+            "expected": [
+                [
+                    11,
+                    20,
+                    30
+                ],
+                [
+                    2,
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "2x1 + 1x3 with zero-padding"
+        },
+        {
+            "id": "matrix_vector_broadcast_001",
+            "input": "[[1, 2], [3, 4]] + {10, 20}",
+            "expected": [
+                [
+                    11,
+                    22
+                ],
+                [
+                    13,
+                    24
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Vector broadcasts as row to each matrix row"
+        },
+        {
+            "id": "matrix_vector_broadcast_002",
+            "input": "{5, 10} + [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    6,
+                    12
+                ],
+                [
+                    8,
+                    14
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Vector broadcasts to matrix (commutative)"
+        },
+        {
+            "id": "matrix_vector_zeropad_001",
+            "input": "{1, 2, 3, 4} + [[10, 20]]",
+            "expected": [
+                [
+                    11,
+                    22,
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Vector + 1-row matrix with zero-padding"
+        },
+        {
+            "id": "nested_broadcast_001",
+            "input": "(5 + {1, 2, 3}) * 2",
+            "expected": [
+                12,
+                14,
+                16
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar broadcast then scale"
+        },
+        {
+            "id": "nested_broadcast_002",
+            "input": "2 * {1, 2, 3} + 3 * {4, 5, 6}",
+            "expected": [
+                14,
+                19,
+                24
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Multiple scalar broadcasts"
+        },
+        {
+            "id": "nested_broadcast_003",
+            "input": "({1, 2} + {3, 4}) * ({5, 6} + {7, 8})",
+            "expected": [
+                48,
+                84
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Nested vector arithmetic: {4,6} * {12,14} = {48,84}"
+        },
+        {
+            "id": "mixed_type_broadcast_001",
+            "input": "2.5 * {2, 4, 6}",
+            "expected": [
+                5.0,
+                10.0,
+                15.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double scalar broadcasts to rational vector"
+        },
+        {
+            "id": "mixed_type_broadcast_002",
+            "input": "{1, 2, 3} + 1.5",
+            "expected": [
+                2.5,
+                3.5,
+                4.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational vector + double scalar"
+        },
+        {
+            "id": "mixed_type_broadcast_003",
+            "input": "{1, 2} + {1.5, 2.5}",
+            "expected": [
+                2.5,
+                4.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational vector + double vector"
+        },
+        {
+            "id": "modulo_broadcast_001",
+            "input": "{10, 11, 12, 13} mod 3",
+            "expected": [
+                1,
+                2,
+                0,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Modulo broadcasts over vector"
+        },
+        {
+            "id": "modulo_broadcast_002",
+            "input": "[[10, 11], [12, 13]] mod 5",
+            "expected": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    2,
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Modulo broadcasts over matrix"
+        },
+        {
+            "id": "power_broadcast_001",
+            "input": "{2, 3, 4} ^ 2",
+            "expected": [
+                4,
+                9,
+                16
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector to scalar power (element-wise)"
+        },
+        {
+            "id": "power_broadcast_002",
+            "input": "[[2, 3], [4, 5]] ^ 0.5",
+            "expected": [
+                [
+                    1.4142135623730951,
+                    1.7320508075688772
+                ],
+                [
+                    2.0,
+                    2.23606797749979
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix element-wise sqrt via power"
+        },
+        {
+            "id": "comparison_structural_001",
+            "input": "{1, 2, 3} == {1, 2, 3}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector equality is structural (scalar boolean result)"
+        },
+        {
+            "id": "comparison_structural_002",
+            "input": "[[1, 2], [3, 4]] == [[1, 2], [3, 4]]",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix equality is structural (scalar boolean result)"
+        },
+        {
+            "id": "comparison_zeropad_001",
+            "input": "{1, 2} == {1, 2, 0}",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Different lengths are not equal (no implicit zero-pad in equality)"
+        }
+    ]
+}

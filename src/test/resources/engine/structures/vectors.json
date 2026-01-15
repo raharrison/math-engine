@@ -1,0 +1,368 @@
+{
+    "category": "Vector Operations",
+    "description": "Comprehensive tests for vector creation, access, arithmetic, and operations",
+    "tests": [
+        {
+            "id": "vector_create_001",
+            "input": "{1, 2, 3}",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Create vector literal"
+        },
+        {
+            "id": "vector_create_002",
+            "input": "{1, 2, 3, 4, 5}",
+            "expected": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Create 5-element vector"
+        },
+        {
+            "id": "vector_create_003",
+            "input": "{42}",
+            "expected": [
+                42
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single element vector"
+        },
+        {
+            "id": "vector_create_004",
+            "input": "{}",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Empty vector"
+        },
+        {
+            "id": "vector_create_005",
+            "input": "{1.5, 2.5, 3.5}",
+            "expected": [
+                1.5,
+                2.5,
+                3.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector with decimals"
+        },
+        {
+            "id": "vector_nested_001",
+            "input": "{{1, 2}, {3, 4}}",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Nested vectors (vector of vectors)"
+        },
+        {
+            "id": "vector_access_001",
+            "input": "{10, 20, 30}[0]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Access first element"
+        },
+        {
+            "id": "vector_access_002",
+            "input": "{10, 20, 30}[2]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Access last element"
+        },
+        {
+            "id": "vector_access_003",
+            "input": "{10, 20, 30}[-1]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Negative index from end"
+        },
+        {
+            "id": "vector_access_004",
+            "input": "{10, 20, 30}[-2]",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Negative index second from end"
+        },
+        {
+            "id": "vector_slice_001",
+            "input": "{1, 2, 3, 4, 5}[1:4]",
+            "expected": [
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from index 1 to 4"
+        },
+        {
+            "id": "vector_slice_002",
+            "input": "{1, 2, 3, 4, 5}[:3]",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from start to 3"
+        },
+        {
+            "id": "vector_slice_003",
+            "input": "{1, 2, 3, 4, 5}[2:]",
+            "expected": [
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from 2 to end"
+        },
+        {
+            "id": "vector_add_001",
+            "input": "{1, 2, 3} + {4, 5, 6}",
+            "expected": [
+                5,
+                7,
+                9
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise addition"
+        },
+        {
+            "id": "vector_add_002",
+            "input": "{1, 2, 3} + 10",
+            "expected": [
+                11,
+                12,
+                13
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar addition to vector"
+        },
+        {
+            "id": "vector_add_003",
+            "input": "10 + {1, 2, 3}",
+            "expected": [
+                11,
+                12,
+                13
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar addition (reversed)"
+        },
+        {
+            "id": "vector_sub_001",
+            "input": "{5, 6, 7} - {1, 2, 3}",
+            "expected": [
+                4,
+                4,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise subtraction"
+        },
+        {
+            "id": "vector_sub_002",
+            "input": "{10, 20, 30} - 5",
+            "expected": [
+                5,
+                15,
+                25
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar subtraction from vector"
+        },
+        {
+            "id": "vector_mult_001",
+            "input": "{1, 2, 3} * {4, 5, 6}",
+            "expected": [
+                4,
+                10,
+                18
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise multiplication"
+        },
+        {
+            "id": "vector_mult_002",
+            "input": "{1, 2, 3} * 2",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar multiplication"
+        },
+        {
+            "id": "vector_mult_003",
+            "input": "3 * {1, 2, 3}",
+            "expected": [
+                3,
+                6,
+                9
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar multiplication (reversed)"
+        },
+        {
+            "id": "vector_div_001",
+            "input": "{10, 20, 30} / {2, 4, 5}",
+            "expected": [
+                5,
+                5,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise division"
+        },
+        {
+            "id": "vector_div_002",
+            "input": "{10, 20, 30} / 10",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar division"
+        },
+        {
+            "id": "vector_power_001",
+            "input": "{2, 3, 4} ^ 2",
+            "expected": [
+                4,
+                9,
+                16
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector power"
+        },
+        {
+            "id": "vector_power_002",
+            "input": "{4, 9, 16} ^ 0.5",
+            "expected": [
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector square root"
+        },
+        {
+            "id": "vector_func_001",
+            "input": "sqrt({4, 9, 16})",
+            "expected": [
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Function on vector"
+        },
+        {
+            "id": "vector_func_002",
+            "input": "abs({-1, -2, 3})",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Abs on vector"
+        },
+        {
+            "id": "vector_func_003",
+            "input": "sin({0, pi/2, pi})",
+            "expected": [
+                0,
+                1,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Sin on vector"
+        },
+        {
+            "id": "vector_comparison_001",
+            "input": "{1, 2, 3} == {1, 2, 3}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector equality"
+        },
+        {
+            "id": "vector_comparison_002",
+            "input": "{1, 2, 3} == {1, 2, 4}",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector inequality"
+        },
+        {
+            "id": "vector_comparison_003",
+            "input": "{1, 2, 3} != {4, 5, 6}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector not equal"
+        },
+        {
+            "id": "vector_dot_001",
+            "input": "sum({1, 2, 3} * {4, 5, 6})",
+            "expected": 32,
+            "expectedType": "NodeRational",
+            "notes": "Dot product via sum of element-wise multiplication"
+        },
+        {
+            "id": "vector_dot_002",
+            "input": "sum({1, 0, 0} * {0, 1, 0})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Orthogonal vectors dot product"
+        },
+        {
+            "id": "matrix_mult_001",
+            "input": "[[1, 2], [3, 4]] @ [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    19,
+                    22
+                ],
+                [
+                    43,
+                    50
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplication with @"
+        },
+        {
+            "id": "vector_expr_001",
+            "input": "v := {1, 2, 3}; v * 2",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector variable"
+        },
+        {
+            "id": "vector_expr_002",
+            "input": "v := {1, 2, 3}; v[0] + v[1] + v[2]",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Sum vector elements via access"
+        }
+    ]
+}

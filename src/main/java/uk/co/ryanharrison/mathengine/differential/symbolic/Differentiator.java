@@ -1,17 +1,22 @@
 package uk.co.ryanharrison.mathengine.differential.symbolic;
 
 import uk.co.ryanharrison.mathengine.core.Function;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
+import uk.co.ryanharrison.mathengine.parser.symbolic.ExpressionItem;
+import uk.co.ryanharrison.mathengine.parser.symbolic.TreeToStack;
 import uk.co.ryanharrison.mathengine.utils.Utils;
 
 import java.util.Deque;
 
 public class Differentiator {
-    public static void main(String[] args) {
-        System.out.println(new Differentiator().differentiate(new Function("sinx"), true));
+
+    static void main() {
+        System.out.println(new Differentiator().differentiate(new Function("sin(x)"), true));
     }
 
     public Function differentiate(Function equation, boolean optimize) {
-        Deque<ExpressionItem> stack = TreeToStack.treeToStack(equation.getCompiledExpression());
+        Node node = equation.getCompiledExpression();
+        Deque<ExpressionItem> stack = TreeToStack.treeToStack(node);
         String result = differentiateStack(stack);
 
         if (optimize)
@@ -20,81 +25,149 @@ public class Differentiator {
         return new Function(result);
     }
 
-    private String differentiateStack(Deque<ExpressionItem> vStack) {
-        ExpressionItem pQi = vStack.pop();
+    /**
+     * Differentiates a string expression by parsing it and differentiating the AST.
+     * Used as a callback for recursive differentiation of sub-expressions.
+     * Always optimizes the result to match original behavior.
+     *
+     * @param expression the expression string to differentiate
+     * @return the derivative as a string expression (optimized)
+     */
+    private String differentiateExpression(String expression) {
+        Node node = new Function(expression).getCompiledExpression();
+        Deque<ExpressionItem> stack = TreeToStack.treeToStack(node);
+        String result = differentiateStack(stack);
+        // Always optimize recursive calls (matches original behavior)
+        return optimize(result.replace(" ", ""));
+    }
 
-        String result = "";
+    /**
+     * Differentiates a stack of expression items.
+     * <p>
+     * Uses postfix (reverse Polish) notation. The stack is processed recursively,
+     * applying differentiation rules for operators and functions.
+     * </p>
+     *
+     * @param stack the expression stack in postfix order
+     * @return the derivative as a string expression
+     */
+    private String differentiateStack(Deque<ExpressionItem> stack) {
+        ExpressionItem item = stack.pop();
 
-        if (pQi.operator != 0) {
-            // get left operand
-            String u = vStack.getFirst().getInput();
-            // get left operand differentiation
-            String du = differentiateStack(vStack);
-            // get right operand
-            String v = vStack.getFirst().getInput();
-            // get right operand differentiation
-            String dv = differentiateStack(vStack);
+        if (item.isOperator()) {
+            // Binary operator: apply product rule, quotient rule, chain rule, etc.
+            return differentiateBinaryOperator(item, stack);
+        } else if (item.isFunction()) {
+            // Function: apply chain rule
+            String u = ExpressionItem.extractFunctionArgument(item.input);
+            String result = DifferentiationRules.differentiate(item.function, u, this::differentiateExpression);
+            return (item.sign == -1 ? "-" : "") + result;
+        } else {
+            // Variable or constant
+            return differentiateVariable(item.input);
+        }
+    }
 
-            if (du.equals("0")) // u is constant
-                switch (pQi.operator) {
-                    case '-': // d(u-v) = -dv
-                        result = "(-" + dv + ')';
-                        break;
-                    case '+': // d(u+v) = dv
-                        result = dv;
-                        break;
-                    case '*': // d(u*v) = u*dv
-                        result = u + '*' + dv;
-                        break;
-                    case '/': // d(u/v) = (-u*dv)/v^2
-                        result = "(-" + u + '*' + dv + ")/(" + v + ")^2";
-                        break;
-                    case '^': // d(u^v) = dv*u^v*ln(u)
-                        result = dv + "*" + u + "^" + v + (u == "e" ? "" : "*ln(" + u + ")");
-                        break;
-                }
-            else if (dv.equals("0")) // v is constant
-                switch (pQi.operator) {
-                    case '-': // d(u-v) = du
-                    case '+': // d(u+v) = du
-                        result = du;
-                        break;
-                    case '*': // d(u*v) = du*v
-                        result = du + '*' + v;
-                        break;
-                    case '/': // d(u/v) = du/v
-                        result = '(' + du + ")/" + v;
-                        break;
-                    case '^': // d(u^v) = v*u^(v-1)*du
-                        result = v + "*" + u + "^" + trim(Double.parseDouble(v) - 1) + "*" + du;
-                        break;
-                }
-            else
-                switch (pQi.operator) {
-                    case '-': // d(u-v) = du-dv
-                    case '+': // d(u+v) = du+dv
-                        result = '(' + du + pQi.operator + dv + ')';
-                        break;
-                    case '*': // d(u*v) = u*dv+du*v
-                        result = '(' + u + '*' + dv + '+' + du + '*' + v + ')';
-                        break;
-                    case '/': // d(u/v) = (du*v-u*dv)/v^2
-                        result = '(' + du + '*' + v + '-' + u + '*' + dv + ")/(" + v + ")^2";
-                        break;
-                    case '^': // d(u^v) = v*u^(v-1)*du+u^v*ln(u)*dv
-                        result = '(' + v + '*' + u + "^(" + v + "-1)*" + du + '+' + u + '^' + v
-                                + "*ln(" + u + ")*" + dv + ')';
-                        break;
-                }
-        } else
-            // get Expression differentiation
-            result = pQi.getDifferentiation();
-        // return resultant differentiation
-        return result;
+    /**
+     * Applies differentiation rules for binary operators.
+     *
+     * @param item  the operator item
+     * @param stack the remaining expression stack
+     * @return the derivative expression
+     */
+    private String differentiateBinaryOperator(ExpressionItem item, Deque<ExpressionItem> stack) {
+        // Get left operand and its derivative
+        String u = stack.getFirst().input;
+        String du = differentiateStack(stack);
+
+        // Get right operand and its derivative
+        String v = stack.getFirst().input;
+        String dv = differentiateStack(stack);
+
+        // Apply differentiation rule based on operator
+        if (du.equals("0")) {
+            // Left operand is constant
+            return applyConstantLeftRule(item.operator, u, v, dv);
+        } else if (dv.equals("0")) {
+            // Right operand is constant
+            return applyConstantRightRule(item.operator, u, v, du);
+        } else {
+            // Both operands are variable
+            return applyGeneralRule(item.operator, u, v, du, dv);
+        }
+    }
+
+    /**
+     * Applies differentiation rule when left operand is constant.
+     */
+    private String applyConstantLeftRule(char op, String u, String v, String dv) {
+        return switch (op) {
+            case '+' -> dv;                                          // d(c+v) = dv
+            case '-' -> "(-" + dv + ')';                             // d(c-v) = -dv
+            case '*' -> u + '*' + dv;                                // d(c*v) = c*dv
+            case '/' -> "(-" + u + '*' + dv + ")/(" + v + ")^2";     // d(c/v) = -c*dv/v²
+            case '^' -> dv + "*" + u + "^" + v +                     // d(c^v) = dv*c^v*ln(c)
+                    (u.equals("e") ? "" : "*ln(" + u + ")");
+            default -> throw new UnsupportedOperationException("Unknown operator: " + op);
+        };
+    }
+
+    /**
+     * Applies differentiation rule when right operand is constant.
+     */
+    private String applyConstantRightRule(char op, String u, String v, String du) {
+        return switch (op) {
+            case '+', '-' -> du;                                     // d(u±c) = du
+            case '*' -> du + '*' + v;                                // d(u*c) = du*c
+            case '/' -> '(' + du + ")/" + v;                         // d(u/c) = du/c
+            case '^' -> v + "*" + u + "^" + trim(Double.parseDouble(v) - 1) + "*" + du; // d(u^c) = c*u^(c-1)*du
+            default -> throw new UnsupportedOperationException("Unknown operator: " + op);
+        };
+    }
+
+    /**
+     * Applies general differentiation rule when both operands are variable.
+     */
+    private String applyGeneralRule(char op, String u, String v, String du, String dv) {
+        return switch (op) {
+            case '+', '-' -> '(' + du + op + dv + ')';               // d(u±v) = du±dv
+            case '*' -> '(' + u + '*' + dv + '+' + du + '*' + v + ')'; // d(u*v) = u*dv + du*v (product rule)
+            case '/' -> '(' + du + '*' + v + '-' + u + '*' + dv + ")/(" + v + ")^2"; // d(u/v) = (du*v - u*dv)/v² (quotient rule)
+            case '^' -> '(' + v + '*' + u + "^(" + v + "-1)*" + du + // d(u^v) = v*u^(v-1)*du + u^v*ln(u)*dv (general power rule)
+                    '+' + u + '^' + v + "*ln(" + u + ")*" + dv + ')';
+            default -> throw new UnsupportedOperationException("Unknown operator: " + op);
+        };
+    }
+
+    /**
+     * Differentiates a variable or constant with respect to x.
+     */
+    private static String differentiateVariable(String var) {
+        // d/dx[x] = 1
+        if (var.equals("x") || var.equals("+x")) {
+            return "1";
+        }
+        // d/dx[-x] = -1
+        else if (var.equals("-x")) {
+            return "-1";
+        }
+        // d/dx[c] = 0 for constants
+        else if (Utils.isNumeric(var) || var.equals("pi") || var.equals("e")) {
+            return "0";
+        }
+        // d/dx[f(x)] where f is unknown
+        else {
+            return 'd' + var + "/dx";
+        }
     }
 
     private static String optimize(String s) {
         int nLength = s.length();
+
+        // Replace "-0" with "0" (handle negative zero from constant differentiation)
+        if (s.equals("-0")) {
+            return "0";
+        }
 
         s = optimizeSign(s);
         StringBuilder str = new StringBuilder(s);
@@ -113,7 +186,7 @@ public class Differentiator {
         nIndex = -1;
         // remove any 1*
         while ((nIndex = str.indexOf("1*", nIndex + 1)) != -1) {
-            if (nIndex == 0 || "+-*(".indexOf(str.charAt(nIndex - 1)) != -1)
+            if (nIndex == 0 || "+-*/(".indexOf(str.charAt(nIndex - 1)) != -1)
                 str = str.delete(nIndex, nIndex + 2);
 
             if (nIndex + 1 > str.length())
@@ -123,7 +196,7 @@ public class Differentiator {
         nIndex = -1;
         // remove any *1
         while ((nIndex = str.indexOf("*1", nIndex + 1)) != -1) {
-            if (nIndex + 2 == str.length() || "+-*(".indexOf(str.charAt(nIndex + 2)) != -1)
+            if (nIndex + 2 == str.length() || "+-*/()".indexOf(str.charAt(nIndex + 2)) != -1)
                 str = str.delete(nIndex, nIndex + 2);
 
             if (nIndex + 1 > str.length())
@@ -133,7 +206,7 @@ public class Differentiator {
         nIndex = -1;
         // remove any exponent equal 1
         while ((nIndex = str.indexOf("^1", nIndex + 1)) != -1) {
-            if (nIndex + 2 == str.length() || "+-*(".indexOf(str.charAt(nIndex + 2)) != -1)
+            if (nIndex + 2 == str.length() || "+-*/()".indexOf(str.charAt(nIndex + 2)) != -1)
                 str = str.delete(nIndex, nIndex + 2);
 
             if (nIndex + 1 > str.length())
@@ -143,8 +216,8 @@ public class Differentiator {
         nIndex = 0;
         // remove unneeded parentheses
         while ((nIndex = str.indexOf("(", nIndex)) != -1) {
-            // "nscthg0" is the end characters of all supported functions
-            if (nIndex > 0 && "nscthg0".indexOf(str.charAt(nIndex - 1)) != -1) {
+            // "nscthgp0" is the end characters of all supported functions
+            if (nIndex > 0 && "nscthgp0".indexOf(str.charAt(nIndex - 1)) != -1) {
                 nIndex++;
                 continue;
             }

@@ -1,0 +1,77 @@
+{
+    "category": "Operator Associativity Tests",
+    "tests": [
+        {
+            "id": "assoc_001",
+            "input": "10 - 5 - 2",
+            "expected": 3,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(10 - 5) - 2",
+            "notes": "Subtraction is left-associative"
+        },
+        {
+            "id": "assoc_002",
+            "input": "20 / 4 / 2",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(20 / 4) / 2",
+            "notes": "Division is left-associative"
+        },
+        {
+            "id": "assoc_003",
+            "input": "2 + 3 + 4",
+            "expected": 9,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2 + 3) + 4",
+            "notes": "Addition is left-associative"
+        },
+        {
+            "id": "assoc_004",
+            "input": "2 * 3 * 4",
+            "expected": 24,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2 * 3) * 4",
+            "notes": "Multiplication is left-associative"
+        },
+        {
+            "id": "assoc_005",
+            "input": "2^3^2",
+            "expected": 512,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2^(3^2)",
+            "notes": "Exponentiation is right-associative"
+        },
+        {
+            "id": "assoc_006",
+            "input": "4^3^2",
+            "expected": 262144,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "4^(3^2)",
+            "notes": "Exponentiation is right-associative"
+        },
+        {
+            "id": "assoc_007",
+            "input": "2^2^2^2",
+            "expected": 65536,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2^(2^(2^2))",
+            "notes": "Multiple right-assoc exponents"
+        },
+        {
+            "id": "assoc_008",
+            "input": "--5",
+            "expected": 5,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "-(-5)",
+            "notes": "Double negation"
+        },
+        {
+            "id": "assoc_009",
+            "input": "---5",
+            "expected": -5,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "-(-(- 5))",
+            "notes": "Triple negation"
+        }
+    ]
+}

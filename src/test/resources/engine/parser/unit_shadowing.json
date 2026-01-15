@@ -1,0 +1,75 @@
+{
+    "category": "Unit Name Shadowing",
+    "tests": [
+        {
+            "id": "shadow_001",
+            "input": "c := 5; c",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Variable 'c' shadows unit (Coulomb)"
+        },
+        {
+            "id": "shadow_002",
+            "input": "f(c) := c * 2; f(10)",
+            "expected": 20.0,
+            "expectedType": "NodeDouble",
+            "notes": "Parameter 'c' shadows unit in function definition"
+        },
+        {
+            "id": "shadow_003",
+            "input": "f(x) := x + 1; f(5)",
+            "expected": 6.0,
+            "expectedType": "NodeDouble",
+            "notes": "Function name 'f' (Farad) used as function definition"
+        },
+        {
+            "id": "shadow_004",
+            "input": "m := 100; m",
+            "expected": 100.0,
+            "expectedType": "NodeRational",
+            "notes": "Variable 'm' shadows meter unit"
+        },
+        {
+            "id": "shadow_005",
+            "input": "s := 42; s",
+            "expected": 42.0,
+            "expectedType": "NodeRational",
+            "notes": "Variable 's' shadows second unit"
+        },
+        {
+            "id": "shadow_006",
+            "input": "func(a, b, c, x) := a*x^2 + b*x + c; func(1, 2, 3, 4)",
+            "expected": 27.0,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple unit-named parameters in function"
+        },
+        {
+            "id": "shadow_007",
+            "input": "f := 10; g := 20; f + g",
+            "expected": 30.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple unit-named variables"
+        },
+        {
+            "id": "shadow_008",
+            "input": "x := 5; f(x) := x^2; f(x)",
+            "expected": 25.0,
+            "expectedType": "NodeDouble",
+            "notes": "Global x shadowed by parameter x in function"
+        },
+        {
+            "id": "shadow_009",
+            "input": "quadratic(a, b, c, x) := a*x^2 + b*x + c; quadratic(2, 3, 1, 5)",
+            "expected": 66.0,
+            "expectedType": "NodeDouble",
+            "notes": "Quadratic function with unit-named parameters"
+        },
+        {
+            "id": "shadow_010",
+            "input": "c := 3; f(c) := c * c; f(c)",
+            "expected": 9.0,
+            "expectedType": "NodeDouble",
+            "notes": "Global c and parameter c, call with global c"
+        }
+    ]
+}

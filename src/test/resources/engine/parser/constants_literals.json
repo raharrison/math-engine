@@ -1,0 +1,206 @@
+{
+    "category": "Constants and Literals",
+    "tests": [
+        {
+            "id": "const_001",
+            "input": "pi",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Pi constant"
+        },
+        {
+            "id": "const_002",
+            "input": "e",
+            "expected": 2.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "Euler's number constant"
+        },
+        {
+            "id": "const_003",
+            "input": "true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean true constant"
+        },
+        {
+            "id": "const_004",
+            "input": "false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean false constant"
+        },
+        {
+            "id": "const_005",
+            "input": "pi * 2",
+            "expected": 6.283185307179586,
+            "expectedType": "NodeDouble",
+            "notes": "Using pi in expression"
+        },
+        {
+            "id": "const_006",
+            "input": "e^2",
+            "expected": 7.38905609893065,
+            "expectedType": "NodeDouble",
+            "notes": "Using e in exponentiation"
+        },
+        {
+            "id": "const_007",
+            "input": "sin(pi / 2)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Pi in trigonometric function"
+        },
+        {
+            "id": "const_008",
+            "input": "ln(e)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Natural log of e"
+        },
+        {
+            "id": "const_009",
+            "input": "42",
+            "expected": 42.0,
+            "expectedType": "NodeRational",
+            "notes": "Integer literal"
+        },
+        {
+            "id": "const_010",
+            "input": "3.14159",
+            "expected": 3.14159,
+            "expectedType": "NodeDouble",
+            "notes": "Decimal literal"
+        },
+        {
+            "id": "const_011",
+            "input": "1.5e2",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "Scientific notation"
+        },
+        {
+            "id": "const_012",
+            "input": "2.5e-3",
+            "expected": 0.0025,
+            "expectedType": "NodeDouble",
+            "notes": "Scientific notation with negative exponent"
+        },
+        {
+            "id": "const_013",
+            "input": "3/4",
+            "expected": 0.75,
+            "expectedType": "NodeRational",
+            "notes": "Rational literal"
+        },
+        {
+            "id": "const_014",
+            "input": "22/7",
+            "expected": 3.142857142857143,
+            "expectedType": "NodeRational",
+            "notes": "Rational approximation of pi"
+        },
+        {
+            "id": "const_015",
+            "input": "\"hello\"",
+            "expected": "hello",
+            "expectedType": "NodeString",
+            "notes": "String literal"
+        },
+        {
+            "id": "const_016",
+            "input": "\"test 123\"",
+            "expected": "test 123",
+            "expectedType": "NodeString",
+            "notes": "String with spaces and numbers"
+        },
+        {
+            "id": "const_017",
+            "input": "0",
+            "expected": 0.0,
+            "expectedType": "NodeRational",
+            "notes": "Zero literal"
+        },
+        {
+            "id": "const_018",
+            "input": "1",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "One literal"
+        },
+        {
+            "id": "const_019",
+            "input": "-1",
+            "expected": -1.0,
+            "expectedType": "NodeRational",
+            "notes": "Negative one"
+        },
+        {
+            "id": "const_020",
+            "input": "-42",
+            "expected": -42.0,
+            "expectedType": "NodeRational",
+            "notes": "Negative integer"
+        },
+        {
+            "id": "const_021",
+            "input": "-3.14",
+            "expected": -3.14,
+            "expectedType": "NodeDouble",
+            "notes": "Negative decimal"
+        },
+        {
+            "id": "const_022",
+            "input": "{}",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Empty vector literal"
+        },
+        {
+            "id": "const_023",
+            "input": "{1}",
+            "expected": [
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single element vector"
+        },
+        {
+            "id": "const_024",
+            "input": "{1, 2, 3}",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector literal"
+        },
+        {
+            "id": "const_025",
+            "input": "[[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix literal"
+        },
+        {
+            "id": "const_026",
+            "input": "[[1]]",
+            "expected": [
+                [
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "1x1 matrix"
+        }
+    ]
+}

@@ -1,0 +1,61 @@
+{
+    "category": "Conditional Functions",
+    "tests": [
+        {
+            "id": "cond_001",
+            "input": "if(true, 10, 20)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "if with true condition"
+        },
+        {
+            "id": "cond_002",
+            "input": "if(false, 10, 20)",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "if with false condition"
+        },
+        {
+            "id": "cond_003",
+            "input": "if(1, 10, 20)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "if with truthy number"
+        },
+        {
+            "id": "cond_004",
+            "input": "if(0, 10, 20)",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "if with falsy zero"
+        },
+        {
+            "id": "cond_005",
+            "input": "if(5 > 3, 100, 200)",
+            "expected": 100,
+            "expectedType": "NodeRational",
+            "notes": "if with comparison true"
+        },
+        {
+            "id": "cond_006",
+            "input": "if(5 < 3, 100, 200)",
+            "expected": 200,
+            "expectedType": "NodeRational",
+            "notes": "if with comparison false"
+        },
+        {
+            "id": "cond_007",
+            "input": "x := 7; if(x > 5, x * 2, x / 2)",
+            "expected": 14,
+            "expectedType": "NodeRational",
+            "notes": "if using variables"
+        },
+        {
+            "id": "cond_008",
+            "input": "x := 3; if(x > 5, x * 2, x / 2)",
+            "expected": 1.5,
+            "expectedType": "NodeRational",
+            "notes": "if false branch with variables"
+        }
+    ]
+}

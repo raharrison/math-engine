@@ -1,0 +1,142 @@
+{
+    "category": "Unit Parsing & AST Construction",
+    "description": "Tests verifying correct parsing of unit syntax and AST node creation",
+    "tests": [
+        {
+            "id": "parse_in_keyword_001",
+            "input": "100 meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Parse 'in' keyword for unit conversion"
+        },
+        {
+            "id": "parse_to_keyword_001",
+            "input": "100 meters to centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Parse 'to' keyword for unit conversion"
+        },
+        {
+            "id": "parse_as_keyword_001",
+            "input": "100 meters as centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Parse 'as' keyword for unit conversion"
+        },
+        {
+            "id": "parse_unit_literal_001",
+            "input": "meters",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Bare unit name evaluates to unit with value 1.0 (singular form)"
+        },
+        {
+            "id": "parse_implicit_mult_001",
+            "input": "100 meters",
+            "expected": "100.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Number + unit = implicit multiplication or unit literal"
+        },
+        {
+            "id": "parse_unit_expr_001",
+            "input": "(50 + 50) meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Expression + unit + conversion"
+        },
+        {
+            "id": "parse_chained_001",
+            "input": "100 mm in cm in m",
+            "expected": "0.1 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Chained conversions parse left-to-right (output uses proper name not alias)"
+        },
+        {
+            "id": "parse_precedence_001",
+            "input": "100 meters in centimeters + 1000",
+            "expected": "11000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit conversion binds tighter than addition"
+        },
+        {
+            "id": "parse_precedence_002",
+            "input": "2 * 50 meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Multiplication before unit application"
+        },
+        {
+            "id": "parse_unit_in_comparison_001",
+            "input": "100 meters in centimeters > 5000",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparison with unit conversion"
+        },
+        {
+            "id": "parse_unit_postfix_001",
+            "input": "5! meters in centimeters",
+            "expected": "12000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Postfix operator before unit (5! = 120)"
+        },
+        {
+            "id": "parse_negative_001",
+            "input": "-100 meters in centimeters",
+            "expected": "-10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Unary minus with unit"
+        },
+        {
+            "id": "parse_variable_unit_001",
+            "input": "x := 100; x meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Variable as unit value"
+        },
+        {
+            "id": "parse_function_unit_001",
+            "input": "sqrt(100) meters in centimeters",
+            "expected": "1000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Function call as unit value"
+        },
+        {
+            "id": "parse_unit_aliases_001",
+            "input": "100 m in cm",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Short unit aliases (output uses proper plural name)"
+        },
+        {
+            "id": "parse_unit_in_vector_001",
+            "input": "{1 kilometers in meters, 2 kilometers in meters}",
+            "expected": [
+                1000.0,
+                2000.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit conversions inside vector literal"
+        },
+        {
+            "id": "parse_unit_subscript_001",
+            "input": "{100 meters, 200 meters}[0] in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit conversion of subscripted value"
+        },
+        {
+            "id": "parse_whitespace_001",
+            "input": "100meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "No whitespace between number and unit"
+        },
+        {
+            "id": "parse_whitespace_002",
+            "input": "100 meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Whitespace between number and unit"
+        }
+    ]
+}

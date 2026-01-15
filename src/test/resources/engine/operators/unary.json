@@ -1,0 +1,328 @@
+{
+    "category": "Unary Operators",
+    "description": "Comprehensive tests for unary operators: -, +, !, !!, %",
+    "tests": [
+        {
+            "id": "neg_001",
+            "input": "-5",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Unary minus on integer"
+        },
+        {
+            "id": "neg_002",
+            "input": "-0",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Unary minus on zero"
+        },
+        {
+            "id": "neg_003",
+            "input": "--5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Double negation"
+        },
+        {
+            "id": "neg_004",
+            "input": "---5",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Triple negation"
+        },
+        {
+            "id": "neg_005",
+            "input": "----5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Quadruple negation"
+        },
+        {
+            "id": "neg_006",
+            "input": "-2.5",
+            "expected": -2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Unary minus on double"
+        },
+        {
+            "id": "neg_007",
+            "input": "-(-5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Negation with parentheses"
+        },
+        {
+            "id": "neg_008",
+            "input": "-(5 + 3)",
+            "expected": -8,
+            "expectedType": "NodeRational",
+            "notes": "Negation of parenthesized expression"
+        },
+        {
+            "id": "neg_009",
+            "input": "-2^2",
+            "expected": -4,
+            "expectedType": "NodeDouble",
+            "notes": "Unary minus after power: -(2^2)"
+        },
+        {
+            "id": "neg_010",
+            "input": "(-2)^2",
+            "expected": 4,
+            "expectedType": "NodeDouble",
+            "notes": "Parenthesized negative squared"
+        },
+        {
+            "id": "plus_001",
+            "input": "+5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Unary plus (no-op)"
+        },
+        {
+            "id": "plus_002",
+            "input": "++5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Double unary plus"
+        },
+        {
+            "id": "plus_003",
+            "input": "+-5",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Unary plus then minus"
+        },
+        {
+            "id": "plus_004",
+            "input": "-+5",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Unary minus then plus"
+        },
+        {
+            "id": "fact_001",
+            "input": "5!",
+            "expected": 120,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 5"
+        },
+        {
+            "id": "fact_002",
+            "input": "0!",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 0 is 1"
+        },
+        {
+            "id": "fact_003",
+            "input": "1!",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 1 is 1"
+        },
+        {
+            "id": "fact_004",
+            "input": "3!",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 3"
+        },
+        {
+            "id": "fact_005",
+            "input": "10!",
+            "expected": 3628800,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 10"
+        },
+        {
+            "id": "fact_006",
+            "input": "5! + 1",
+            "expected": 121,
+            "expectedType": "NodeRational",
+            "notes": "Factorial before addition: (5!) + 1"
+        },
+        {
+            "id": "fact_007",
+            "input": "2 * 3!",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Factorial before multiplication: 2 * (3!)"
+        },
+        {
+            "id": "fact_008",
+            "input": "(3 + 2)!",
+            "expected": 120,
+            "expectedType": "NodeDouble",
+            "notes": "Factorial of parenthesized expression"
+        },
+        {
+            "id": "fact_009",
+            "input": "3! + 2!",
+            "expected": 8,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple factorials"
+        },
+        {
+            "id": "dfact_001",
+            "input": "5!!",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial: 5!! = 5 * 3 * 1"
+        },
+        {
+            "id": "dfact_002",
+            "input": "6!!",
+            "expected": 48,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial: 6!! = 6 * 4 * 2"
+        },
+        {
+            "id": "dfact_003",
+            "input": "0!!",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial of 0"
+        },
+        {
+            "id": "dfact_004",
+            "input": "1!!",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial of 1"
+        },
+        {
+            "id": "dfact_005",
+            "input": "7!!",
+            "expected": 105,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial: 7!! = 7 * 5 * 3 * 1"
+        },
+        {
+            "id": "dfact_006",
+            "input": "8!!",
+            "expected": 384,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial: 8!! = 8 * 6 * 4 * 2"
+        },
+        {
+            "id": "pct_001",
+            "input": "50%",
+            "expected": 0.5,
+            "expectedType": "NodePercent",
+            "notes": "Percent literal: 50% = 0.5"
+        },
+        {
+            "id": "pct_002",
+            "input": "100%",
+            "expected": 1.0,
+            "expectedType": "NodePercent",
+            "notes": "Percent literal: 100% = 1.0"
+        },
+        {
+            "id": "pct_003",
+            "input": "25%",
+            "expected": 0.25,
+            "expectedType": "NodePercent",
+            "notes": "Percent literal: 25% = 0.25"
+        },
+        {
+            "id": "pct_004",
+            "input": "0%",
+            "expected": 0.0,
+            "expectedType": "NodePercent",
+            "notes": "Zero percent"
+        },
+        {
+            "id": "pct_005",
+            "input": "150%",
+            "expected": 1.5,
+            "expectedType": "NodePercent",
+            "notes": "Percent over 100"
+        },
+        {
+            "id": "pct_006",
+            "input": "1%",
+            "expected": 0.01,
+            "expectedType": "NodePercent",
+            "notes": "One percent"
+        },
+        {
+            "id": "pct_007",
+            "input": "50% + 0.5",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent + Double"
+        },
+        {
+            "id": "pct_008",
+            "input": "25% * 4",
+            "expected": "100%",
+            "expectedType": "NodePercent",
+            "notes": "Percent * Rational"
+        },
+        {
+            "id": "pct_009",
+            "input": "50% + 50%",
+            "expected": "100%",
+            "expectedType": "NodePercent",
+            "notes": "Percent + Percent returns NodePercent"
+        },
+        {
+            "id": "pct_010",
+            "input": "100% - 25%",
+            "expected": "75%",
+            "expectedType": "NodePercent",
+            "notes": "Percent - Percent returns NodePercent"
+        },
+        {
+            "id": "of_001",
+            "input": "50% of 200",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "'of' operator: 50% of 200"
+        },
+        {
+            "id": "of_002",
+            "input": "100% of 200",
+            "expected": 200.0,
+            "expectedType": "NodeDouble",
+            "notes": "100% of X = X"
+        },
+        {
+            "id": "of_003",
+            "input": "0% of 200",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "0% of X = 0"
+        },
+        {
+            "id": "of_004",
+            "input": "25% of 80",
+            "expected": 20.0,
+            "expectedType": "NodeDouble",
+            "notes": "25% of 80 = 20"
+        },
+        {
+            "id": "of_005",
+            "input": "150% of 100",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent over 100"
+        },
+        {
+            "id": "of_006",
+            "input": "10% of 1000",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "10% of 1000 = 100"
+        },
+        {
+            "id": "of_007",
+            "input": "50% of 200 + 50",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "Precedence: (50% of 200) + 50"
+        }
+    ]
+}

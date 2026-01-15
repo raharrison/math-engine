@@ -1,0 +1,74 @@
+{
+    "category": "Built-in Matrix Functions",
+    "tests": [
+        {
+            "id": "builtin_mat_001",
+            "input": "det([5])",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Determinant of 1x1 matrix"
+        },
+        {
+            "id": "builtin_mat_002",
+            "input": "det([1, 2; 3, 4])",
+            "expected": -2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Determinant of 2x2 matrix"
+        },
+        {
+            "id": "builtin_mat_003",
+            "input": "det([1, 0; 0, 1])",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Determinant of identity matrix"
+        },
+        {
+            "id": "builtin_mat_004",
+            "input": "det([1, 2, 3; 4, 5, 6; 7, 8, 9])",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Determinant of singular 3x3 matrix"
+        },
+        {
+            "id": "builtin_mat_005",
+            "input": "trace([1, 2; 3, 4])",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Trace of 2x2 matrix"
+        },
+        {
+            "id": "builtin_mat_006",
+            "input": "trace([1, 2, 3; 4, 5, 6; 7, 8, 9])",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Trace of 3x3 matrix"
+        },
+        {
+            "id": "builtin_mat_007",
+            "input": "trace([1, 0; 0, 1])",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Trace of 2x2 identity"
+        },
+        {
+            "id": "builtin_mat_008",
+            "input": "length([1, 2; 3, 4])",
+            "expected": [
+                2,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Length of matrix returns dimensions"
+        },
+        {
+            "id": "builtin_mat_009",
+            "input": "length([1, 2, 3; 4, 5, 6])",
+            "expected": [
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Length of 2x3 matrix"
+        }
+    ]
+}

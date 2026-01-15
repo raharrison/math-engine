@@ -1,0 +1,242 @@
+{
+    "category": "Configuration - Angle Units",
+    "description": "Tests radians vs degrees angle unit configuration",
+    "tests": [
+        {
+            "id": "radians_sin_001",
+            "input": "sin(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "RADIANS"
+            },
+            "notes": "sin(0) = 0 in radians"
+        },
+        {
+            "id": "radians_sin_002",
+            "input": "sin(pi/2)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "RADIANS"
+            },
+            "notes": "sin(pi/2) = 1 in radians"
+        },
+        {
+            "id": "radians_sin_003",
+            "input": "sin(pi)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "config": {
+                "angleUnit": "RADIANS"
+            },
+            "notes": "sin(pi) = 0 in radians"
+        },
+        {
+            "id": "radians_cos_001",
+            "input": "cos(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "RADIANS"
+            },
+            "notes": "cos(0) = 1 in radians"
+        },
+        {
+            "id": "radians_cos_002",
+            "input": "cos(pi)",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "RADIANS"
+            },
+            "notes": "cos(pi) = -1 in radians"
+        },
+        {
+            "id": "radians_tan_001",
+            "input": "tan(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "RADIANS"
+            },
+            "notes": "tan(0) = 0 in radians"
+        },
+        {
+            "id": "radians_tan_002",
+            "input": "tan(pi/4)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "RADIANS"
+            },
+            "notes": "tan(pi/4) = 1 in radians"
+        },
+        {
+            "id": "degrees_sin_001",
+            "input": "sin(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "sin(0°) = 0 in degrees"
+        },
+        {
+            "id": "degrees_sin_002",
+            "input": "sin(30)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "sin(30°) = 0.5 in degrees"
+        },
+        {
+            "id": "degrees_sin_003",
+            "input": "sin(90)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "sin(90°) = 1 in degrees"
+        },
+        {
+            "id": "degrees_sin_004",
+            "input": "sin(180)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "sin(180°) = 0 in degrees"
+        },
+        {
+            "id": "degrees_cos_001",
+            "input": "cos(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "cos(0°) = 1 in degrees"
+        },
+        {
+            "id": "degrees_cos_002",
+            "input": "cos(60)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "cos(60°) = 0.5 in degrees"
+        },
+        {
+            "id": "degrees_cos_003",
+            "input": "cos(90)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "cos(90°) = 0 in degrees"
+        },
+        {
+            "id": "degrees_cos_004",
+            "input": "cos(180)",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "cos(180°) = -1 in degrees"
+        },
+        {
+            "id": "degrees_tan_001",
+            "input": "tan(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "tan(0°) = 0 in degrees"
+        },
+        {
+            "id": "degrees_tan_002",
+            "input": "tan(45)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "tan(45°) = 1 in degrees"
+        },
+        {
+            "id": "radians_asin_001",
+            "input": "asin(0.5)",
+            "expected": 0.5235987755982989,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "RADIANS"
+            },
+            "notes": "asin(0.5) returns radians"
+        },
+        {
+            "id": "degrees_asin_001",
+            "input": "asin(0.5)",
+            "expected": 30.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "asin(0.5) returns degrees"
+        },
+        {
+            "id": "radians_acos_001",
+            "input": "acos(0.5)",
+            "expected": 1.0471975511965979,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "RADIANS"
+            },
+            "notes": "acos(0.5) returns radians"
+        },
+        {
+            "id": "degrees_acos_001",
+            "input": "acos(0.5)",
+            "expected": 60.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "acos(0.5) returns degrees"
+        },
+        {
+            "id": "radians_atan_001",
+            "input": "atan(1)",
+            "expected": 0.7853981633974483,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "RADIANS"
+            },
+            "notes": "atan(1) returns radians (pi/4)"
+        },
+        {
+            "id": "degrees_atan_001",
+            "input": "atan(1)",
+            "expected": 45.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "atan(1) returns degrees"
+        }
+    ]
+}

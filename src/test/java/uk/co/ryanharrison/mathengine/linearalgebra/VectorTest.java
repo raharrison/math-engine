@@ -368,7 +368,7 @@ class VectorTest {
     void addNullVectorThrowsException() {
         Vector v = Vector.of(1.0, 2.0, 3.0);
 
-        assertThatThrownBy(() -> v.add((Vector) null))
+        assertThatThrownBy(() -> v.add(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("null vector");
     }
@@ -401,7 +401,7 @@ class VectorTest {
     void subtractNullVectorThrowsException() {
         Vector v = Vector.of(1.0, 2.0, 3.0);
 
-        assertThatThrownBy(() -> v.subtract((Vector) null))
+        assertThatThrownBy(() -> v.subtract(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("null vector");
     }
@@ -434,7 +434,7 @@ class VectorTest {
     void multiplyByNullVectorThrowsException() {
         Vector v = Vector.of(1.0, 2.0, 3.0);
 
-        assertThatThrownBy(() -> v.multiply((Vector) null))
+        assertThatThrownBy(() -> v.multiply(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("null vector");
     }
@@ -467,7 +467,7 @@ class VectorTest {
     void divideByNullVectorThrowsException() {
         Vector v = Vector.of(1.0, 2.0, 3.0);
 
-        assertThatThrownBy(() -> v.divide((Vector) null))
+        assertThatThrownBy(() -> v.divide(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("null vector");
     }
@@ -556,7 +556,7 @@ class VectorTest {
     void powWithNullVectorThrowsException() {
         Vector v = Vector.of(1.0, 2.0, 3.0);
 
-        assertThatThrownBy(() -> v.pow((Vector) null))
+        assertThatThrownBy(() -> v.pow(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("null vector");
     }

@@ -1,0 +1,131 @@
+{
+    "category": "Evaluation Errors",
+    "tests": [
+        {
+            "id": "err_eval_001",
+            "input": "1 / 0",
+            "expected": "Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Division by zero should throw error"
+        },
+        {
+            "id": "err_eval_002",
+            "input": "undefined_var",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Reference to undefined variable"
+        },
+        {
+            "id": "err_eval_003",
+            "input": "sqrt(-1)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Square root of negative number"
+        },
+        {
+            "id": "err_eval_004",
+            "input": "ln(0)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Logarithm of zero"
+        },
+        {
+            "id": "err_eval_005",
+            "input": "ln(-5)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Logarithm of negative number"
+        },
+        {
+            "id": "err_eval_006",
+            "input": "sin(1, 2)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "Too many arguments to sin function"
+        },
+        {
+            "id": "err_eval_007",
+            "input": "pow(2)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "Not enough arguments to pow function"
+        },
+        {
+            "id": "err_eval_008",
+            "input": "if(1, 2)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "If function requires exactly 3 arguments"
+        },
+        {
+            "id": "err_eval_009",
+            "input": "f(x) := x; f()",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "User function called with wrong number of arguments"
+        },
+        {
+            "id": "err_eval_010",
+            "input": "undefined_func(5)",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Call to undefined function"
+        },
+        {
+            "id": "err_eval_011",
+            "input": "{1,2,3}[10]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Vector index out of bounds"
+        },
+        {
+            "id": "err_eval_012",
+            "input": "{1,2,3}[-10]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Negative vector index out of bounds"
+        },
+        {
+            "id": "err_eval_013",
+            "input": "(-10)!",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Factorial of negative number"
+        },
+        {
+            "id": "err_eval_014",
+            "input": "min({})",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Min of empty vector"
+        },
+        {
+            "id": "err_eval_015",
+            "input": "max({})",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Max of empty vector"
+        },
+        {
+            "id": "err_eval_016",
+            "input": "median({})",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Median of empty vector"
+        },
+        {
+            "id": "err_eval_017",
+            "input": "[[1,2],[3,4]] @ [[1],[2],[3]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix multiplication with incompatible dimensions"
+        },
+        {
+            "id": "err_eval_018",
+            "input": "det([[1,2,3],[4,5,6]])",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Determinant of non-square matrix"
+        }
+    ]
+}

@@ -1,0 +1,363 @@
+{
+    "category": "Unit Conversion",
+    "description": "Unit conversion operations: parsing unit literals, 'in/to/as' operators, and unit arithmetic",
+    "tests": [
+        {
+            "id": "length_km_to_m_001",
+            "input": "5 kilometers in meters",
+            "expected": "5000.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Kilometers to meters (exact)"
+        },
+        {
+            "id": "length_m_to_cm_001",
+            "input": "10 meters in centimeters",
+            "expected": "1000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Meters to centimeters (exact)"
+        },
+        {
+            "id": "length_cm_to_mm_001",
+            "input": "25 centimeters in millimeters",
+            "expected": "250.0 millimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Centimeters to millimeters (exact)"
+        },
+        {
+            "id": "length_m_to_km_001",
+            "input": "2500 meters in kilometers",
+            "expected": "2.5 kilometers",
+            "expectedType": "NodeUnit",
+            "notes": "Meters to kilometers (exact)"
+        },
+        {
+            "id": "length_mm_to_m_001",
+            "input": "5000 millimeters in meters",
+            "expected": "5.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Millimeters to meters (exact)"
+        },
+        {
+            "id": "temp_celsius_to_fahrenheit_001",
+            "input": "0 celsius in fahrenheit",
+            "expected": "32.0 fahrenheit",
+            "expectedType": "NodeUnit",
+            "notes": "Freezing point: 0C = 32F"
+        },
+        {
+            "id": "temp_fahrenheit_to_celsius_001",
+            "input": "32 fahrenheit in celsius",
+            "expected": "0.0 celsius",
+            "expectedType": "NodeUnit",
+            "notes": "Freezing point: 32F = 0C"
+        },
+        {
+            "id": "temp_celsius_to_fahrenheit_002",
+            "input": "100 celsius in fahrenheit",
+            "expected": "212.0 fahrenheit",
+            "expectedType": "NodeUnit",
+            "notes": "Boiling point: 100C = 212F"
+        },
+        {
+            "id": "temp_fahrenheit_to_celsius_002",
+            "input": "212 fahrenheit in celsius",
+            "expected": "100.0 celsius",
+            "expectedType": "NodeUnit",
+            "notes": "Boiling point: 212F = 100C"
+        },
+        {
+            "id": "temp_celsius_to_kelvin_001",
+            "input": "0 celsius in kelvin",
+            "expected": "273.15 kelvin",
+            "expectedType": "NodeUnit",
+            "notes": "0C = 273.15K"
+        },
+        {
+            "id": "temp_kelvin_to_celsius_001",
+            "input": "273.15 kelvin in celsius",
+            "expected": "0.0 celsius",
+            "expectedType": "NodeUnit",
+            "notes": "273.15K = 0C"
+        },
+        {
+            "id": "syntax_to_keyword_001",
+            "input": "100 meters to centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "'to' syntax alternative"
+        },
+        {
+            "id": "syntax_as_keyword_001",
+            "input": "5 kilometers as meters",
+            "expected": "5000.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "'as' syntax alternative"
+        },
+        {
+            "id": "alias_m_to_cm_001",
+            "input": "2 m in cm",
+            "expected": "200.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Short form aliases - output uses proper plural form"
+        },
+        {
+            "id": "alias_km_to_m_001",
+            "input": "3 km in m",
+            "expected": "3000.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Kilometers to meters using aliases - output uses proper plural form"
+        },
+        {
+            "id": "alias_mm_to_cm_001",
+            "input": "50 mm in cm",
+            "expected": "5.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Millimeters to centimeters using aliases"
+        },
+        {
+            "id": "same_unit_001",
+            "input": "100 meters in meters",
+            "expected": "100.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Converting to same unit returns original value"
+        },
+        {
+            "id": "same_unit_002",
+            "input": "50 celsius in celsius",
+            "expected": "50.0 celsius",
+            "expectedType": "NodeUnit",
+            "notes": "Same unit conversion"
+        },
+        {
+            "id": "expression_with_conversion_001",
+            "input": "(100 + 50) meters in centimeters",
+            "expected": "15000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Expression result converted to unit"
+        },
+        {
+            "id": "expression_with_conversion_002",
+            "input": "2 * 50 meters in kilometers",
+            "expected": "0.1 kilometers",
+            "expectedType": "NodeUnit",
+            "notes": "Arithmetic before unit conversion"
+        },
+        {
+            "id": "chained_conversion_001",
+            "input": "1000 millimeters in centimeters in meters",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Chained unit conversions: mm -> cm -> m (exactly 1.0 so singular)"
+        },
+        {
+            "id": "decimal_value_001",
+            "input": "2.5 kilometers in meters",
+            "expected": "2500.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Decimal value conversion"
+        },
+        {
+            "id": "negative_value_001",
+            "input": "-40 celsius in fahrenheit",
+            "expected": "-40.0 fahrenheit",
+            "expectedType": "NodeUnit",
+            "notes": "Negative temperature (-40C = -40F)"
+        },
+        {
+            "id": "zero_value_001",
+            "input": "0 meters in centimeters",
+            "expected": "0.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Zero value conversion"
+        },
+        {
+            "id": "large_value_001",
+            "input": "1000000 meters in kilometers",
+            "expected": "1000.0 kilometers",
+            "expectedType": "NodeUnit",
+            "notes": "Large value conversion"
+        },
+        {
+            "id": "fraction_value_001",
+            "input": "1/2 meters in centimeters",
+            "expected": "50.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Rational fraction as value"
+        },
+        {
+            "id": "variable_with_unit_001",
+            "input": "x := 100; x meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Variable value with unit conversion"
+        },
+        {
+            "id": "function_result_001",
+            "input": "sqrt(100) meters in centimeters",
+            "expected": "1000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Function result as unit value"
+        },
+        {
+            "id": "plural_singular_001",
+            "input": "1000 millimeters in meters",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Plural/singular based on value (exactly 1.0 so singular)"
+        },
+        {
+            "id": "complex_expr_001",
+            "input": "(5 + 3) * 2 meters in centimeters",
+            "expected": "1600.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Complex expression with unit"
+        },
+        {
+            "id": "precedence_001",
+            "input": "100 meters in centimeters + 1000",
+            "expected": "11000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit conversion before addition"
+        },
+        {
+            "id": "incompatible_types_001",
+            "input": "100 meters in celsius",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot convert length to temperature"
+        },
+        {
+            "id": "unknown_from_unit_001",
+            "input": "100 foobar in meters",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Unknown source unit"
+        },
+        {
+            "id": "unknown_to_unit_001",
+            "input": "100 meters in foobar",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unknown target unit"
+        },
+        {
+            "id": "unit_literal_001",
+            "input": "100 meters",
+            "expected": "100.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit literal without conversion"
+        },
+        {
+            "id": "unit_literal_singular_001",
+            "input": "1 meter",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Singular form when value is exactly 1.0"
+        },
+        {
+            "id": "unit_literal_singular_002",
+            "input": "1 foot",
+            "expected": "1.0 foot",
+            "expectedType": "NodeUnit",
+            "notes": "Singular irregular form when value is exactly 1.0"
+        },
+        {
+            "id": "unit_arithmetic_001",
+            "input": "100 meters + 50 meters",
+            "expected": "150.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Adding same units"
+        },
+        {
+            "id": "unit_arithmetic_002",
+            "input": "200 meters - 50 meters",
+            "expected": "150.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Subtracting same units"
+        },
+        {
+            "id": "unit_arithmetic_003",
+            "input": "10 meters * 2",
+            "expected": "20.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Scaling a unit value"
+        },
+        {
+            "id": "unit_arithmetic_004",
+            "input": "100 meters / 2",
+            "expected": "50.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Dividing a unit value"
+        },
+        {
+            "id": "unit_mixed_arithmetic_001",
+            "input": "1000 meters + 500 centimeters in meters",
+            "expected": "1005.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Add different units (auto-convert to first)"
+        },
+        {
+            "id": "temperature_absolute_zero_001",
+            "input": "-273.15 celsius in kelvin",
+            "expected": "0.0 kelvin",
+            "expectedType": "NodeUnit",
+            "notes": "Absolute zero"
+        },
+        {
+            "id": "temperature_body_temp_001",
+            "input": "100 celsius in fahrenheit",
+            "expected": "212.0 fahrenheit",
+            "expectedType": "NodeUnit",
+            "notes": "Boiling point temperature"
+        },
+        {
+            "id": "comparison_with_units_001",
+            "input": "100 meters in centimeters > 5000",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Compare converted unit value"
+        },
+        {
+            "id": "comparison_with_units_002",
+            "input": "100 mm in cm == 10",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit conversion in equality (mm to cm avoids precision issues)"
+        },
+        {
+            "id": "comparison_with_units_003",
+            "input": "1000 mm == 1 meters",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Direct equality of different units (auto-convert behind scenes)"
+        },
+        {
+            "id": "comparison_with_units_004",
+            "input": "100 cm == 1000 mm",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Direct equality of different units in same family"
+        },
+        {
+            "id": "comparison_with_units_005",
+            "input": "1 km == 1000 m",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Kilometer to meter equality"
+        },
+        {
+            "id": "parentheses_001",
+            "input": "(100 meters) in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Parentheses around value"
+        },
+        {
+            "id": "nested_expr_001",
+            "input": "((50 + 50) meters) in kilometers",
+            "expected": "0.1 kilometers",
+            "expectedType": "NodeUnit",
+            "notes": "Nested parentheses with unit"
+        }
+    ]
+}

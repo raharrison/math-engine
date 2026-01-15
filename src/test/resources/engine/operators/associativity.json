@@ -1,0 +1,133 @@
+{
+    "category": "Operator Associativity",
+    "description": "Tests verifying correct left/right associativity of operators",
+    "tests": [
+        {
+            "id": "assoc_left_sub_001",
+            "input": "10 - 5 - 2",
+            "expected": 3,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(10 - 5) - 2",
+            "notes": "Subtraction is left-associative"
+        },
+        {
+            "id": "assoc_left_sub_002",
+            "input": "100 - 50 - 25 - 10",
+            "expected": 15,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "((100 - 50) - 25) - 10",
+            "notes": "Multiple left-associative subtractions"
+        },
+        {
+            "id": "assoc_left_div_001",
+            "input": "20 / 4 / 2",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(20 / 4) / 2",
+            "notes": "Division is left-associative"
+        },
+        {
+            "id": "assoc_left_div_002",
+            "input": "100 / 10 / 5 / 2",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "((100 / 10) / 5) / 2",
+            "notes": "Multiple left-associative divisions"
+        },
+        {
+            "id": "assoc_left_add_001",
+            "input": "2 + 3 + 4",
+            "expected": 9,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2 + 3) + 4",
+            "notes": "Addition is left-associative"
+        },
+        {
+            "id": "assoc_left_mul_001",
+            "input": "2 * 3 * 4",
+            "expected": 24,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2 * 3) * 4",
+            "notes": "Multiplication is left-associative"
+        },
+        {
+            "id": "assoc_right_pow_001",
+            "input": "2^3^2",
+            "expected": 512,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2^(3^2)",
+            "notes": "Exponentiation is right-associative"
+        },
+        {
+            "id": "assoc_right_pow_002",
+            "input": "4^3^2",
+            "expected": 262144,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "4^(3^2)",
+            "notes": "Exponentiation is right-associative"
+        },
+        {
+            "id": "assoc_right_pow_003",
+            "input": "2^2^2^2",
+            "expected": 65536,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2^(2^(2^2))",
+            "notes": "Multiple right-assoc exponents"
+        },
+        {
+            "id": "assoc_right_pow_004",
+            "input": "3^2^1",
+            "expected": 9,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "3^(2^1)",
+            "notes": "Three exponents right-associative"
+        },
+        {
+            "id": "assoc_right_pow_005",
+            "input": "(2^3)^2",
+            "expected": 64,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2^3)^2",
+            "notes": "Parentheses make it left-associative"
+        },
+        {
+            "id": "assoc_unary_001",
+            "input": "--5",
+            "expected": 5,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "-(-5)",
+            "notes": "Double negation"
+        },
+        {
+            "id": "assoc_unary_002",
+            "input": "---5",
+            "expected": -5,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "-(-(- 5))",
+            "notes": "Triple negation"
+        },
+        {
+            "id": "assoc_and_001",
+            "input": "true && true && false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(true && true) && false",
+            "notes": "AND is left-associative"
+        },
+        {
+            "id": "assoc_or_001",
+            "input": "false || false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(false || false) || true",
+            "notes": "OR is left-associative"
+        },
+        {
+            "id": "assoc_compare_001",
+            "input": "(2 < 3) == true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparison result can be compared"
+        }
+    ]
+}

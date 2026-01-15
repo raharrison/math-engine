@@ -1,0 +1,146 @@
+{
+    "category": "Hyperbolic Functions",
+    "description": "Comprehensive tests for sinh, cosh, tanh, asinh, acosh, atanh, sech, csch, coth",
+    "tests": [
+        {
+            "id": "sinh_001",
+            "input": "sinh(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "sinh(0) = 0"
+        },
+        {
+            "id": "sinh_002",
+            "input": "sinh(1)",
+            "expected": 1.1752011936438014,
+            "expectedType": "NodeDouble",
+            "notes": "sinh(1)"
+        },
+        {
+            "id": "sinh_003",
+            "input": "sinh(-1)",
+            "expected": -1.1752011936438014,
+            "expectedType": "NodeDouble",
+            "notes": "sinh(-1) = -sinh(1)"
+        },
+        {
+            "id": "cosh_001",
+            "input": "cosh(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "cosh(0) = 1"
+        },
+        {
+            "id": "cosh_002",
+            "input": "cosh(1)",
+            "expected": 1.5430806348152437,
+            "expectedType": "NodeDouble",
+            "notes": "cosh(1)"
+        },
+        {
+            "id": "cosh_003",
+            "input": "cosh(-1)",
+            "expected": 1.5430806348152437,
+            "expectedType": "NodeDouble",
+            "notes": "cosh(-1) = cosh(1) (even function)"
+        },
+        {
+            "id": "tanh_001",
+            "input": "tanh(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "tanh(0) = 0"
+        },
+        {
+            "id": "tanh_002",
+            "input": "tanh(1)",
+            "expected": 0.7615941559557649,
+            "expectedType": "NodeDouble",
+            "notes": "tanh(1)"
+        },
+        {
+            "id": "tanh_003",
+            "input": "tanh(-1)",
+            "expected": -0.7615941559557649,
+            "expectedType": "NodeDouble",
+            "notes": "tanh(-1) = -tanh(1)"
+        },
+        {
+            "id": "asinh_001",
+            "input": "asinh(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "asinh(0) = 0"
+        },
+        {
+            "id": "asinh_002",
+            "input": "asinh(1)",
+            "expected": 0.881373587019543,
+            "expectedType": "NodeDouble",
+            "notes": "asinh(1)"
+        },
+        {
+            "id": "acosh_001",
+            "input": "acosh(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "acosh(1) = 0"
+        },
+        {
+            "id": "acosh_002",
+            "input": "acosh(2)",
+            "expected": 1.3169578969248166,
+            "expectedType": "NodeDouble",
+            "notes": "acosh(2)"
+        },
+        {
+            "id": "atanh_001",
+            "input": "atanh(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "atanh(0) = 0"
+        },
+        {
+            "id": "atanh_002",
+            "input": "atanh(0.5)",
+            "expected": 0.5493061443340548,
+            "expectedType": "NodeDouble",
+            "notes": "atanh(0.5)"
+        },
+        {
+            "id": "identity_001",
+            "input": "cosh(0)^2 - sinh(0)^2",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Hyperbolic identity: cosh^2 - sinh^2 = 1"
+        },
+        {
+            "id": "identity_002",
+            "input": "cosh(1)^2 - sinh(1)^2",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Hyperbolic identity at x=1"
+        },
+        {
+            "id": "sech_001",
+            "input": "sech(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "sech(0) = 1/cosh(0) = 1"
+        },
+        {
+            "id": "csch_001",
+            "input": "csch(1)",
+            "expected": 0.8509181282393216,
+            "expectedType": "NodeDouble",
+            "notes": "csch(1) = 1/sinh(1)"
+        },
+        {
+            "id": "coth_001",
+            "input": "coth(1)",
+            "expected": 1.3130352854993312,
+            "expectedType": "NodeDouble",
+            "notes": "coth(1) = 1/tanh(1)"
+        }
+    ]
+}

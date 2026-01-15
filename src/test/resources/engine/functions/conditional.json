@@ -1,0 +1,201 @@
+{
+    "category": "Conditional Functions",
+    "description": "Comprehensive tests for if, clamp, lerp",
+    "tests": [
+        {
+            "id": "if_001",
+            "input": "if(true, 10, 20)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "if with true condition"
+        },
+        {
+            "id": "if_002",
+            "input": "if(false, 10, 20)",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "if with false condition"
+        },
+        {
+            "id": "if_003",
+            "input": "if(1, 10, 20)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "if with truthy number"
+        },
+        {
+            "id": "if_004",
+            "input": "if(0, 10, 20)",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "if with falsy zero"
+        },
+        {
+            "id": "if_005",
+            "input": "if(5 > 3, 100, 200)",
+            "expected": 100,
+            "expectedType": "NodeRational",
+            "notes": "if with comparison true"
+        },
+        {
+            "id": "if_006",
+            "input": "if(5 < 3, 100, 200)",
+            "expected": 200,
+            "expectedType": "NodeRational",
+            "notes": "if with comparison false"
+        },
+        {
+            "id": "if_007",
+            "input": "x := 7; if(x > 5, x * 2, x / 2)",
+            "expected": 14,
+            "expectedType": "NodeRational",
+            "notes": "if using variables"
+        },
+        {
+            "id": "if_008",
+            "input": "x := 3; if(x > 5, x * 2, x / 2)",
+            "expected": 1.5,
+            "expectedType": "NodeRational",
+            "notes": "if false branch with variables"
+        },
+        {
+            "id": "if_009",
+            "input": "if(true, {1, 2}, {3, 4})",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "if returning vector"
+        },
+        {
+            "id": "if_010",
+            "input": "if(false, {1, 2}, {3, 4})",
+            "expected": [
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "if false returning vector"
+        },
+        {
+            "id": "if_nested_001",
+            "input": "if(true, if(true, 1, 2), 3)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Nested if - both true"
+        },
+        {
+            "id": "if_nested_002",
+            "input": "if(true, if(false, 1, 2), 3)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Nested if - outer true, inner false"
+        },
+        {
+            "id": "if_nested_003",
+            "input": "if(false, 1, if(true, 2, 3))",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Nested if - outer false, inner true"
+        },
+        {
+            "id": "if_lazy_001",
+            "input": "if(true, 5, 1/0)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Lazy evaluation - false branch not evaluated"
+        },
+        {
+            "id": "if_lazy_002",
+            "input": "if(false, 1/0, 10)",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Lazy evaluation - true branch not evaluated when false"
+        },
+        {
+            "id": "if_lazy_003",
+            "input": "if(1 > 0, 42, undefined_var)",
+            "expected": 42.0,
+            "expectedType": "NodeDouble",
+            "notes": "Lazy evaluation with undefined variable"
+        },
+        {
+            "id": "if_lazy_004",
+            "input": "if(1 < 0, undefined_var, 99)",
+            "expected": 99.0,
+            "expectedType": "NodeDouble",
+            "notes": "Lazy evaluation with undefined variable in true branch"
+        },
+        {
+            "id": "clamp_001",
+            "input": "clamp(5, 0, 10)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Clamp value within range"
+        },
+        {
+            "id": "clamp_002",
+            "input": "clamp(-5, 0, 10)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Clamp value below range"
+        },
+        {
+            "id": "clamp_003",
+            "input": "clamp(15, 0, 10)",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Clamp value above range"
+        },
+        {
+            "id": "clamp_004",
+            "input": "clamp(0, 0, 10)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Clamp at lower bound"
+        },
+        {
+            "id": "clamp_005",
+            "input": "clamp(10, 0, 10)",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Clamp at upper bound"
+        },
+        {
+            "id": "lerp_001",
+            "input": "lerp(0, 10, 0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Lerp at t=0"
+        },
+        {
+            "id": "lerp_002",
+            "input": "lerp(0, 10, 1)",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Lerp at t=1"
+        },
+        {
+            "id": "lerp_003",
+            "input": "lerp(0, 10, 0.5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Lerp at t=0.5 (midpoint)"
+        },
+        {
+            "id": "lerp_004",
+            "input": "lerp(0, 100, 0.25)",
+            "expected": 25.0,
+            "expectedType": "NodeDouble",
+            "notes": "Lerp at t=0.25"
+        },
+        {
+            "id": "lerp_005",
+            "input": "lerp(-10, 10, 0.5)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Lerp with negative start"
+        }
+    ]
+}

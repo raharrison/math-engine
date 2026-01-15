@@ -1,0 +1,139 @@
+{
+    "category": "Constants",
+    "description": "Comprehensive tests for mathematical constants",
+    "tests": [
+        {
+            "id": "pi_001",
+            "input": "pi",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Pi constant"
+        },
+        {
+            "id": "pi_002",
+            "input": "2 * pi",
+            "expected": 6.283185307179586,
+            "expectedType": "NodeDouble",
+            "notes": "2 * pi"
+        },
+        {
+            "id": "pi_003",
+            "input": "pi / 2",
+            "expected": 1.5707963267948966,
+            "expectedType": "NodeDouble",
+            "notes": "pi / 2"
+        },
+        {
+            "id": "e_001",
+            "input": "e",
+            "expected": 2.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "Euler's number"
+        },
+        {
+            "id": "euler_001",
+            "input": "euler",
+            "expected": 2.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "Euler alias for e"
+        },
+        {
+            "id": "e_002",
+            "input": "e ^ 1",
+            "expected": 2.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "e to the 1"
+        },
+        {
+            "id": "e_003",
+            "input": "ln(e)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Natural log of e"
+        },
+        {
+            "id": "phi_001",
+            "input": "phi",
+            "expected": 1.618033988749895,
+            "expectedType": "NodeDouble",
+            "notes": "Golden ratio"
+        },
+        {
+            "id": "phi_002",
+            "input": "phi ^ 2 - phi",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Golden ratio identity: phi^2 - phi = 1"
+        },
+        {
+            "id": "tau_001",
+            "input": "tau",
+            "expected": 6.283185307179586,
+            "expectedType": "NodeDouble",
+            "notes": "Tau = 2*pi"
+        },
+        {
+            "id": "tau_002",
+            "input": "tau / 2",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Tau / 2 = pi"
+        },
+        {
+            "id": "true_001",
+            "input": "true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean true"
+        },
+        {
+            "id": "false_001",
+            "input": "false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean false"
+        },
+        {
+            "id": "infinity_001",
+            "input": "infinity",
+            "expected": "Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Positive infinity"
+        },
+        {
+            "id": "inf_001",
+            "input": "inf",
+            "expected": "Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Infinity alias"
+        },
+        {
+            "id": "identity_001",
+            "input": "sin(pi/2)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "sin(pi/2) = 1"
+        },
+        {
+            "id": "identity_002",
+            "input": "cos(pi)",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "notes": "cos(pi) = -1"
+        },
+        {
+            "id": "identity_003",
+            "input": "sin(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "sin(0) = 0"
+        },
+        {
+            "id": "identity_004",
+            "input": "cos(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "cos(0) = 1"
+        }
+    ]
+}

@@ -1,0 +1,152 @@
+{
+    "category": "Variables and Assignment",
+    "description": "Comprehensive tests for variable assignment and usage",
+    "tests": [
+        {
+            "id": "assign_001",
+            "input": "x := 5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Simple assignment"
+        },
+        {
+            "id": "assign_002",
+            "input": "x := 5; x",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Assignment and retrieval"
+        },
+        {
+            "id": "assign_003",
+            "input": "x := 5; x + 3",
+            "expected": 8,
+            "expectedType": "NodeRational",
+            "notes": "Assignment and use in expression"
+        },
+        {
+            "id": "assign_004",
+            "input": "x := 10; y := 20; x + y",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Multiple assignments"
+        },
+        {
+            "id": "assign_005",
+            "input": "x := 5; x := x + 1; x",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Reassignment"
+        },
+        {
+            "id": "assign_expr_001",
+            "input": "x := 2 + 3",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Assign expression result"
+        },
+        {
+            "id": "assign_expr_002",
+            "input": "x := 10; y := x * 2; y",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Use variable in assignment expression"
+        },
+        {
+            "id": "assign_vector_001",
+            "input": "v := {1, 2, 3}; v",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Assign vector"
+        },
+        {
+            "id": "assign_vector_002",
+            "input": "v := {1, 2, 3}; v[1]",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Access element of vector variable"
+        },
+        {
+            "id": "assign_vector_003",
+            "input": "v := {1, 2, 3}; sum(v)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Function on vector variable"
+        },
+        {
+            "id": "assign_matrix_001",
+            "input": "m := [[1, 2], [3, 4]]; m",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Assign matrix"
+        },
+        {
+            "id": "assign_computed_001",
+            "input": "x := 5; y := x^2; z := y + x; z",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Chain of computed assignments"
+        },
+        {
+            "id": "scope_001",
+            "input": "x := 1; y := 2; x + y",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Multiple variables in scope"
+        },
+        {
+            "id": "naming_001",
+            "input": "myVar := 42; myVar",
+            "expected": 42,
+            "expectedType": "NodeRational",
+            "notes": "CamelCase variable name"
+        },
+        {
+            "id": "naming_002",
+            "input": "my_var := 42; my_var",
+            "expected": 42,
+            "expectedType": "NodeRational",
+            "notes": "Snake case variable name"
+        },
+        {
+            "id": "naming_003",
+            "input": "x1 := 10; x2 := 20; x1 + x2",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Variable names with numbers"
+        },
+        {
+            "id": "shadow_001",
+            "input": "x := 5; x := 10; x",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadowing"
+        },
+        {
+            "id": "complex_expr_001",
+            "input": "a := 2; b := 3; c := 4; a*b + c",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Multiple variables in expression"
+        },
+        {
+            "id": "complex_expr_002",
+            "input": "r := 5; area := pi * r^2; area",
+            "expected": 78.53981633974483,
+            "expectedType": "NodeDouble",
+            "notes": "Circle area formula"
+        }
+    ]
+}

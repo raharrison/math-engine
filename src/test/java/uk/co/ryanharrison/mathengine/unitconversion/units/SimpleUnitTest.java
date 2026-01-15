@@ -58,7 +58,7 @@ class SimpleUnitTest {
     void builderRejectsNullConversionFactor() {
         assertThatThrownBy(() -> SimpleUnit.builder()
                 .singular("meter")
-                .conversionFactor((BigRational) null)
+                .conversionFactor(null)
                 .build())
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("Conversion factor");

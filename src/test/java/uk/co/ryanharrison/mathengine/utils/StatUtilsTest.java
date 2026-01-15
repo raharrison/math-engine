@@ -243,16 +243,17 @@ class StatUtilsTest {
     }
 
     @Test
-    void geometricMeanWithNegativeValuesProducesNaN() {
+    void geometricMeanWithNegativeValuesThrowsException() {
         double[] data = {-2.0, 4.0, 8.0};
-        double result = StatUtils.geometricMean(data);
-        assertThat(result).isNaN();
+        assertThatThrownBy(() -> StatUtils.geometricMean(data))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void geometricMeanWithZeroProducesZero() {
+    void geometricMeanWithZeroThrowsException() {
         double[] data = {1.0, 0.0, 4.0};
-        assertThat(StatUtils.geometricMean(data)).isCloseTo(0.0, within(TOLERANCE));
+        assertThatThrownBy(() -> StatUtils.geometricMean(data))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     // ==================== Central Tendency - Harmonic Mean Tests ====================

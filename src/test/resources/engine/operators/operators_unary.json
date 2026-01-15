@@ -1,0 +1,138 @@
+{
+    "category": "Unary Operators",
+    "tests": [
+        {
+            "id": "unary_001",
+            "input": "-5",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Unary minus on integer"
+        },
+        {
+            "id": "unary_002",
+            "input": "--5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Double negation"
+        },
+        {
+            "id": "unary_003",
+            "input": "---5",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Triple negation"
+        },
+        {
+            "id": "unary_004",
+            "input": "+5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Unary plus (no-op)"
+        },
+        {
+            "id": "unary_005",
+            "input": "-2.5",
+            "expected": -2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Unary minus on double"
+        },
+        {
+            "id": "unary_006",
+            "input": "5!",
+            "expected": 120,
+            "expectedType": "NodeRational",
+            "notes": "Factorial"
+        },
+        {
+            "id": "unary_007",
+            "input": "0!",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 0 is 1"
+        },
+        {
+            "id": "unary_008",
+            "input": "1!",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 1 is 1"
+        },
+        {
+            "id": "unary_009",
+            "input": "3!",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 3"
+        },
+        {
+            "id": "unary_010",
+            "input": "5! + 1",
+            "expected": 121,
+            "expectedType": "NodeRational",
+            "notes": "Factorial before addition: (5!) + 1"
+        },
+        {
+            "id": "unary_011",
+            "input": "2 * 3!",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Factorial before multiplication: 2 * (3!)"
+        },
+        {
+            "id": "unary_012",
+            "input": "5!!",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial: 5!! = 5 * 3 * 1"
+        },
+        {
+            "id": "unary_013",
+            "input": "6!!",
+            "expected": 48,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial: 6!! = 6 * 4 * 2"
+        },
+        {
+            "id": "unary_014",
+            "input": "50%",
+            "expected": 0.5,
+            "expectedType": "NodePercent",
+            "notes": "Percent literal: 50% = 0.5"
+        },
+        {
+            "id": "unary_015",
+            "input": "100%",
+            "expected": 1.0,
+            "expectedType": "NodePercent",
+            "notes": "Percent literal: 100% = 1.0"
+        },
+        {
+            "id": "unary_016",
+            "input": "25%",
+            "expected": 0.25,
+            "expectedType": "NodePercent",
+            "notes": "Percent literal: 25% = 0.25"
+        },
+        {
+            "id": "unary_017",
+            "input": "50% + 0.5",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent + Double"
+        },
+        {
+            "id": "unary_018",
+            "input": "25% * 4",
+            "expected": "100%",
+            "expectedType": "NodePercent",
+            "notes": "Percent * Rational"
+        },
+        {
+            "id": "unary_019",
+            "input": "-2^2",
+            "expected": -4,
+            "expectedType": "NodeDouble",
+            "notes": "Unary minus after power: -(2^2)"
+        }
+    ]
+}

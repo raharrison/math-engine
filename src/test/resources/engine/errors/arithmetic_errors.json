@@ -1,0 +1,104 @@
+{
+    "category": "Arithmetic Errors",
+    "description": "Tests for arithmetic errors including division by zero and overflow",
+    "tests": [
+        {
+            "id": "div_zero_001",
+            "input": "1/0",
+            "expected": "Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Division by zero produces infinity"
+        },
+        {
+            "id": "div_zero_002",
+            "input": "-1/0",
+            "expected": "-Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Negative divided by zero"
+        },
+        {
+            "id": "div_zero_003",
+            "input": "0/0",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "Zero divided by zero is NaN"
+        },
+        {
+            "id": "mod_zero_001",
+            "input": "5 mod 0",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "Modulo by zero"
+        },
+        {
+            "id": "fmod_zero_001",
+            "input": "fmod(5, 0)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "fmod by zero"
+        },
+        {
+            "id": "inf_arithmetic_001",
+            "input": "(1/0) + 1",
+            "expected": "Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Infinity + finite = infinity"
+        },
+        {
+            "id": "inf_arithmetic_002",
+            "input": "(1/0) - (1/0)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "Infinity - infinity = NaN"
+        },
+        {
+            "id": "inf_arithmetic_003",
+            "input": "(1/0) * 0",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "Infinity * 0 = NaN"
+        },
+        {
+            "id": "nan_propagation_001",
+            "input": "(0/0) + 5",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "NaN + anything = NaN"
+        },
+        {
+            "id": "nan_propagation_002",
+            "input": "(0/0) * 10",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "NaN * anything = NaN"
+        },
+        {
+            "id": "percentchange_zero_001",
+            "input": "percentchange(0, 100)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Percent change from zero"
+        },
+        {
+            "id": "whatpercent_zero_001",
+            "input": "whatpercent(10, 0)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "What percent of zero"
+        },
+        {
+            "id": "normalize_equal_001",
+            "input": "normalize(5, 10, 10)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Normalize with equal min and max"
+        },
+        {
+            "id": "inverselerp_equal_001",
+            "input": "inverselerp(5, 5, 3)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Inverse lerp with equal start and end"
+        }
+    ]
+}

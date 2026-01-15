@@ -1,0 +1,243 @@
+{
+    "category": "Built-in Mathematical Functions",
+    "tests": [
+        {
+            "id": "builtin_math_001",
+            "input": "sin(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "sin function in radians"
+        },
+        {
+            "id": "builtin_math_002",
+            "input": "cos(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "cos function in radians"
+        },
+        {
+            "id": "builtin_math_003",
+            "input": "tan(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "tan function in radians"
+        },
+        {
+            "id": "builtin_math_004",
+            "input": "ln(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Natural logarithm of 1"
+        },
+        {
+            "id": "builtin_math_005",
+            "input": "ln(euler)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Natural logarithm of e"
+        },
+        {
+            "id": "builtin_math_006",
+            "input": "log(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm of 1"
+        },
+        {
+            "id": "builtin_math_007",
+            "input": "log(10)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm of 10"
+        },
+        {
+            "id": "builtin_math_008",
+            "input": "log(100)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm of 100"
+        },
+        {
+            "id": "builtin_math_009",
+            "input": "exp(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Exponential of 0"
+        },
+        {
+            "id": "builtin_math_010",
+            "input": "exp(1)",
+            "expected": 2.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "Exponential of 1"
+        },
+        {
+            "id": "builtin_math_011",
+            "input": "sqrt(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Square root of 0"
+        },
+        {
+            "id": "builtin_math_012",
+            "input": "sqrt(4)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Square root of 4"
+        },
+        {
+            "id": "builtin_math_013",
+            "input": "sqrt(9)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Square root of 9"
+        },
+        {
+            "id": "builtin_math_014",
+            "input": "cbrt(8)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Cube root of 8"
+        },
+        {
+            "id": "builtin_math_015",
+            "input": "cbrt(27)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Cube root of 27"
+        },
+        {
+            "id": "builtin_math_016",
+            "input": "floor(3.7)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Floor function"
+        },
+        {
+            "id": "builtin_math_017",
+            "input": "floor(-3.2)",
+            "expected": -4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Floor of negative number"
+        },
+        {
+            "id": "builtin_math_018",
+            "input": "ceil(3.2)",
+            "expected": 4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Ceiling function"
+        },
+        {
+            "id": "builtin_math_019",
+            "input": "ceil(-3.2)",
+            "expected": -3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Ceiling of negative number"
+        },
+        {
+            "id": "builtin_math_020",
+            "input": "round(3.2)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Round down"
+        },
+        {
+            "id": "builtin_math_021",
+            "input": "round(3.7)",
+            "expected": 4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Round up"
+        },
+        {
+            "id": "builtin_math_022",
+            "input": "abs(5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Absolute value of positive"
+        },
+        {
+            "id": "builtin_math_023",
+            "input": "abs(-5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Absolute value of negative"
+        },
+        {
+            "id": "builtin_math_024",
+            "input": "abs(0)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Absolute value of zero"
+        },
+        {
+            "id": "builtin_math_025",
+            "input": "sign(5)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Sign of positive"
+        },
+        {
+            "id": "builtin_math_026",
+            "input": "sign(-5)",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "Sign of negative"
+        },
+        {
+            "id": "builtin_math_027",
+            "input": "sign(0)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Sign of zero"
+        },
+        {
+            "id": "builtin_math_028",
+            "input": "min(1, 2, 3)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Min of multiple arguments"
+        },
+        {
+            "id": "builtin_math_029",
+            "input": "min({3, 1, 4, 1, 5})",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Min of vector"
+        },
+        {
+            "id": "builtin_math_030",
+            "input": "max(1, 2, 3)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Max of multiple arguments"
+        },
+        {
+            "id": "builtin_math_031",
+            "input": "max({3, 1, 4, 1, 5})",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Max of vector"
+        },
+        {
+            "id": "builtin_math_032",
+            "input": "sinh(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Hyperbolic sine"
+        },
+        {
+            "id": "builtin_math_033",
+            "input": "cosh(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Hyperbolic cosine"
+        },
+        {
+            "id": "builtin_math_034",
+            "input": "tanh(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Hyperbolic tangent"
+        }
+    ]
+}

@@ -174,35 +174,68 @@ public final class MathUtils {
     // ==================== Combinatorial Functions ====================
 
     /**
-     * Calculates the binomial coefficient "n choose k" - the number of ways to choose k items from n items.
+     * Calculates the binomial coefficient "n choose k" — the number of ways to choose k items from n items.
      * <p>
-     * The binomial coefficient is defined as:
-     * <br>
-     * C(n, k) = n! / (k! × (n - k)!)
-     * </p>
-     * <p>
-     * This method uses the Gamma function to support real-valued arguments and negative n.
+     * Supports integer and real n/k, including:
+     * <ul>
+     *     <li>Positive integers n and k</li>
+     *     <li>Negative integer n</li>
+     *     <li>Real-valued n and k using the Gamma function</li>
+     * </ul>
      * </p>
      *
-     * @param n the size of the set
-     * @param k the size of the subsets to count
-     * @return the binomial coefficient C(n, k)
+     * <p>
+     * Edge cases:
+     * <ul>
+     *     <li>If k < 0, returns 0</li>
+     *     <li>If integer n and k > n, returns 0</li>
+     *     <li>If negative integer n and integer k ≥ 0, uses generalized formula: C(-n,k) = (-1)^k × C(n+k-1,k)</li>
+     * </ul>
+     * </p>
+     *
+     * @param n the size of the set (can be real or integer, positive or negative integer)
+     * @param k the size of the subsets to count (can be real or integer)
+     * @return the binomial coefficient C(n, k), or POSITIVE_INFINITY/NaN if undefined
      */
     public static double combination(double n, double k) {
-        if (k < 0) {
-            return 0;
+        // Edge case: k < 0 means 0
+        if (k < 0) return 0;
+
+        // INTEGER BRANCH: both n and k are integers
+        if (n % 1 == 0 && k % 1 == 0) {
+            long K = (long) k;
+
+            // Handle negative integer n using generalized formula
+            if (n < 0) {
+                long N = (long) (-n);
+                return ((K % 2 == 0) ? 1 : -1) * combination(N + K - 1, K);
+            }
+
+            // n is non-negative integer
+            long N = (long) n;
+            if (K > N) return 0;          // can't choose more than available
+            K = Math.min(K, N - K);       // symmetry: C(n,k) = C(n,n-k)
+            double result = 1.0;
+
+            // Multiplicative formula avoids factorial overflow
+            for (long i = 1; i <= K; i++) {
+                result *= (N - (K - i));
+                result /= i;
+            }
+            return result;
         }
 
-        if (n >= 0) {
-            return Gamma.gamma(n + 1) / (Gamma.gamma(k + 1) * Gamma.gamma(n - k + 1));
-        } else {
-            // For negative n and integer k
-            if (k % 1 == 0) {
-                return Math.pow(-1, k) * (factorial(k - n - 1) / (factorial(k) * factorial(-n - 1)));
-            } else {
-                return Double.POSITIVE_INFINITY;
-            }
+        // Avoid gamma poles for real n/k
+        if ((k <= 0 && k != Math.floor(k)) || ((n - k) <= 0 && (n - k) != Math.floor(n - k))) {
+            return Double.NaN;
         }
+
+        // Gamma function formula
+        return Math.exp(
+                Gamma.gammaLn(n + 1)
+                        - Gamma.gammaLn(k + 1)
+                        - Gamma.gammaLn(n - k + 1)
+        );
     }
 
     /**
@@ -312,7 +345,7 @@ public final class MathUtils {
      * @param b the second integer
      * @return the least common multiple of a and b
      */
-    private static long lcm(long a, long b) {
+    public static long lcm(long a, long b) {
         if (a == 0 || b == 0) {
             return 0;
         }
@@ -533,7 +566,7 @@ public final class MathUtils {
      * @return the mapped value
      * @throws IllegalArgumentException if fromMin == fromMax
      */
-    public static double map(double value, double fromMin, double fromMax, double toMin, double toMax) {
+    public static double remap(double value, double fromMin, double fromMax, double toMin, double toMax) {
         if (fromMin == fromMax) {
             throw new IllegalArgumentException("Source range cannot have zero width");
         }

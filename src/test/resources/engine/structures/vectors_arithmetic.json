@@ -1,0 +1,214 @@
+{
+    "category": "Vector Arithmetic",
+    "tests": [
+        {
+            "id": "vector_001",
+            "input": "{1, 2, 3}",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Basic vector literal"
+        },
+        {
+            "id": "vector_002",
+            "input": "{1}",
+            "expected": [
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single-element vector"
+        },
+        {
+            "id": "vector_003",
+            "input": "{}",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Empty vector"
+        },
+        {
+            "id": "vector_004",
+            "input": "{1, 2} + {3, 4}",
+            "expected": [
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise addition"
+        },
+        {
+            "id": "vector_005",
+            "input": "{5, 6} - {1, 2}",
+            "expected": [
+                4,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise subtraction"
+        },
+        {
+            "id": "vector_006",
+            "input": "{1, 2} * {3, 4}",
+            "expected": [
+                3,
+                8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise multiplication (Hadamard product)"
+        },
+        {
+            "id": "vector_007",
+            "input": "{6, 8} / {2, 4}",
+            "expected": [
+                3,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise division"
+        },
+        {
+            "id": "vector_008",
+            "input": "{1, 2, 3} * 2",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar multiplication (vector * scalar)"
+        },
+        {
+            "id": "vector_009",
+            "input": "2 * {1, 2, 3}",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar multiplication (scalar * vector)"
+        },
+        {
+            "id": "vector_010",
+            "input": "3 + {1, 2, 3}",
+            "expected": [
+                4,
+                5,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar addition (broadcast)"
+        },
+        {
+            "id": "vector_011",
+            "input": "{1, 2, 3} + 10",
+            "expected": [
+                11,
+                12,
+                13
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar addition (vector + scalar)"
+        },
+        {
+            "id": "vector_012",
+            "input": "{10, 20, 30} - 5",
+            "expected": [
+                5,
+                15,
+                25
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar subtraction"
+        },
+        {
+            "id": "vector_013",
+            "input": "{1, 2, 3} / 2",
+            "expected": [
+                0.5,
+                1.0,
+                1.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar division"
+        },
+        {
+            "id": "vector_014",
+            "input": "{1} + {1, 2, 3}",
+            "expected": [
+                2,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single-element vector zero-pads: {1,0,0} + {1,2,3}"
+        },
+        {
+            "id": "vector_015",
+            "input": "{1, 2} + {1, 2, 3}",
+            "expected": [
+                2,
+                4,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Extend with zeros: {1,2,0} + {1,2,3}"
+        },
+        {
+            "id": "vector_016",
+            "input": "{1, 2, 3} + {1, 2}",
+            "expected": [
+                2,
+                4,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Extend shorter vector with zeros"
+        },
+        {
+            "id": "vector_017",
+            "input": "-{1, 2, 3}",
+            "expected": [
+                -1,
+                -2,
+                -3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unary negation on vector"
+        },
+        {
+            "id": "vector_018",
+            "input": "{2, 3, 4} ^ 2",
+            "expected": [
+                4.0,
+                9.0,
+                16.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise power (promotes to double)"
+        },
+        {
+            "id": "vector_019",
+            "input": "{1, 2, 3} + {4, 5, 6} + {7, 8, 9}",
+            "expected": [
+                12,
+                15,
+                18
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Multiple vector additions"
+        },
+        {
+            "id": "vector_020",
+            "input": "({1, 2} + {3, 4}) * 2",
+            "expected": [
+                8,
+                12
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Precedence: vector addition then scalar multiplication"
+        }
+    ]
+}

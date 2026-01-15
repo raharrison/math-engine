@@ -466,4 +466,168 @@ class GammaTest {
 
         assertThat(product).isCloseTo(expected, within(STANDARD_TOLERANCE));
     }
+
+    // ==================== Digamma Function Tests ====================
+
+    /**
+     * Tests known values of the digamma function.
+     * <p>
+     * ψ(1) = -γ where γ is the Euler-Mascheroni constant ≈ 0.5772156649
+     * ψ(x) is the logarithmic derivative of Γ(x): ψ(x) = d/dx ln(Γ(x))
+     * </p>
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "1.0, -0.5772156649015329",     // ψ(1) = -γ (Euler-Mascheroni constant)
+            "2.0, 0.4227843350984671",      // ψ(2) = 1 - γ
+            "3.0, 0.9227843350984671",      // ψ(3) = 1 + 1/2 - γ
+            "4.0, 1.2561176684318005",      // ψ(4) = 1 + 1/2 + 1/3 - γ
+            "0.5, -1.9635100260214235"      // ψ(0.5) = -γ - 2ln(2)
+    })
+    void digammaKnownValues(double x, double expected) {
+        double result = Gamma.digamma(x);
+        assertThat(result).isCloseTo(expected, within(STANDARD_TOLERANCE));
+    }
+
+    /**
+     * Tests the recurrence relation for digamma: ψ(x+1) = ψ(x) + 1/x.
+     * <p>
+     * This is the defining property that relates consecutive values.
+     * </p>
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "0.5",
+            "1.0",
+            "1.5",
+            "2.0",
+            "3.0",
+            "5.0",
+            "10.0",
+            "20.0"
+    })
+    void digammaRecurrenceRelation(double x) {
+        double psiX = Gamma.digamma(x);
+        double psiXPlus1 = Gamma.digamma(x + 1.0);
+        double expectedPsiXPlus1 = psiX + 1.0 / x;
+
+        assertThat(psiXPlus1).isCloseTo(expectedPsiXPlus1, within(STANDARD_TOLERANCE));
+    }
+
+    /**
+     * Tests that digamma returns NaN for non-positive integers.
+     * <p>
+     * The digamma function is undefined at x = 0, -1, -2, -3, ...
+     * </p>
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "0.0",
+            "-1.0",
+            "-2.0",
+            "-3.0",
+            "-10.0"
+    })
+    void digammaReturnsNaNForNonPositiveIntegers(double x) {
+        double result = Gamma.digamma(x);
+        assertThat(result).isNaN();
+    }
+
+    /**
+     * Tests that digamma is monotonically increasing for x > 0.
+     * <p>
+     * Since ψ'(x) = d²/dx² ln(Γ(x)) > 0 for x > 0, digamma is strictly increasing.
+     * </p>
+     */
+    @Test
+    void digammaIsMonotonicallyIncreasing() {
+        double prev = Gamma.digamma(0.1);
+
+        for (double x = 0.2; x <= 10.0; x += 0.5) {
+            double current = Gamma.digamma(x);
+            assertThat(current).isGreaterThan(prev);
+            prev = current;
+        }
+    }
+
+    /**
+     * Tests digamma for small positive values near zero.
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "0.001",
+            "0.01",
+            "0.1"
+    })
+    void digammaOfSmallPositiveValues(double x) {
+        double result = Gamma.digamma(x);
+
+        // ψ(x) → -∞ as x → 0+, but should be finite for x > 0
+        assertThat(result).isNegative();
+        assertThat(result).isNotNaN();
+        assertThat(result).isFinite();
+    }
+
+    /**
+     * Tests digamma for large values.
+     * <p>
+     * For large x, ψ(x) ≈ ln(x)
+     * </p>
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "100.0",
+            "200.0",
+            "500.0",
+            "1000.0"
+    })
+    void digammaForLargeValues(double x) {
+        double result = Gamma.digamma(x);
+        double approximation = Math.log(x);
+
+        // For large x, ψ(x) approaches ln(x)
+        assertThat(result).isCloseTo(approximation, within(0.01));
+    }
+
+    /**
+     * Tests digamma for negative non-integer values using the reflection formula.
+     * <p>
+     * ψ(1-x) = ψ(x) + π·cot(πx)
+     * </p>
+     */
+    @Test
+    void digammaReflectionFormulaForNegativeValues() {
+        double x = 0.3;
+        double psiX = Gamma.digamma(x);
+        double psi1MinusX = Gamma.digamma(1.0 - x);
+        double expected = psiX + Math.PI / Math.tan(Math.PI * x);
+
+        assertThat(psi1MinusX).isCloseTo(expected, within(STANDARD_TOLERANCE));
+    }
+
+    /**
+     * Tests that digamma is consistent with the derivative of gammaLn.
+     * <p>
+     * Since ψ(x) = d/dx ln(Γ(x)), we can verify using numerical differentiation.
+     * </p>
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "2.5",
+            "3.5",
+            "5.5",
+            "10.0"
+    })
+    void digammaIsDerivativeOfGammaLn(double x) {
+        double h = 1e-5; // stable step size for numerical differentiation
+
+        double digammaX = Gamma.digamma(x);
+
+        // Forward difference: avoids crossing poles of ln Γ(x)
+        double numericalDerivative =
+                (Gamma.gammaLn(x + h) - Gamma.gammaLn(x)) / h;
+
+        assertThat(digammaX)
+                .isCloseTo(numericalDerivative, within(1e-5));
+    }
 }

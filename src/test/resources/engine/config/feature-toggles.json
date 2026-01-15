@@ -1,0 +1,225 @@
+{
+    "category": "Configuration - Feature Toggles",
+    "description": "Tests that features work when enabled and produce errors when disabled",
+    "tests": [
+        {
+            "id": "vectors_enabled_001",
+            "input": "{1, 2, 3}",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "config": {
+                "vectorsEnabled": true
+            },
+            "notes": "Vectors work when enabled"
+        },
+        {
+            "id": "vectors_disabled_001",
+            "input": "{1, 2, 3}",
+            "expectError": true,
+            "config": {
+                "vectorsEnabled": false
+            },
+            "notes": "Vectors produce error when disabled"
+        },
+        {
+            "id": "vectors_enabled_ops_001",
+            "input": "{1, 2} + {3, 4}",
+            "expected": [
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "config": {
+                "vectorsEnabled": true
+            },
+            "notes": "Vector operations work when enabled"
+        },
+        {
+            "id": "matrices_enabled_001",
+            "input": "[[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "config": {
+                "matricesEnabled": true
+            },
+            "notes": "Matrices work when enabled"
+        },
+        {
+            "id": "matrices_disabled_001",
+            "input": "[[1, 2], [3, 4]]",
+            "expectError": true,
+            "config": {
+                "matricesEnabled": false
+            },
+            "notes": "Matrices produce error when disabled"
+        },
+        {
+            "id": "matrices_enabled_ops_001",
+            "input": "[[1, 0], [0, 1]] @ [[2, 3], [4, 5]]",
+            "expected": [
+                [
+                    2,
+                    3
+                ],
+                [
+                    4,
+                    5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "config": {
+                "matricesEnabled": true
+            },
+            "notes": "Matrix operations work when enabled"
+        },
+        {
+            "id": "comprehensions_enabled_001",
+            "input": "{x^2 for x in 1..5}",
+            "expected": [
+                1,
+                4,
+                9,
+                16,
+                25
+            ],
+            "expectedType": "NodeVector",
+            "config": {
+                "comprehensionsEnabled": true
+            },
+            "notes": "List comprehensions work when enabled"
+        },
+        {
+            "id": "comprehensions_disabled_001",
+            "input": "{x^2 for x in 1..5}",
+            "expectError": true,
+            "config": {
+                "comprehensionsEnabled": false
+            },
+            "notes": "List comprehensions produce error when disabled"
+        },
+        {
+            "id": "comprehensions_enabled_filter_001",
+            "input": "{x for x in 1..10 if x mod 2 == 0}",
+            "expected": [
+                2,
+                4,
+                6,
+                8,
+                10
+            ],
+            "expectedType": "NodeVector",
+            "config": {
+                "comprehensionsEnabled": true
+            },
+            "notes": "Filtered comprehensions work when enabled"
+        },
+        {
+            "id": "lambdas_enabled_001",
+            "input": "map(x -> x * 2, {1, 2, 3})",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "config": {
+                "lambdasEnabled": true
+            },
+            "notes": "Lambda expressions work when enabled"
+        },
+        {
+            "id": "lambdas_disabled_001",
+            "input": "map(x -> x * 2, {1, 2, 3})",
+            "expectError": true,
+            "config": {
+                "lambdasEnabled": false
+            },
+            "notes": "Lambda expressions produce error when disabled"
+        },
+        {
+            "id": "lambdas_enabled_filter_001",
+            "input": "filter(x -> x > 3, {1, 2, 3, 4, 5})",
+            "expected": [
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "config": {
+                "lambdasEnabled": true
+            },
+            "notes": "Lambda in filter works when enabled"
+        },
+        {
+            "id": "user_functions_enabled_001",
+            "input": "f(x) := x^2; f(5)",
+            "expected": 25.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "userDefinedFunctionsEnabled": true
+            },
+            "notes": "User-defined functions work when enabled"
+        },
+        {
+            "id": "user_functions_disabled_001",
+            "input": "f(x) := x^2; f(5)",
+            "expectError": true,
+            "config": {
+                "userDefinedFunctionsEnabled": false
+            },
+            "notes": "User-defined functions produce error when disabled"
+        },
+        {
+            "id": "user_functions_enabled_multi_param_001",
+            "input": "add(a, b) := a + b; add(3, 4)",
+            "expected": 7.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "userDefinedFunctionsEnabled": true
+            },
+            "notes": "Multi-parameter user functions work when enabled"
+        },
+        {
+            "id": "units_enabled_001",
+            "input": "100 meters in feet",
+            "expected": 328.084,
+            "expectedType": "NodeUnit",
+            "tolerance": 0.001,
+            "config": {
+                "unitsEnabled": true
+            },
+            "notes": "Unit conversions work when enabled"
+        },
+        {
+            "id": "units_disabled_001",
+            "input": "100 meters in feet",
+            "expectError": true,
+            "config": {
+                "unitsEnabled": false
+            },
+            "notes": "Unit conversions produce error when disabled"
+        },
+        {
+            "id": "units_enabled_arithmetic_001",
+            "input": "5 meters + 3 meters",
+            "expected": 8.0,
+            "expectedType": "NodeUnit",
+            "config": {
+                "unitsEnabled": true
+            },
+            "notes": "Unit arithmetic works when enabled"
+        }
+    ]
+}

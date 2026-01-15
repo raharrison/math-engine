@@ -122,7 +122,7 @@ class ConversionEngineTest {
     void convertRejectsNullAmount() {
         ConversionEngine engine = ConversionEngine.of(List.of(createLengthGroup()));
 
-        assertThatThrownBy(() -> engine.convert((BigRational) null, "meters", "feet"))
+        assertThatThrownBy(() -> engine.convert(null, "meters", "feet"))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("Amount cannot be null");
     }

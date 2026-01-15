@@ -1,0 +1,124 @@
+{
+    "category": "Comparison Operators",
+    "tests": [
+        {
+            "id": "comparison_001",
+            "input": "5 == 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Equality: equal values"
+        },
+        {
+            "id": "comparison_002",
+            "input": "5 == 6",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Equality: unequal values"
+        },
+        {
+            "id": "comparison_003",
+            "input": "5 != 5",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Inequality: equal values"
+        },
+        {
+            "id": "comparison_004",
+            "input": "5 != 6",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Inequality: unequal values"
+        },
+        {
+            "id": "comparison_005",
+            "input": "3 < 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than: true"
+        },
+        {
+            "id": "comparison_006",
+            "input": "5 < 3",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than: false"
+        },
+        {
+            "id": "comparison_007",
+            "input": "5 > 3",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than: true"
+        },
+        {
+            "id": "comparison_008",
+            "input": "3 > 5",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than: false"
+        },
+        {
+            "id": "comparison_009",
+            "input": "5 <= 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than or equal: equal values"
+        },
+        {
+            "id": "comparison_010",
+            "input": "5 <= 6",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than or equal: less value"
+        },
+        {
+            "id": "comparison_011",
+            "input": "6 <= 5",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Less than or equal: greater value"
+        },
+        {
+            "id": "comparison_012",
+            "input": "5 >= 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than or equal: equal values"
+        },
+        {
+            "id": "comparison_013",
+            "input": "6 >= 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than or equal: greater value"
+        },
+        {
+            "id": "comparison_014",
+            "input": "5 >= 6",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than or equal: less value"
+        },
+        {
+            "id": "comparison_015",
+            "input": "2 + 3 < 10",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Arithmetic before comparison: (2 + 3) < 10"
+        },
+        {
+            "id": "comparison_016",
+            "input": "5 * 2 > 8",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Arithmetic before comparison: (5 * 2) > 8"
+        },
+        {
+            "id": "comparison_017",
+            "input": "10 - 5 == 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Arithmetic before equality: (10 - 5) == 5"
+        }
+    ]
+}

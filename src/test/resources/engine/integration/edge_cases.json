@@ -1,0 +1,228 @@
+{
+    "category": "Edge Cases & Special Values",
+    "description": "Edge cases not covered elsewhere: zero identities, empty containers, precision, extremes",
+    "tests": [
+        {
+            "id": "zero_additive_identity_001",
+            "input": "0 + 5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Zero is additive identity"
+        },
+        {
+            "id": "zero_mult_annihilator_001",
+            "input": "999 * 0",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Zero annihilates multiplication"
+        },
+        {
+            "id": "one_mult_identity_001",
+            "input": "17 * 1",
+            "expected": 17,
+            "expectedType": "NodeRational",
+            "notes": "One is multiplicative identity"
+        },
+        {
+            "id": "empty_vector_001",
+            "input": "{}",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Empty vector literal"
+        },
+        {
+            "id": "empty_vector_length_001",
+            "input": "length({})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Length of empty vector"
+        },
+        {
+            "id": "empty_vector_equality_001",
+            "input": "{} == {}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Empty vectors are equal"
+        },
+        {
+            "id": "empty_vector_arithmetic_001",
+            "input": "{} + {}",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Empty + empty = empty"
+        },
+        {
+            "id": "single_element_broadcast_001",
+            "input": "{5} + {1, 2, 3}",
+            "expected": [
+                6,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single-element vector zero-pads (not broadcasts): {5,0,0} + {1,2,3}"
+        },
+        {
+            "id": "single_element_matrix_broadcast_001",
+            "input": "[[5]] + [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    6,
+                    7
+                ],
+                [
+                    8,
+                    9
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "1x1 matrix broadcasts to 2x2"
+        },
+        {
+            "id": "large_numbers_001",
+            "input": "1e100 + 1e100",
+            "expected": 2e100,
+            "expectedType": "NodeDouble",
+            "notes": "Large number arithmetic"
+        },
+        {
+            "id": "small_numbers_001",
+            "input": "1e-100 * 2",
+            "expected": 2e-100,
+            "expectedType": "NodeDouble",
+            "notes": "Very small number arithmetic"
+        },
+        {
+            "id": "floating_point_precision_001",
+            "input": "todouble(0.1) + 0.2",
+            "expected": 0.30000000000000004,
+            "expectedType": "NodeDouble",
+            "notes": "Floating point precision artifact"
+        },
+        {
+            "id": "floating_point_equality_001",
+            "input": "0.1 + 0.2 == 0.3",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "FP precision causes inequality, but using rationals"
+        },
+        {
+            "id": "floating_point_equality_002",
+            "input": "todouble(0.1) + 0.2 == 0.3",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "FP precision causes inequalitys"
+        },
+        {
+            "id": "rational_exact_001",
+            "input": "1/3 + 1/3 + 1/3",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Rational arithmetic is exact"
+        },
+        {
+            "id": "rational_exact_equality_001",
+            "input": "1/3 + 1/3 + 1/3 == 1",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational equality is exact"
+        },
+        {
+            "id": "negative_zero_001",
+            "input": "-0.0 == 0.0",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative zero equals positive zero"
+        },
+        {
+            "id": "identity_matrix_mult_001",
+            "input": "[[1, 2], [3, 4]] @ identity(2)",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix @ identity = matrix"
+        },
+        {
+            "id": "zero_matrix_add_001",
+            "input": "[[1, 2], [3, 4]] + zeros(2)",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix + zero matrix = matrix"
+        },
+        {
+            "id": "zero_matrix_mult_001",
+            "input": "[[1, 2], [3, 4]] * zeros(2)",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise mult by zero matrix"
+        },
+        {
+            "id": "boolean_double_negation_001",
+            "input": "not not true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double negation"
+        },
+        {
+            "id": "modulo_self_001",
+            "input": "5 mod 5",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "n mod n = 0"
+        },
+        {
+            "id": "modulo_one_001",
+            "input": "999 mod 1",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "n mod 1 = 0"
+        },
+        {
+            "id": "factorial_zero_001",
+            "input": "0!",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "0! = 1 by definition"
+        },
+        {
+            "id": "negative_one_even_power_001",
+            "input": "(-1)^100",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Even power of -1 is 1"
+        },
+        {
+            "id": "negative_one_odd_power_001",
+            "input": "(-1)^99",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Odd power of -1 is -1"
+        }
+    ]
+}

@@ -1,0 +1,83 @@
+{
+    "category": "Syntax Errors",
+    "description": "Tests for syntax and parsing errors",
+    "tests": [
+        {
+            "id": "unmatched_paren_001",
+            "input": "(5 + 3",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Unclosed parenthesis"
+        },
+        {
+            "id": "unmatched_paren_002",
+            "input": "5 + 3)",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Extra closing parenthesis"
+        },
+        {
+            "id": "unmatched_bracket_001",
+            "input": "{1, 2, 3",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Unclosed vector bracket"
+        },
+        {
+            "id": "unmatched_bracket_002",
+            "input": "[1, 2, 3",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Unclosed square bracket"
+        },
+        {
+            "id": "missing_operand_001",
+            "input": "5 +",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Missing right operand"
+        },
+        {
+            "id": "missing_operand_002",
+            "input": "* 5",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Missing left operand"
+        },
+        {
+            "id": "consecutive_operators_001",
+            "input": "5 + * 3",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Consecutive binary operators"
+        },
+        {
+            "id": "empty_parens_001",
+            "input": "()",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Empty parentheses"
+        },
+        {
+            "id": "invalid_function_001",
+            "input": "unknownfunc(5)",
+            "expectError": true,
+            "expectedErrorType": "RuntimeException",
+            "notes": "Unknown function"
+        },
+        {
+            "id": "undefined_variable_001",
+            "input": "undefined_x + 5",
+            "expectError": true,
+            "expectedErrorType": "RuntimeException",
+            "notes": "Undefined variable"
+        },
+        {
+            "id": "invalid_number_001",
+            "input": "1.2.3",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "notes": "Invalid number format"
+        }
+    ]
+}

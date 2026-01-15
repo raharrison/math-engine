@@ -1,0 +1,180 @@
+{
+    "category": "Type Coercion - Boolean",
+    "tests": [
+        {
+            "id": "bool_001",
+            "input": "true + 1",
+            "expected": 2,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean to number coercion: true + 1 = 1 + 1 = 2"
+        },
+        {
+            "id": "bool_002",
+            "input": "false + 1",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean to number coercion: false + 1 = 0 + 1 = 1"
+        },
+        {
+            "id": "bool_003",
+            "input": "true + false",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean arithmetic: true + false = 1 + 0 = 1"
+        },
+        {
+            "id": "bool_004",
+            "input": "true * 5",
+            "expected": 5,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean multiplication: true * 5 = 1 * 5 = 5"
+        },
+        {
+            "id": "bool_005",
+            "input": "false * 5",
+            "expected": 0,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean multiplication: false * 5 = 0 * 5 = 0"
+        },
+        {
+            "id": "bool_006",
+            "input": "1 + true",
+            "expected": 2,
+            "expectedType": "NodeDouble",
+            "notes": "Integer + Boolean: 1 + true = 1 + 1 = 2"
+        },
+        {
+            "id": "bool_007",
+            "input": "10 - true",
+            "expected": 9,
+            "expectedType": "NodeDouble",
+            "notes": "Integer - Boolean: 10 - true = 10 - 1 = 9"
+        },
+        {
+            "id": "bool_008",
+            "input": "10 - false",
+            "expected": 10,
+            "expectedType": "NodeDouble",
+            "notes": "Integer - Boolean: 10 - false = 10 - 0 = 10"
+        },
+        {
+            "id": "bool_009",
+            "input": "true - false",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean subtraction: true - false = 1 - 0 = 1"
+        },
+        {
+            "id": "bool_010",
+            "input": "false - true",
+            "expected": -1,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean subtraction: false - true = 0 - 1 = -1"
+        },
+        {
+            "id": "bool_011",
+            "input": "2 * true",
+            "expected": 2,
+            "expectedType": "NodeDouble",
+            "notes": "Integer * Boolean: 2 * true = 2 * 1 = 2"
+        },
+        {
+            "id": "bool_012",
+            "input": "2 * false",
+            "expected": 0,
+            "expectedType": "NodeDouble",
+            "notes": "Integer * Boolean: 2 * false = 2 * 0 = 0"
+        },
+        {
+            "id": "bool_013",
+            "input": "10 / true",
+            "expected": 10,
+            "expectedType": "NodeDouble",
+            "notes": "Integer / Boolean: 10 / true = 10 / 1 = 10"
+        },
+        {
+            "id": "bool_014",
+            "input": "true + true",
+            "expected": 2,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean addition: true + true = 1 + 1 = 2"
+        },
+        {
+            "id": "bool_015",
+            "input": "false + false",
+            "expected": 0,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean addition: false + false = 0 + 0 = 0"
+        },
+        {
+            "id": "bool_016",
+            "input": "true * true",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean multiplication: true * true = 1 * 1 = 1"
+        },
+        {
+            "id": "bool_017",
+            "input": "false * false",
+            "expected": 0,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean multiplication: false * false = 0 * 0 = 0"
+        },
+        {
+            "id": "bool_018",
+            "input": "true + 2 * 3",
+            "expected": 7,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean in expression: true + (2 * 3) = 1 + 6 = 7"
+        },
+        {
+            "id": "bool_019",
+            "input": "(true + false) * 5",
+            "expected": 5,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean in parentheses: (1 + 0) * 5 = 1 * 5 = 5"
+        },
+        {
+            "id": "bool_020",
+            "input": "3.5 + true",
+            "expected": 4.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double + Boolean: 3.5 + true = 3.5 + 1 = 4.5"
+        },
+        {
+            "id": "bool_021",
+            "input": "false + 3.5",
+            "expected": 3.5,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean + Double: false + 3.5 = 0 + 3.5 = 3.5"
+        },
+        {
+            "id": "bool_022",
+            "input": "2.0 * true",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Double * Boolean: 2.0 * true = 2.0 * 1 = 2.0"
+        },
+        {
+            "id": "bool_023",
+            "input": "false * 2.0",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean * Double: false * 2.0 = 0 * 2.0 = 0.0"
+        },
+        {
+            "id": "bool_024",
+            "input": "5 - true - false",
+            "expected": 4,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple booleans: 5 - 1 - 0 = 4"
+        },
+        {
+            "id": "bool_025",
+            "input": "true + true + true",
+            "expected": 3,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple true values: 1 + 1 + 1 = 3"
+        }
+    ]
+}

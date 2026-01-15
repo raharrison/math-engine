@@ -586,7 +586,7 @@ class BigRationalTest {
     void powWithNullBigIntegerThrowsException() {
         BigRational r = BigRational.of(1, 2);
 
-        assertThatThrownBy(() -> r.pow((BigInteger) null))
+        assertThatThrownBy(() -> r.pow(null))
                 .isInstanceOf(NullPointerException.class);
     }
 

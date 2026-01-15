@@ -1,0 +1,145 @@
+{
+    "category": "Parentheses and Expression Grouping",
+    "tests": [
+        {
+            "id": "paren_001",
+            "input": "(5)",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Simple parenthesized number"
+        },
+        {
+            "id": "paren_002",
+            "input": "(2 + 3)",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Parenthesized addition"
+        },
+        {
+            "id": "paren_003",
+            "input": "2 * (3 + 4)",
+            "expected": 14.0,
+            "expectedType": "NodeRational",
+            "notes": "Parentheses override precedence"
+        },
+        {
+            "id": "paren_004",
+            "input": "(2 + 3) * 4",
+            "expected": 20.0,
+            "expectedType": "NodeRational",
+            "notes": "Parentheses change order of operations"
+        },
+        {
+            "id": "paren_005",
+            "input": "((2 + 3) * 4)",
+            "expected": 20.0,
+            "expectedType": "NodeRational",
+            "notes": "Nested parentheses"
+        },
+        {
+            "id": "paren_006",
+            "input": "(((5)))",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple levels of parentheses"
+        },
+        {
+            "id": "paren_007",
+            "input": "2 * (3 + 4) * 5",
+            "expected": 70.0,
+            "expectedType": "NodeRational",
+            "notes": "Parentheses in middle of expression"
+        },
+        {
+            "id": "paren_008",
+            "input": "(2 + 3) * (4 + 5)",
+            "expected": 45.0,
+            "expectedType": "NodeRational",
+            "notes": "Two parenthesized groups"
+        },
+        {
+            "id": "paren_009",
+            "input": "((2 + 3) * (4 + 5))",
+            "expected": 45.0,
+            "expectedType": "NodeRational",
+            "notes": "Nested with multiple groups"
+        },
+        {
+            "id": "paren_010",
+            "input": "2^(3^2)",
+            "expected": 512.0,
+            "expectedType": "NodeDouble",
+            "notes": "Parentheses with exponentiation"
+        },
+        {
+            "id": "paren_011",
+            "input": "(2^3)^2",
+            "expected": 64.0,
+            "expectedType": "NodeDouble",
+            "notes": "Different grouping with exponentiation"
+        },
+        {
+            "id": "paren_012",
+            "input": "-(5 + 3)",
+            "expected": -8.0,
+            "expectedType": "NodeRational",
+            "notes": "Negation of parenthesized expression"
+        },
+        {
+            "id": "paren_013",
+            "input": "(-5) + (-3)",
+            "expected": -8.0,
+            "expectedType": "NodeRational",
+            "notes": "Parenthesized negative numbers"
+        },
+        {
+            "id": "paren_014",
+            "input": "(1 + 2) * (3 + 4) * (5 + 6)",
+            "expected": 231.0,
+            "expectedType": "NodeRational",
+            "notes": "Three parenthesized groups"
+        },
+        {
+            "id": "paren_015",
+            "input": "1 / (2 + 3)",
+            "expected": 0.2,
+            "expectedType": "NodeRational",
+            "notes": "Division with parenthesized denominator"
+        },
+        {
+            "id": "paren_016",
+            "input": "(10 - 5) / (2 + 3)",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Both numerator and denominator parenthesized"
+        },
+        {
+            "id": "paren_017",
+            "input": "(true && false) || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Parentheses with logical operators"
+        },
+        {
+            "id": "paren_018",
+            "input": "true && (false || true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Logical operators with different grouping"
+        },
+        {
+            "id": "paren_019",
+            "input": "(5 > 3) && (2 < 4)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Parenthesized comparisons"
+        },
+        {
+            "id": "paren_020",
+            "input": "not (5 > 10)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT with parenthesized comparison"
+        }
+    ]
+}

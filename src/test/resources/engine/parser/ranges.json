@@ -1,0 +1,100 @@
+{
+    "category": "Range Operations",
+    "tests": [
+        {
+            "id": "range_001",
+            "input": "1..5",
+            "expected": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Simple ascending range"
+        },
+        {
+            "id": "range_002",
+            "input": "1..10",
+            "expected": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range 1 to 10"
+        },
+        {
+            "id": "range_003",
+            "input": "0..0",
+            "expected": [
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single element range"
+        },
+        {
+            "id": "range_004",
+            "input": "5..5",
+            "expected": [
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single element range (non-zero)"
+        },
+        {
+            "id": "range_005",
+            "input": "{1, 2, 3} + (1..3)",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range converts to vector in arithmetic"
+        },
+        {
+            "id": "range_006",
+            "input": "(1..3) * 2",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range multiplication"
+        },
+        {
+            "id": "range_007",
+            "input": "2 * (1..3)",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar times range"
+        },
+        {
+            "id": "range_008",
+            "input": "(1..5) + (1..5)",
+            "expected": [
+                2,
+                4,
+                6,
+                8,
+                10
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range + Range (parenthesized for clarity)"
+        }
+    ]
+}

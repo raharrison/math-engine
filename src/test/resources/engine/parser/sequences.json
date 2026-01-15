@@ -1,0 +1,110 @@
+{
+    "category": "Statement Sequences",
+    "tests": [
+        {
+            "id": "seq_001",
+            "input": "x := 5; x",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Two statements: assignment and variable reference"
+        },
+        {
+            "id": "seq_002",
+            "input": "x := 10; y := 20; x + y",
+            "expected": 30.0,
+            "expectedType": "NodeRational",
+            "notes": "Three statements with multiple assignments"
+        },
+        {
+            "id": "seq_003",
+            "input": "f(x) := x^2; g(x) := x + 1; h(x) := f(g(x)); h(2)",
+            "expected": 9.0,
+            "expectedType": "NodeDouble",
+            "notes": "Function composition with sequences"
+        },
+        {
+            "id": "seq_004",
+            "input": "a := 1; b := 2; c := 3; a + b + c",
+            "expected": 6.0,
+            "expectedType": "NodeRational",
+            "notes": "Four statements"
+        },
+        {
+            "id": "seq_005",
+            "input": "x := 5; f(x) := x^2; f(3)",
+            "expected": 9.0,
+            "expectedType": "NodeDouble",
+            "notes": "Function parameter shadows global variable"
+        },
+        {
+            "id": "seq_006",
+            "input": "5; 10; 15",
+            "expected": 15.0,
+            "expectedType": "NodeRational",
+            "notes": "Sequence of expressions returns last value"
+        },
+        {
+            "id": "seq_007",
+            "input": "x := 1; x := x + 1; x := x + 1; x",
+            "expected": 3.0,
+            "expectedType": "NodeRational",
+            "notes": "Reassignment in sequence"
+        },
+        {
+            "id": "seq_008",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n-1)); fact(5)",
+            "expected": 120.0,
+            "expectedType": "NodeDouble",
+            "notes": "Recursive function definition and call"
+        },
+        {
+            "id": "seq_009",
+            "input": "double(x) := x * 2; triple(x) := x * 3; double(5) + triple(5)",
+            "expected": 25.0,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple function definitions and calls"
+        },
+        {
+            "id": "seq_010",
+            "input": "x := {1, 2, 3}; sum(x)",
+            "expected": 6.0,
+            "expectedType": "NodeRational",
+            "notes": "Vector assignment and function call"
+        },
+        {
+            "id": "seq_011",
+            "input": "1 + 1;",
+            "expected": 2.0,
+            "expectedType": "NodeRational",
+            "notes": "Single statement with trailing semicolon"
+        },
+        {
+            "id": "seq_012",
+            "input": "x := 10; y := 20;",
+            "expected": 20.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple statements with trailing semicolon"
+        },
+        {
+            "id": "seq_013",
+            "input": "f(x) := x + 1; g(y) := f(y) * 2; g(f(5))",
+            "expected": 14.0,
+            "expectedType": "NodeDouble",
+            "notes": "Nested function calls across sequences"
+        },
+        {
+            "id": "seq_014",
+            "input": "m := [[1, 2], [3, 4]]; det(m)",
+            "expected": -2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Matrix assignment and determinant"
+        },
+        {
+            "id": "seq_015",
+            "input": "inc(x) := x + 1; x := 0; x := inc(x); x := inc(x); x",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Function used to update variable multiple times"
+        }
+    ]
+}

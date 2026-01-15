@@ -1,0 +1,387 @@
+{
+    "category": "String Functions",
+    "description": "Comprehensive tests for strlen, upper, lower, trim, substring, left, right, charat, strindexof, replace, split, join, ord, chr, format",
+    "tests": [
+        {
+            "id": "strlen_001",
+            "input": "strlen(\"hello\")",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Length of 'hello'"
+        },
+        {
+            "id": "strlen_002",
+            "input": "strlen(\"\")",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Length of empty string"
+        },
+        {
+            "id": "strlen_003",
+            "input": "strlen(\"hello world\")",
+            "expected": 11,
+            "expectedType": "NodeRational",
+            "notes": "Length with space"
+        },
+        {
+            "id": "upper_001",
+            "input": "upper(\"hello\")",
+            "expected": "HELLO",
+            "expectedType": "NodeString",
+            "notes": "Convert to uppercase"
+        },
+        {
+            "id": "upper_002",
+            "input": "upper(\"Hello World\")",
+            "expected": "HELLO WORLD",
+            "expectedType": "NodeString",
+            "notes": "Mixed case to upper"
+        },
+        {
+            "id": "lower_001",
+            "input": "lower(\"HELLO\")",
+            "expected": "hello",
+            "expectedType": "NodeString",
+            "notes": "Convert to lowercase"
+        },
+        {
+            "id": "lower_002",
+            "input": "lower(\"Hello World\")",
+            "expected": "hello world",
+            "expectedType": "NodeString",
+            "notes": "Mixed case to lower"
+        },
+        {
+            "id": "trim_001",
+            "input": "trim(\"  hello  \")",
+            "expected": "hello",
+            "expectedType": "NodeString",
+            "notes": "Trim whitespace"
+        },
+        {
+            "id": "trim_002",
+            "input": "trim(\"hello\")",
+            "expected": "hello",
+            "expectedType": "NodeString",
+            "notes": "No whitespace to trim"
+        },
+        {
+            "id": "ltrim_001",
+            "input": "ltrim(\"  hello  \")",
+            "expected": "hello  ",
+            "expectedType": "NodeString",
+            "notes": "Trim left whitespace"
+        },
+        {
+            "id": "rtrim_001",
+            "input": "rtrim(\"  hello  \")",
+            "expected": "  hello",
+            "expectedType": "NodeString",
+            "notes": "Trim right whitespace"
+        },
+        {
+            "id": "substring_001",
+            "input": "substring(\"hello world\", 0, 5)",
+            "expected": "hello",
+            "expectedType": "NodeString",
+            "notes": "Substring from start"
+        },
+        {
+            "id": "substring_002",
+            "input": "substring(\"hello world\", 6)",
+            "expected": "world",
+            "expectedType": "NodeString",
+            "notes": "Substring to end"
+        },
+        {
+            "id": "substring_003",
+            "input": "substring(\"hello\", -2)",
+            "expected": "lo",
+            "expectedType": "NodeString",
+            "notes": "Negative index from end"
+        },
+        {
+            "id": "left_001",
+            "input": "left(\"hello world\", 5)",
+            "expected": "hello",
+            "expectedType": "NodeString",
+            "notes": "Left 5 characters"
+        },
+        {
+            "id": "left_002",
+            "input": "left(\"hi\", 10)",
+            "expected": "hi",
+            "expectedType": "NodeString",
+            "notes": "Left more than length"
+        },
+        {
+            "id": "right_001",
+            "input": "right(\"hello world\", 5)",
+            "expected": "world",
+            "expectedType": "NodeString",
+            "notes": "Right 5 characters"
+        },
+        {
+            "id": "right_002",
+            "input": "right(\"hi\", 10)",
+            "expected": "hi",
+            "expectedType": "NodeString",
+            "notes": "Right more than length"
+        },
+        {
+            "id": "charat_001",
+            "input": "charat(\"hello\", 0)",
+            "expected": "h",
+            "expectedType": "NodeString",
+            "notes": "First character"
+        },
+        {
+            "id": "charat_002",
+            "input": "charat(\"hello\", 4)",
+            "expected": "o",
+            "expectedType": "NodeString",
+            "notes": "Last character"
+        },
+        {
+            "id": "charat_003",
+            "input": "charat(\"hello\", -1)",
+            "expected": "o",
+            "expectedType": "NodeString",
+            "notes": "Negative index"
+        },
+        {
+            "id": "strindexof_001",
+            "input": "strindexof(\"hello world\", \"world\")",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Find substring"
+        },
+        {
+            "id": "strindexof_002",
+            "input": "strindexof(\"hello\", \"x\")",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "Substring not found"
+        },
+        {
+            "id": "strlastindexof_001",
+            "input": "strlastindexof(\"hello hello\", \"hello\")",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Last occurrence"
+        },
+        {
+            "id": "strcontains_001",
+            "input": "strcontains(\"hello world\", \"world\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Contains substring"
+        },
+        {
+            "id": "strcontains_002",
+            "input": "strcontains(\"hello\", \"xyz\")",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Does not contain"
+        },
+        {
+            "id": "startswith_001",
+            "input": "startswith(\"hello world\", \"hello\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Starts with prefix"
+        },
+        {
+            "id": "startswith_002",
+            "input": "startswith(\"hello\", \"world\")",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Does not start with"
+        },
+        {
+            "id": "endswith_001",
+            "input": "endswith(\"hello world\", \"world\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Ends with suffix"
+        },
+        {
+            "id": "endswith_002",
+            "input": "endswith(\"hello\", \"world\")",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Does not end with"
+        },
+        {
+            "id": "replace_001",
+            "input": "replace(\"hello world\", \"world\", \"there\")",
+            "expected": "hello there",
+            "expectedType": "NodeString",
+            "notes": "Replace substring"
+        },
+        {
+            "id": "replace_002",
+            "input": "replace(\"aaa\", \"a\", \"b\")",
+            "expected": "bbb",
+            "expectedType": "NodeString",
+            "notes": "Replace all occurrences"
+        },
+        {
+            "id": "strreverse_001",
+            "input": "strreverse(\"hello\")",
+            "expected": "olleh",
+            "expectedType": "NodeString",
+            "notes": "Reverse string"
+        },
+        {
+            "id": "strrepeat_001",
+            "input": "strrepeat(\"ab\", 3)",
+            "expected": "ababab",
+            "expectedType": "NodeString",
+            "notes": "Repeat string"
+        },
+        {
+            "id": "strrepeat_002",
+            "input": "strrepeat(\"x\", 0)",
+            "expected": "",
+            "expectedType": "NodeString",
+            "notes": "Repeat zero times"
+        },
+        {
+            "id": "padleft_001",
+            "input": "padleft(\"42\", 5, \"0\")",
+            "expected": "00042",
+            "expectedType": "NodeString",
+            "notes": "Pad left with zeros"
+        },
+        {
+            "id": "padleft_002",
+            "input": "padleft(\"hello\", 3)",
+            "expected": "hello",
+            "expectedType": "NodeString",
+            "notes": "No padding needed"
+        },
+        {
+            "id": "padright_001",
+            "input": "padright(\"42\", 5, \"0\")",
+            "expected": "42000",
+            "expectedType": "NodeString",
+            "notes": "Pad right with zeros"
+        },
+        {
+            "id": "str_001",
+            "input": "str(42)",
+            "expected": "42",
+            "expectedType": "NodeString",
+            "notes": "Number to string"
+        },
+        {
+            "id": "str_002",
+            "input": "str(true)",
+            "expected": "true",
+            "expectedType": "NodeString",
+            "notes": "Boolean to string"
+        },
+        {
+            "id": "split_001",
+            "input": "split(\"a,b,c\", \",\")",
+            "expected": [
+                "a",
+                "b",
+                "c"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Split by comma"
+        },
+        {
+            "id": "split_002",
+            "input": "split(\"hello\")",
+            "expected": [
+                "h",
+                "e",
+                "l",
+                "l",
+                "o"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Split into characters"
+        },
+        {
+            "id": "join_001",
+            "input": "join({\"a\", \"b\", \"c\"}, \",\")",
+            "expected": "a,b,c",
+            "expectedType": "NodeString",
+            "notes": "Join with comma"
+        },
+        {
+            "id": "join_002",
+            "input": "join({\"a\", \"b\", \"c\"})",
+            "expected": "abc",
+            "expectedType": "NodeString",
+            "notes": "Join without delimiter"
+        },
+        {
+            "id": "ord_001",
+            "input": "ord(\"A\")",
+            "expected": 65,
+            "expectedType": "NodeRational",
+            "notes": "ASCII code of A"
+        },
+        {
+            "id": "ord_002",
+            "input": "ord(\"a\")",
+            "expected": 97,
+            "expectedType": "NodeRational",
+            "notes": "ASCII code of a"
+        },
+        {
+            "id": "chr_001",
+            "input": "chr(65)",
+            "expected": "A",
+            "expectedType": "NodeString",
+            "notes": "Character from code 65"
+        },
+        {
+            "id": "chr_002",
+            "input": "chr(97)",
+            "expected": "a",
+            "expectedType": "NodeString",
+            "notes": "Character from code 97"
+        },
+        {
+            "id": "isempty_001",
+            "input": "isempty(\"\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Empty string"
+        },
+        {
+            "id": "isempty_002",
+            "input": "isempty(\"   \")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Blank string"
+        },
+        {
+            "id": "isempty_003",
+            "input": "isempty(\"hello\")",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Non-empty string"
+        },
+        {
+            "id": "format_001",
+            "input": "format(3.14159, 2)",
+            "expected": "3.14",
+            "expectedType": "NodeString",
+            "notes": "Format to 2 decimals"
+        },
+        {
+            "id": "format_002",
+            "input": "format(42, 3)",
+            "expected": "42.000",
+            "expectedType": "NodeString",
+            "notes": "Format integer with decimals"
+        }
+    ]
+}

@@ -1,0 +1,180 @@
+{
+    "category": "Type Coercion - Percent",
+    "tests": [
+        {
+            "id": "percent_001",
+            "input": "50%",
+            "expected": 0.5,
+            "expectedType": "NodePercent",
+            "notes": "Basic percent literal: 50% = 0.5"
+        },
+        {
+            "id": "percent_002",
+            "input": "100%",
+            "expected": 1.0,
+            "expectedType": "NodePercent",
+            "notes": "100% = 1.0"
+        },
+        {
+            "id": "percent_003",
+            "input": "25%",
+            "expected": 0.25,
+            "expectedType": "NodePercent",
+            "notes": "25% = 0.25"
+        },
+        {
+            "id": "percent_004",
+            "input": "0%",
+            "expected": 0.0,
+            "expectedType": "NodePercent",
+            "notes": "0% = 0.0"
+        },
+        {
+            "id": "percent_005",
+            "input": "150%",
+            "expected": 1.5,
+            "expectedType": "NodePercent",
+            "notes": "Percent over 100: 150% = 1.5"
+        },
+        {
+            "id": "percent_006",
+            "input": "50% of 200",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "'of' operator: 50% of 200 = 100"
+        },
+        {
+            "id": "percent_007",
+            "input": "100% of 200",
+            "expected": 200.0,
+            "expectedType": "NodeDouble",
+            "notes": "100% of X = X"
+        },
+        {
+            "id": "percent_008",
+            "input": "0% of 200",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "0% of X = 0"
+        },
+        {
+            "id": "percent_009",
+            "input": "25% of 80",
+            "expected": 20.0,
+            "expectedType": "NodeDouble",
+            "notes": "25% of 80 = 20"
+        },
+        {
+            "id": "percent_010",
+            "input": "150% of 100",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent over 100: 150% of 100 = 150"
+        },
+        {
+            "id": "percent_011",
+            "input": "10% of 1000",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "10% of 1000 = 100"
+        },
+        {
+            "id": "percent_012",
+            "input": "75% of 200",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "75% of 200 = 150"
+        },
+        {
+            "id": "percent_013",
+            "input": "50% + 0.5",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent + Double: 50% + 0.5 = 1.0"
+        },
+        {
+            "id": "percent_014",
+            "input": "25% * 4",
+            "expected": "100%",
+            "expectedType": "NodePercent",
+            "notes": "Percent * Rational: 25% * 4 = 100%"
+        },
+        {
+            "id": "percent_015",
+            "input": "50% + 50%",
+            "expected": "100%",
+            "expectedType": "NodePercent",
+            "notes": "Percent + Percent: 50% + 50% = 100%"
+        },
+        {
+            "id": "percent_016",
+            "input": "100% - 25%",
+            "expected": "75%",
+            "expectedType": "NodePercent",
+            "notes": "Percent - Percent: 100% - 25% = 75%"
+        },
+        {
+            "id": "percent_017",
+            "input": "50% * 2",
+            "expected": "100%",
+            "expectedType": "NodePercent",
+            "notes": "Percent * Integer: 50% * 2 = 100%"
+        },
+        {
+            "id": "percent_018",
+            "input": "100% / 2",
+            "expected": "50%",
+            "expectedType": "NodePercent",
+            "notes": "Percent / Integer: 100% / 2 = 50% or 0.5"
+        },
+        {
+            "id": "percent_019",
+            "input": "20% of 50",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "20% of 50 = 10"
+        },
+        {
+            "id": "percent_020",
+            "input": "5% of 1000",
+            "expected": 50.0,
+            "expectedType": "NodeDouble",
+            "notes": "5% of 1000 = 50"
+        },
+        {
+            "id": "percent_021",
+            "input": "200% of 50",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "200% of 50 = 100"
+        },
+        {
+            "id": "percent_022",
+            "input": "1% of 100",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "1% of 100 = 1"
+        },
+        {
+            "id": "percent_023",
+            "input": "50% of 200 + 50",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "Precedence: (50% of 200) + 50 = 100 + 50 = 150"
+        },
+        {
+            "id": "percent_024",
+            "input": "50% + 1",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Percent + Integer: 50% + 1 = 0.5 + 1 = 1.5"
+        },
+        {
+            "id": "percent_025",
+            "input": "1 + 50%",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Integer + Percent: 1 + 50% = 1 + 0.5 = 1.5"
+        }
+    ]
+}

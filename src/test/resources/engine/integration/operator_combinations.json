@@ -1,0 +1,255 @@
+{
+    "category": "Complex Operator Combinations",
+    "description": "Complex nested expressions combining multiple operator types (beyond basic precedence)",
+    "tests": [
+        {
+            "id": "complex_arithmetic_001",
+            "input": "2 + 3 * 4 - 5 / 2",
+            "expected": 11.5,
+            "expectedType": "NodeDouble",
+            "notes": "All arithmetic ops in one expression"
+        },
+        {
+            "id": "complex_arithmetic_002",
+            "input": "2 * (3 + 4 * (5 - 2))",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Deep nesting with mixed ops"
+        },
+        {
+            "id": "complex_arithmetic_003",
+            "input": "((2 + 3) * 4 - 5) / 3",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple parentheses levels"
+        },
+        {
+            "id": "complex_arithmetic_004",
+            "input": "(10 - 5) * 2 + (6 / 3) - 1",
+            "expected": 11.0,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple grouped expressions"
+        },
+        {
+            "id": "comparison_arithmetic_001",
+            "input": "2 + 3 < 10 - 4",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Arithmetic on both sides of comparison"
+        },
+        {
+            "id": "comparison_arithmetic_002",
+            "input": "5 * 2 == 20 / 2",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Complex arithmetic equality"
+        },
+        {
+            "id": "comparison_arithmetic_003",
+            "input": "(5 > 3) == (2 < 4)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparing comparison results"
+        },
+        {
+            "id": "logical_comparison_001",
+            "input": "(5 > 3 && 2 < 4) || (10 > 20 && 1 < 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Complex nested logical with comparisons"
+        },
+        {
+            "id": "logical_comparison_002",
+            "input": "not (5 > 10) && (3 < 7 || 2 > 8)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT, AND, OR with comparisons"
+        },
+        {
+            "id": "mixed_factorial_001",
+            "input": "5! / 2! + 3!",
+            "expected": 66,
+            "expectedType": "NodeRational",
+            "notes": "Factorial in arithmetic expression"
+        },
+        {
+            "id": "mixed_factorial_002",
+            "input": "(3 + 2)! / 10",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of grouped expression"
+        },
+        {
+            "id": "mixed_percent_001",
+            "input": "50% of 100 + 50",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "'of' has higher precedence"
+        },
+        {
+            "id": "mixed_percent_002",
+            "input": "100 + 20% + 10",
+            "expected": 130.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent in arithmetic chain"
+        },
+        {
+            "id": "vector_complex_001",
+            "input": "{1, 2, 3} + {4, 5, 6} * 2",
+            "expected": [
+                9,
+                12,
+                15
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector ops respect precedence"
+        },
+        {
+            "id": "vector_complex_002",
+            "input": "({1, 2, 3} + {4, 5, 6}) * 2",
+            "expected": [
+                10,
+                14,
+                18
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Parentheses override precedence"
+        },
+        {
+            "id": "vector_complex_003",
+            "input": "2 * {1, 2, 3} + 3 * {4, 5, 6}",
+            "expected": [
+                14,
+                19,
+                24
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Multiple scaled vectors"
+        },
+        {
+            "id": "matrix_complex_001",
+            "input": "[[1, 2], [3, 4]] + [[5, 6], [7, 8]] * 2",
+            "expected": [
+                [
+                    11,
+                    14
+                ],
+                [
+                    17,
+                    20
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix arithmetic with precedence"
+        },
+        {
+            "id": "matrix_complex_002",
+            "input": "2 * [[1, 2], [3, 4]] @ [[1, 0], [0, 1]]",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar mult before matrix mult"
+        },
+        {
+            "id": "matrix_complex_003",
+            "input": "[[1, 2], [3, 4]] @ [[1, 0], [0, 1]] + [[1, 1], [1, 1]]",
+            "expected": [
+                [
+                    2,
+                    3
+                ],
+                [
+                    4,
+                    5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix mult then add"
+        },
+        {
+            "id": "function_arithmetic_001",
+            "input": "sum({1, 2, 3}) + product({1, 2, 3})",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Functions in arithmetic"
+        },
+        {
+            "id": "function_arithmetic_002",
+            "input": "max({5, 3, 9, 1}) * min({5, 3, 9, 1})",
+            "expected": 9.0,
+            "expectedType": "NodeDouble",
+            "notes": "Max times min"
+        },
+        {
+            "id": "function_arithmetic_003",
+            "input": "abs(-5) + sqrt(16) - floor(3.7)",
+            "expected": 6.0,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple functions in expression"
+        },
+        {
+            "id": "short_circuit_001",
+            "input": "false && (1/0 > 0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND short-circuits (no div by zero)"
+        },
+        {
+            "id": "short_circuit_002",
+            "input": "true || (1/0 > 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR short-circuits"
+        },
+        {
+            "id": "if_lazy_001",
+            "input": "if(true, 5, 10)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "If with true condition"
+        },
+        {
+            "id": "if_lazy_002",
+            "input": "if(5 > 3, 2 + 3, 4 + 5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "If with comparison and lazy eval"
+        },
+        {
+            "id": "if_lazy_003",
+            "input": "if(false, 1/0, 42)",
+            "expected": 42,
+            "expectedType": "NodeRational",
+            "notes": "Lazy eval prevents error in false branch"
+        },
+        {
+            "id": "deeply_nested_001",
+            "input": "((((1 + 2) * 3) - 4) / 5) + 6",
+            "expected": 7.0,
+            "expectedType": "NodeRational",
+            "notes": "Deeply nested parentheses"
+        },
+        {
+            "id": "deeply_nested_002",
+            "input": "2^(3^2)",
+            "expected": 512.0,
+            "expectedType": "NodeDouble",
+            "notes": "Right-associative nested power"
+        },
+        {
+            "id": "deeply_nested_003",
+            "input": "1000 * (1 + 0.05)^10",
+            "expected": 1628.894626777442,
+            "expectedType": "NodeDouble",
+            "notes": "Compound interest formula"
+        }
+    ]
+}

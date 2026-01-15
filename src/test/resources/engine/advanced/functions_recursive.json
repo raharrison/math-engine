@@ -1,0 +1,82 @@
+{
+    "category": "Recursive Functions",
+    "tests": [
+        {
+            "id": "func_rec_001",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n-1)); fact(5)",
+            "expected": 120.0,
+            "expectedType": "NodeDouble",
+            "notes": "Factorial function"
+        },
+        {
+            "id": "func_rec_002",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n-1)); fact(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Factorial of 0"
+        },
+        {
+            "id": "func_rec_003",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n-1)); fact(1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Factorial of 1"
+        },
+        {
+            "id": "func_rec_004",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n-1)); fact(10)",
+            "expected": 3628800.0,
+            "expectedType": "NodeDouble",
+            "notes": "Factorial of 10"
+        },
+        {
+            "id": "func_rec_005",
+            "input": "fib(n) := if(n <= 1, n, fib(n-1) + fib(n-2)); fib(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Fibonacci base case 0"
+        },
+        {
+            "id": "func_rec_006",
+            "input": "fib(n) := if(n <= 1, n, fib(n-1) + fib(n-2)); fib(1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Fibonacci base case 1"
+        },
+        {
+            "id": "func_rec_007",
+            "input": "fib(n) := if(n <= 1, n, fib(n-1) + fib(n-2)); fib(10)",
+            "expected": 55.0,
+            "expectedType": "NodeDouble",
+            "notes": "Fibonacci of 10"
+        },
+        {
+            "id": "func_rec_008",
+            "input": "power(x, n) := if(n == 0, 1, x * power(x, n-1)); power(2, 5)",
+            "expected": 32.0,
+            "expectedType": "NodeDouble",
+            "notes": "Recursive power function"
+        },
+        {
+            "id": "func_rec_009",
+            "input": "power(x, n) := if(n == 0, 1, x * power(x, n-1)); power(3, 4)",
+            "expected": 81.0,
+            "expectedType": "NodeDouble",
+            "notes": "Power of 3^4"
+        },
+        {
+            "id": "func_rec_010",
+            "input": "sumto(n) := if(n <= 0, 0, n + sumto(n-1)); sumto(10)",
+            "expected": 55.0,
+            "expectedType": "NodeDouble",
+            "notes": "Sum from 1 to n"
+        },
+        {
+            "id": "func_rec_011",
+            "input": "sumto(n) := if(n <= 0, 0, n + sumto(n-1)); sumto(100)",
+            "expected": 5050.0,
+            "expectedType": "NodeDouble",
+            "notes": "Sum from 1 to 100"
+        }
+    ]
+}

@@ -1,0 +1,89 @@
+{
+    "category": "Lazy Evaluation and Short-Circuit Logic",
+    "tests": [
+        {
+            "id": "lazy_001",
+            "input": "if(true, 5, 1/0)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "If should not evaluate false branch (which would error)"
+        },
+        {
+            "id": "lazy_002",
+            "input": "if(false, 1/0, 10)",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "If should not evaluate true branch when condition is false"
+        },
+        {
+            "id": "lazy_003",
+            "input": "if(1 > 0, 42, undefined_var)",
+            "expected": 42.0,
+            "expectedType": "NodeDouble",
+            "notes": "If should not evaluate false branch with undefined variable"
+        },
+        {
+            "id": "lazy_004",
+            "input": "if(1 < 0, undefined_var, 99)",
+            "expected": 99.0,
+            "expectedType": "NodeDouble",
+            "notes": "If should not evaluate true branch when false"
+        },
+        {
+            "id": "lazy_005",
+            "input": "false && (1/0 > 0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND short-circuits when left is false"
+        },
+        {
+            "id": "lazy_006",
+            "input": "true || (1/0 > 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR short-circuits when left is true"
+        },
+        {
+            "id": "lazy_007",
+            "input": "(5 > 10) && undefined_var",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND doesn't evaluate right when left is false"
+        },
+        {
+            "id": "lazy_008",
+            "input": "(5 < 10) || undefined_var",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR doesn't evaluate right when left is true"
+        },
+        {
+            "id": "lazy_009",
+            "input": "0 && (1/0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Numeric 0 is falsy, short-circuits AND"
+        },
+        {
+            "id": "lazy_010",
+            "input": "1 || (1/0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Numeric 1 is truthy, short-circuits OR"
+        },
+        {
+            "id": "lazy_011",
+            "input": "true && false && (1/0 > 0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple AND operators short-circuit"
+        },
+        {
+            "id": "lazy_012",
+            "input": "false || false || true || (1/0 > 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple OR operators short-circuit"
+        }
+    ]
+}

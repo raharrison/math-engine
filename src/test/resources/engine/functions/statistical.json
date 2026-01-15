@@ -1,0 +1,265 @@
+{
+    "category": "Statistical Functions",
+    "description": "Comprehensive tests for range, percentile, iqr, gmean, hmean, rms, skewness, kurtosis, covariance, correlation, mode, quartile, variance, stddev",
+    "tests": [
+        {
+            "id": "range_001",
+            "input": "range({1, 5, 3, 9, 2})",
+            "expected": 8.0,
+            "expectedType": "NodeDouble",
+            "notes": "Range (max - min)"
+        },
+        {
+            "id": "range_002",
+            "input": "range({5, 5, 5})",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Range of identical values"
+        },
+        {
+            "id": "range_003",
+            "input": "range(1, 2, 3, 4, 5)",
+            "expected": 4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Range with variadic arguments"
+        },
+        {
+            "id": "percentile_001",
+            "input": "percentile({1, 2, 3, 4, 5}, 50)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "50th percentile (median)"
+        },
+        {
+            "id": "percentile_002",
+            "input": "percentile({1, 2, 3, 4, 5}, 0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "0th percentile (minimum)"
+        },
+        {
+            "id": "percentile_003",
+            "input": "percentile({1, 2, 3, 4, 5}, 100)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "100th percentile (maximum)"
+        },
+        {
+            "id": "percentile_004",
+            "input": "percentile({1, 2, 3, 4, 5}, 0.5)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "50th percentile using decimal format"
+        },
+        {
+            "id": "percentile_005",
+            "input": "percentile({10, 20, 30, 40, 50}, 25)",
+            "expected": 20.0,
+            "expectedType": "NodeDouble",
+            "notes": "25th percentile (Q1)"
+        },
+        {
+            "id": "iqr_001",
+            "input": "iqr({1, 2, 3, 4, 5, 6, 7, 8})",
+            "expected": 3.5,
+            "expectedType": "NodeDouble",
+            "notes": "Interquartile range"
+        },
+        {
+            "id": "iqr_002",
+            "input": "iqr({2, 4, 4, 4, 5, 5, 7, 9})",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "IQR of typical dataset"
+        },
+        {
+            "id": "gmean_001",
+            "input": "gmean(2, 8)",
+            "expected": 4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Geometric mean of 2 and 8"
+        },
+        {
+            "id": "gmean_002",
+            "input": "gmean({1, 2, 4, 8})",
+            "expected": 2.8284271247461903,
+            "expectedType": "NodeDouble",
+            "notes": "Geometric mean of powers of 2"
+        },
+        {
+            "id": "gmean_003",
+            "input": "gmean(1, 1, 1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Geometric mean of ones"
+        },
+        {
+            "id": "hmean_001",
+            "input": "hmean(1, 2)",
+            "expected": 1.3333333333333333,
+            "expectedType": "NodeDouble",
+            "notes": "Harmonic mean of 1 and 2"
+        },
+        {
+            "id": "hmean_002",
+            "input": "hmean({2, 4, 4})",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Harmonic mean"
+        },
+        {
+            "id": "hmean_003",
+            "input": "hmean(40, 60)",
+            "expected": 48.0,
+            "expectedType": "NodeDouble",
+            "notes": "Harmonic mean for average speed"
+        },
+        {
+            "id": "rms_001",
+            "input": "rms({3, 4})",
+            "expected": 3.5355339059327378,
+            "expectedType": "NodeDouble",
+            "notes": "Root mean square of 3 and 4"
+        },
+        {
+            "id": "rms_002",
+            "input": "rms({1, 2, 3, 4, 5})",
+            "expected": 3.3166247903554,
+            "expectedType": "NodeDouble",
+            "notes": "RMS of 1 to 5"
+        },
+        {
+            "id": "rms_003",
+            "input": "rms(1, 1, 1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "RMS of equal values"
+        },
+        {
+            "id": "skewness_001",
+            "input": "skewness({1, 2, 3, 4, 5})",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Skewness of symmetric distribution"
+        },
+        {
+            "id": "skewness_002",
+            "input": "skewness({1, 1, 1, 2, 5})",
+            "expected": 1.2909944487358056,
+            "expectedType": "NodeDouble",
+            "notes": "Positive skewness (right tail)"
+        },
+        {
+            "id": "kurtosis_001",
+            "input": "kurtosis({1, 2, 3, 4, 5, 6, 7})",
+            "expected": -1.25,
+            "expectedType": "NodeDouble",
+            "notes": "Kurtosis of uniform-like distribution"
+        },
+        {
+            "id": "covariance_001",
+            "input": "covariance({1, 2, 3}, {4, 5, 6})",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Covariance of perfectly correlated"
+        },
+        {
+            "id": "covariance_002",
+            "input": "covariance({1, 2, 3, 4, 5}, {5, 4, 3, 2, 1})",
+            "expected": -2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Negative covariance"
+        },
+        {
+            "id": "correlation_001",
+            "input": "correlation({1, 2, 3}, {1, 2, 3})",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Perfect positive correlation"
+        },
+        {
+            "id": "correlation_002",
+            "input": "correlation({1, 2, 3}, {3, 2, 1})",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Perfect negative correlation"
+        },
+        {
+            "id": "correlation_003",
+            "input": "correlation({1, 2, 3, 4, 5}, {2, 4, 5, 4, 5})",
+            "expected": 0.7745966692414834,
+            "expectedType": "NodeDouble",
+            "notes": "Partial correlation"
+        },
+        {
+            "id": "mode_001",
+            "input": "mode({1, 2, 2, 3})",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Mode of simple dataset"
+        },
+        {
+            "id": "mode_002",
+            "input": "mode({1, 1, 2, 2, 2, 3, 3})",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Mode with multiple occurrences"
+        },
+        {
+            "id": "mode_003",
+            "input": "mode({5, 5, 5, 5})",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Mode of identical values"
+        },
+        {
+            "id": "quartile_001",
+            "input": "quartile({1, 2, 3, 4, 5, 6, 7, 8}, 1)",
+            "expected": 2.75,
+            "expectedType": "NodeDouble",
+            "notes": "First quartile (Q1)"
+        },
+        {
+            "id": "quartile_002",
+            "input": "quartile({1, 2, 3, 4, 5, 6, 7, 8}, 2)",
+            "expected": 4.5,
+            "expectedType": "NodeDouble",
+            "notes": "Second quartile (median)"
+        },
+        {
+            "id": "quartile_003",
+            "input": "quartile({1, 2, 3, 4, 5, 6, 7, 8}, 3)",
+            "expected": 6.25,
+            "expectedType": "NodeDouble",
+            "notes": "Third quartile (Q3)"
+        },
+        {
+            "id": "variance_001",
+            "input": "variance({2, 4, 4, 4, 5, 5, 7, 9})",
+            "expected": 4.571428571428571,
+            "expectedType": "NodeDouble",
+            "notes": "Sample variance of dataset"
+        },
+        {
+            "id": "variance_002",
+            "input": "variance({1, 1, 1, 1})",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Variance of identical values"
+        },
+        {
+            "id": "stddev_001",
+            "input": "stddev({2, 4, 4, 4, 5, 5, 7, 9})",
+            "expected": 2.138089935299395,
+            "expectedType": "NodeDouble",
+            "notes": "Sample standard deviation"
+        },
+        {
+            "id": "stddev_002",
+            "input": "stddev({10, 10, 10})",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Standard deviation of identical values"
+        }
+    ]
+}

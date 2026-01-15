@@ -1,0 +1,152 @@
+{
+    "category": "Rational Arithmetic",
+    "tests": [
+        {
+            "id": "arithmetic_001",
+            "input": "1 + 2",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Integer addition stays rational"
+        },
+        {
+            "id": "arithmetic_002",
+            "input": "5 - 3",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Integer subtraction stays rational"
+        },
+        {
+            "id": "arithmetic_003",
+            "input": "2 * 3",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Integer multiplication stays rational"
+        },
+        {
+            "id": "arithmetic_004",
+            "input": "6 / 3",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Exact division stays rational (2/1)"
+        },
+        {
+            "id": "arithmetic_005",
+            "input": "7 / 3",
+            "expected": 2.333333333333,
+            "expectedType": "NodeRational",
+            "notes": "Non-exact division creates fraction (7/3)"
+        },
+        {
+            "id": "arithmetic_006",
+            "input": "10 - 5 - 2",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Left-associative subtraction: (10 - 5) - 2"
+        },
+        {
+            "id": "arithmetic_007",
+            "input": "20 / 4 / 2",
+            "expected": 2.5,
+            "expectedType": "NodeRational",
+            "notes": "Left-associative division: (20 / 4) / 2"
+        },
+        {
+            "id": "arithmetic_008",
+            "input": "2 + 3 + 4",
+            "expected": 9,
+            "expectedType": "NodeRational",
+            "notes": "Left-associative addition"
+        },
+        {
+            "id": "arithmetic_009",
+            "input": "2 * 3 * 4",
+            "expected": 24,
+            "expectedType": "NodeRational",
+            "notes": "Left-associative multiplication"
+        },
+        {
+            "id": "arithmetic_010",
+            "input": "2 + 3 * 4",
+            "expected": 14,
+            "expectedType": "NodeRational",
+            "notes": "Multiplication before addition"
+        },
+        {
+            "id": "arithmetic_011",
+            "input": "2 * 3 + 4",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Multiplication before addition"
+        },
+        {
+            "id": "arithmetic_012",
+            "input": "10 - 2 * 3",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "Multiplication before subtraction"
+        },
+        {
+            "id": "arithmetic_013",
+            "input": "8 / 2 + 2",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Division before addition"
+        },
+        {
+            "id": "arithmetic_014",
+            "input": "2 * 3^2",
+            "expected": 18,
+            "expectedType": "NodeDouble",
+            "notes": "Exponentiation before multiplication"
+        },
+        {
+            "id": "arithmetic_015",
+            "input": "2^3 * 4",
+            "expected": 32,
+            "expectedType": "NodeDouble",
+            "notes": "Exponentiation before multiplication"
+        },
+        {
+            "id": "arithmetic_016",
+            "input": "2 + 3^2",
+            "expected": 11,
+            "expectedType": "NodeDouble",
+            "notes": "Exponentiation before addition"
+        },
+        {
+            "id": "arithmetic_017",
+            "input": "2^3 + 4",
+            "expected": 12,
+            "expectedType": "NodeDouble",
+            "notes": "Exponentiation before addition"
+        },
+        {
+            "id": "arithmetic_018",
+            "input": "2^3^2",
+            "expected": 512,
+            "expectedType": "NodeDouble",
+            "notes": "Right-associative exponentiation: 2^(3^2) = 2^9"
+        },
+        {
+            "id": "arithmetic_019",
+            "input": "4^3^2",
+            "expected": 262144,
+            "expectedType": "NodeDouble",
+            "notes": "Right-associative exponentiation: 4^(3^2) = 4^9"
+        },
+        {
+            "id": "arithmetic_020",
+            "input": "7 mod 3",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "notes": "Modulo operation"
+        },
+        {
+            "id": "arithmetic_021",
+            "input": "10 mod 5",
+            "expected": 0,
+            "expectedType": "NodeDouble",
+            "notes": "Modulo with no remainder"
+        }
+    ]
+}

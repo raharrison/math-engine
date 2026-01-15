@@ -1,0 +1,156 @@
+{
+    "category": "Real World Examples",
+    "description": "Tests for real-world mathematical problems and formulas",
+    "tests": [
+        {
+            "id": "circle_area_001",
+            "input": "r := 5; pi * r^2",
+            "expected": 78.53981633974483,
+            "expectedType": "NodeDouble",
+            "notes": "Area of circle with radius 5"
+        },
+        {
+            "id": "circle_circumference_001",
+            "input": "r := 5; 2 * pi * r",
+            "expected": 31.41592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Circumference with radius 5"
+        },
+        {
+            "id": "sphere_volume_001",
+            "input": "r := 3; (4/3) * pi * r^3",
+            "expected": 113.09733552923255,
+            "expectedType": "NodeDouble",
+            "notes": "Volume of sphere radius 3"
+        },
+        {
+            "id": "sphere_surface_001",
+            "input": "r := 3; 4 * pi * r^2",
+            "expected": 113.09733552923255,
+            "expectedType": "NodeDouble",
+            "notes": "Surface area of sphere radius 3"
+        },
+        {
+            "id": "pythagorean_001",
+            "input": "a := 3; b := 4; sqrt(a^2 + b^2)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Pythagorean theorem 3-4-5"
+        },
+        {
+            "id": "pythagorean_002",
+            "input": "a := 5; b := 12; sqrt(a^2 + b^2)",
+            "expected": 13.0,
+            "expectedType": "NodeDouble",
+            "notes": "Pythagorean theorem 5-12-13"
+        },
+        {
+            "id": "quadratic_discriminant_001",
+            "input": "a := 1; b := 5; c := 6; b^2 - 4*a*c",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Discriminant of x^2 + 5x + 6"
+        },
+        {
+            "id": "quadratic_roots_001",
+            "input": "a := 1; b := 5; c := 6; (-b + sqrt(b^2 - 4*a*c)) / (2*a)",
+            "expected": -2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Root of x^2 + 5x + 6 using quadratic formula"
+        },
+        {
+            "id": "quadratic_roots_002",
+            "input": "a := 1; b := 5; c := 6; (-b - sqrt(b^2 - 4*a*c)) / (2*a)",
+            "expected": -3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Other root of x^2 + 5x + 6"
+        },
+        {
+            "id": "compound_interest_001",
+            "input": "P := 1000; r := 0.05; t := 10; P * (1 + r)^t",
+            "expected": 1628.894626777442,
+            "expectedType": "NodeDouble",
+            "notes": "Compound interest $1000 at 5% for 10 years"
+        },
+        {
+            "id": "simple_interest_001",
+            "input": "P := 1000; r := 0.05; t := 10; P * (1 + r * t)",
+            "expected": 1500.0,
+            "expectedType": "NodeDouble",
+            "notes": "Simple interest $1000 at 5% for 10 years"
+        },
+        {
+            "id": "present_value_001",
+            "input": "FV := 10000; r := 0.08; n := 5; FV / (1 + r)^n",
+            "expected": 6805.831970337529,
+            "expectedType": "NodeDouble",
+            "notes": "Present value of $10000 in 5 years at 8%"
+        },
+        {
+            "id": "bmi_001",
+            "input": "weight := 70; height := 1.75; weight / height^2",
+            "expected": 22.857142857142858,
+            "expectedType": "NodeDouble",
+            "notes": "BMI calculation"
+        },
+        {
+            "id": "distance_formula_001",
+            "input": "x1 := 1; y1 := 2; x2 := 4; y2 := 6; sqrt((x2-x1)^2 + (y2-y1)^2)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Distance between (1,2) and (4,6)"
+        },
+        {
+            "id": "midpoint_001",
+            "input": "x1 := 2; y1 := 4; x2 := 6; y2 := 8; {(x1+x2)/2, (y1+y2)/2}",
+            "expected": [
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Midpoint formula"
+        },
+        {
+            "id": "slope_001",
+            "input": "x1 := 1; y1 := 2; x2 := 3; y2 := 8; (y2-y1)/(x2-x1)",
+            "expected": 3.0,
+            "expectedType": "NodeRational",
+            "notes": "Slope between two points"
+        },
+        {
+            "id": "fahrenheit_to_celsius_001",
+            "input": "F := 212; (F - 32) * 5/9",
+            "expected": 100.0,
+            "expectedType": "NodeRational",
+            "notes": "Convert 212F to Celsius"
+        },
+        {
+            "id": "celsius_to_fahrenheit_001",
+            "input": "C := 100; C * 9/5 + 32",
+            "expected": 212.0,
+            "expectedType": "NodeRational",
+            "notes": "Convert 100C to Fahrenheit"
+        },
+        {
+            "id": "standard_deviation_001",
+            "input": "data := {2, 4, 4, 4, 5, 5, 7, 9}; stddev(data)",
+            "expected": 2.138089935299395,
+            "expectedType": "NodeDouble",
+            "notes": "Standard deviation"
+        },
+        {
+            "id": "z_score_001",
+            "input": "x := 75; mu := 70; sigma := 10; (x - mu) / sigma",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Z-score calculation"
+        },
+        {
+            "id": "fibonacci_formula_001",
+            "input": "n := 10; (phi^n - (1-phi)^n) / sqrt(5)",
+            "expected": 55.0,
+            "expectedType": "NodeDouble",
+            "notes": "Binet formula for Fibonacci"
+        }
+    ]
+}

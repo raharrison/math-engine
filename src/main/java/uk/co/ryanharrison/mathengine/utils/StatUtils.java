@@ -94,15 +94,26 @@ public final class StatUtils {
      * </p>
      * <p>
      * Note: All values must be positive for a real result.
+     * This implementation uses logarithms to avoid overflow for large products.
      * </p>
      *
-     * @param data the data set, must not be null or empty, all values should be positive
+     * @param data the data set, must not be null or empty, all values must be positive
      * @return the geometric mean of the data set
-     * @throws IllegalArgumentException if data is null or empty
+     * @throws IllegalArgumentException if data is null, empty, or contains non-positive values
      */
     public static double geometricMean(double[] data) {
-        double product = product(data);
-        return Math.pow(product, 1.0 / data.length);
+        validateData(data);
+
+        // Use log to avoid overflow: GM = exp((1/n) × Σ ln(x_i))
+        double logSum = 0.0;
+        for (double value : data) {
+            if (value <= 0.0) {
+                throw new IllegalArgumentException("Geometric mean requires positive values, got: " + value);
+            }
+            logSum += Math.log(value);
+        }
+
+        return Math.exp(logSum / data.length);
     }
 
     /**

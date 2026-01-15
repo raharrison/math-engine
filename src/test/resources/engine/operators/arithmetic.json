@@ -1,0 +1,412 @@
+{
+    "category": "Arithmetic Operators",
+    "description": "Comprehensive tests for all arithmetic operators: +, -, *, /, ^, mod",
+    "tests": [
+        {
+            "id": "add_001",
+            "input": "1 + 2",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Integer addition stays rational"
+        },
+        {
+            "id": "add_002",
+            "input": "0 + 0",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Zero addition identity"
+        },
+        {
+            "id": "add_003",
+            "input": "-5 + 5",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Additive inverse"
+        },
+        {
+            "id": "add_004",
+            "input": "1 + 2 + 3 + 4 + 5",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Multiple additions"
+        },
+        {
+            "id": "add_005",
+            "input": "2.5 + 3.5",
+            "expected": 6.0,
+            "expectedType": "NodeDouble",
+            "notes": "Decimal addition"
+        },
+        {
+            "id": "add_006",
+            "input": "1e10 + 1e10",
+            "expected": 2e10,
+            "expectedType": "NodeDouble",
+            "notes": "Large number addition"
+        },
+        {
+            "id": "add_007",
+            "input": "0.1 + 0.2",
+            "expected": 0.30000000000000004,
+            "expectedType": "NodeDouble",
+            "notes": "Floating point precision"
+        },
+        {
+            "id": "sub_001",
+            "input": "5 - 3",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Integer subtraction"
+        },
+        {
+            "id": "sub_002",
+            "input": "0 - 0",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Zero subtraction"
+        },
+        {
+            "id": "sub_003",
+            "input": "3 - 5",
+            "expected": -2,
+            "expectedType": "NodeRational",
+            "notes": "Negative result"
+        },
+        {
+            "id": "sub_004",
+            "input": "10 - 5 - 2",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Left-associative: (10 - 5) - 2"
+        },
+        {
+            "id": "sub_005",
+            "input": "10 - 5 - 2 - 1",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Multiple left-associative subtractions"
+        },
+        {
+            "id": "mul_001",
+            "input": "2 * 3",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Integer multiplication"
+        },
+        {
+            "id": "mul_002",
+            "input": "0 * 1000",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Multiplication by zero"
+        },
+        {
+            "id": "mul_003",
+            "input": "1 * 42",
+            "expected": 42,
+            "expectedType": "NodeRational",
+            "notes": "Multiplicative identity"
+        },
+        {
+            "id": "mul_004",
+            "input": "-3 * 4",
+            "expected": -12,
+            "expectedType": "NodeRational",
+            "notes": "Negative times positive"
+        },
+        {
+            "id": "mul_005",
+            "input": "-3 * -4",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Negative times negative"
+        },
+        {
+            "id": "mul_006",
+            "input": "2 * 3 * 4",
+            "expected": 24,
+            "expectedType": "NodeRational",
+            "notes": "Left-associative multiplication"
+        },
+        {
+            "id": "mul_007",
+            "input": "2.5 * 4",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Decimal multiplication"
+        },
+        {
+            "id": "div_001",
+            "input": "6 / 3",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Exact division"
+        },
+        {
+            "id": "div_002",
+            "input": "7 / 3",
+            "expected": 2.333333333333333,
+            "expectedType": "NodeRational",
+            "notes": "Non-exact division creates fraction"
+        },
+        {
+            "id": "div_003",
+            "input": "0 / 5",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Zero divided by non-zero"
+        },
+        {
+            "id": "div_004",
+            "input": "20 / 4 / 2",
+            "expected": 2.5,
+            "expectedType": "NodeRational",
+            "notes": "Left-associative: (20 / 4) / 2"
+        },
+        {
+            "id": "div_005",
+            "input": "-12 / 4",
+            "expected": -3,
+            "expectedType": "NodeRational",
+            "notes": "Negative dividend"
+        },
+        {
+            "id": "div_006",
+            "input": "12 / -4",
+            "expected": -3,
+            "expectedType": "NodeRational",
+            "notes": "Negative divisor"
+        },
+        {
+            "id": "div_007",
+            "input": "-12 / -4",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Both negative"
+        },
+        {
+            "id": "pow_001",
+            "input": "2^3",
+            "expected": 8,
+            "expectedType": "NodeDouble",
+            "notes": "Integer power"
+        },
+        {
+            "id": "pow_002",
+            "input": "2^0",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "notes": "Anything to the power 0"
+        },
+        {
+            "id": "pow_003",
+            "input": "0^5",
+            "expected": 0,
+            "expectedType": "NodeDouble",
+            "notes": "Zero to positive power"
+        },
+        {
+            "id": "pow_004",
+            "input": "2^-1",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Negative exponent"
+        },
+        {
+            "id": "pow_005",
+            "input": "4^0.5",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Fractional exponent (square root)"
+        },
+        {
+            "id": "pow_006",
+            "input": "8^(1/3)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Cube root via exponent"
+        },
+        {
+            "id": "pow_007",
+            "input": "2^3^2",
+            "expected": 512,
+            "expectedType": "NodeDouble",
+            "notes": "Right-associative: 2^(3^2) = 2^9"
+        },
+        {
+            "id": "pow_008",
+            "input": "(2^3)^2",
+            "expected": 64,
+            "expectedType": "NodeDouble",
+            "notes": "Parentheses override associativity"
+        },
+        {
+            "id": "pow_009",
+            "input": "(-2)^2",
+            "expected": 4,
+            "expectedType": "NodeDouble",
+            "notes": "Negative base squared"
+        },
+        {
+            "id": "pow_010",
+            "input": "(-2)^3",
+            "expected": -8,
+            "expectedType": "NodeDouble",
+            "notes": "Negative base cubed"
+        },
+        {
+            "id": "pow_011",
+            "input": "-2^2",
+            "expected": -4,
+            "expectedType": "NodeDouble",
+            "notes": "Unary minus after power: -(2^2)"
+        },
+        {
+            "id": "pow_012",
+            "input": "2^2^2^2",
+            "expected": 65536,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple right-assoc: 2^(2^(2^2))"
+        },
+        {
+            "id": "mod_001",
+            "input": "7 mod 3",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "notes": "Modulo operation"
+        },
+        {
+            "id": "mod_002",
+            "input": "10 mod 5",
+            "expected": 0,
+            "expectedType": "NodeDouble",
+            "notes": "Modulo with no remainder"
+        },
+        {
+            "id": "mod_003",
+            "input": "15 mod 4",
+            "expected": 3,
+            "expectedType": "NodeDouble",
+            "notes": "Modulo with remainder"
+        },
+        {
+            "id": "mod_004",
+            "input": "-7 mod 3",
+            "expected": 2,
+            "expectedType": "NodeDouble",
+            "notes": "Modulo with negative dividend"
+        },
+        {
+            "id": "mod_005",
+            "input": "7 mod -3",
+            "expected": -2,
+            "expectedType": "NodeDouble",
+            "notes": "Modulo with negative divisor"
+        },
+        {
+            "id": "mod_006",
+            "input": "0 mod 5",
+            "expected": 0,
+            "expectedType": "NodeDouble",
+            "notes": "Zero modulo anything"
+        },
+        {
+            "id": "mixed_001",
+            "input": "2 + 3 * 4",
+            "expected": 14,
+            "expectedType": "NodeRational",
+            "notes": "Multiplication before addition"
+        },
+        {
+            "id": "mixed_002",
+            "input": "2 * 3 + 4",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Multiplication before addition"
+        },
+        {
+            "id": "mixed_003",
+            "input": "10 - 2 * 3",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "Multiplication before subtraction"
+        },
+        {
+            "id": "mixed_004",
+            "input": "8 / 2 + 2",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Division before addition"
+        },
+        {
+            "id": "mixed_005",
+            "input": "2 * 3^2",
+            "expected": 18,
+            "expectedType": "NodeDouble",
+            "notes": "Exponentiation before multiplication"
+        },
+        {
+            "id": "mixed_006",
+            "input": "2^3 * 4",
+            "expected": 32,
+            "expectedType": "NodeDouble",
+            "notes": "Exponentiation before multiplication"
+        },
+        {
+            "id": "mixed_007",
+            "input": "2 + 3^2",
+            "expected": 11,
+            "expectedType": "NodeDouble",
+            "notes": "Exponentiation before addition"
+        },
+        {
+            "id": "mixed_008",
+            "input": "2 + 3 * 4^2",
+            "expected": 50,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple precedence levels"
+        },
+        {
+            "id": "mixed_009",
+            "input": "1 + 2 * 3^2 - 4 / 2",
+            "expected": 17,
+            "expectedType": "NodeDouble",
+            "notes": "All precedence levels"
+        },
+        {
+            "id": "paren_001",
+            "input": "(2 + 3) * 4",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Parentheses override precedence"
+        },
+        {
+            "id": "paren_002",
+            "input": "2 * (3 + 4)",
+            "expected": 14,
+            "expectedType": "NodeRational",
+            "notes": "Parentheses for grouping"
+        },
+        {
+            "id": "paren_003",
+            "input": "(1 + 2) * (3 + 4)",
+            "expected": 21,
+            "expectedType": "NodeRational",
+            "notes": "Two parenthesized groups"
+        },
+        {
+            "id": "paren_004",
+            "input": "((2 + 3) * (4 + 5))",
+            "expected": 45,
+            "expectedType": "NodeRational",
+            "notes": "Nested parentheses"
+        },
+        {
+            "id": "paren_005",
+            "input": "2 * (3 + 4 * (5 + 6))",
+            "expected": 94,
+            "expectedType": "NodeRational",
+            "notes": "Deep nesting"
+        }
+    ]
+}

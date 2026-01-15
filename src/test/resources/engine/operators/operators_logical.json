@@ -1,0 +1,152 @@
+{
+    "category": "Logical Operators",
+    "tests": [
+        {
+            "id": "logical_001",
+            "input": "true && true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: both true"
+        },
+        {
+            "id": "logical_002",
+            "input": "true && false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: one false"
+        },
+        {
+            "id": "logical_003",
+            "input": "false && true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: one false (reversed)"
+        },
+        {
+            "id": "logical_004",
+            "input": "false && false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: both false"
+        },
+        {
+            "id": "logical_005",
+            "input": "true || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: both true"
+        },
+        {
+            "id": "logical_006",
+            "input": "true || false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: one true"
+        },
+        {
+            "id": "logical_007",
+            "input": "false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: one true (reversed)"
+        },
+        {
+            "id": "logical_008",
+            "input": "false || false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: both false"
+        },
+        {
+            "id": "logical_009",
+            "input": "true xor true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: same values"
+        },
+        {
+            "id": "logical_010",
+            "input": "true xor false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: different values"
+        },
+        {
+            "id": "logical_011",
+            "input": "false xor true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: different values (reversed)"
+        },
+        {
+            "id": "logical_012",
+            "input": "false xor false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: same values"
+        },
+        {
+            "id": "logical_013",
+            "input": "not true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT: negate true"
+        },
+        {
+            "id": "logical_014",
+            "input": "not false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT: negate false"
+        },
+        {
+            "id": "logical_015",
+            "input": "not not true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT: double negation"
+        },
+        {
+            "id": "logical_016",
+            "input": "true && false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND before OR: (true && false) || true"
+        },
+        {
+            "id": "logical_017",
+            "input": "false && false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND before OR: (false && false) || true"
+        },
+        {
+            "id": "logical_018",
+            "input": "true || false && false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND before OR: true || (false && false)"
+        },
+        {
+            "id": "logical_019",
+            "input": "5 > 3 && 2 < 4",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparison before AND: (5 > 3) && (2 < 4)"
+        },
+        {
+            "id": "logical_020",
+            "input": "5 > 3 && 4 < 2",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparison before AND: (5 > 3) && (4 < 2)"
+        },
+        {
+            "id": "logical_021",
+            "input": "not (5 > 3)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT on comparison result"
+        }
+    ]
+}

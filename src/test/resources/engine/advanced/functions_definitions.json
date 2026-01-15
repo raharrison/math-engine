@@ -1,0 +1,89 @@
+{
+    "category": "Function Definitions",
+    "tests": [
+        {
+            "id": "func_def_001",
+            "input": "square(x) := x^2",
+            "expected": null,
+            "expectedType": "NodeFunction",
+            "notes": "Define simple unary function"
+        },
+        {
+            "id": "func_def_002",
+            "input": "square(x) := x^2; square(5)",
+            "expected": 25.0,
+            "expectedType": "NodeDouble",
+            "notes": "Define and call function"
+        },
+        {
+            "id": "func_def_003",
+            "input": "double(n) := 2 * n; double(3)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Function with rational arithmetic"
+        },
+        {
+            "id": "func_def_004",
+            "input": "neg(x) := -x; neg(5)",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Function with negation"
+        },
+        {
+            "id": "func_def_005",
+            "input": "third(x) := x / 3; third(7)",
+            "expected": 2.333333333333333,
+            "expectedType": "NodeRational",
+            "notes": "Function preserving rational arithmetic"
+        },
+        {
+            "id": "func_def_006",
+            "input": "add(a, b) := a + b; add(3, 4)",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "Binary function"
+        },
+        {
+            "id": "func_def_007",
+            "input": "dist(x1, y1, x2, y2) := sqrt((x2-x1)^2 + (y2-y1)^2); dist(0, 0, 3, 4)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Function with four parameters"
+        },
+        {
+            "id": "func_def_008",
+            "input": "quadratic(a, b, c, x) := a*x^2 + b*x + c; quadratic(2, 3, 1, 5)",
+            "expected": 66.0,
+            "expectedType": "NodeDouble",
+            "notes": "Multi-parameter function with complex expression"
+        },
+        {
+            "id": "func_def_009",
+            "input": "f(x) := x^2; g(x) := x + 1; h(x) := f(g(x)); h(2)",
+            "expected": 9.0,
+            "expectedType": "NodeDouble",
+            "notes": "Function composition"
+        },
+        {
+            "id": "func_def_010",
+            "input": "square(x) := x^2; triple(x) := 3 * x; square(triple(2))",
+            "expected": 36.0,
+            "expectedType": "NodeDouble",
+            "notes": "Nested function calls"
+        },
+        {
+            "id": "func_def_011",
+            "input": "x := 5; f(x) := x^2; f(3)",
+            "expected": 9.0,
+            "expectedType": "NodeDouble",
+            "notes": "Function parameter shadows global variable"
+        },
+        {
+            "id": "func_def_012",
+            "input": "a := 10; addA(x) := x + a; addA(5)",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Function accessing global variable"
+        }
+    ]
+}

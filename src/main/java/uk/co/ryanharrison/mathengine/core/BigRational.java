@@ -928,6 +928,19 @@ public final class BigRational extends Number implements Comparable<BigRational>
     // ==================== Other Operations ====================
 
     /**
+     * Returns true if this rational simplifies to an Integer value
+     *
+     * @return true if this rational is an Integer
+     */
+    public boolean isInteger() {
+        if (denominator.equals(BigInteger.ONE)) {
+            return true;
+        }
+        BigInteger gcd = numerator.gcd(denominator);
+        return denominator.divide(gcd).equals(BigInteger.ONE);
+    }
+
+    /**
      * Returns the absolute value of this rational number.
      *
      * @return {@code |this|}

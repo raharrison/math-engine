@@ -15,7 +15,7 @@ parser/calculator). Most packages can be used standalone or integrated through t
 
 ## Build and Test Commands
 
-**Build System**: Gradle 9.2.0 with Kotlin DSL
+**Build System**: Gradle with Kotlin DSL
 
 ```bash
 # Build the project
@@ -104,9 +104,8 @@ The `testSummary` task outputs:
 
 **Dependencies**:
 
-- Apache Commons Lang 3.17.0
 - JUnit Jupiter 5.11.4 (testing via BOM)
-- AssertJ 3.27.2 (test assertions)
+- AssertJ 3.27.6 (test assertions)
 
 ## GUI Applications
 
@@ -117,78 +116,6 @@ The project includes runnable GUI applications with `main` methods:
 3. **Grapher** (`uk.co.ryanharrison.mathengine.plotting.Grapher`) - Function plotter with pan/zoom
 
 ## Core Architecture
-
-### Parser Package - Expression Evaluation System
-
-The parser is the centerpiece of the library, providing expression evaluation with multiple result types. Understanding its
-architecture is critical:
-
-**Two-Stage Evaluation Pipeline**:
-
-1. `ExpressionParser` converts strings → Node expression trees
-2. `RecursiveDescentParser` evaluates trees → `NodeConstant` results
-
-**Evaluator Factory Methods** (different operator sets):
-
-- `Evaluator.newSimpleBinaryEvaluator()` - Only basic arithmetic (+, -, *, /, ^)
-- `Evaluator.newSimpleEvaluator()` - Adds unary operators (sin, cos, abs, factorial, etc.)
-- `Evaluator.newEvaluator()` - Full evaluator with logical, vector, matrix, custom operators
-
-**Node Type Hierarchy** (result types):
-
-```
-NodeConstant (abstract base for all results)
-├── NodeNumber (abstract numeric base)
-│   ├── NodeDouble (floating point - default)
-│   ├── NodeRational (exact fractions using BigRational)
-│   ├── NodePercent (special double that auto-divides by 100)
-│   └── NodeBoolean (1.0 for true, 0.0 for false)
-├── NodeVector (1D arrays - Node[] elements)
-├── NodeMatrix (2D arrays - Node[][] elements)
-└── NodeFunction (user-defined functions with compiled trees)
-```
-
-**Key Design Patterns**:
-
-- `NodeTransformer`: Type conversion interface (number→vector, vector→matrix, etc.)
-- `applyUniFunc(Function)` / `applyBiFunc(BiFunction)`: Apply operations element-wise to containers
-- Container normalization: Vectors/matrices auto-align sizes via broadcasting or zero-padding
-- Operators are pluggable strategies registered via `OperatorProvider`
-
-**Operator Registration**:
-All operators live in `parser.operators` package:
-
-- `BinaryOperator` subclasses (e.g., `Add`, `Multiply`)
-- `UnaryOperator` subclasses (e.g., `Sine`, `Factorial`, `Sum`)
-- Template classes: `SimpleBinaryOperator`, `NumberOperator`, `VectorOperator`, `MatrixOperator`, `TrigOperator`
-- `CustomOperator`: Wraps user-defined `NodeFunction` instances
-
-**Custom Functions**:
-Users define functions with `:=` operator:
-
-```java
-evaluator.evaluateConstant("f(x) := x^2 + 8*x + 12");
-evaluator.
-
-evaluateDouble("f(5)"); // Returns 77.0
-```
-
-Custom functions can be redefined anytime but **cannot override system operators** (sin, cos, +, -, etc.). This is enforced to
-prevent breaking built-in functionality.
-
-**Rational vs Double Arithmetic**:
-
-- Operations on whole numbers or rationals preserve `NodeRational` type (exact arithmetic)
-- Mixing `NodeRational` + `NodeDouble` = `NodeDouble` (precision loss)
-- Use `.toRational()` operator to convert or ensure inputs stay rational
-
-**EvaluationContext**:
-Central state object holding:
-
-- Constants/variables map
-- Operators registry
-- AngleUnit (Radians/Degrees for trig)
-- Supports scoping via `withArgs()` for function parameter binding
 
 ### Function Class - Single-Variable Equations
 
@@ -271,31 +198,6 @@ Internally uses `Evaluator.newSimpleEvaluator()` with lazy initialization. The e
 - `HistoricalTextField`: Reusable text field with arrow-key history
 
 ## Important Implementation Notes
-
-### System Operator Protection
-
-Custom functions **cannot redefine system operators**. The parser enforces this via checks in `EvaluationContext.addOperator()`.
-System operators include all built-in operators registered by `OperatorProvider` methods.
-
-Attempting to redefine system operators (e.g., `sin(x) := x + 2`) will throw an exception.
-
-### Array Handling
-
-When working with vectors/matrices in the parser:
-
-- Prefer using `System.arraycopy()` for array copies (not manual loops)
-- Node normalization handles size mismatches automatically
-- Single-element containers auto-convert to scalars where appropriate
-
-### Operator Precedence
-
-Operators have precedence values (lower = higher priority):
-
-- Power (^): 1
-- Multiply (*), Divide (/): 2
-- Add (+), Subtract (-): 3
-- Logical operators: 4-6
-- Custom operators: Configurable
 
 ### Test Organization
 
@@ -596,117 +498,18 @@ void distributionIsImmutable() {
 - Be specific about what's wrong and what's expected
 
 ```java
-if(standardDeviation <=0.0){
-        throw new
-
-IllegalArgumentException(
-        "Standard deviation must be positive, got: "+standardDeviation);
+if (standardDeviation <= 0.0) {
+    throw new IllegalArgumentException(
+        "Standard deviation must be positive, got: " + standardDeviation);
 }
-```
-
-### Object Methods
-
-**Always Override**:
-
-- `equals()` - compare all fields with `Double.compare()` for doubles
-- `hashCode()` - use `Objects.hash()` with all fields
-- `toString()` - include class name and key parameters using `String.format()`
-
-```java
-
-@Override
-public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof NormalDistribution that)) return false;
-    return Double.compare(that.mean, mean) == 0 &&
-            Double.compare(that.standardDeviation, standardDeviation) == 0;
-}
-
-@Override
-public int hashCode() {
-    return Objects.hash(mean, standardDeviation);
-}
-
-@Override
-public String toString() {
-    return String.format("NormalDistribution(μ=%.4f, σ=%.4f)", mean, standardDeviation);
-}
-```
-
-## Common Patterns
-
-### Adding New Operators
-
-1. Extend `BinaryOperator` or `UnaryOperator`
-2. Implement abstract `toResult()` method
-3. Define `getAliases()` for string representations
-4. Set precedence via `getPrecedence()`
-5. Register in `OperatorProvider` (e.g., `customOperators()` method)
-6. Add to appropriate `Evaluator` factory method
-
-For simple numeric operations, use template classes:
-
-- `SimpleBinaryOperator` - Binary arithmetic on numbers
-- `NumberOperator` - Unary operations on numbers/vectors/matrices
-- `VectorOperator` / `MatrixOperator` - Type-specific operations
-
-### Evaluating Expressions Programmatically
-
-```java
-Evaluator eval = Evaluator.newEvaluator();
-eval.
-
-addVariable("x","5");
-
-NodeConstant result = eval.evaluateConstant("{1,2,3} * x");
-// Returns: NodeVector with {5, 10, 15}
-```
-
-### Working with Functions
-
-```java
-// Create and evaluate
-Function f = new Function("x^2 + 8*x + 12");
-double value = f.evaluateAt(3.5);
-
-// Differentiate symbolically
-Differentiator diff = new Differentiator();
-Function derivative = diff.differentiate(f, true);
-// derivative.getEquation() = "2*x+8"
-
-// Integrate numerically
-SimpsonIntegrator integrator = new SimpsonIntegrator(f);
-integrator.
-
-setLower(0.5);
-integrator.
-
-setUpper(5.0);
-integrator.
-
-setIterations(100);
-
-double area = integrator.integrate();
-
-// Find roots
-BrentSolver solver = new BrentSolver(f);
-solver.
-
-setLowerBound(-10);
-solver.
-
-setUpperBound(10);
-
-List<Double> roots = solver.solveAll();
 ```
 
 ## File Structure Quick Reference
 
 ```
 src/main/java/uk/co/ryanharrison/mathengine/
-├── Function.java                      # Main function abstraction
-├── Utils.java, MathUtils.java         # Utility methods
-├── BigRational.java                   # Arbitrary precision fractions
+├── core/                             # BigRational and Function
+├── util/                              # Utility methods
 │
 ├── parser/                            # Expression parser (CORE)
 │   ├── Evaluator.java                 # Entry point
@@ -723,9 +526,6 @@ src/main/java/uk/co/ryanharrison/mathengine/
 │       └── unary/                     # Single-argument operators
 │
 ├── differential/                      # Differentiation
-│   ├── NumericalDifferentiationMethod.java
-│   └── symbolic/Differentiator.java
-│
 ├── integral/                          # Integration methods
 ├── solvers/                           # Root finding
 ├── distributions/                     # Probability distributions

@@ -1,0 +1,580 @@
+{
+    "category": "Matrix Operations",
+    "description": "Comprehensive tests for matrix creation, access, subscripts, and basic operations",
+    "tests": [
+        {
+            "id": "matrix_create_001",
+            "input": "[[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Create 2x2 matrix literal"
+        },
+        {
+            "id": "matrix_create_002",
+            "input": "[[1, 2, 3], [4, 5, 6], [7, 8, 9]]",
+            "expected": [
+                [
+                    1,
+                    2,
+                    3
+                ],
+                [
+                    4,
+                    5,
+                    6
+                ],
+                [
+                    7,
+                    8,
+                    9
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Create 3x3 matrix"
+        },
+        {
+            "id": "matrix_create_003",
+            "input": "[[42]]",
+            "expected": [
+                [
+                    42
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Single element matrix"
+        },
+        {
+            "id": "matrix_create_004",
+            "input": "[[1, 2, 3]]",
+            "expected": [
+                [
+                    1,
+                    2,
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Row vector as matrix"
+        },
+        {
+            "id": "matrix_create_005",
+            "input": "[[1], [2], [3]]",
+            "expected": [
+                [
+                    1
+                ],
+                [
+                    2
+                ],
+                [
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Column vector as matrix"
+        },
+        {
+            "id": "matrix_create_006",
+            "input": "[[1.5, 2.5], [3.5, 4.5]]",
+            "expected": [
+                [
+                    1.5,
+                    2.5
+                ],
+                [
+                    3.5,
+                    4.5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix with decimals"
+        },
+        {
+            "id": "matrix_create_007",
+            "input": "[[]]",
+            "expected": [
+                []
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Empty row matrix"
+        },
+        {
+            "id": "matrix_create_008",
+            "input": "[[-1, -2], [-3, -4]]",
+            "expected": [
+                [
+                    -1,
+                    -2
+                ],
+                [
+                    -3,
+                    -4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix with negative values"
+        },
+        {
+            "id": "matrix_access_001",
+            "input": "[[10, 20], [30, 40]][0]",
+            "expected": [
+                10,
+                20
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Access first row"
+        },
+        {
+            "id": "matrix_access_002",
+            "input": "[[10, 20], [30, 40]][1]",
+            "expected": [
+                30,
+                40
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Access second row"
+        },
+        {
+            "id": "matrix_access_003",
+            "input": "[[10, 20], [30, 40]][-1]",
+            "expected": [
+                30,
+                40
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Negative index from end"
+        },
+        {
+            "id": "matrix_access_004",
+            "input": "[[10, 20], [30, 40]][0][0]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Access element via double subscript"
+        },
+        {
+            "id": "matrix_access_005",
+            "input": "[[10, 20], [30, 40]][1][1]",
+            "expected": 40,
+            "expectedType": "NodeRational",
+            "notes": "Access last element"
+        },
+        {
+            "id": "matrix_access_006",
+            "input": "[[10, 20, 30], [40, 50, 60]][0][2]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Access element in 2x3 matrix"
+        },
+        {
+            "id": "matrix_add_001",
+            "input": "[[1, 2], [3, 4]] + [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    6,
+                    8
+                ],
+                [
+                    10,
+                    12
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise matrix addition"
+        },
+        {
+            "id": "matrix_add_002",
+            "input": "[[1, 2], [3, 4]] + 10",
+            "expected": [
+                [
+                    11,
+                    12
+                ],
+                [
+                    13,
+                    14
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar addition to matrix"
+        },
+        {
+            "id": "matrix_add_003",
+            "input": "10 + [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    11,
+                    12
+                ],
+                [
+                    13,
+                    14
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar addition (reversed)"
+        },
+        {
+            "id": "matrix_sub_001",
+            "input": "[[5, 6], [7, 8]] - [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    4,
+                    4
+                ],
+                [
+                    4,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise matrix subtraction"
+        },
+        {
+            "id": "matrix_sub_002",
+            "input": "[[10, 20], [30, 40]] - 5",
+            "expected": [
+                [
+                    5,
+                    15
+                ],
+                [
+                    25,
+                    35
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar subtraction from matrix"
+        },
+        {
+            "id": "matrix_mult_001",
+            "input": "[[1, 2], [3, 4]] * [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    5,
+                    12
+                ],
+                [
+                    21,
+                    32
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise multiplication"
+        },
+        {
+            "id": "matrix_mult_002",
+            "input": "[[1, 2], [3, 4]] * 2",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar multiplication"
+        },
+        {
+            "id": "matrix_mult_003",
+            "input": "3 * [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    3,
+                    6
+                ],
+                [
+                    9,
+                    12
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar multiplication (reversed)"
+        },
+        {
+            "id": "matrix_div_001",
+            "input": "[[10, 20], [30, 40]] / [[2, 4], [5, 8]]",
+            "expected": [
+                [
+                    5,
+                    5
+                ],
+                [
+                    6,
+                    5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise division"
+        },
+        {
+            "id": "matrix_div_002",
+            "input": "[[10, 20], [30, 40]] / 10",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar division"
+        },
+        {
+            "id": "matrix_power_001",
+            "input": "[[2, 3], [4, 5]] ^ 2",
+            "expected": [
+                [
+                    16,
+                    21
+                ],
+                [
+                    28,
+                    37
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix power (A^2 = A @ A)"
+        },
+        {
+            "id": "matrix_power_002",
+            "input": "[[1, 1], [1, 0]] ^ 5",
+            "expected": [
+                [
+                    8,
+                    5
+                ],
+                [
+                    5,
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Fibonacci matrix to 5th power"
+        },
+        {
+            "id": "matrix_power_003",
+            "input": "[[2, 0], [0, 3]] ^ 0",
+            "expected": [
+                [
+                    1,
+                    0
+                ],
+                [
+                    0,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix to power 0 gives identity"
+        },
+        {
+            "id": "matrix_matmul_001",
+            "input": "[[1, 2], [3, 4]] @ [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    19,
+                    22
+                ],
+                [
+                    43,
+                    50
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "True matrix multiplication"
+        },
+        {
+            "id": "matrix_matmul_002",
+            "input": "[[1, 2, 3]] @ [[4], [5], [6]]",
+            "expected": [
+                [
+                    32
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Row vector @ column vector = 1x1 matrix"
+        },
+        {
+            "id": "matrix_matmul_003",
+            "input": "[[1, 0], [0, 1]] @ [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    5,
+                    6
+                ],
+                [
+                    7,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Identity @ matrix = matrix"
+        },
+        {
+            "id": "matrix_comparison_001",
+            "input": "[[1, 2], [3, 4]] == [[1, 2], [3, 4]]",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix structural equality"
+        },
+        {
+            "id": "matrix_comparison_002",
+            "input": "[[1, 2], [3, 4]] == [[1, 2], [3, 5]]",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix structural inequality"
+        },
+        {
+            "id": "matrix_comparison_003",
+            "input": "[[1, 2], [3, 4]] != [[5, 6], [7, 8]]",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix not equal"
+        },
+        {
+            "id": "matrix_expr_001",
+            "input": "M := [[1, 2], [3, 4]]; M + M",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix variable"
+        },
+        {
+            "id": "matrix_expr_002",
+            "input": "M := [[1, 2], [3, 4]]; M[0][0] + M[1][1]",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Sum of diagonal elements"
+        },
+        {
+            "id": "matrix_expr_003",
+            "input": "A := [[1, 2]]; B := [[3], [4]]; A @ B",
+            "expected": [
+                [
+                    11
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Variables in matrix multiplication"
+        },
+        {
+            "id": "matrix_expr_004",
+            "input": "M := [[2, 0], [0, 2]]; M ^ 3",
+            "expected": [
+                [
+                    8,
+                    0
+                ],
+                [
+                    0,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Diagonal matrix cubed"
+        },
+        {
+            "id": "matrix_mixed_001",
+            "input": "[[1, 2], [3, 4]] + 2 * [[1, 1], [1, 1]]",
+            "expected": [
+                [
+                    3,
+                    4
+                ],
+                [
+                    5,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Mixed arithmetic operations"
+        },
+        {
+            "id": "matrix_mixed_002",
+            "input": "2 * [[1, 2], [3, 4]] @ [[1, 0], [0, 1]]",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar mult before matrix mult"
+        },
+        {
+            "id": "matrix_unary_001",
+            "input": "-[[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    -1,
+                    -2
+                ],
+                [
+                    -3,
+                    -4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Negation of matrix"
+        },
+        {
+            "id": "matrix_unary_002",
+            "input": "+[[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Unary plus on matrix"
+        },
+        {
+            "id": "matrix_nested_001",
+            "input": "[[1, 2], [3, 4]] + ([[5, 6], [7, 8]] * 2)",
+            "expected": [
+                [
+                    11,
+                    14
+                ],
+                [
+                    17,
+                    20
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Nested operations with parentheses"
+        }
+    ]
+}

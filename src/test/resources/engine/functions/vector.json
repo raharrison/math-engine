@@ -1,0 +1,464 @@
+{
+    "category": "Vector Functions",
+    "description": "Comprehensive tests for sum, product, min, max, mean, median, sort, reverse, len, first, last, and manipulation functions",
+    "tests": [
+        {
+            "id": "sum_001",
+            "input": "sum(1, 2, 3)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Sum of variadic arguments"
+        },
+        {
+            "id": "sum_002",
+            "input": "sum({1, 2, 3})",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Sum of vector"
+        },
+        {
+            "id": "sum_003",
+            "input": "sum({})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Sum of empty vector is zero"
+        },
+        {
+            "id": "sum_004",
+            "input": "sum(1..100)",
+            "expected": 5050,
+            "expectedType": "NodeRational",
+            "notes": "Sum of range 1 to 100"
+        },
+        {
+            "id": "sum_005",
+            "input": "sum({-1, 0, 1})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Sum with negative numbers"
+        },
+        {
+            "id": "product_001",
+            "input": "product(2, 3, 4)",
+            "expected": 24,
+            "expectedType": "NodeRational",
+            "notes": "Product of variadic arguments"
+        },
+        {
+            "id": "product_002",
+            "input": "product({1, 2, 3, 4})",
+            "expected": 24,
+            "expectedType": "NodeRational",
+            "notes": "Product of vector"
+        },
+        {
+            "id": "product_003",
+            "input": "product({})",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Product of empty vector is one"
+        },
+        {
+            "id": "product_004",
+            "input": "product({2, 0, 5})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Product with zero"
+        },
+        {
+            "id": "min_001",
+            "input": "min(1, 2, 3)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Min of variadic arguments"
+        },
+        {
+            "id": "min_002",
+            "input": "min({3, 1, 4, 1, 5})",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Min of vector"
+        },
+        {
+            "id": "min_003",
+            "input": "min(-5, 0, 5)",
+            "expected": -5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Min with negative"
+        },
+        {
+            "id": "min_004",
+            "input": "min(5, 3)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Min of two values"
+        },
+        {
+            "id": "max_001",
+            "input": "max(1, 2, 3)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Max of variadic arguments"
+        },
+        {
+            "id": "max_002",
+            "input": "max({3, 1, 4, 1, 5})",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Max of vector"
+        },
+        {
+            "id": "max_003",
+            "input": "max(-5, 0, 5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Max with negative"
+        },
+        {
+            "id": "max_004",
+            "input": "max(3, 5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Max of two values"
+        },
+        {
+            "id": "mean_001",
+            "input": "mean(1, 2, 3, 4, 5)",
+            "expected": 3.0,
+            "expectedType": "NodeRational",
+            "notes": "Mean of variadic arguments"
+        },
+        {
+            "id": "mean_002",
+            "input": "mean({10, 20, 30})",
+            "expected": 20.0,
+            "expectedType": "NodeRational",
+            "notes": "Mean of vector"
+        },
+        {
+            "id": "mean_003",
+            "input": "mean({42})",
+            "expected": 42.0,
+            "expectedType": "NodeRational",
+            "notes": "Mean of single element"
+        },
+        {
+            "id": "median_001",
+            "input": "median({1, 2, 3})",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Median of odd-length vector"
+        },
+        {
+            "id": "median_002",
+            "input": "median({1, 2, 3, 4})",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Median of even-length vector"
+        },
+        {
+            "id": "median_003",
+            "input": "median({5})",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Median of single-element vector"
+        },
+        {
+            "id": "median_004",
+            "input": "median({10, 1, 5, 3, 7})",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Median of unsorted vector"
+        },
+        {
+            "id": "median_005",
+            "input": "median(4, 2, 8, 1)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Median with variadic arguments"
+        },
+        {
+            "id": "sort_001",
+            "input": "sort({3, 1, 4, 1, 5})",
+            "expected": [
+                1,
+                1,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Sort ascending"
+        },
+        {
+            "id": "sort_002",
+            "input": "sort({})",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Sort empty vector"
+        },
+        {
+            "id": "sort_003",
+            "input": "sort({5, 4, 3, 2, 1})",
+            "expected": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Sort reverse ordered"
+        },
+        {
+            "id": "reverse_001",
+            "input": "reverse({1, 2, 3})",
+            "expected": [
+                3,
+                2,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Reverse vector"
+        },
+        {
+            "id": "reverse_002",
+            "input": "reverse({})",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Reverse empty vector"
+        },
+        {
+            "id": "reverse_003",
+            "input": "reverse({42})",
+            "expected": [
+                42
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Reverse single element"
+        },
+        {
+            "id": "length_001",
+            "input": "length({1, 2, 3})",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Length of vector"
+        },
+        {
+            "id": "length_002",
+            "input": "length({})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Length of empty vector"
+        },
+        {
+            "id": "length_003",
+            "input": "len({1, 2, 3, 4, 5})",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "len alias for length"
+        },
+        {
+            "id": "first_001",
+            "input": "first({10, 20, 30})",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "First element of vector"
+        },
+        {
+            "id": "last_001",
+            "input": "last({10, 20, 30})",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Last element of vector"
+        },
+        {
+            "id": "take_001",
+            "input": "take({1, 2, 3, 4, 5}, 3)",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Take first 3 elements"
+        },
+        {
+            "id": "drop_001",
+            "input": "drop({1, 2, 3, 4, 5}, 2)",
+            "expected": [
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Drop first 2 elements"
+        },
+        {
+            "id": "slice_001",
+            "input": "slice({1, 2, 3, 4, 5}, 1, 4)",
+            "expected": [
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from 1 to 4"
+        },
+        {
+            "id": "get_001",
+            "input": "get({10, 20, 30}, 1)",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Get element at index"
+        },
+        {
+            "id": "indexof_001",
+            "input": "indexof({10, 20, 30}, 20)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Find index of element"
+        },
+        {
+            "id": "contains_001",
+            "input": "contains({1, 2, 3}, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector contains element"
+        },
+        {
+            "id": "contains_002",
+            "input": "contains({1, 2, 3}, 5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector does not contain element"
+        },
+        {
+            "id": "unique_001",
+            "input": "unique({1, 2, 2, 3, 3, 3})",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Remove duplicates"
+        },
+        {
+            "id": "concat_001",
+            "input": "concat({1, 2}, {3, 4})",
+            "expected": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Concatenate vectors"
+        },
+        {
+            "id": "flatten_001",
+            "input": "flatten({{1, 2}, {3, 4}})",
+            "expected": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Flatten nested vectors"
+        },
+        {
+            "id": "repeat_001",
+            "input": "repeat(5, 3)",
+            "expected": [
+                5,
+                5,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Repeat value 3 times"
+        },
+        {
+            "id": "count_001",
+            "input": "count({1, 2, 2, 3, 2}, 2)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Count occurrences of 2"
+        },
+        {
+            "id": "any_001",
+            "input": "any({false, false, true})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Any true value"
+        },
+        {
+            "id": "any_002",
+            "input": "any({false, false, false})",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "All false"
+        },
+        {
+            "id": "all_001",
+            "input": "all({true, true, true})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "All true values"
+        },
+        {
+            "id": "all_002",
+            "input": "all({true, false, true})",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Not all true"
+        },
+        {
+            "id": "none_001",
+            "input": "none({false, false, false})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "None true"
+        },
+        {
+            "id": "seq_001",
+            "input": "seq(1, 5)",
+            "expected": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Generate sequence 1 to 5"
+        },
+        {
+            "id": "linspace_001",
+            "input": "linspace(0, 10, 5)",
+            "expected": [
+                0.0,
+                2.5,
+                5.0,
+                7.5,
+                10.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Linearly spaced values"
+        },
+        {
+            "id": "fill_001",
+            "input": "fill(0, 5)",
+            "expected": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Fill with zeros"
+        }
+    ]
+}

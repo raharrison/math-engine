@@ -1,0 +1,106 @@
+{
+    "category": "Configuration - Recursion Limits",
+    "description": "Tests maxRecursionDepth configuration",
+    "tests": [
+        {
+            "id": "recursion_normal_001",
+            "input": "factorial(5)",
+            "expected": 120.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "maxRecursionDepth": 1000
+            },
+            "notes": "Normal recursion with default limit"
+        },
+        {
+            "id": "recursion_limited_001",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(5)",
+            "expected": 120.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "maxRecursionDepth": 100
+            },
+            "notes": "User-defined recursive function within limit"
+        },
+        {
+            "id": "recursion_limited_002",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(10)",
+            "expected": 3628800.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "maxRecursionDepth": 100
+            },
+            "notes": "Deeper recursion still within limit"
+        },
+        {
+            "id": "recursion_exceeds_limit_001",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(200)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 100
+            },
+            "notes": "Recursion exceeds maxRecursionDepth=100"
+        },
+        {
+            "id": "recursion_deep_allowed_001",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(100)",
+            "expected": 9.332621544394415e+157,
+            "expectedType": "NodeDouble",
+            "config": {
+                "maxRecursionDepth": 1000
+            },
+            "notes": "Deep recursion allowed with higher limit"
+        },
+        {
+            "id": "recursion_shallow_limit_001",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(20)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 10
+            },
+            "notes": "Even modest recursion fails with very low limit"
+        },
+        {
+            "id": "recursion_fib_001",
+            "input": "fib(n) := if(n <= 2, 1, fib(n-1) + fib(n-2)); fib(10)",
+            "expected": 55.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "maxRecursionDepth": 1000
+            },
+            "notes": "Fibonacci recursion with default limit"
+        },
+        {
+            "id": "recursion_fib_limited_001",
+            "input": "fib(n) := if(n <= 2, 1, fib(n-1) + fib(n-2)); fib(15)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 10
+            },
+            "notes": "Fibonacci exceeds limit - depth of 15 > limit of 10"
+        },
+        {
+            "id": "recursion_nested_001",
+            "input": "sum_range(start, end) := if(start > end, 0, start + sum_range(start + 1, end)); sum_range(1, 10)",
+            "expected": 55.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "maxRecursionDepth": 100
+            },
+            "notes": "Tail-recursive sum within limit"
+        },
+        {
+            "id": "recursion_nested_exceeds_001",
+            "input": "sum_range(start, end) := if(start > end, 0, start + sum_range(start + 1, end)); sum_range(1, 200)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 100
+            },
+            "notes": "Tail-recursive sum exceeds limit"
+        }
+    ]
+}

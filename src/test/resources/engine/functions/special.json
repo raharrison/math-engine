@@ -1,0 +1,275 @@
+{
+    "category": "Special Functions",
+    "description": "Comprehensive tests for gamma, lgamma, factorial, gcd, lcm, binomial, random, randint, beta, erf, erfc, digamma",
+    "tests": [
+        {
+            "id": "gamma_001",
+            "input": "gamma(1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Gamma(1) = 0! = 1"
+        },
+        {
+            "id": "gamma_002",
+            "input": "gamma(2)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Gamma(2) = 1! = 1"
+        },
+        {
+            "id": "gamma_003",
+            "input": "gamma(3)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Gamma(3) = 2! = 2"
+        },
+        {
+            "id": "gamma_004",
+            "input": "gamma(4)",
+            "expected": 6.0,
+            "expectedType": "NodeDouble",
+            "notes": "Gamma(4) = 3! = 6"
+        },
+        {
+            "id": "gamma_005",
+            "input": "gamma(5)",
+            "expected": 24.0,
+            "expectedType": "NodeDouble",
+            "notes": "Gamma(5) = 4! = 24"
+        },
+        {
+            "id": "gamma_006",
+            "input": "gamma(0.5)",
+            "expected": 1.7724538509055159,
+            "expectedType": "NodeDouble",
+            "notes": "Gamma(1/2) = sqrt(pi)"
+        },
+        {
+            "id": "lgamma_001",
+            "input": "lgamma(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "ln(Gamma(1)) = ln(1) = 0"
+        },
+        {
+            "id": "lgamma_002",
+            "input": "lgamma(5)",
+            "expected": 3.1780538303479458,
+            "expectedType": "NodeDouble",
+            "notes": "ln(Gamma(5)) = ln(24)"
+        },
+        {
+            "id": "factorial_001",
+            "input": "factorial(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "0! = 1"
+        },
+        {
+            "id": "factorial_002",
+            "input": "factorial(1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "1! = 1"
+        },
+        {
+            "id": "factorial_003",
+            "input": "factorial(5)",
+            "expected": 120.0,
+            "expectedType": "NodeDouble",
+            "notes": "5! = 120"
+        },
+        {
+            "id": "factorial_004",
+            "input": "factorial(10)",
+            "expected": 3628800.0,
+            "expectedType": "NodeDouble",
+            "notes": "10! = 3628800"
+        },
+        {
+            "id": "gcd_001",
+            "input": "gcd(12, 8)",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "GCD of 12 and 8"
+        },
+        {
+            "id": "gcd_002",
+            "input": "gcd(17, 13)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "GCD of coprime numbers"
+        },
+        {
+            "id": "gcd_003",
+            "input": "gcd(100, 25)",
+            "expected": 25,
+            "expectedType": "NodeRational",
+            "notes": "GCD when one divides other"
+        },
+        {
+            "id": "gcd_004",
+            "input": "gcd(12, 18, 24)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "GCD of three numbers"
+        },
+        {
+            "id": "gcd_005",
+            "input": "gcd(-12, 8)",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "GCD with negative number"
+        },
+        {
+            "id": "lcm_001",
+            "input": "lcm(4, 6)",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "LCM of 4 and 6"
+        },
+        {
+            "id": "lcm_002",
+            "input": "lcm(3, 5)",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "LCM of coprime numbers"
+        },
+        {
+            "id": "lcm_003",
+            "input": "lcm(12, 4)",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "LCM when one divides other"
+        },
+        {
+            "id": "lcm_004",
+            "input": "lcm(2, 3, 4)",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "LCM of three numbers"
+        },
+        {
+            "id": "binomial_001",
+            "input": "binomial(5, 2)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "5 choose 2"
+        },
+        {
+            "id": "binomial_002",
+            "input": "binomial(10, 5)",
+            "expected": 252,
+            "expectedType": "NodeRational",
+            "notes": "10 choose 5"
+        },
+        {
+            "id": "binomial_003",
+            "input": "binomial(5, 0)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "n choose 0 = 1"
+        },
+        {
+            "id": "binomial_004",
+            "input": "binomial(5, 5)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "n choose n = 1"
+        },
+        {
+            "id": "binomial_005",
+            "input": "binomial(5, 6)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "n choose k when k > n = 0"
+        },
+        {
+            "id": "binomial_006",
+            "input": "binomial(20, 10)",
+            "expected": 184756,
+            "expectedType": "NodeRational",
+            "notes": "20 choose 10"
+        },
+        {
+            "id": "beta_001",
+            "input": "beta(1, 1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Beta(1,1) = 1"
+        },
+        {
+            "id": "beta_002",
+            "input": "beta(2, 2)",
+            "expected": 0.16666666666666666,
+            "expectedType": "NodeDouble",
+            "notes": "Beta(2,2) = 1/6"
+        },
+        {
+            "id": "beta_003",
+            "input": "beta(0.5, 0.5)",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Beta(1/2,1/2) = pi"
+        },
+        {
+            "id": "erf_001",
+            "input": "erf(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Error function at 0"
+        },
+        {
+            "id": "erf_002",
+            "input": "erf(1)",
+            "expected": 0.8427007929497149,
+            "expectedType": "NodeDouble",
+            "tolerance": 2e-7,
+            "notes": "Error function at 1"
+        },
+        {
+            "id": "erf_003",
+            "input": "erf(-1)",
+            "expected": -0.8427007929497149,
+            "expectedType": "NodeDouble",
+            "tolerance": 2e-7,
+            "notes": "Error function is odd"
+        },
+        {
+            "id": "erfc_001",
+            "input": "erfc(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Complementary error function at 0"
+        },
+        {
+            "id": "erfc_002",
+            "input": "erfc(1)",
+            "expected": 0.1572992070502851,
+            "expectedType": "NodeDouble",
+            "tolerance": 2e-7,
+            "notes": "erfc(1) = 1 - erf(1)"
+        },
+        {
+            "id": "erf_erfc_identity",
+            "input": "erf(2) + erfc(2)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "erf(x) + erfc(x) = 1"
+        },
+        {
+            "id": "digamma_001",
+            "input": "digamma(1)",
+            "expected": -0.5772156649015329,
+            "expectedType": "NodeDouble",
+            "notes": "Digamma(1) = -gamma (Euler constant)"
+        },
+        {
+            "id": "digamma_002",
+            "input": "digamma(2)",
+            "expected": 0.42278433509846713,
+            "expectedType": "NodeDouble",
+            "notes": "Digamma(2)"
+        }
+    ]
+}

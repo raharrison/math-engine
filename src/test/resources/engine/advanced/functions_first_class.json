@@ -1,0 +1,110 @@
+{
+    "category": "First-Class Functions",
+    "tests": [
+        {
+            "id": "first_001",
+            "input": "f(x) := x * 2; g := f; g(5)",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Assign function to variable"
+        },
+        {
+            "id": "first_002",
+            "input": "add(a, b) := a + b; add(3, 4)",
+            "expected": 7.0,
+            "expectedType": "NodeDouble",
+            "notes": "Define and call multi-parameter function"
+        },
+        {
+            "id": "first_003",
+            "input": "apply(f, x) := f(x); double(n) := n * 2; apply(double, 7)",
+            "expected": 14.0,
+            "expectedType": "NodeDouble",
+            "notes": "Pass function as argument"
+        },
+        {
+            "id": "first_004",
+            "input": "makeAdder(n) := (x -> x + n); add5 := makeAdder(5); add5(10)",
+            "expected": 15.0,
+            "expectedType": "NodeDouble",
+            "notes": "Return lambda from function"
+        },
+        {
+            "id": "first_005",
+            "input": "twice(f, x) := f(f(x)); inc(n) := n + 1; twice(inc, 5)",
+            "expected": 7.0,
+            "expectedType": "NodeDouble",
+            "notes": "Apply function twice"
+        },
+        {
+            "id": "first_006",
+            "input": "compose(f, g, x) := f(g(x)); double(n) := n * 2; inc(n) := n + 1; compose(double, inc, 5)",
+            "expected": 12.0,
+            "expectedType": "NodeDouble",
+            "notes": "Function composition"
+        },
+        {
+            "id": "first_007",
+            "input": "map(f, v) := v @ f; square(n) := n^2; map(square, {1,2,3,4})",
+            "expected": "{1, 4, 9, 16}",
+            "expectedType": "NodeVector",
+            "notes": "Map function over vector"
+        },
+        {
+            "id": "first_008",
+            "input": "const(x) := (y -> x); always5 := const(5); always5(99)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Constant function"
+        },
+        {
+            "id": "first_009",
+            "input": "flip(f) := (x, y) -> f(y, x); sub(a, b) := a - b; flip(sub)(3, 10)",
+            "expected": 7.0,
+            "expectedType": "NodeDouble",
+            "notes": "Flip argument order"
+        },
+        {
+            "id": "first_010",
+            "input": "apply2(f, x, y) := f(x, y); mul(a, b) := a * b; apply2(mul, 6, 7)",
+            "expected": 42.0,
+            "expectedType": "NodeDouble",
+            "notes": "Apply binary function"
+        },
+        {
+            "id": "first_011",
+            "input": "ifelse(cond, t, f, x) := if(cond(x), t(x), f(x)); pos(n) := n > 0; abs(n) := n; neg(n) := -n; ifelse(pos, abs, neg, 5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Conditional with function arguments"
+        },
+        {
+            "id": "first_012",
+            "input": "ifelse(cond, t, f, x) := if(cond(x), t(x), f(x)); pos(n) := n > 0; abs(n) := n; neg(n) := -n; ifelse(pos, abs, neg, -5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Conditional function with negative input"
+        },
+        {
+            "id": "first_013",
+            "input": "applyTwice(f) := (x -> f(f(x))); double(n) := n * 2; doubleTwice := applyTwice(double); doubleTwice(3)",
+            "expected": 12.0,
+            "expectedType": "NodeDouble",
+            "notes": "Higher-order function returning function"
+        },
+        {
+            "id": "first_014",
+            "input": "choose(b, x, y) := if(b, x, y); choose(true, 10, 20)",
+            "expected": 10.0,
+            "expectedType": "NodeRational",
+            "notes": "Simple choice function"
+        },
+        {
+            "id": "first_015",
+            "input": "choose(b, x, y) := if(b, x, y); choose(false, 10, 20)",
+            "expected": 20.0,
+            "expectedType": "NodeRational",
+            "notes": "Choice function selecting second"
+        }
+    ]
+}

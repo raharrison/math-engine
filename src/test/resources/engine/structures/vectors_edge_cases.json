@@ -1,0 +1,228 @@
+{
+    "category": "Vector Edge Cases",
+    "tests": [
+        {
+            "id": "vec_edge_001",
+            "input": "length({})",
+            "expected": 0.0,
+            "expectedType": "NodeRational",
+            "notes": "Length of empty vector"
+        },
+        {
+            "id": "vec_edge_002",
+            "input": "reverse({})",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Reverse empty vector"
+        },
+        {
+            "id": "vec_edge_003",
+            "input": "sort({})",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Sort empty vector"
+        },
+        {
+            "id": "vec_edge_004",
+            "input": "{1}[0]",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Index single-element vector"
+        },
+        {
+            "id": "vec_edge_005",
+            "input": "{1}[-1]",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Negative index on single-element vector"
+        },
+        {
+            "id": "vec_edge_006",
+            "input": "{5, 4, 3, 2, 1}[0]",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "First element"
+        },
+        {
+            "id": "vec_edge_007",
+            "input": "{5, 4, 3, 2, 1}[-1]",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Last element with negative index"
+        },
+        {
+            "id": "vec_edge_008",
+            "input": "{5, 4, 3, 2, 1}[-2]",
+            "expected": 2.0,
+            "expectedType": "NodeRational",
+            "notes": "Second-to-last element"
+        },
+        {
+            "id": "vec_edge_009",
+            "input": "{1, 2, 3}[0:2]",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from start"
+        },
+        {
+            "id": "vec_edge_010",
+            "input": "{1, 2, 3, 4, 5}[2:4]",
+            "expected": [
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice middle elements"
+        },
+        {
+            "id": "vec_edge_011",
+            "input": "{1, 2, 3, 4, 5}[:]",
+            "expected": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice all elements"
+        },
+        {
+            "id": "vec_edge_012",
+            "input": "{1, 2, 3, 4, 5}[1:]",
+            "expected": [
+                2,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from index to end"
+        },
+        {
+            "id": "vec_edge_013",
+            "input": "{1, 2, 3, 4, 5}[:3]",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from start to index"
+        },
+        {
+            "id": "vec_edge_014",
+            "input": "{1, 2, 3} + {4, 5, 6}",
+            "expected": [
+                5,
+                7,
+                9
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector addition"
+        },
+        {
+            "id": "vec_edge_015",
+            "input": "{10, 20, 30} - {1, 2, 3}",
+            "expected": [
+                9,
+                18,
+                27
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector subtraction"
+        },
+        {
+            "id": "vec_edge_016",
+            "input": "{1, 2, 3} * 2",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar multiplication"
+        },
+        {
+            "id": "vec_edge_017",
+            "input": "2 * {1, 2, 3}",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar multiplication (reversed)"
+        },
+        {
+            "id": "vec_edge_018",
+            "input": "{10, 20, 30} / 10",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar division"
+        },
+        {
+            "id": "vec_edge_019",
+            "input": "-{1, 2, 3}",
+            "expected": [
+                -1,
+                -2,
+                -3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector negation"
+        },
+        {
+            "id": "vec_edge_020",
+            "input": "{{1, 2}, {3, 4}, {5, 6}}",
+            "expected": "{{1, 2}, {3, 4}, {5, 6}}",
+            "expectedType": "NodeVector",
+            "notes": "Vector of vectors"
+        },
+        {
+            "id": "vec_edge_021",
+            "input": "{{1, 2}, {3, 4}}[0]",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Index into vector of vectors"
+        },
+        {
+            "id": "vec_edge_022",
+            "input": "{{1, 2}, {3, 4}}[1][0]",
+            "expected": 3.0,
+            "expectedType": "NodeRational",
+            "notes": "Nested indexing"
+        },
+        {
+            "id": "vec_edge_023",
+            "input": "sum({})",
+            "expected": 0.0,
+            "expectedType": "NodeRational",
+            "notes": "Sum of empty vector is 0"
+        },
+        {
+            "id": "vec_edge_024",
+            "input": "product({})",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Product of empty vector is 1"
+        },
+        {
+            "id": "vec_edge_025",
+            "input": "mean({42})",
+            "expected": 42.0,
+            "expectedType": "NodeRational",
+            "notes": "Mean of single element"
+        }
+    ]
+}

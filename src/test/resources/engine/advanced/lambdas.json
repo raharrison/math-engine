@@ -1,0 +1,197 @@
+{
+    "category": "Lambda Functions",
+    "description": "Comprehensive tests for lambda expressions and higher-order functions",
+    "tests": [
+        {
+            "id": "lambda_basic_001",
+            "input": "f := x -> x + 1; f(5)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Basic lambda"
+        },
+        {
+            "id": "lambda_basic_002",
+            "input": "f := x -> x * 2; f(10)",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Lambda multiplication"
+        },
+        {
+            "id": "lambda_basic_003",
+            "input": "f := x -> x^2; f(4)",
+            "expected": 16,
+            "expectedType": "NodeRational",
+            "notes": "Lambda power"
+        },
+        {
+            "id": "lambda_multiarg_001",
+            "input": "f := (x, y) -> x + y; f(3, 4)",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "Two argument lambda"
+        },
+        {
+            "id": "lambda_multiarg_002",
+            "input": "f := (a, b, c) -> a + b + c; f(1, 2, 3)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Three argument lambda"
+        },
+        {
+            "id": "lambda_multiarg_003",
+            "input": "f := (x, y) -> x * y; f(5, 6)",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Product lambda"
+        },
+        {
+            "id": "lambda_nested_001",
+            "input": "f := x -> x + 1; g := x -> f(x) * 2; g(5)",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Lambda calling lambda"
+        },
+        {
+            "id": "lambda_inline_001",
+            "input": "(x -> x + 1)(5)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Inline lambda call"
+        },
+        {
+            "id": "lambda_inline_002",
+            "input": "((x, y) -> x * y)(3, 4)",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Inline two-arg lambda"
+        },
+        {
+            "id": "lambda_closure_001",
+            "input": "a := 10; f := x -> x + a; f(5)",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Lambda with closure"
+        },
+        {
+            "id": "map_001",
+            "input": "map(x -> x * 2, {1, 2, 3})",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Map with lambda"
+        },
+        {
+            "id": "map_002",
+            "input": "map(x -> x^2, {1, 2, 3, 4})",
+            "expected": [
+                1,
+                4,
+                9,
+                16
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Map square"
+        },
+        {
+            "id": "map_003",
+            "input": "map(x -> x + 10, 1..5)",
+            "expected": [
+                11,
+                12,
+                13,
+                14,
+                15
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Map on range"
+        },
+        {
+            "id": "filter_001",
+            "input": "filter(x -> x > 3, {1, 2, 3, 4, 5})",
+            "expected": [
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Filter greater than 3"
+        },
+        {
+            "id": "filter_002",
+            "input": "filter(x -> x mod 2 == 0, 1..10)",
+            "expected": [
+                2,
+                4,
+                6,
+                8,
+                10
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Filter even numbers"
+        },
+        {
+            "id": "filter_003",
+            "input": "filter(x -> x mod 2 != 0, 1..10)",
+            "expected": [
+                1,
+                3,
+                5,
+                7,
+                9
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Filter odd numbers"
+        },
+        {
+            "id": "reduce_001",
+            "input": "reduce((acc, x) -> acc + x, 0, {1, 2, 3, 4, 5})",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Reduce sum"
+        },
+        {
+            "id": "reduce_002",
+            "input": "reduce((acc, x) -> acc * x, 1, {1, 2, 3, 4, 5})",
+            "expected": 120,
+            "expectedType": "NodeRational",
+            "notes": "Reduce product"
+        },
+        {
+            "id": "reduce_003",
+            "input": "reduce((a, b) -> if(a > b, a, b), 0, {3, 1, 4, 1, 5, 9})",
+            "expected": 9,
+            "expectedType": "NodeDouble",
+            "notes": "Reduce max"
+        },
+        {
+            "id": "compose_001",
+            "input": "f := x -> x + 1; g := x -> x * 2; g(f(5))",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Function composition"
+        },
+        {
+            "id": "compose_002",
+            "input": "f := x -> x^2; g := x -> x + 1; f(g(3))",
+            "expected": 16,
+            "expectedType": "NodeRational",
+            "notes": "Square of (x+1)"
+        },
+        {
+            "id": "lambda_predicate_001",
+            "input": "isPositive := x -> x > 0; isPositive(5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Predicate lambda"
+        },
+        {
+            "id": "lambda_predicate_002",
+            "input": "isPositive := x -> x > 0; isPositive(-3)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Predicate lambda false"
+        }
+    ]
+}

@@ -1,0 +1,356 @@
+{
+    "category": "Exponential and Logarithmic Functions",
+    "description": "Comprehensive tests for exp, exp2, exp10, expm1, ln, log, log2, logn, log1p, sqrt, cbrt, nroot, pow",
+    "tests": [
+        {
+            "id": "exp_001",
+            "input": "exp(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "e^0 = 1"
+        },
+        {
+            "id": "exp_002",
+            "input": "exp(1)",
+            "expected": 2.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "e^1 = e"
+        },
+        {
+            "id": "exp_003",
+            "input": "exp(-1)",
+            "expected": 0.36787944117144233,
+            "expectedType": "NodeDouble",
+            "notes": "e^-1 = 1/e"
+        },
+        {
+            "id": "exp_004",
+            "input": "exp(2)",
+            "expected": 7.38905609893065,
+            "expectedType": "NodeDouble",
+            "notes": "e^2"
+        },
+        {
+            "id": "exp2_001",
+            "input": "exp2(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "2^0 = 1"
+        },
+        {
+            "id": "exp2_002",
+            "input": "exp2(3)",
+            "expected": 8.0,
+            "expectedType": "NodeDouble",
+            "notes": "2^3 = 8"
+        },
+        {
+            "id": "exp2_003",
+            "input": "exp2(10)",
+            "expected": 1024.0,
+            "expectedType": "NodeDouble",
+            "notes": "2^10 = 1024"
+        },
+        {
+            "id": "exp10_001",
+            "input": "exp10(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "10^0 = 1"
+        },
+        {
+            "id": "exp10_002",
+            "input": "exp10(2)",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "10^2 = 100"
+        },
+        {
+            "id": "exp10_003",
+            "input": "exp10(3)",
+            "expected": 1000.0,
+            "expectedType": "NodeDouble",
+            "notes": "10^3 = 1000"
+        },
+        {
+            "id": "expm1_001",
+            "input": "expm1(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "e^0 - 1 = 0"
+        },
+        {
+            "id": "expm1_002",
+            "input": "expm1(1)",
+            "expected": 1.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "e^1 - 1 = e - 1"
+        },
+        {
+            "id": "ln_001",
+            "input": "ln(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "ln(1) = 0"
+        },
+        {
+            "id": "ln_002",
+            "input": "ln(e)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "ln(e) = 1"
+        },
+        {
+            "id": "ln_003",
+            "input": "ln(euler)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "ln(euler) = 1"
+        },
+        {
+            "id": "ln_004",
+            "input": "ln(e^2)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "ln(e^2) = 2"
+        },
+        {
+            "id": "log_001",
+            "input": "log(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "log10(1) = 0"
+        },
+        {
+            "id": "log_002",
+            "input": "log(10)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "log10(10) = 1"
+        },
+        {
+            "id": "log_003",
+            "input": "log(100)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "log10(100) = 2"
+        },
+        {
+            "id": "log_004",
+            "input": "log(1000)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "log10(1000) = 3"
+        },
+        {
+            "id": "log10_001",
+            "input": "log10(100)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "log10(100) = 2"
+        },
+        {
+            "id": "log10_002",
+            "input": "log10(1000)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "log10(1000) = 3"
+        },
+        {
+            "id": "log10_003",
+            "input": "log10(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "log10(1) = 0"
+        },
+        {
+            "id": "log2_001",
+            "input": "log2(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "log2(1) = 0"
+        },
+        {
+            "id": "log2_002",
+            "input": "log2(2)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "log2(2) = 1"
+        },
+        {
+            "id": "log2_003",
+            "input": "log2(8)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "log2(8) = 3"
+        },
+        {
+            "id": "log2_004",
+            "input": "log2(1024)",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "log2(1024) = 10"
+        },
+        {
+            "id": "logn_001",
+            "input": "logn(8, 2)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "log base 2 of 8 = 3"
+        },
+        {
+            "id": "logn_002",
+            "input": "logn(27, 3)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "log base 3 of 27 = 3"
+        },
+        {
+            "id": "logn_003",
+            "input": "logn(100, 10)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "log base 10 of 100 = 2"
+        },
+        {
+            "id": "sqrt_001",
+            "input": "sqrt(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "sqrt(0) = 0"
+        },
+        {
+            "id": "sqrt_002",
+            "input": "sqrt(1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "sqrt(1) = 1"
+        },
+        {
+            "id": "sqrt_003",
+            "input": "sqrt(4)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "sqrt(4) = 2"
+        },
+        {
+            "id": "sqrt_004",
+            "input": "sqrt(9)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "sqrt(9) = 3"
+        },
+        {
+            "id": "sqrt_005",
+            "input": "sqrt(16)",
+            "expected": 4.0,
+            "expectedType": "NodeDouble",
+            "notes": "sqrt(16) = 4"
+        },
+        {
+            "id": "sqrt_006",
+            "input": "sqrt(2)",
+            "expected": 1.4142135623730951,
+            "expectedType": "NodeDouble",
+            "notes": "sqrt(2) = 1.414..."
+        },
+        {
+            "id": "cbrt_001",
+            "input": "cbrt(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "cbrt(0) = 0"
+        },
+        {
+            "id": "cbrt_002",
+            "input": "cbrt(8)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "cbrt(8) = 2"
+        },
+        {
+            "id": "cbrt_003",
+            "input": "cbrt(27)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "cbrt(27) = 3"
+        },
+        {
+            "id": "cbrt_004",
+            "input": "cbrt(-8)",
+            "expected": -2.0,
+            "expectedType": "NodeDouble",
+            "notes": "cbrt(-8) = -2"
+        },
+        {
+            "id": "nroot_001",
+            "input": "nroot(16, 4)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "4th root of 16 = 2"
+        },
+        {
+            "id": "nroot_002",
+            "input": "nroot(32, 5)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "5th root of 32 = 2"
+        },
+        {
+            "id": "pow_001",
+            "input": "pow(2, 3)",
+            "expected": 8.0,
+            "expectedType": "NodeDouble",
+            "notes": "2^3 = 8"
+        },
+        {
+            "id": "pow_002",
+            "input": "pow(10, 2)",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "10^2 = 100"
+        },
+        {
+            "id": "pow_003",
+            "input": "pow(5, 0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "5^0 = 1"
+        },
+        {
+            "id": "pow_004",
+            "input": "pow(2, -1)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "2^-1 = 0.5"
+        },
+        {
+            "id": "pow_005",
+            "input": "pow(4, 0.5)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "4^0.5 = sqrt(4) = 2"
+        },
+        {
+            "id": "identity_001",
+            "input": "ln(exp(5))",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "ln(e^5) = 5"
+        },
+        {
+            "id": "identity_002",
+            "input": "exp(ln(5))",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "e^ln(5) = 5"
+        },
+        {
+            "id": "identity_003",
+            "input": "sqrt(16) + cbrt(27)",
+            "expected": 7.0,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple roots"
+        }
+    ]
+}

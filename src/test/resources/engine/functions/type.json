@@ -1,0 +1,398 @@
+{
+    "category": "Type Functions",
+    "description": "Comprehensive tests for isnan, isinf, isfinite, isint, iseven, isodd, ispositive, isnegative, iszero, int, float, bool, numerator, denominator, typeof, isnumber, isvector, ismatrix, isboolean",
+    "tests": [
+        {
+            "id": "isnan_001",
+            "input": "isnan(0/0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "0/0 produces NaN"
+        },
+        {
+            "id": "isnan_002",
+            "input": "isnan(5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Regular number is not NaN"
+        },
+        {
+            "id": "isnan_003",
+            "input": "isnan(1/0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Infinity is not NaN"
+        },
+        {
+            "id": "isinf_001",
+            "input": "isinf(1/0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "1/0 produces infinity"
+        },
+        {
+            "id": "isinf_002",
+            "input": "isinf(-1/0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative infinity"
+        },
+        {
+            "id": "isinf_003",
+            "input": "isinf(5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Regular number is finite"
+        },
+        {
+            "id": "isfinite_001",
+            "input": "isfinite(5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "5 is finite"
+        },
+        {
+            "id": "isfinite_002",
+            "input": "isfinite(1/0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Infinity is not finite"
+        },
+        {
+            "id": "isfinite_003",
+            "input": "isfinite(0/0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "NaN is not finite"
+        },
+        {
+            "id": "isint_001",
+            "input": "isint(5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "5 is integer"
+        },
+        {
+            "id": "isint_002",
+            "input": "isint(5.5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "5.5 is not integer"
+        },
+        {
+            "id": "isint_003",
+            "input": "isint(-3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative integer"
+        },
+        {
+            "id": "isint_004",
+            "input": "isint(0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Zero is integer"
+        },
+        {
+            "id": "iseven_001",
+            "input": "iseven(4)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "4 is even"
+        },
+        {
+            "id": "iseven_002",
+            "input": "iseven(5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "5 is odd"
+        },
+        {
+            "id": "iseven_003",
+            "input": "iseven(0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "0 is even"
+        },
+        {
+            "id": "iseven_004",
+            "input": "iseven(-2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative even"
+        },
+        {
+            "id": "isodd_001",
+            "input": "isodd(5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "5 is odd"
+        },
+        {
+            "id": "isodd_002",
+            "input": "isodd(4)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "4 is even"
+        },
+        {
+            "id": "isodd_003",
+            "input": "isodd(-3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative odd"
+        },
+        {
+            "id": "ispositive_001",
+            "input": "ispositive(5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "5 is positive"
+        },
+        {
+            "id": "ispositive_002",
+            "input": "ispositive(-5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "-5 is not positive"
+        },
+        {
+            "id": "ispositive_003",
+            "input": "ispositive(0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "0 is not positive"
+        },
+        {
+            "id": "isnegative_001",
+            "input": "isnegative(-5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "-5 is negative"
+        },
+        {
+            "id": "isnegative_002",
+            "input": "isnegative(5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "5 is not negative"
+        },
+        {
+            "id": "isnegative_003",
+            "input": "isnegative(0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "0 is not negative"
+        },
+        {
+            "id": "iszero_001",
+            "input": "iszero(0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "0 is zero"
+        },
+        {
+            "id": "iszero_002",
+            "input": "iszero(0.0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "0.0 is zero"
+        },
+        {
+            "id": "iszero_003",
+            "input": "iszero(1)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "1 is not zero"
+        },
+        {
+            "id": "int_001",
+            "input": "int(5.7)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Truncate positive"
+        },
+        {
+            "id": "int_002",
+            "input": "int(-5.7)",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Truncate negative toward zero"
+        },
+        {
+            "id": "int_003",
+            "input": "int(5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Integer unchanged"
+        },
+        {
+            "id": "float_001",
+            "input": "float(5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Convert to double"
+        },
+        {
+            "id": "float_002",
+            "input": "float(1/2)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Rational to double"
+        },
+        {
+            "id": "bool_001",
+            "input": "bool(1)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "1 is truthy"
+        },
+        {
+            "id": "bool_002",
+            "input": "bool(0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "0 is falsy"
+        },
+        {
+            "id": "bool_003",
+            "input": "bool(-1)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Non-zero is truthy"
+        },
+        {
+            "id": "numerator_001",
+            "input": "numerator(3/4)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Numerator of 3/4"
+        },
+        {
+            "id": "numerator_002",
+            "input": "numerator(5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Numerator of integer"
+        },
+        {
+            "id": "denominator_001",
+            "input": "denominator(3/4)",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "Denominator of 3/4"
+        },
+        {
+            "id": "denominator_002",
+            "input": "denominator(5)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Denominator of integer"
+        },
+        {
+            "id": "typeof_001",
+            "input": "typeof(5)",
+            "expected": "rational",
+            "expectedType": "NodeString",
+            "notes": "Type of integer"
+        },
+        {
+            "id": "typeof_002",
+            "input": "typeof(5.5)",
+            "expected": "rational",
+            "expectedType": "NodeString",
+            "notes": "Type of rational"
+        },
+        {
+            "id": "typeof_003",
+            "input": "typeof(true)",
+            "expected": "boolean",
+            "expectedType": "NodeString",
+            "notes": "Type of boolean"
+        },
+        {
+            "id": "typeof_004",
+            "input": "typeof({1, 2, 3})",
+            "expected": "vector",
+            "expectedType": "NodeString",
+            "notes": "Type of vector"
+        },
+        {
+            "id": "typeof_005",
+            "input": "typeof([[1, 2], [3, 4]])",
+            "expected": "matrix",
+            "expectedType": "NodeString",
+            "notes": "Type of matrix"
+        },
+        {
+            "id": "typeof_006",
+            "input": "typeof(todouble(5.5))",
+            "expected": "double",
+            "expectedType": "NodeString",
+            "notes": "Type of double"
+        },
+        {
+            "id": "isnumber_001",
+            "input": "isnumber(5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Integer is number"
+        },
+        {
+            "id": "isnumber_002",
+            "input": "isnumber(5.5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double is number"
+        },
+        {
+            "id": "isnumber_003",
+            "input": "isnumber(true)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean is not number"
+        },
+        {
+            "id": "isvector_001",
+            "input": "isvector({1, 2, 3})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector is vector"
+        },
+        {
+            "id": "isvector_002",
+            "input": "isvector(5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Number is not vector"
+        },
+        {
+            "id": "ismatrix_001",
+            "input": "ismatrix([[1, 2], [3, 4]])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix is matrix"
+        },
+        {
+            "id": "ismatrix_002",
+            "input": "ismatrix({1, 2, 3})",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector is not matrix"
+        },
+        {
+            "id": "isboolean_001",
+            "input": "isboolean(true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean is boolean"
+        },
+        {
+            "id": "isboolean_002",
+            "input": "isboolean(1)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Number is not boolean"
+        }
+    ]
+}

@@ -1,0 +1,82 @@
+{
+    "category": "Built-in Vector Functions",
+    "tests": [
+        {
+            "id": "builtin_vec_001",
+            "input": "sum(1, 2, 3)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Sum of variadic arguments"
+        },
+        {
+            "id": "builtin_vec_002",
+            "input": "sum({1, 2, 3})",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Sum of vector"
+        },
+        {
+            "id": "builtin_vec_003",
+            "input": "sum({})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Sum of empty vector is zero"
+        },
+        {
+            "id": "builtin_vec_004",
+            "input": "sum(1..100)",
+            "expected": 5050,
+            "expectedType": "NodeRational",
+            "notes": "Sum of range 1 to 100"
+        },
+        {
+            "id": "builtin_vec_005",
+            "input": "product(2, 3, 4)",
+            "expected": 24,
+            "expectedType": "NodeRational",
+            "notes": "Product of variadic arguments"
+        },
+        {
+            "id": "builtin_vec_006",
+            "input": "product({1, 2, 3, 4})",
+            "expected": 24,
+            "expectedType": "NodeRational",
+            "notes": "Product of vector"
+        },
+        {
+            "id": "builtin_vec_007",
+            "input": "product({})",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Product of empty vector is one"
+        },
+        {
+            "id": "builtin_vec_008",
+            "input": "mean(1, 2, 3, 4, 5)",
+            "expected": 3.0,
+            "expectedType": "NodeRational",
+            "notes": "Mean of variadic arguments"
+        },
+        {
+            "id": "builtin_vec_009",
+            "input": "mean({10, 20, 30})",
+            "expected": 20.0,
+            "expectedType": "NodeRational",
+            "notes": "Mean of vector"
+        },
+        {
+            "id": "builtin_vec_010",
+            "input": "length({1, 2, 3})",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Length of vector"
+        },
+        {
+            "id": "builtin_vec_011",
+            "input": "length({})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Length of empty vector"
+        }
+    ]
+}

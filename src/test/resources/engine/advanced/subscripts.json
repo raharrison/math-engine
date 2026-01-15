@@ -1,0 +1,205 @@
+{
+    "category": "Subscripts and Indexing",
+    "description": "Comprehensive tests for subscript and indexing operations",
+    "tests": [
+        {
+            "id": "subscript_vector_001",
+            "input": "{10, 20, 30}[0]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Vector index 0"
+        },
+        {
+            "id": "subscript_vector_002",
+            "input": "{10, 20, 30}[1]",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Vector index 1"
+        },
+        {
+            "id": "subscript_vector_003",
+            "input": "{10, 20, 30}[2]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Vector index 2"
+        },
+        {
+            "id": "subscript_negative_001",
+            "input": "{10, 20, 30}[-1]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Negative index -1 (last)"
+        },
+        {
+            "id": "subscript_negative_002",
+            "input": "{10, 20, 30}[-2]",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Negative index -2"
+        },
+        {
+            "id": "subscript_negative_003",
+            "input": "{10, 20, 30}[-3]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Negative index -3 (first)"
+        },
+        {
+            "id": "subscript_matrix_001",
+            "input": "[[1, 2, 3], [4, 5, 6]][0][0]",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Matrix [0][0]"
+        },
+        {
+            "id": "subscript_matrix_002",
+            "input": "[[1, 2, 3], [4, 5, 6]][0][2]",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Matrix [0][2]"
+        },
+        {
+            "id": "subscript_matrix_003",
+            "input": "[[1, 2, 3], [4, 5, 6]][1][1]",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Matrix [1][1]"
+        },
+        {
+            "id": "subscript_matrix_004",
+            "input": "[[1, 2], [3, 4], [5, 6]][2][0]",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "3x2 matrix access"
+        },
+        {
+            "id": "subscript_range_001",
+            "input": "(1..10)[0]",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Range index 0"
+        },
+        {
+            "id": "subscript_range_002",
+            "input": "(1..10)[4]",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Range index 4"
+        },
+        {
+            "id": "subscript_range_003",
+            "input": "(1..10)[-1]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Range negative index"
+        },
+        {
+            "id": "subscript_expr_001",
+            "input": "v := {10, 20, 30}; v[0]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Access via variable"
+        },
+        {
+            "id": "subscript_expr_002",
+            "input": "v := {10, 20, 30}; i := 1; v[i]",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Index from variable"
+        },
+        {
+            "id": "subscript_expr_003",
+            "input": "v := {10, 20, 30}; v[1 + 1]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Computed index"
+        },
+        {
+            "id": "slice_basic_001",
+            "input": "{1, 2, 3, 4, 5}[1:4]",
+            "expected": [
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Basic slice 1:4"
+        },
+        {
+            "id": "slice_basic_002",
+            "input": "{1, 2, 3, 4, 5}[0:3]",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from start"
+        },
+        {
+            "id": "slice_open_001",
+            "input": "{1, 2, 3, 4, 5}[:3]",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice with open start"
+        },
+        {
+            "id": "slice_open_002",
+            "input": "{1, 2, 3, 4, 5}[2:]",
+            "expected": [
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice with open end"
+        },
+        {
+            "id": "slice_negative_001",
+            "input": "{1, 2, 3, 4, 5}[-3:]",
+            "expected": [
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from negative index"
+        },
+        {
+            "id": "slice_negative_002",
+            "input": "{1, 2, 3, 4, 5}[:-2]",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice to negative index"
+        },
+        {
+            "id": "nested_access_001",
+            "input": "{{1, 2}, {3, 4}}[0][1]",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Nested vector access"
+        },
+        {
+            "id": "nested_access_002",
+            "input": "{{1, 2}, {3, 4}}[1][0]",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Nested second element access"
+        },
+        {
+            "id": "chain_access_001",
+            "input": "v := {{1, 2, 3}, {4, 5, 6}}; v[0][2]",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Chained access on variable"
+        }
+    ]
+}

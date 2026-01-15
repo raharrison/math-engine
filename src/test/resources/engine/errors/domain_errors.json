@@ -1,0 +1,83 @@
+{
+    "category": "Domain Errors",
+    "description": "Tests for domain errors and mathematical undefined operations",
+    "tests": [
+        {
+            "id": "sqrt_negative_001",
+            "input": "sqrt(-1)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Square root of negative (without complex)"
+        },
+        {
+            "id": "log_zero_001",
+            "input": "ln(0)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Log of zero"
+        },
+        {
+            "id": "log_negative_001",
+            "input": "ln(-1)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Log of negative"
+        },
+        {
+            "id": "asin_domain_001",
+            "input": "asin(2)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "arcsin outside [-1, 1]"
+        },
+        {
+            "id": "acos_domain_001",
+            "input": "acos(-2)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "arccos outside [-1, 1]"
+        },
+        {
+            "id": "acosh_domain_001",
+            "input": "acosh(0.5)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "arccosh requires x >= 1"
+        },
+        {
+            "id": "atanh_domain_001",
+            "input": "atanh(2)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "arctanh outside (-1, 1)"
+        },
+        {
+            "id": "factorial_negative_001",
+            "input": "factorial(-3)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Factorial of negative integer"
+        },
+        {
+            "id": "gmean_negative_001",
+            "input": "gmean({-1, 2, 3})",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Geometric mean requires positive values"
+        },
+        {
+            "id": "hmean_zero_001",
+            "input": "hmean({0, 1, 2})",
+            "expectError": true,
+            "expectedErrorType": "ArithmeticException",
+            "notes": "Harmonic mean with zero"
+        },
+        {
+            "id": "nroot_even_negative_001",
+            "input": "nroot(-8, 2)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Even root of negative"
+        }
+    ]
+}

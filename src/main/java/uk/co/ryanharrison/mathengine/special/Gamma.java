@@ -175,4 +175,50 @@ public final class Gamma {
 
         return result;
     }
+
+    /**
+     * Calculates the digamma function ψ(x), also known as the psi function.
+     * <p>
+     * The digamma function is the logarithmic derivative of the Gamma function:
+     * <br>
+     * ψ(x) = d/dx ln(Γ(x)) = Γ'(x) / Γ(x)
+     * </p>
+     * <p>
+     * Key properties:
+     * </p>
+     * <ul>
+     *     <li><b>Recurrence relation:</b> ψ(x + 1) = ψ(x) + 1/x</li>
+     *     <li><b>Reflection formula:</b> ψ(1 - x) = ψ(x) + π·cot(πx)</li>
+     *     <li><b>Special values:</b> ψ(1) = -γ (negative Euler-Mascheroni constant)</li>
+     * </ul>
+     * <p>
+     * This implementation uses the asymptotic series approximation for large x,
+     * combined with the recurrence relation to handle small values.
+     * </p>
+     *
+     * @param x the point at which to evaluate ψ(x)
+     * @return the value of ψ(x), or {@code Double.NaN} if x is a non-positive integer
+     */
+    public static double digamma(double x) {
+        // For non-positive integers, digamma is undefined
+        if (x <= 0 && x == Math.floor(x)) {
+            return Double.NaN;
+        }
+
+        // Use reflection formula for negative values
+        if (x < 0) {
+            return digamma(1 - x) - Math.PI / Math.tan(Math.PI * x);
+        }
+
+        // Use recurrence relation to shift x into range where asymptotic series works well
+        double result = 0;
+        while (x < 6) {
+            result -= 1 / x;
+            x += 1;
+        }
+
+        // Apply asymptotic series for large x
+        double x2 = 1 / (x * x);
+        return result + Math.log(x) - 0.5 / x - x2 * (1.0 / 12 - x2 * (1.0 / 120 - x2 / 252));
+    }
 }

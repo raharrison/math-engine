@@ -1,0 +1,153 @@
+{
+    "category": "User-Defined Functions",
+    "description": "Comprehensive tests for user-defined function definitions and calls",
+    "tests": [
+        {
+            "id": "udf_basic_001",
+            "input": "f(x) := x + 1; f(5)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Basic user function"
+        },
+        {
+            "id": "udf_basic_002",
+            "input": "double(x) := x * 2; double(10)",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Doubling function"
+        },
+        {
+            "id": "udf_basic_003",
+            "input": "square(x) := x^2; square(7)",
+            "expected": 49,
+            "expectedType": "NodeRational",
+            "notes": "Square function"
+        },
+        {
+            "id": "udf_multiarg_001",
+            "input": "add(x, y) := x + y; add(3, 4)",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "Two argument function"
+        },
+        {
+            "id": "udf_multiarg_002",
+            "input": "hypotenuse(a, b) := sqrt(a^2 + b^2); hypotenuse(3, 4)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Hypotenuse calculation"
+        },
+        {
+            "id": "udf_multiarg_003",
+            "input": "avg(a, b, c) := (a + b + c) / 3; avg(3, 6, 9)",
+            "expected": 6.0,
+            "expectedType": "NodeRational",
+            "notes": "Three argument average"
+        },
+        {
+            "id": "udf_chain_001",
+            "input": "f(x) := x + 1; g(x) := x * 2; f(g(5))",
+            "expected": 11,
+            "expectedType": "NodeRational",
+            "notes": "Chained function calls"
+        },
+        {
+            "id": "udf_chain_002",
+            "input": "f(x) := x + 1; g(x) := x * 2; g(f(5))",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Chained calls reversed"
+        },
+        {
+            "id": "udf_recursive_001",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(5)",
+            "expected": 120.0,
+            "expectedType": "NodeDouble",
+            "notes": "Recursive factorial"
+        },
+        {
+            "id": "udf_recursive_002",
+            "input": "fib(n) := if(n <= 2, 1, fib(n-1) + fib(n-2)); fib(10)",
+            "expected": 55.0,
+            "expectedType": "NodeDouble",
+            "notes": "Recursive Fibonacci"
+        },
+        {
+            "id": "udf_multiple_001",
+            "input": "f(x) := x^2; g(x) := x + 1; h(x) := f(g(x)); h(3)",
+            "expected": 16,
+            "expectedType": "NodeRational",
+            "notes": "Composed function"
+        },
+        {
+            "id": "udf_vector_001",
+            "input": "sumSquares(v) := sum(v^2); sumSquares({1, 2, 3})",
+            "expected": 14,
+            "expectedType": "NodeRational",
+            "notes": "Function operating on vector"
+        },
+        {
+            "id": "udf_constant_001",
+            "input": "area(r) := pi * r^2; area(1)",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Function using constant"
+        },
+        {
+            "id": "udf_constant_002",
+            "input": "circumference(r) := 2 * pi * r; circumference(1)",
+            "expected": 6.283185307179586,
+            "expectedType": "NodeDouble",
+            "notes": "Circumference function"
+        },
+        {
+            "id": "udf_conditional_001",
+            "input": "absVal(x) := if(x < 0, -x, x); absVal(-5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Conditional in function"
+        },
+        {
+            "id": "udf_conditional_002",
+            "input": "absVal(x) := if(x < 0, -x, x); absVal(5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Conditional positive case"
+        },
+        {
+            "id": "udf_sign_001",
+            "input": "sgn(x) := if(x > 0, 1, if(x < 0, -1, 0)); sgn(10)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Sign function positive"
+        },
+        {
+            "id": "udf_sign_002",
+            "input": "sgn(x) := if(x > 0, 1, if(x < 0, -1, 0)); sgn(-10)",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Sign function negative"
+        },
+        {
+            "id": "udf_sign_003",
+            "input": "sgn(x) := if(x > 0, 1, if(x < 0, -1, 0)); sgn(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Sign function zero"
+        },
+        {
+            "id": "udf_quadratic_001",
+            "input": "quad(a, b, c, x) := a*x^2 + b*x + c; quad(1, 0, 0, 5)",
+            "expected": 25,
+            "expectedType": "NodeRational",
+            "notes": "Quadratic function"
+        },
+        {
+            "id": "udf_quadratic_002",
+            "input": "quad(a, b, c, x) := a*x^2 + b*x + c; quad(1, 2, 1, 3)",
+            "expected": 16,
+            "expectedType": "NodeRational",
+            "notes": "Quadratic with all terms"
+        }
+    ]
+}

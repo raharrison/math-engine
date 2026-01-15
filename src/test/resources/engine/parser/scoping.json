@@ -1,0 +1,110 @@
+{
+    "category": "Lexical Scoping",
+    "tests": [
+        {
+            "id": "scope_001",
+            "input": "x := 10; f(x) := x + 5; f(3)",
+            "expected": 8.0,
+            "expectedType": "NodeDouble",
+            "notes": "Parameter shadows global variable"
+        },
+        {
+            "id": "scope_002",
+            "input": "x := 10; f(y) := x + y; f(5)",
+            "expected": 15.0,
+            "expectedType": "NodeDouble",
+            "notes": "Function uses global variable"
+        },
+        {
+            "id": "scope_003",
+            "input": "x := 5; f(y) := x + y; x := 10; f(3)",
+            "expected": 13.0,
+            "expectedType": "NodeDouble",
+            "notes": "Regular function uses dynamic scoping - looks up x at call time"
+        },
+        {
+            "id": "scope_004",
+            "input": "makeCounter(n) := (x -> n + x); counter := makeCounter(100); counter(5)",
+            "expected": 105.0,
+            "expectedType": "NodeDouble",
+            "notes": "Closure captures parameter"
+        },
+        {
+            "id": "scope_005",
+            "input": "a := 1; b := 2; f(a) := a + b; f(10)",
+            "expected": 12.0,
+            "expectedType": "NodeDouble",
+            "notes": "Parameter shadows global 'a', uses global 'b'"
+        },
+        {
+            "id": "scope_006",
+            "input": "x := 100; f(y) := (z -> x + y + z); g := f(10); g(1)",
+            "expected": 111.0,
+            "expectedType": "NodeDouble",
+            "notes": "Nested closure captures multiple scopes"
+        },
+        {
+            "id": "scope_007",
+            "input": "x := 5; y := 10; f(x, y) := x * y; f(2, 3)",
+            "expected": 6.0,
+            "expectedType": "NodeDouble",
+            "notes": "Both parameters shadow globals"
+        },
+        {
+            "id": "scope_008",
+            "input": "outer := 100; makeFunc(x) := (y -> outer + x + y); func := makeFunc(10); outer := 200; func(5)",
+            "expected": 115.0,
+            "expectedType": "NodeDouble",
+            "notes": "Closure captures at definition, not call time"
+        },
+        {
+            "id": "scope_009",
+            "input": "f(x) := g(x) + 1; g(x) := x * 2; f(5)",
+            "expected": 11.0,
+            "expectedType": "NodeRational",
+            "notes": "Reference to function defined later on"
+        },
+        {
+            "id": "scope_010",
+            "input": "a := 10; f(x) := a + x; a := 20; b := f(5); a := 30; b",
+            "expected": 25.0,
+            "expectedType": "NodeDouble",
+            "notes": "Regular function uses dynamic scoping - a=20 when f(5) is called"
+        },
+        {
+            "id": "scope_011",
+            "input": "x := 1; f() := x; x := 2; f()",
+            "expected": 2.0,
+            "expectedType": "NodeRational",
+            "notes": "Regular function uses dynamic scoping - uses x at call time"
+        },
+        {
+            "id": "scope_012",
+            "input": "makeAdders() := (a := (x -> x + 1); b := (x -> x + 2); {a, b}); funcs := makeAdders(); funcs[0](10)",
+            "expected": 11.0,
+            "expectedType": "NodeDouble",
+            "notes": "Return multiple functions in vector"
+        },
+        {
+            "id": "scope_013",
+            "input": "n := 5; fib(n) := if(n <= 1, n, fib(n-1) + fib(n-2)); fib(n)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Recursive function parameter shadows global"
+        },
+        {
+            "id": "scope_014",
+            "input": "x := 99; f(y) := (x := y + 1; x * 2); f(5)",
+            "expected": 12.0,
+            "expectedType": "NodeDouble",
+            "notes": "Local assignment in function body"
+        },
+        {
+            "id": "scope_015",
+            "input": "counter := 0; inc() := (counter := counter + 1; counter); inc(); inc(); inc()",
+            "expected": 3.0,
+            "expectedType": "NodeRational",
+            "notes": "Function modifies global state"
+        }
+    ]
+}

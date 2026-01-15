@@ -1,0 +1,300 @@
+{
+    "category": "Rounding Functions",
+    "description": "Comprehensive tests for floor, ceil, round, trunc, roundn, abs, sign, copysign, fmod, remainder, hypot",
+    "tests": [
+        {
+            "id": "floor_001",
+            "input": "floor(3.7)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Floor of positive decimal"
+        },
+        {
+            "id": "floor_002",
+            "input": "floor(3.2)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Floor of positive decimal less than 0.5"
+        },
+        {
+            "id": "floor_003",
+            "input": "floor(-3.2)",
+            "expected": -4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Floor of negative rounds toward -infinity"
+        },
+        {
+            "id": "floor_004",
+            "input": "floor(-3.7)",
+            "expected": -4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Floor of negative decimal"
+        },
+        {
+            "id": "floor_005",
+            "input": "floor(5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Floor of integer"
+        },
+        {
+            "id": "floor_006",
+            "input": "floor(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Floor of zero"
+        },
+        {
+            "id": "ceil_001",
+            "input": "ceil(3.2)",
+            "expected": 4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Ceiling of positive decimal"
+        },
+        {
+            "id": "ceil_002",
+            "input": "ceil(3.7)",
+            "expected": 4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Ceiling of positive decimal"
+        },
+        {
+            "id": "ceil_003",
+            "input": "ceil(-3.2)",
+            "expected": -3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Ceiling of negative rounds toward +infinity"
+        },
+        {
+            "id": "ceil_004",
+            "input": "ceil(-3.7)",
+            "expected": -3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Ceiling of negative decimal"
+        },
+        {
+            "id": "ceil_005",
+            "input": "ceil(5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Ceiling of integer"
+        },
+        {
+            "id": "ceil_006",
+            "input": "ceil(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Ceiling of zero"
+        },
+        {
+            "id": "round_001",
+            "input": "round(3.2)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Round down"
+        },
+        {
+            "id": "round_002",
+            "input": "round(3.7)",
+            "expected": 4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Round up"
+        },
+        {
+            "id": "round_003",
+            "input": "round(3.5)",
+            "expected": 4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Round half up"
+        },
+        {
+            "id": "round_004",
+            "input": "round(-3.2)",
+            "expected": -3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Round negative toward zero"
+        },
+        {
+            "id": "round_005",
+            "input": "round(-3.7)",
+            "expected": -4.0,
+            "expectedType": "NodeDouble",
+            "notes": "Round negative away from zero"
+        },
+        {
+            "id": "round_006",
+            "input": "round(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Round zero"
+        },
+        {
+            "id": "trunc_001",
+            "input": "trunc(3.7)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Truncate positive"
+        },
+        {
+            "id": "trunc_002",
+            "input": "trunc(-3.7)",
+            "expected": -3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Truncate negative (toward zero)"
+        },
+        {
+            "id": "trunc_003",
+            "input": "trunc(5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Truncate integer"
+        },
+        {
+            "id": "roundn_001",
+            "input": "roundn(3.14159, 2)",
+            "expected": 3.14,
+            "expectedType": "NodeDouble",
+            "notes": "Round to 2 decimal places"
+        },
+        {
+            "id": "roundn_002",
+            "input": "roundn(3.14159, 4)",
+            "expected": 3.1416,
+            "expectedType": "NodeDouble",
+            "notes": "Round to 4 decimal places"
+        },
+        {
+            "id": "roundn_003",
+            "input": "roundn(3.14159, 0)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Round to 0 decimal places"
+        },
+        {
+            "id": "abs_001",
+            "input": "abs(5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Absolute value of positive"
+        },
+        {
+            "id": "abs_002",
+            "input": "abs(-5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Absolute value of negative"
+        },
+        {
+            "id": "abs_003",
+            "input": "abs(0)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Absolute value of zero"
+        },
+        {
+            "id": "abs_004",
+            "input": "abs(-3.14)",
+            "expected": 3.14,
+            "expectedType": "NodeDouble",
+            "notes": "Absolute value of negative decimal"
+        },
+        {
+            "id": "sign_001",
+            "input": "sign(5)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Sign of positive"
+        },
+        {
+            "id": "sign_002",
+            "input": "sign(-5)",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "Sign of negative"
+        },
+        {
+            "id": "sign_003",
+            "input": "sign(0)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Sign of zero"
+        },
+        {
+            "id": "sign_004",
+            "input": "sign(100)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Sign of large positive"
+        },
+        {
+            "id": "sign_005",
+            "input": "sign(-100)",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "Sign of large negative"
+        },
+        {
+            "id": "copysign_001",
+            "input": "copysign(5, 1)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Positive magnitude with positive sign"
+        },
+        {
+            "id": "copysign_002",
+            "input": "copysign(5, -1)",
+            "expected": -5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Positive magnitude with negative sign"
+        },
+        {
+            "id": "copysign_003",
+            "input": "copysign(-5, 1)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Negative magnitude with positive sign"
+        },
+        {
+            "id": "hypot_001",
+            "input": "hypot(3, 4)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "3-4-5 right triangle"
+        },
+        {
+            "id": "hypot_002",
+            "input": "hypot(5, 12)",
+            "expected": 13.0,
+            "expectedType": "NodeDouble",
+            "notes": "5-12-13 right triangle"
+        },
+        {
+            "id": "hypot_003",
+            "input": "hypot(1, 1)",
+            "expected": 1.4142135623730951,
+            "expectedType": "NodeDouble",
+            "notes": "Unit right triangle"
+        },
+        {
+            "id": "fmod_001",
+            "input": "fmod(5.5, 2.0)",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Floating point modulo"
+        },
+        {
+            "id": "fmod_002",
+            "input": "fmod(-5.5, 2.0)",
+            "expected": -1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Negative dividend modulo"
+        },
+        {
+            "id": "remainder_001",
+            "input": "remainder(5.5, 2.0)",
+            "expected": -0.5,
+            "expectedType": "NodeDouble",
+            "notes": "IEEE remainder"
+        }
+    ]
+}

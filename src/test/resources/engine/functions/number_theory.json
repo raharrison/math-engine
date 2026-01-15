@@ -1,0 +1,279 @@
+{
+    "category": "Number Theory Functions",
+    "description": "Comprehensive tests for isprime, nextprime, prevprime, factors, distinctfactors, divisorcount, divisorsum, modpow, iscoprime",
+    "tests": [
+        {
+            "id": "isprime_001",
+            "input": "isprime(2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "2 is prime"
+        },
+        {
+            "id": "isprime_002",
+            "input": "isprime(3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "3 is prime"
+        },
+        {
+            "id": "isprime_003",
+            "input": "isprime(4)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "4 is not prime"
+        },
+        {
+            "id": "isprime_004",
+            "input": "isprime(17)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "17 is prime"
+        },
+        {
+            "id": "isprime_005",
+            "input": "isprime(1)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "1 is not prime"
+        },
+        {
+            "id": "isprime_006",
+            "input": "isprime(97)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "97 is prime"
+        },
+        {
+            "id": "isprime_007",
+            "input": "isprime(100)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "100 is not prime"
+        },
+        {
+            "id": "nextprime_001",
+            "input": "nextprime(10)",
+            "expected": 11,
+            "expectedType": "NodeRational",
+            "notes": "Next prime after 10"
+        },
+        {
+            "id": "nextprime_002",
+            "input": "nextprime(11)",
+            "expected": 13,
+            "expectedType": "NodeRational",
+            "notes": "Next prime after 11"
+        },
+        {
+            "id": "nextprime_003",
+            "input": "nextprime(1)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Next prime after 1"
+        },
+        {
+            "id": "nextprime_004",
+            "input": "nextprime(100)",
+            "expected": 101,
+            "expectedType": "NodeRational",
+            "notes": "Next prime after 100"
+        },
+        {
+            "id": "prevprime_001",
+            "input": "prevprime(10)",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "Previous prime before 10"
+        },
+        {
+            "id": "prevprime_002",
+            "input": "prevprime(13)",
+            "expected": 11,
+            "expectedType": "NodeRational",
+            "notes": "Previous prime before 13"
+        },
+        {
+            "id": "prevprime_003",
+            "input": "prevprime(100)",
+            "expected": 97,
+            "expectedType": "NodeRational",
+            "notes": "Previous prime before 100"
+        },
+        {
+            "id": "factors_001",
+            "input": "factors(12)",
+            "expected": [
+                2,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Prime factors of 12"
+        },
+        {
+            "id": "factors_002",
+            "input": "factors(100)",
+            "expected": [
+                2,
+                2,
+                5,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Prime factors of 100"
+        },
+        {
+            "id": "factors_003",
+            "input": "factors(17)",
+            "expected": [
+                17
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Prime factors of a prime"
+        },
+        {
+            "id": "factors_004",
+            "input": "factors(1)",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Prime factors of 1"
+        },
+        {
+            "id": "distinctfactors_001",
+            "input": "distinctfactors(12)",
+            "expected": [
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Distinct prime factors of 12"
+        },
+        {
+            "id": "distinctfactors_002",
+            "input": "distinctfactors(100)",
+            "expected": [
+                2,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Distinct prime factors of 100"
+        },
+        {
+            "id": "distinctfactors_003",
+            "input": "distinctfactors(30)",
+            "expected": [
+                2,
+                3,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Distinct prime factors of 30"
+        },
+        {
+            "id": "divisorcount_001",
+            "input": "divisorcount(12)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "12 has 6 divisors: 1,2,3,4,6,12"
+        },
+        {
+            "id": "divisorcount_002",
+            "input": "divisorcount(1)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "1 has 1 divisor"
+        },
+        {
+            "id": "divisorcount_003",
+            "input": "divisorcount(17)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Primes have 2 divisors"
+        },
+        {
+            "id": "divisorcount_004",
+            "input": "divisorcount(36)",
+            "expected": 9,
+            "expectedType": "NodeRational",
+            "notes": "36 has 9 divisors"
+        },
+        {
+            "id": "divisorsum_001",
+            "input": "divisorsum(12)",
+            "expected": 28,
+            "expectedType": "NodeRational",
+            "notes": "Sum of divisors of 12"
+        },
+        {
+            "id": "divisorsum_002",
+            "input": "divisorsum(1)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Sum of divisors of 1"
+        },
+        {
+            "id": "divisorsum_003",
+            "input": "divisorsum(6)",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "6 is perfect: divisors sum to 2*6"
+        },
+        {
+            "id": "modpow_001",
+            "input": "modpow(2, 10, 1000)",
+            "expected": 24,
+            "expectedType": "NodeRational",
+            "notes": "2^10 mod 1000 = 1024 mod 1000"
+        },
+        {
+            "id": "modpow_002",
+            "input": "modpow(3, 5, 7)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "3^5 mod 7 = 243 mod 7"
+        },
+        {
+            "id": "modpow_003",
+            "input": "modpow(2, 0, 5)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Any number to power 0 is 1"
+        },
+        {
+            "id": "modpow_004",
+            "input": "modpow(7, 100, 13)",
+            "expected": 9,
+            "expectedType": "NodeRational",
+            "notes": "Large exponent with modpow"
+        },
+        {
+            "id": "iscoprime_001",
+            "input": "iscoprime(8, 15)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "8 and 15 are coprime"
+        },
+        {
+            "id": "iscoprime_002",
+            "input": "iscoprime(12, 8)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "12 and 8 share factor 4"
+        },
+        {
+            "id": "iscoprime_003",
+            "input": "iscoprime(17, 19)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Distinct primes are coprime"
+        },
+        {
+            "id": "iscoprime_004",
+            "input": "iscoprime(1, 100)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "1 is coprime with everything"
+        }
+    ]
+}

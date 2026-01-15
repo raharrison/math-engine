@@ -1,0 +1,125 @@
+{
+    "category": "Operator Precedence Tests",
+    "tests": [
+        {
+            "id": "precedence_001",
+            "input": "2 + 3 * 4",
+            "expected": 14,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2 + (3 * 4)",
+            "notes": "Multiplication before addition"
+        },
+        {
+            "id": "precedence_002",
+            "input": "2 * 3 + 4",
+            "expected": 10,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2 * 3) + 4",
+            "notes": "Multiplication before addition"
+        },
+        {
+            "id": "precedence_003",
+            "input": "10 - 2 * 3",
+            "expected": 4,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "10 - (2 * 3)",
+            "notes": "Multiplication before subtraction"
+        },
+        {
+            "id": "precedence_004",
+            "input": "8 / 2 + 2",
+            "expected": 6,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(8 / 2) + 2",
+            "notes": "Division before addition"
+        },
+        {
+            "id": "precedence_005",
+            "input": "2 + 3 - 1",
+            "expected": 4,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2 + 3) - 1",
+            "notes": "Left-to-right for same precedence"
+        },
+        {
+            "id": "precedence_006",
+            "input": "2 * 3^2",
+            "expected": 18,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2 * (3^2)",
+            "notes": "Exponentiation before multiplication"
+        },
+        {
+            "id": "precedence_007",
+            "input": "2^3 * 4",
+            "expected": 32,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2^3) * 4",
+            "notes": "Exponentiation before multiplication"
+        },
+        {
+            "id": "precedence_008",
+            "input": "2 + 3^2",
+            "expected": 11,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2 + (3^2)",
+            "notes": "Exponentiation before addition"
+        },
+        {
+            "id": "precedence_009",
+            "input": "2^3 + 4",
+            "expected": 12,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(2^3) + 4",
+            "notes": "Exponentiation before addition"
+        },
+        {
+            "id": "precedence_010",
+            "input": "-2^2",
+            "expected": -4,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "-(2^2)",
+            "notes": "Exponentiation before unary minus"
+        },
+        {
+            "id": "precedence_011",
+            "input": "(-2)^2",
+            "expected": 4,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(-2)^2",
+            "notes": "Parentheses override precedence"
+        },
+        {
+            "id": "precedence_012",
+            "input": "2 + 3 < 10",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(2 + 3) < 10",
+            "notes": "Arithmetic before comparison"
+        },
+        {
+            "id": "precedence_013",
+            "input": "5 * 2 > 8",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(5 * 2) > 8",
+            "notes": "Arithmetic before comparison"
+        },
+        {
+            "id": "precedence_014",
+            "input": "10 - 5 == 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(10 - 5) == 5",
+            "notes": "Arithmetic before equality"
+        },
+        {
+            "id": "precedence_015",
+            "input": "2 + 3 * 4^2",
+            "expected": 50,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "2 + (3 * (4^2))",
+            "notes": "Multiple precedence levels"
+        }
+    ]
+}

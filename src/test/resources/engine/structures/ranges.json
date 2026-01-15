@@ -1,0 +1,210 @@
+{
+    "category": "Range Operations",
+    "description": "Comprehensive tests for range syntax and operations",
+    "tests": [
+        {
+            "id": "range_basic_001",
+            "input": "1..5",
+            "expected": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Basic range 1 to 5"
+        },
+        {
+            "id": "range_basic_002",
+            "input": "0..3",
+            "expected": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range starting at 0"
+        },
+        {
+            "id": "range_basic_003",
+            "input": "5..10",
+            "expected": [
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range 5 to 10"
+        },
+        {
+            "id": "range_single_001",
+            "input": "5..5",
+            "expected": [
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single element range"
+        },
+        {
+            "id": "range_negative_001",
+            "input": "-3..3",
+            "expected": [
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Negative to positive range"
+        },
+        {
+            "id": "range_negative_002",
+            "input": "-5..-1",
+            "expected": [
+                -5,
+                -4,
+                -3,
+                -2,
+                -1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Negative range"
+        },
+        {
+            "id": "range_sum_001",
+            "input": "sum(1..10)",
+            "expected": 55,
+            "expectedType": "NodeRational",
+            "notes": "Sum of 1 to 10"
+        },
+        {
+            "id": "range_sum_002",
+            "input": "sum(1..100)",
+            "expected": 5050,
+            "expectedType": "NodeRational",
+            "notes": "Sum of 1 to 100"
+        },
+        {
+            "id": "range_product_001",
+            "input": "product(1..5)",
+            "expected": 120,
+            "expectedType": "NodeRational",
+            "notes": "Product of 1 to 5 (5!)"
+        },
+        {
+            "id": "range_length_001",
+            "input": "length(1..10)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Length of range"
+        },
+        {
+            "id": "range_min_001",
+            "input": "min(5..15)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Min of range"
+        },
+        {
+            "id": "range_max_001",
+            "input": "max(5..15)",
+            "expected": 15.0,
+            "expectedType": "NodeDouble",
+            "notes": "Max of range"
+        },
+        {
+            "id": "range_mean_001",
+            "input": "mean(1..9)",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Mean of range"
+        },
+        {
+            "id": "range_access_001",
+            "input": "(1..10)[0]",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Access first element of range"
+        },
+        {
+            "id": "range_access_002",
+            "input": "(1..10)[4]",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Access 5th element of range"
+        },
+        {
+            "id": "range_in_expr_001",
+            "input": "sum(1..5) + sum(6..10)",
+            "expected": 55,
+            "expectedType": "NodeRational",
+            "notes": "Ranges in expression"
+        },
+        {
+            "id": "range_variable_001",
+            "input": "r := 1..5; sum(r)",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Range assigned to variable"
+        },
+        {
+            "id": "range_arithmetic_001",
+            "input": "(1..5) * 2",
+            "expected": [
+                2,
+                4,
+                6,
+                8,
+                10
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Multiply range by scalar"
+        },
+        {
+            "id": "range_arithmetic_002",
+            "input": "(1..5) + 10",
+            "expected": [
+                11,
+                12,
+                13,
+                14,
+                15
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Add scalar to range"
+        },
+        {
+            "id": "range_squared_001",
+            "input": "(1..5) ^ 2",
+            "expected": [
+                1,
+                4,
+                9,
+                16,
+                25
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Square each element"
+        },
+        {
+            "id": "range_func_001",
+            "input": "sqrt(1..4)",
+            "expected": [
+                1,
+                1.4142135623730951,
+                1.7320508075688772,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Function on range"
+        }
+    ]
+}

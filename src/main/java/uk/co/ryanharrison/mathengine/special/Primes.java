@@ -63,7 +63,8 @@ public final class Primes {
      * <pre>{@code
      * Primes.distinctPrimeFactors(60);   // [2, 3, 5]  (60 = 2^2 * 3 * 5)
      * Primes.distinctPrimeFactors(17);   // [17]       (17 is prime)
-     * Primes.distinctPrimeFactors(1);    // [1]        (special case)
+     * Primes.distinctPrimeFactors(1);    // []         (empty - no prime factors)
+     * Primes.distinctPrimeFactors(0);    // []         (empty - no prime factors)
      * Primes.distinctPrimeFactors(-12);  // [-2, 3]    (only first 2 is negative)
      * }</pre>
      *
@@ -260,7 +261,8 @@ public final class Primes {
      * Special cases:
      * </p>
      * <ul>
-     *     <li>1 returns [1] (by convention)</li>
+     *     <li>1 returns [] (empty list - the empty product equals 1 by mathematical convention)</li>
+     *     <li>0 returns [] (empty list - 0 has no prime factorization)</li>
      *     <li>Prime numbers return a list containing only that number</li>
      *     <li>Negative numbers have their first prime factor negated</li>
      * </ul>
@@ -269,7 +271,8 @@ public final class Primes {
      * <pre>{@code
      * Primes.primeFactors(60);    // [2, 2, 3, 5]  (60 = 2 * 2 * 3 * 5)
      * Primes.primeFactors(17);    // [17]          (17 is prime)
-     * Primes.primeFactors(1);     // [1]           (special case)
+     * Primes.primeFactors(1);     // []            (empty product = 1)
+     * Primes.primeFactors(0);     // []            (no prime factorization)
      * Primes.primeFactors(-12);   // [-2, 2, 3]    (-12 = -2 * 2 * 3)
      * Primes.primeFactors(100);   // [2, 2, 5, 5]  (100 = 2^2 * 5^2)
      * }</pre>
@@ -281,9 +284,10 @@ public final class Primes {
         long num = Math.abs(n);
         List<Long> factors = new ArrayList<>();
 
-        // Special case for 1
-        if (num == 1) {
-            factors.add(1L);
+        // Special case for 0 and 1: both return empty list
+        // 1 = empty product (by mathematical convention)
+        // 0 has no prime factorization
+        if (num <= 1) {
             return Collections.unmodifiableList(factors);
         }
 

@@ -509,7 +509,7 @@ class SimpsonIntegratorTest {
 
         assertThatThrownBy(integrator::integrate)
                 .isInstanceOf(ArithmeticException.class)
-                .hasMessageContaining("Division by zero");
+                .hasMessageContaining("Function evaluation at lower bound produced non-finite value: Infinity");
     }
 
     @Test

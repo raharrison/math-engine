@@ -1,0 +1,146 @@
+{
+    "category": "Complex Expressions",
+    "description": "Tests combining multiple features and operators",
+    "tests": [
+        {
+            "id": "complex_001",
+            "input": "sum({x^2 for x in 1..10})",
+            "expected": 385,
+            "expectedType": "NodeRational",
+            "notes": "Sum of squares using comprehension"
+        },
+        {
+            "id": "complex_002",
+            "input": "sum({x for x in 1..100 if x mod 2 == 0})",
+            "expected": 2550,
+            "expectedType": "NodeRational",
+            "notes": "Sum of even numbers 1-100"
+        },
+        {
+            "id": "complex_003",
+            "input": "product(1..5) / sum(1..5)",
+            "expected": 8.0,
+            "expectedType": "NodeRational",
+            "notes": "Factorial / triangular number"
+        },
+        {
+            "id": "complex_004",
+            "input": "mean({x^2 for x in 1..5})",
+            "expected": 11.0,
+            "expectedType": "NodeRational",
+            "notes": "Mean of squares"
+        },
+        {
+            "id": "complex_005",
+            "input": "length(filter(x -> isprime(x), 1..100))",
+            "expected": 25,
+            "expectedType": "NodeRational",
+            "notes": "Count primes up to 100"
+        },
+        {
+            "id": "complex_006",
+            "input": "sum(map(x -> x^3, filter(x -> x mod 2 != 0, 1..10)))",
+            "expected": 1225,
+            "expectedType": "NodeRational",
+            "notes": "Sum of cubes of odd numbers"
+        },
+        {
+            "id": "complex_007",
+            "input": "v := {3, 1, 4, 1, 5, 9}; max(v) - min(v)",
+            "expected": 8.0,
+            "expectedType": "NodeDouble",
+            "notes": "Range calculation"
+        },
+        {
+            "id": "complex_008",
+            "input": "m := [[1, 2], [3, 4]]; trace(m) + det(m)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Trace plus determinant"
+        },
+        {
+            "id": "complex_009",
+            "input": "v := 1..5; sum(v^2) - sum(v)^2 / length(v)",
+            "expected": 10.0,
+            "expectedType": "NodeRational",
+            "notes": "Variance numerator"
+        },
+        {
+            "id": "complex_010",
+            "input": "f := x -> x^2 + 2*x + 1; f(5)",
+            "expected": 36,
+            "expectedType": "NodeRational",
+            "notes": "Lambda polynomial"
+        },
+        {
+            "id": "complex_011",
+            "input": "reduce((a, b) -> a + b, 0, {x^2 for x in 1..5})",
+            "expected": 55,
+            "expectedType": "NodeRational",
+            "notes": "Reduce with comprehension"
+        },
+        {
+            "id": "complex_012",
+            "input": "sorted := sort({5, 2, 8, 1, 9}); sorted[0] + sorted[-1]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Min + max via sort"
+        },
+        {
+            "id": "complex_013",
+            "input": "v := {1, 2, 3, 4}; w := {5, 6, 7, 8}; sum(v * w)",
+            "expected": 70,
+            "expectedType": "NodeRational",
+            "notes": "Dot product via sum of element-wise"
+        },
+        {
+            "id": "complex_014",
+            "input": "n := 6; sum({(-1)^k * binomial(n, k) for k in 0..n})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Binomial identity (1-1)^n = 0"
+        },
+        {
+            "id": "complex_015",
+            "input": "n := 5; sum({binomial(n, k) for k in 0..n})",
+            "expected": 32,
+            "expectedType": "NodeRational",
+            "notes": "Sum of binomial row = 2^n"
+        },
+        {
+            "id": "complex_016",
+            "input": "gcd(lcm(12, 18), gcd(24, 36))",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Nested GCD/LCM"
+        },
+        {
+            "id": "complex_017",
+            "input": "abs(-5) + sign(-3) * floor(3.7)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Mixed numeric functions"
+        },
+        {
+            "id": "complex_018",
+            "input": "roundn(sin(pi/4) * 1000, 0) / 1000",
+            "expected": 0.707,
+            "expectedType": "NodeDouble",
+            "notes": "Rounding sin result"
+        },
+        {
+            "id": "complex_019",
+            "input": "all({iseven(x) for x in {2, 4, 6, 8}})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "All even check"
+        },
+        {
+            "id": "complex_020",
+            "input": "any({isprime(x) for x in {4, 6, 7, 8}})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Any prime check"
+        }
+    ]
+}

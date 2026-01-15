@@ -1,0 +1,54 @@
+{
+    "category": "Mixed Type Arithmetic",
+    "tests": [
+        {
+            "id": "mixed_001",
+            "input": "2 + 3.0",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Rational + Double = Double"
+        },
+        {
+            "id": "mixed_002",
+            "input": "2.5 * 3",
+            "expected": 7.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double * Rational = Double"
+        },
+        {
+            "id": "mixed_003",
+            "input": "1.5 + 0.5",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Double + Double = Double"
+        },
+        {
+            "id": "mixed_004",
+            "input": "true + 1",
+            "expected": 2,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean (1.0) + Rational = Double"
+        },
+        {
+            "id": "mixed_005",
+            "input": "false + 1",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean (0.0) + Rational = Double"
+        },
+        {
+            "id": "mixed_006",
+            "input": "true * 5",
+            "expected": 5,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean multiplication"
+        },
+        {
+            "id": "mixed_007",
+            "input": "true + false",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean addition"
+        }
+    ]
+}

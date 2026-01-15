@@ -1,0 +1,110 @@
+{
+    "category": "Implicit Multiplication",
+    "tests": [
+        {
+            "id": "implicit_001",
+            "input": "2x",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "This test requires 'x' to be defined. Implicit multiplication: 2 * x"
+        },
+        {
+            "id": "implicit_002",
+            "input": "x := 5; 2x",
+            "expected": 10.0,
+            "expectedType": "NodeRational",
+            "notes": "Number times variable"
+        },
+        {
+            "id": "implicit_003",
+            "input": "x := 3; y := 4; xy",
+            "expected": 12.0,
+            "expectedType": "NodeRational",
+            "notes": "Variable times variable (implicit)"
+        },
+        {
+            "id": "implicit_004",
+            "input": "pi := 3.14159; 2pi",
+            "expected": 6.28318,
+            "expectedType": "NodeDouble",
+            "notes": "Number times constant"
+        },
+        {
+            "id": "implicit_005",
+            "input": "2(3 + 4)",
+            "expected": 14.0,
+            "expectedType": "NodeRational",
+            "notes": "Number times parenthesized expression"
+        },
+        {
+            "id": "implicit_006",
+            "input": "(2 + 3)(4 + 5)",
+            "expected": 45.0,
+            "expectedType": "NodeRational",
+            "notes": "Two parenthesized expressions multiplied"
+        },
+        {
+            "id": "implicit_007",
+            "input": "3(2)(5)",
+            "expected": 30.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple implicit multiplications"
+        },
+        {
+            "id": "implicit_008",
+            "input": "x := 2; 5x(x + 1)",
+            "expected": 30.0,
+            "expectedType": "NodeRational",
+            "notes": "Complex implicit multiplication"
+        },
+        {
+            "id": "implicit_009",
+            "input": "f(x) := x^2; x := 3; 2f(x)",
+            "expected": 18.0,
+            "expectedType": "NodeDouble",
+            "notes": "Number times function call"
+        },
+        {
+            "id": "implicit_010",
+            "input": "x := 5; xsqrt(4)",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Variable times builtin function"
+        },
+        {
+            "id": "implicit_011",
+            "input": "2sin(pi/2)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Number times function"
+        },
+        {
+            "id": "implicit_012",
+            "input": "x := 10; (x)(x)",
+            "expected": 100.0,
+            "expectedType": "NodeRational",
+            "notes": "Parenthesized variable multiplication"
+        },
+        {
+            "id": "implicit_013",
+            "input": "a := 2; b := 3; c := 4; abc",
+            "expected": 24.0,
+            "expectedType": "NodeRational",
+            "notes": "Three variables implicit multiplication"
+        },
+        {
+            "id": "implicit_014",
+            "input": "pi2e",
+            "expected": 17.07946844534713,
+            "expectedType": "NodeDouble",
+            "notes": "Constants multiplied implicitly"
+        },
+        {
+            "id": "implicit_015",
+            "input": "3sqrt(9)",
+            "expected": 9.0,
+            "expectedType": "NodeDouble",
+            "notes": "Number times square root"
+        }
+    ]
+}

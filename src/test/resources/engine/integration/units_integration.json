@@ -1,0 +1,253 @@
+{
+    "category": "Unit Integration",
+    "description": "Integration tests combining units with other language features",
+    "tests": [
+        {
+            "id": "units_with_variables_001",
+            "input": "distance := 100 meters; distance in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Variable storing unit value"
+        },
+        {
+            "id": "units_with_variables_002",
+            "input": "d := 100; d meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Variable as numeric value with unit"
+        },
+        {
+            "id": "units_with_lambdas_001",
+            "input": "f := x -> x meters in centimeters; f(100)",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Lambda with unit conversion"
+        },
+        {
+            "id": "units_in_vector_001",
+            "input": "{1, 2, 3} kilometers in meters",
+            "expected": [
+                1000.0,
+                2000.0,
+                3000.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector with unit conversion (broadcast)"
+        },
+        {
+            "id": "units_map_001",
+            "input": "map(x -> x meters in centimeters, {10, 20, 30})",
+            "expected": [
+                1000.0,
+                2000.0,
+                3000.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Map function with unit conversions"
+        },
+        {
+            "id": "units_comprehension_001",
+            "input": "{x meters in centimeters for x in {10, 20, 30}}",
+            "expected": [
+                1000.0,
+                2000.0,
+                3000.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Comprehension with unit conversion"
+        },
+        {
+            "id": "units_filter_001",
+            "input": "filter(x -> x meters in centimeters > 1500, {10, 20, 30})",
+            "expected": [
+                20,
+                30
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Filter based on converted unit value"
+        },
+        {
+            "id": "units_sum_001",
+            "input": "sum({100, 200, 300} meters)",
+            "expected": "600.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Sum of unit values"
+        },
+        {
+            "id": "units_mean_001",
+            "input": "mean({100, 200, 300} meters) in kilometers",
+            "expected": "0.2 kilometers",
+            "expectedType": "NodeUnit",
+            "notes": "Mean of units then convert"
+        },
+        {
+            "id": "units_range_001",
+            "input": "{x meters in centimeters for x in 1..5}",
+            "expected": [
+                100.0,
+                200.0,
+                300.0,
+                400.0,
+                500.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range with unit conversion"
+        },
+        {
+            "id": "units_conditional_001",
+            "input": "if(100 meters in centimeters > 5000, 1, 0)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Conditional with unit conversion"
+        },
+        {
+            "id": "units_conditional_002",
+            "input": "temp := 25 celsius; if(temp in fahrenheit > 70, \"hot\", \"cold\")",
+            "expected": "hot",
+            "expectedType": "NodeString",
+            "notes": "Temperature-based conditional"
+        },
+        {
+            "id": "units_arithmetic_chain_001",
+            "input": "100 meters + 50 meters - 25 meters",
+            "expected": "125.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Chain arithmetic with units"
+        },
+        {
+            "id": "units_arithmetic_chain_002",
+            "input": "10 meters * 2 / 5",
+            "expected": "4.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Multiply and divide unit value"
+        },
+        {
+            "id": "units_comparison_001",
+            "input": "1000 mm in m == 1",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Compare converted units (avoids floating point issues)"
+        },
+        {
+            "id": "units_comparison_002",
+            "input": "1 kilometer in meters > 999",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than comparison"
+        },
+        {
+            "id": "units_comparison_003",
+            "input": "500 cm == 5 m",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Direct equality of different units (auto-convert)"
+        },
+        {
+            "id": "units_comparison_004",
+            "input": "2000 grams == 2 kg",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Direct equality of mass units"
+        },
+        {
+            "id": "units_mixed_temp_001",
+            "input": "max({0, 100} celsius in fahrenheit)",
+            "expected": "212.0 fahrenheit",
+            "expectedType": "NodeUnit",
+            "notes": "Max of converted temperatures"
+        },
+        {
+            "id": "units_mixed_temp_002",
+            "input": "min({312, 212} fahrenheit in celsius)",
+            "expected": "100.0 celsius",
+            "expectedType": "NodeUnit",
+            "notes": "Min of converted temperatures"
+        },
+        {
+            "id": "units_assignment_001",
+            "input": "distance := 100 meters in centimeters; distance",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Assign converted value"
+        },
+        {
+            "id": "units_assignment_002",
+            "input": "temp := 100 celsius in fahrenheit; temp - 32",
+            "expected": "180.0 fahrenheit",
+            "expectedType": "NodeUnit",
+            "notes": "Arithmetic on assigned unit"
+        },
+        {
+            "id": "units_typeof_001",
+            "input": "typeof(100 meters)",
+            "expected": "unit",
+            "expectedType": "NodeString",
+            "notes": "Type of unit value"
+        },
+        {
+            "id": "units_nested_conversion_001",
+            "input": "(100 meters in centimeters) in meters",
+            "expected": "100.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Round-trip conversion"
+        },
+        {
+            "id": "units_expression_001",
+            "input": "(50 + 50) meters + (100 - 50) meters",
+            "expected": "150.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Expressions with units"
+        },
+        {
+            "id": "units_function_result_001",
+            "input": "abs(-100) meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Function result as unit value"
+        },
+        {
+            "id": "units_power_001",
+            "input": "(10 meters) ^ 2",
+            "expected": "100.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Square a unit value (result in square units)"
+        },
+        {
+            "id": "units_sqrt_001",
+            "input": "sqrt(100 meters)",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Square root of unit value"
+        },
+        {
+            "id": "units_percent_001",
+            "input": "50% of 100 meters",
+            "expected": "50.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Percentage of unit value"
+        },
+        {
+            "id": "units_reciprocal_001",
+            "input": "1 / (10 meters)",
+            "expected": 0.1,
+            "expectedType": "NodeDouble",
+            "notes": "Reciprocal of unit value"
+        },
+        {
+            "id": "units_in_matrix_001",
+            "input": "[[1, 2], [3, 4]] kilometers in meters",
+            "expected": [
+                [
+                    1000.0,
+                    2000.0
+                ],
+                [
+                    3000.0,
+                    4000.0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix with unit conversion (broadcast)"
+        }
+    ]
+}

@@ -120,22 +120,24 @@ class MathUtilsTest {
 
     // ==================== Combinatorial Functions ====================
 
+    // Positive integer tests
     @ParameterizedTest
     @CsvSource({
-            "5, 0, 1.0",        // C(5,0) = 1
-            "5, 1, 5.0",        // C(5,1) = 5
-            "5, 2, 10.0",       // C(5,2) = 10
-            "5, 3, 10.0",       // C(5,3) = 10
-            "5, 5, 1.0",        // C(5,5) = 1
-            "10, 3, 120.0",     // C(10,3) = 120
-            "10, 5, 252.0",     // C(10,5) = 252
-            "20, 10, 184756.0", // C(20,10) = 184756
-            "0, 0, 1.0"         // C(0,0) = 1
+            "5, 0, 1.0",
+            "5, 1, 5.0",
+            "5, 2, 10.0",
+            "5, 3, 10.0",
+            "5, 5, 1.0",
+            "10, 3, 120.0",
+            "10, 5, 252.0",
+            "20, 10, 184756.0",
+            "0, 0, 1.0"
     })
     void combination_NonNegativeInputs_ReturnsCorrectValue(double n, double k, double expected) {
         assertThat(MathUtils.combination(n, k)).isCloseTo(expected, within(GAMMA_TOLERANCE));
     }
 
+    // Negative k
     @ParameterizedTest
     @CsvSource({
             "5, -1",
@@ -145,18 +147,28 @@ class MathUtilsTest {
         assertThat(MathUtils.combination(n, k)).isEqualTo(0.0);
     }
 
+    // Negative integer n
     @ParameterizedTest
     @CsvSource({
-            "-5, 2, 15.0",      // C(-5,2) = (-1)^2 × C(6,2) = 15
-            "-10, 3, -220.0"    // C(-10,3) = (-1)^3 × C(12,3) = -220
+            "-5, 2, 15.0",
+            "-10, 3, -220.0"
     })
     void combination_NegativeN_IntegerK_ReturnsCorrectValue(double n, double k, double expected) {
         assertThat(MathUtils.combination(n, k)).isCloseTo(expected, within(GAMMA_TOLERANCE));
     }
 
+    // Negative non-integer n
     @Test
-    void combination_NegativeN_FractionalK_ReturnsInfinity() {
-        assertThat(MathUtils.combination(-5.0, 2.5)).isEqualTo(Double.POSITIVE_INFINITY);
+    void combination_NegativeN_FractionalK_ReturnsNaN() {
+        assertThat(MathUtils.combination(-5.0, 2.5)).isNaN();
+    }
+
+    // Fractional n and k using gamma function
+    @Test
+    void combination_FractionalNAndK_ReturnsGammaResult() {
+        double result = MathUtils.combination(5.5, 2.2);
+        assertThat(result).isNotNaN();
+        assertThat(result).isGreaterThan(0);
     }
 
     @ParameterizedTest
@@ -190,6 +202,24 @@ class MathUtilsTest {
     })
     void gcd_ReturnsCorrectValue(int x, int y, int expected) {
         assertThat(MathUtils.gcd(x, y)).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "4, 6, 12",         // lcm(4, 6) = 12
+            "12, 18, 36",       // lcm(12, 18) = 36
+            "21, 6, 42",        // lcm(21, 6) = 42
+            "5, 7, 35",         // lcm(5, 7) = 35 (coprime)
+            "10, 15, 30",       // lcm(10, 15) = 30
+            "0, 5, 0",          // lcm(0, 5) = 0
+            "5, 0, 0",          // lcm(5, 0) = 0
+            "0, 0, 0",          // lcm(0, 0) = 0
+            "-4, 6, 12",        // lcm(-4, 6) = 12
+            "4, -6, 12",        // lcm(4, -6) = 12
+            "-4, -6, 12"        // lcm(-4, -6) = 12
+    })
+    void lcm_ReturnsCorrectValue(long a, long b, long expected) {
+        assertThat(MathUtils.lcm(a, b)).isEqualTo(expected);
     }
 
     @Test
@@ -538,23 +568,23 @@ class MathUtilsTest {
             "-5.0, 0.0, 10.0, 0.0, 100.0, -50.0",    // extrapolation (below)
             "50.0, 0.0, 100.0, 32.0, 212.0, 122.0"   // Celsius to Fahrenheit (50C = 122F)
     })
-    void map_ReturnsCorrectMapping(double value, double fromMin, double fromMax, double toMin, double toMax, double expected) {
-        assertThat(MathUtils.map(value, fromMin, fromMax, toMin, toMax)).isCloseTo(expected, within(TOLERANCE));
+    void remap_ReturnsCorrectMapping(double value, double fromMin, double fromMax, double toMin, double toMax, double expected) {
+        assertThat(MathUtils.remap(value, fromMin, fromMax, toMin, toMax)).isCloseTo(expected, within(TOLERANCE));
     }
 
     @Test
-    void map_FromMinEqualsFromMax_ThrowsException() {
-        assertThatThrownBy(() -> MathUtils.map(5.0, 10.0, 10.0, 0.0, 100.0))
+    void remap_FromMinEqualsFromMax_ThrowsException() {
+        assertThatThrownBy(() -> MathUtils.remap(5.0, 10.0, 10.0, 0.0, 100.0))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Source range cannot have zero width");
     }
 
     @Test
-    void map_InverseMapping() {
+    void remap_InverseMapping() {
         // Verify: mapping and reverse mapping are inverses
         double value = 37.5;
-        double result = MathUtils.map(value, 0.0, 100.0, 0.0, 1.0);
-        double recovered = MathUtils.map(result, 0.0, 1.0, 0.0, 100.0);
+        double result = MathUtils.remap(value, 0.0, 100.0, 0.0, 1.0);
+        double recovered = MathUtils.remap(result, 0.0, 1.0, 0.0, 100.0);
         assertThat(recovered).isCloseTo(value, within(TOLERANCE));
     }
 
@@ -775,11 +805,11 @@ class MathUtilsTest {
     // ==================== Integration Tests ====================
 
     @Test
-    void clampAndMap_Integration() {
+    void clampAndRemap_Integration() {
         // Test using clamp followed by map
         double value = 150.0;
         double clamped = MathUtils.clamp(value, 0.0, 100.0);  // clamps to 100
-        double mapped = MathUtils.map(clamped, 0.0, 100.0, 0.0, 1.0);  // maps to 1.0
+        double mapped = MathUtils.remap(clamped, 0.0, 100.0, 0.0, 1.0);  // maps to 1.0
 
         assertThat(clamped).isCloseTo(100.0, within(TOLERANCE));
         assertThat(mapped).isCloseTo(1.0, within(TOLERANCE));

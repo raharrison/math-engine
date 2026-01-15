@@ -1,0 +1,19 @@
+{
+    "category": "Variable Assignment",
+    "tests": [
+        {
+            "id": "assignment_001",
+            "input": "x := 5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Simple assignment returns value"
+        },
+        {
+            "id": "assignment_002",
+            "input": "foo := 5; 1/foo",
+            "expected": 0.2,
+            "expectedType": "NodeRational",
+            "notes": "Simple assignment and variable usage"
+        }
+    ]
+}

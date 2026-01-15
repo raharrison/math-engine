@@ -185,6 +185,55 @@ public final class Utils {
     }
 
     /**
+     * Removes redundant nested double parentheses from a string.
+     * <p>
+     * This method recursively removes layers of double parentheses "((...))" when they exist
+     * at the beginning and end, and the outer pair is redundant (i.e., the parentheses depth
+     * never goes negative when scanning from position 1 to length-2). It continues removing
+     * layers until only a single layer of parentheses remains.
+     * </p>
+     * <p>
+     * Examples:
+     * </p>
+     * <ul>
+     *     <li>{@code "((x))" → "(x)"} (removes one redundant layer)</li>
+     *     <li>{@code "((a+b))" → "(a+b)"}</li>
+     *     <li>{@code "((((x))))" → "(x)"} (removes until single layer remains)</li>
+     *     <li>{@code "((a)+(b))" → "(a)+(b)"} (removes redundant outer layer)</li>
+     *     <li>{@code "(a)+(b)" → "(a)+(b)"} (no change - doesn't start/end with double parens)</li>
+     *     <li>{@code "(x)" → "(x)"} (no change - only single layer)</li>
+     *     <li>{@code "x" → "x"} (no change - no parentheses)</li>
+     * </ul>
+     *
+     * @param s the string to process, must not be null
+     * @return the string with redundant nested parentheses removed (down to single layer)
+     * @throws NullPointerException if s is null
+     */
+    public static String removeRedundantParentheses(String s) {
+        if (s == null) {
+            throw new NullPointerException("String cannot be null");
+        }
+
+        if (s.startsWith("((") && s.endsWith("))")) {
+            // Check if outer parens are redundant
+            int depth = 0;
+            boolean canRemove = true;
+            for (int i = 1; i < s.length() - 1; i++) {
+                if (s.charAt(i) == '(') depth++;
+                if (s.charAt(i) == ')') depth--;
+                if (depth < 0) {
+                    canRemove = false;
+                    break;
+                }
+            }
+            if (canRemove) {
+                return removeRedundantParentheses(s.substring(1, s.length() - 1));
+            }
+        }
+        return s;
+    }
+
+    /**
      * Standardizes a string by removing all whitespace and converting to lowercase.
      * <p>
      * This is useful for normalizing user input, comparing strings in a case-insensitive

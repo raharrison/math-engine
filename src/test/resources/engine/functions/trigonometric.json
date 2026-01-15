@@ -1,0 +1,317 @@
+{
+    "category": "Trigonometric Functions",
+    "description": "Comprehensive tests for sin, cos, tan, asin, acos, atan, atan2, sec, csc, cot",
+    "tests": [
+        {
+            "id": "sin_001",
+            "input": "sin(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "sin(0) = 0 radians"
+        },
+        {
+            "id": "sin_002",
+            "input": "sin(pi/2)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "sin(pi/2) = 1"
+        },
+        {
+            "id": "sin_003",
+            "input": "sin(pi)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "sin(pi) = 0"
+        },
+        {
+            "id": "sin_004",
+            "input": "sin(3*pi/2)",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "notes": "sin(3pi/2) = -1"
+        },
+        {
+            "id": "sin_005",
+            "input": "sin(2*pi)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "sin(2pi) = 0 (periodicity)"
+        },
+        {
+            "id": "sin_006",
+            "input": "sin(-pi/2)",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "notes": "sin(-pi/2) = -1"
+        },
+        {
+            "id": "sin_deg_001",
+            "input": "sin(90)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "sin(90 degrees) = 1"
+        },
+        {
+            "id": "sin_deg_002",
+            "input": "sin(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "sin(0 degrees) = 0"
+        },
+        {
+            "id": "sin_deg_003",
+            "input": "sin(180)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "sin(180 degrees) = 0"
+        },
+        {
+            "id": "sin_deg_004",
+            "input": "sin(30)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "sin(30 degrees) = 0.5"
+        },
+        {
+            "id": "cos_001",
+            "input": "cos(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "cos(0) = 1"
+        },
+        {
+            "id": "cos_002",
+            "input": "cos(pi/2)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "cos(pi/2) = 0"
+        },
+        {
+            "id": "cos_003",
+            "input": "cos(pi)",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "notes": "cos(pi) = -1"
+        },
+        {
+            "id": "cos_004",
+            "input": "cos(2*pi)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "cos(2pi) = 1 (periodicity)"
+        },
+        {
+            "id": "cos_deg_001",
+            "input": "cos(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "cos(0 degrees) = 1"
+        },
+        {
+            "id": "cos_deg_002",
+            "input": "cos(60)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "cos(60 degrees) = 0.5"
+        },
+        {
+            "id": "cos_deg_003",
+            "input": "cos(90)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "cos(90 degrees) = 0"
+        },
+        {
+            "id": "tan_001",
+            "input": "tan(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "tan(0) = 0"
+        },
+        {
+            "id": "tan_002",
+            "input": "tan(pi/4)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "tan(pi/4) = 1"
+        },
+        {
+            "id": "tan_003",
+            "input": "tan(-pi/4)",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "notes": "tan(-pi/4) = -1"
+        },
+        {
+            "id": "tan_deg_001",
+            "input": "tan(45)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "tan(45 degrees) = 1"
+        },
+        {
+            "id": "asin_001",
+            "input": "asin(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "asin(0) = 0"
+        },
+        {
+            "id": "asin_002",
+            "input": "asin(1)",
+            "expected": 1.5707963267948966,
+            "expectedType": "NodeDouble",
+            "notes": "asin(1) = pi/2"
+        },
+        {
+            "id": "asin_003",
+            "input": "asin(-1)",
+            "expected": -1.5707963267948966,
+            "expectedType": "NodeDouble",
+            "notes": "asin(-1) = -pi/2"
+        },
+        {
+            "id": "asin_004",
+            "input": "asin(0.5)",
+            "expected": 0.5235987755982989,
+            "expectedType": "NodeDouble",
+            "notes": "asin(0.5) = pi/6"
+        },
+        {
+            "id": "acos_001",
+            "input": "acos(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "acos(1) = 0"
+        },
+        {
+            "id": "acos_002",
+            "input": "acos(0)",
+            "expected": 1.5707963267948966,
+            "expectedType": "NodeDouble",
+            "notes": "acos(0) = pi/2"
+        },
+        {
+            "id": "acos_003",
+            "input": "acos(-1)",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "acos(-1) = pi"
+        },
+        {
+            "id": "acos_004",
+            "input": "acos(0.5)",
+            "expected": 1.0471975511965979,
+            "expectedType": "NodeDouble",
+            "notes": "acos(0.5) = pi/3"
+        },
+        {
+            "id": "atan_001",
+            "input": "atan(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "atan(0) = 0"
+        },
+        {
+            "id": "atan_002",
+            "input": "atan(1)",
+            "expected": 0.7853981633974483,
+            "expectedType": "NodeDouble",
+            "notes": "atan(1) = pi/4"
+        },
+        {
+            "id": "atan_003",
+            "input": "atan(-1)",
+            "expected": -0.7853981633974483,
+            "expectedType": "NodeDouble",
+            "notes": "atan(-1) = -pi/4"
+        },
+        {
+            "id": "atan2_001",
+            "input": "atan2(1, 1)",
+            "expected": 0.7853981633974483,
+            "expectedType": "NodeDouble",
+            "notes": "atan2(1, 1) = pi/4"
+        },
+        {
+            "id": "atan2_002",
+            "input": "atan2(0, 1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "atan2(0, 1) = 0"
+        },
+        {
+            "id": "atan2_003",
+            "input": "atan2(1, 0)",
+            "expected": 1.5707963267948966,
+            "expectedType": "NodeDouble",
+            "notes": "atan2(1, 0) = pi/2"
+        },
+        {
+            "id": "identity_001",
+            "input": "sin(pi/4) + cos(pi/4)",
+            "expected": 1.4142135623730951,
+            "expectedType": "NodeDouble",
+            "notes": "sin(pi/4) + cos(pi/4) = sqrt(2)"
+        },
+        {
+            "id": "identity_002",
+            "input": "sin(0)^2 + cos(0)^2",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Pythagorean identity at 0"
+        },
+        {
+            "id": "identity_003",
+            "input": "sin(pi/6)^2 + cos(pi/6)^2",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Pythagorean identity at pi/6"
+        },
+        {
+            "id": "sec_001",
+            "input": "sec(0)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "sec(0) = 1/cos(0) = 1"
+        },
+        {
+            "id": "csc_001",
+            "input": "csc(pi/2)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "csc(pi/2) = 1/sin(pi/2) = 1"
+        },
+        {
+            "id": "cot_001",
+            "input": "cot(pi/4)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "cot(pi/4) = 1/tan(pi/4) = 1"
+        }
+    ]
+}

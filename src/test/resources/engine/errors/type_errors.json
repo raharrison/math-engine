@@ -1,0 +1,349 @@
+{
+    "category": "Type Errors",
+    "description": "Tests for type mismatch errors",
+    "tests": [
+        {
+            "id": "det_vector_001",
+            "input": "det({1, 2, 3})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Determinant requires matrix not vector"
+        },
+        {
+            "id": "det_nonsquare_001",
+            "input": "det([[1, 2, 3], [4, 5, 6]])",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Determinant requires square matrix"
+        },
+        {
+            "id": "trace_nonsquare_001",
+            "input": "trace([[1, 2, 3], [4, 5, 6]])",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Trace requires square matrix"
+        },
+        {
+            "id": "inverse_singular_001",
+            "input": "inverse([[1, 2], [2, 4]])",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Inverse of singular matrix"
+        },
+        {
+            "id": "identity_nonpositive_001",
+            "input": "identity(0)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Identity size must be positive"
+        },
+        {
+            "id": "identity_negative_001",
+            "input": "identity(-1)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Identity size must be positive"
+        },
+        {
+            "id": "zeros_negative_001",
+            "input": "zeros(-2)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Zeros dimensions must be positive"
+        },
+        {
+            "id": "reshape_mismatch_001",
+            "input": "reshape({1, 2, 3, 4, 5}, 2, 3)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Cannot reshape 5 elements to 2x3"
+        },
+        {
+            "id": "covariance_length_001",
+            "input": "covariance({1, 2, 3}, {1, 2})",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Covariance requires equal length vectors"
+        },
+        {
+            "id": "correlation_length_001",
+            "input": "correlation({1, 2, 3}, {1, 2})",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Correlation requires equal length vectors"
+        },
+        {
+            "id": "row_outofbounds_001",
+            "input": "row([[1, 2], [3, 4]], 5)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Row index out of bounds"
+        },
+        {
+            "id": "col_outofbounds_001",
+            "input": "col([[1, 2], [3, 4]], 5)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Column index out of bounds"
+        },
+        {
+            "id": "matmul_dimension_001",
+            "input": "[[1, 2], [3, 4]] @ [[1, 2, 3]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot multiply 2x2 and 1x3 matrices (inner dimensions 2 != 1)"
+        },
+        {
+            "id": "matmul_dimension_002",
+            "input": "[[1, 2], [3, 4]] @ [[1], [2], [3]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot multiply 2x2 and 3x1 matrices (inner dimensions 2 != 3)"
+        },
+        {
+            "id": "matrix_power_nonsquare_001",
+            "input": "[[1, 2, 3], [4, 5, 6]] ^ 2",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix power requires square matrix"
+        },
+        {
+            "id": "matrix_power_negative_001",
+            "input": "[[1, 2], [3, 4]] ^ -1",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix power with negative exponent not supported"
+        },
+        {
+            "id": "matrix_power_nonint_001",
+            "input": "[[1, 2], [3, 4]] ^ 2.5",
+            "expectError": false,
+            "expectedErrorType": null,
+            "notes": "Matrix power with non-integer: element-wise power (broadcasts)"
+        },
+        {
+            "id": "dot_dimension_001",
+            "input": "{1, 2, 3} @ {1, 2}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Dot product requires equal length vectors"
+        },
+        {
+            "id": "ordering_vector_001",
+            "input": "{1, 2, 3} < {2, 3, 4}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order vectors with <"
+        },
+        {
+            "id": "ordering_vector_002",
+            "input": "{5, 6} > {1, 2}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order vectors with >"
+        },
+        {
+            "id": "ordering_vector_003",
+            "input": "{1, 2} <= {3, 4}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order vectors with <="
+        },
+        {
+            "id": "ordering_vector_004",
+            "input": "{1, 2} >= {3, 4}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order vectors with >="
+        },
+        {
+            "id": "ordering_matrix_001",
+            "input": "[[1, 2], [3, 4]] < [[5, 6], [7, 8]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order matrices with <"
+        },
+        {
+            "id": "ordering_matrix_002",
+            "input": "[[1, 2], [3, 4]] > [[5, 6], [7, 8]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order matrices with >"
+        },
+        {
+            "id": "logical_vector_001",
+            "input": "{true, false} && {true, true}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Logical AND not defined for vectors"
+        },
+        {
+            "id": "logical_vector_002",
+            "input": "{true, false} || {false, false}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Logical OR not defined for vectors"
+        },
+        {
+            "id": "logical_matrix_001",
+            "input": "[[true, false], [false, true]] && [[true, true], [false, false]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Logical AND not defined for matrices"
+        },
+        {
+            "id": "logical_matrix_002",
+            "input": "[[true, false], [false, true]] || [[true, true], [false, false]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Logical OR not defined for matrices"
+        },
+        {
+            "id": "logical_number_001",
+            "input": "5 && 3",
+            "expectError": false,
+            "expectedErrorType": null,
+            "notes": "Numbers coerce to boolean (non-zero is true)"
+        },
+        {
+            "id": "factorial_negative_001",
+            "input": "(-5)!",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Factorial of negative number"
+        },
+        {
+            "id": "factorial_nonint_001",
+            "input": "(2.5)!",
+            "expectError": false,
+            "expectedErrorType": null,
+            "notes": "Factorial of non-integer uses gamma function"
+        },
+        {
+            "id": "doublefactorial_negative_001",
+            "input": "(-3)!!",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Double factorial of negative number"
+        },
+        {
+            "id": "sqrt_negative_001",
+            "input": "sqrt(-1)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "sqrt is not defined for negative values"
+        },
+        {
+            "id": "log_negative_001",
+            "input": "log(-1)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "log is not defined for negative values"
+        },
+        {
+            "id": "log_zero_001",
+            "input": "log(0)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "log is not defined for zero"
+        },
+        {
+            "id": "asin_outofrange_001",
+            "input": "asin(2)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "asin requires input in range [-1,1]"
+        },
+        {
+            "id": "acos_outofrange_001",
+            "input": "acos(2)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "acos requires input in range [-1,1]"
+        },
+        {
+            "id": "mod_zero_001",
+            "input": "10 mod 0",
+            "expectError": false,
+            "expectedErrorType": null,
+            "notes": "Modulo by zero produces NaN"
+        },
+        {
+            "id": "gcd_nonint_001",
+            "input": "gcd(2.5, 3.5)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "GCD requires integers"
+        },
+        {
+            "id": "lcm_nonint_001",
+            "input": "lcm(2.5, 3.5)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "LCM requires integers"
+        },
+        {
+            "id": "subscript_outofbounds_001",
+            "input": "{1, 2, 3}[10]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Vector subscript out of bounds"
+        },
+        {
+            "id": "subscript_outofbounds_002",
+            "input": "{1, 2, 3}[-10]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Negative vector subscript out of bounds"
+        },
+        {
+            "id": "subscript_scalar_001",
+            "input": "5[0]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot subscript scalar"
+        },
+        {
+            "id": "function_arity_001",
+            "input": "f := (x, y) -> x + y; f(5)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "Function expects 2 args, got 1"
+        },
+        {
+            "id": "function_arity_002",
+            "input": "f := (x) -> x * 2; f(1, 2, 3)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "Function expects 1 arg, got 3"
+        },
+        {
+            "id": "undefined_variable_001",
+            "input": "undefinedVar + 5",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Using undefined variable"
+        },
+        {
+            "id": "undefined_function_001",
+            "input": "undefinedFunc(5)",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Calling undefined function"
+        },
+        {
+            "id": "call_nonfunction_001",
+            "input": "x := 5; x(3)",
+            "expectError": false,
+            "expectedErrorType": null,
+            "notes": "Calling non-function: implicit multiplication fallback"
+        },
+        {
+            "id": "percent_of_vector_001",
+            "input": "50% of {1, 2, 3}",
+            "expectError": false,
+            "expectedErrorType": null,
+            "notes": "Percent of vector: broadcasts"
+        }
+    ]
+}

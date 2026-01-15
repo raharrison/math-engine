@@ -1,0 +1,557 @@
+{
+    "category": "Matrix Functions",
+    "description": "Comprehensive tests for det, trace, transpose, identity, zeros, ones, diag, inverse, rank, norm, row, col, reshape, minor, cofactor, adjugate",
+    "tests": [
+        {
+            "id": "det_001",
+            "input": "det([[1, 0], [0, 1]])",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Determinant of identity matrix"
+        },
+        {
+            "id": "det_002",
+            "input": "det([[1, 2], [3, 4]])",
+            "expected": -2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Determinant of 2x2 matrix"
+        },
+        {
+            "id": "det_003",
+            "input": "det([[1, 2, 3], [4, 5, 6], [7, 8, 9]])",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Determinant of singular matrix"
+        },
+        {
+            "id": "det_004",
+            "input": "det([[2, 0, 0], [0, 3, 0], [0, 0, 4]])",
+            "expected": 24.0,
+            "expectedType": "NodeDouble",
+            "notes": "Determinant of diagonal matrix"
+        },
+        {
+            "id": "det_005",
+            "input": "det([[5]])",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Determinant of 1x1 matrix"
+        },
+        {
+            "id": "trace_001",
+            "input": "trace([[1, 2], [3, 4]])",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Trace of 2x2 matrix"
+        },
+        {
+            "id": "trace_002",
+            "input": "trace([[1, 0, 0], [0, 2, 0], [0, 0, 3]])",
+            "expected": 6.0,
+            "expectedType": "NodeDouble",
+            "notes": "Trace of diagonal matrix"
+        },
+        {
+            "id": "trace_003",
+            "input": "trace(identity(5))",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Trace of 5x5 identity"
+        },
+        {
+            "id": "rows_001",
+            "input": "rows([[1, 2, 3], [4, 5, 6]])",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Row count of 2x3 matrix"
+        },
+        {
+            "id": "rows_002",
+            "input": "rows([[1], [2], [3], [4]])",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "Row count of 4x1 matrix"
+        },
+        {
+            "id": "cols_001",
+            "input": "cols([[1, 2, 3], [4, 5, 6]])",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Column count of 2x3 matrix"
+        },
+        {
+            "id": "cols_002",
+            "input": "cols([[1], [2], [3]])",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Column count of 3x1 matrix"
+        },
+        {
+            "id": "transpose_001",
+            "input": "transpose([[1, 2], [3, 4]])",
+            "expected": [
+                [
+                    1,
+                    3
+                ],
+                [
+                    2,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Transpose of 2x2 matrix"
+        },
+        {
+            "id": "transpose_002",
+            "input": "transpose([[1, 2, 3]])",
+            "expected": [
+                [
+                    1
+                ],
+                [
+                    2
+                ],
+                [
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Transpose of row vector"
+        },
+        {
+            "id": "transpose_003",
+            "input": "transpose([[1], [2], [3]])",
+            "expected": [
+                [
+                    1,
+                    2,
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Transpose of column vector"
+        },
+        {
+            "id": "identity_001",
+            "input": "identity(2)",
+            "expected": [
+                [
+                    1,
+                    0
+                ],
+                [
+                    0,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "2x2 identity matrix"
+        },
+        {
+            "id": "identity_002",
+            "input": "identity(3)",
+            "expected": [
+                [
+                    1,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    1,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "3x3 identity matrix"
+        },
+        {
+            "id": "identity_003",
+            "input": "identity(1)",
+            "expected": [
+                [
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "1x1 identity matrix"
+        },
+        {
+            "id": "zeros_001",
+            "input": "zeros(2)",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "2x2 zero matrix"
+        },
+        {
+            "id": "zeros_002",
+            "input": "zeros(2, 3)",
+            "expected": [
+                [
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "2x3 zero matrix"
+        },
+        {
+            "id": "ones_001",
+            "input": "ones(2)",
+            "expected": [
+                [
+                    1,
+                    1
+                ],
+                [
+                    1,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "2x2 ones matrix"
+        },
+        {
+            "id": "ones_002",
+            "input": "ones(2, 3)",
+            "expected": [
+                [
+                    1,
+                    1,
+                    1
+                ],
+                [
+                    1,
+                    1,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "2x3 ones matrix"
+        },
+        {
+            "id": "diag_001",
+            "input": "diag({1, 2, 3})",
+            "expected": [
+                [
+                    1,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    2,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Create diagonal matrix from vector"
+        },
+        {
+            "id": "diag_002",
+            "input": "diag([[1, 2, 3], [4, 5, 6], [7, 8, 9]])",
+            "expected": [
+                1,
+                5,
+                9
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Extract diagonal from matrix"
+        },
+        {
+            "id": "diag_003",
+            "input": "diag({5})",
+            "expected": [
+                [
+                    5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Single element diagonal matrix"
+        },
+        {
+            "id": "inverse_001",
+            "input": "inverse([[1, 2], [3, 4]])",
+            "expected": [
+                [
+                    -2.0,
+                    1.0
+                ],
+                [
+                    1.5,
+                    -0.5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Inverse of 2x2 matrix"
+        },
+        {
+            "id": "inverse_002",
+            "input": "inverse(identity(3))",
+            "expected": [
+                [
+                    1,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    1,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Inverse of identity is identity"
+        },
+        {
+            "id": "rank_001",
+            "input": "rank([[1, 0], [0, 1]])",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Rank of identity matrix"
+        },
+        {
+            "id": "rank_002",
+            "input": "rank([[1, 2], [2, 4]])",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Rank of rank-deficient matrix"
+        },
+        {
+            "id": "rank_003",
+            "input": "rank([[0, 0], [0, 0]])",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Rank of zero matrix"
+        },
+        {
+            "id": "norm_001",
+            "input": "norm({3, 4})",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Euclidean norm of vector"
+        },
+        {
+            "id": "norm_002",
+            "input": "norm([[1, 2], [2, 1]])",
+            "expected": 3.1622776601683795,
+            "expectedType": "NodeDouble",
+            "notes": "Frobenius norm of matrix"
+        },
+        {
+            "id": "norm_003",
+            "input": "norm({1, 0, 0})",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Norm of unit vector"
+        },
+        {
+            "id": "row_001",
+            "input": "row([[1, 2, 3], [4, 5, 6]], 0)",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Extract first row"
+        },
+        {
+            "id": "row_002",
+            "input": "row([[1, 2, 3], [4, 5, 6]], 1)",
+            "expected": [
+                4,
+                5,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Extract second row"
+        },
+        {
+            "id": "col_001",
+            "input": "col([[1, 2, 3], [4, 5, 6]], 0)",
+            "expected": [
+                1,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Extract first column"
+        },
+        {
+            "id": "col_002",
+            "input": "col([[1, 2, 3], [4, 5, 6]], 2)",
+            "expected": [
+                3,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Extract third column"
+        },
+        {
+            "id": "reshape_001",
+            "input": "reshape({1, 2, 3, 4, 5, 6}, 2, 3)",
+            "expected": [
+                [
+                    1,
+                    2,
+                    3
+                ],
+                [
+                    4,
+                    5,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Reshape vector to 2x3 matrix"
+        },
+        {
+            "id": "reshape_002",
+            "input": "reshape({1, 2, 3, 4}, 2, 2)",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Reshape vector to 2x2 matrix"
+        },
+        {
+            "id": "minor_001",
+            "input": "minor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 0, 0)",
+            "expected": -3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Minor at (0,0)"
+        },
+        {
+            "id": "cofactor_001",
+            "input": "cofactor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 0, 0)",
+            "expected": -3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Cofactor at (0,0) - same sign as minor"
+        },
+        {
+            "id": "cofactor_002",
+            "input": "cofactor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 0, 1)",
+            "expected": 6.0,
+            "expectedType": "NodeDouble",
+            "notes": "Cofactor at (0,1) - opposite sign"
+        },
+        {
+            "id": "matrix_mult_001",
+            "input": "[[1, 2], [3, 4]] @ [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    19,
+                    22
+                ],
+                [
+                    43,
+                    50
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplication with @"
+        },
+        {
+            "id": "matrix_elementwise_001",
+            "input": "[[1, 2], [3, 4]] * [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    5,
+                    12
+                ],
+                [
+                    21,
+                    32
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise multiplication with *"
+        },
+        {
+            "id": "matrix_add_001",
+            "input": "[[1, 2], [3, 4]] + [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    6,
+                    8
+                ],
+                [
+                    10,
+                    12
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix addition"
+        },
+        {
+            "id": "matrix_scalar_001",
+            "input": "2 * [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar multiplication"
+        },
+        {
+            "id": "matrix_power_001",
+            "input": "[[1, 1], [1, 0]] ^ 2",
+            "expected": [
+                [
+                    2,
+                    1
+                ],
+                [
+                    1,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix power (Fibonacci matrix squared)"
+        }
+    ]
+}

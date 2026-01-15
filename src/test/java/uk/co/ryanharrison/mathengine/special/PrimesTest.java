@@ -251,11 +251,19 @@ class PrimesTest {
     }
 
     /**
-     * Tests prime factorization of 1 (special case).
+     * Tests prime factorization of 1 (special case - empty product).
      */
     @Test
-    void primeFactorsOf1Returns1() {
-        assertThat(Primes.primeFactors(1)).containsExactly(1L);
+    void primeFactorsOf1ReturnsEmptyList() {
+        assertThat(Primes.primeFactors(1)).isEmpty();
+    }
+
+    /**
+     * Tests prime factorization of 0 (special case - no factorization).
+     */
+    @Test
+    void primeFactorsOf0ReturnsEmptyList() {
+        assertThat(Primes.primeFactors(0)).isEmpty();
     }
 
     /**
@@ -347,11 +355,19 @@ class PrimesTest {
     }
 
     /**
-     * Tests distinct prime factors of 1.
+     * Tests distinct prime factors of 1 (empty - no prime factors).
      */
     @Test
-    void distinctPrimeFactorsOf1Returns1() {
-        assertThat(Primes.distinctPrimeFactors(1)).containsExactly(1L);
+    void distinctPrimeFactorsOf1ReturnsEmptyList() {
+        assertThat(Primes.distinctPrimeFactors(1)).isEmpty();
+    }
+
+    /**
+     * Tests distinct prime factors of 0 (empty - no prime factors).
+     */
+    @Test
+    void distinctPrimeFactorsOf0ReturnsEmptyList() {
+        assertThat(Primes.distinctPrimeFactors(0)).isEmpty();
     }
 
     /**

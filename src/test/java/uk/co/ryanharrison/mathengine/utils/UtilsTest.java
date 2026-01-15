@@ -244,6 +244,74 @@ class UtilsTest {
         assertThat(Utils.removeOuterParenthesis("")).isEqualTo("");
     }
 
+    // ==================== removeRedundantParentheses() Tests ====================
+
+    @ParameterizedTest
+    @CsvSource({
+            "((x)), (x)",                    // double nested, single var - removes one layer
+            "((a+b)), (a+b)",                // double nested, expression - removes one layer
+            "(((x))), (x)",                  // triple nested - removes to single
+            "((((x)))), (x)",                // quad nested - removes to single
+            "((2+3)), (2+3)",                // double nested numeric - removes one layer
+    })
+    void removeRedundantParenthesesRemovesDoubleNesting(String input, String expected) {
+        assertThat(Utils.removeRedundantParentheses(input)).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "x, x",                          // no parentheses
+            "(x), (x)",                      // single parentheses - not removed
+            "(a+b), (a+b)",                  // single parentheses with expression
+            "(a)+(b), (a)+(b)",              // multiple single parentheses
+            "((a)+(b)), (a)+(b)",            // double at ends - depth goes negative, so outer layer removed
+    })
+    void removeRedundantParenthesesDoesNotRemoveSingleOrNonRedundant(String input, String expected) {
+        assertThat(Utils.removeRedundantParentheses(input)).isEqualTo(expected);
+    }
+
+    @Test
+    void removeRedundantParenthesesHandlesComplexExpressions() {
+        // Expression with nested parts but not redundant doubles
+        assertThat(Utils.removeRedundantParentheses("(a+(b+c))")).isEqualTo("(a+(b+c))");
+
+        // Outer layer is redundant, so it gets removed
+        assertThat(Utils.removeRedundantParentheses("((a+b)+(c+d))")).isEqualTo("(a+b)+(c+d)");
+
+        // Recursively removes multiple layers until only single parens remain
+        assertThat(Utils.removeRedundantParentheses("((((a+b))))")).isEqualTo("(a+b)");
+
+        // Only outer doubles removed
+        assertThat(Utils.removeRedundantParentheses("((a+(b+c)))")).isEqualTo("(a+(b+c))");
+    }
+
+    @Test
+    void removeRedundantParenthesesHandlesEdgeCases() {
+        // Empty string
+        assertThat(Utils.removeRedundantParentheses("")).isEqualTo("");
+
+        // Just parentheses - removes down to single pair
+        assertThat(Utils.removeRedundantParentheses("(())")).isEqualTo("()");
+        assertThat(Utils.removeRedundantParentheses("((()))")).isEqualTo("()");
+
+        // Single char
+        assertThat(Utils.removeRedundantParentheses("a")).isEqualTo("a");
+    }
+
+    @Test
+    void removeRedundantParenthesesThrowsOnNull() {
+        assertThatThrownBy(() -> Utils.removeRedundantParentheses(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("cannot be null");
+    }
+
+    @Test
+    void removeRedundantParenthesesDoesNotAffectUnmatchedParentheses() {
+        // If there are unmatched parens, should just return as-is
+        assertThat(Utils.removeRedundantParentheses("((a+b)")).isEqualTo("((a+b)");
+        assertThat(Utils.removeRedundantParentheses("(a+b))")).isEqualTo("(a+b))");
+    }
+
     // ==================== standardiseString() Tests ====================
 
     @ParameterizedTest
