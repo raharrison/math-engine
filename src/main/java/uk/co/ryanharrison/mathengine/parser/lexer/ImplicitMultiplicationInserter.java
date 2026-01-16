@@ -57,7 +57,10 @@ public final class ImplicitMultiplicationInserter {
             TokenType.RPAREN,
             TokenType.IDENTIFIER,
             TokenType.UNIT,
-            TokenType.FACTORIAL,    // After postfix operator
+            TokenType.UNIT_REF,
+            TokenType.VAR_REF,
+            TokenType.CONST_REF,
+            TokenType.FACTORIAL,
             TokenType.DOUBLE_FACTORIAL,
             TokenType.PERCENT
     );
@@ -75,6 +78,9 @@ public final class ImplicitMultiplicationInserter {
             TokenType.LPAREN,
             TokenType.IDENTIFIER,
             TokenType.UNIT,
+            TokenType.UNIT_REF,
+            TokenType.VAR_REF,
+            TokenType.CONST_REF,
             TokenType.FUNCTION
     );
 
@@ -191,11 +197,7 @@ public final class ImplicitMultiplicationInserter {
         }
 
         // Postfix operators followed by values
-        if (isPostfixOperator(currType) && isRightMultiplicand(nextType)) {
-            return true;
-        }
-
-        return false;
+        return isPostfixOperator(currType) && isRightMultiplicand(nextType);
     }
 
     /**
@@ -213,10 +215,14 @@ public final class ImplicitMultiplicationInserter {
     }
 
     /**
-     * Checks if the token type is an identifier or unit.
+     * Checks if the token type is an identifier, unit, or explicit reference.
      */
     private boolean isIdentifierOrUnit(TokenType type) {
-        return type == TokenType.IDENTIFIER || type == TokenType.UNIT;
+        return type == TokenType.IDENTIFIER ||
+                type == TokenType.UNIT ||
+                type == TokenType.UNIT_REF ||
+                type == TokenType.VAR_REF ||
+                type == TokenType.CONST_REF;
     }
 
     /**

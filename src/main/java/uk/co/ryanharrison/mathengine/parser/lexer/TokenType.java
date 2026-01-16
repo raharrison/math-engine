@@ -9,33 +9,13 @@ package uk.co.ryanharrison.mathengine.parser.lexer;
 public final class TokenType {
 
     private final String name;
-    private final int precedence;
-    private final boolean rightAssociative;
-
-    private TokenType(String name, int precedence, boolean rightAssociative) {
-        this.name = name;
-        this.precedence = precedence;
-        this.rightAssociative = rightAssociative;
-    }
 
     private TokenType(String name) {
-        this(name, -1, false);
+        this.name = name;
     }
 
     public String getName() {
         return name;
-    }
-
-    public int getPrecedence() {
-        return precedence;
-    }
-
-    public boolean isRightAssociative() {
-        return rightAssociative;
-    }
-
-    public boolean isOperator() {
-        return precedence >= 0;
     }
 
     @Override
@@ -76,46 +56,46 @@ public final class TokenType {
 
     // Operators - with precedence (lower number = higher precedence)
     // Level 6: Power
-    public static final TokenType POWER = new TokenType("POWER", 6, true);
+    public static final TokenType POWER = new TokenType("POWER");
 
     // Level 7: Multiplicative
-    public static final TokenType MULTIPLY = new TokenType("MULTIPLY", 7, false);
-    public static final TokenType DIVIDE = new TokenType("DIVIDE", 7, false);
-    public static final TokenType AT = new TokenType("AT", 7, false);  // Matrix multiplication
-    public static final TokenType MOD = new TokenType("MOD", 7, false);
-    public static final TokenType OF = new TokenType("OF", 7, false);
+    public static final TokenType MULTIPLY = new TokenType("MULTIPLY");
+    public static final TokenType DIVIDE = new TokenType("DIVIDE");
+    public static final TokenType AT = new TokenType("AT");
+    public static final TokenType MOD = new TokenType("MOD");
+    public static final TokenType OF = new TokenType("OF");
 
     // Level 8: Additive
-    public static final TokenType PLUS = new TokenType("PLUS", 8, false);
-    public static final TokenType MINUS = new TokenType("MINUS", 8, false);
+    public static final TokenType PLUS = new TokenType("PLUS");
+    public static final TokenType MINUS = new TokenType("MINUS");
 
     // Level 9: Range
-    public static final TokenType RANGE = new TokenType("RANGE", 9, false);
+    public static final TokenType RANGE = new TokenType("RANGE");
 
     // Level 10: Relational
-    public static final TokenType LT = new TokenType("LT", 10, false);
-    public static final TokenType GT = new TokenType("GT", 10, false);
-    public static final TokenType LTE = new TokenType("LTE", 10, false);
-    public static final TokenType GTE = new TokenType("GTE", 10, false);
+    public static final TokenType LT = new TokenType("LT");
+    public static final TokenType GT = new TokenType("GT");
+    public static final TokenType LTE = new TokenType("LTE");
+    public static final TokenType GTE = new TokenType("GTE");
 
     // Level 11: Equality
-    public static final TokenType EQ = new TokenType("EQ", 11, false);
-    public static final TokenType NEQ = new TokenType("NEQ", 11, false);
+    public static final TokenType EQ = new TokenType("EQ");
+    public static final TokenType NEQ = new TokenType("NEQ");
 
     // Level 12: Logical AND
-    public static final TokenType AND = new TokenType("AND", 12, false);
+    public static final TokenType AND = new TokenType("AND");
 
     // Level 13: Logical XOR
-    public static final TokenType XOR = new TokenType("XOR", 13, false);
+    public static final TokenType XOR = new TokenType("XOR");
 
     // Level 14: Logical OR
-    public static final TokenType OR = new TokenType("OR", 14, false);
+    public static final TokenType OR = new TokenType("OR");
 
     // Level 15: Assignment
-    public static final TokenType ASSIGN = new TokenType("ASSIGN", 15, true);
+    public static final TokenType ASSIGN = new TokenType("ASSIGN");
 
     // Level 16: Lambda
-    public static final TokenType LAMBDA = new TokenType("LAMBDA", 16, true);
+    public static final TokenType LAMBDA = new TokenType("LAMBDA");
 
     // Unary operators (no precedence - handled differently)
     public static final TokenType NOT = new TokenType("NOT");
@@ -130,4 +110,13 @@ public final class TokenType {
     public static final TokenType FUNCTION = new TokenType("FUNCTION");
     public static final TokenType EOF = new TokenType("EOF");
     public static final TokenType NEWLINE = new TokenType("NEWLINE");
+
+    // Explicit unit reference: @fahrenheit
+    public static final TokenType UNIT_REF = new TokenType("UNIT_REF");
+
+    // Explicit variable reference: $x
+    public static final TokenType VAR_REF = new TokenType("VAR_REF");
+
+    // Explicit constant reference: #pi
+    public static final TokenType CONST_REF = new TokenType("CONST_REF");
 }

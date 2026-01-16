@@ -6,6 +6,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.ArityException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
@@ -35,25 +36,8 @@ import java.util.function.UnaryOperator;
  */
 public final class FunctionContext {
 
-    /**
-     * Callback interface for applying functions to arguments.
-     */
-    @FunctionalInterface
-    public interface FunctionCaller {
-        NodeConstant call(NodeFunction function, List<NodeConstant> args, EvaluationContext context);
-    }
-
     private final EvaluationContext evaluationContext;
     private final FunctionCaller functionCaller;
-
-    /**
-     * Creates a function context wrapping the given evaluation context.
-     *
-     * @param evaluationContext the evaluation context
-     */
-    public FunctionContext(EvaluationContext evaluationContext) {
-        this(evaluationContext, null);
-    }
 
     /**
      * Creates a function context with function calling capability.

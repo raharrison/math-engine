@@ -120,7 +120,9 @@ public final class TokenScanner {
             case '*' -> addToken(TokenType.MULTIPLY, "*");
             case '/' -> addToken(TokenType.DIVIDE, "/");
             case '^' -> addToken(TokenType.POWER, "^");
-            case '@' -> addToken(TokenType.AT, "@");
+            case '@' -> scanAtSign();
+            case '$' -> scanDollarSign();
+            case '#' -> scanHashSign();
             case '%' -> addToken(TokenType.PERCENT, "%");
 
             case '.' -> scanDot();
@@ -217,6 +219,46 @@ public final class TokenScanner {
         } else {
             throw scanner.error("Unexpected character '.'");
         }
+    }
+
+    /**
+     * Scans @ character - either matrix multiplication or explicit unit reference.
+     * If immediately followed by a letter (no space), it's a unit reference (@fahrenheit).
+     * Otherwise, it's matrix multiplication operator (@).
+     */
+    private void scanAtSign() {
+        // Look ahead to see if it's @identifier (unit reference) or standalone @ (matrix mult)
+        if (CharacterScanner.isAlpha(scanner.peek())) {
+            // Explicit unit reference: @fahrenheit
+            String unitName = extractIdentifierName();
+            addToken(TokenType.UNIT_REF, "@" + unitName);
+        } else {
+            addToken(TokenType.AT, "@");
+        }
+    }
+
+    /**
+     * Scans $ character - explicit variable reference.
+     * Must be followed by an identifier (letter).
+     */
+    private void scanDollarSign() {
+        if (!CharacterScanner.isAlpha(scanner.peek())) {
+            throw scanner.error("Expected identifier after '$' (use $variable for explicit variable reference)");
+        }
+        String varName = extractIdentifierName();
+        addToken(TokenType.VAR_REF, "$" + varName);
+    }
+
+    /**
+     * Scans # character - explicit constant reference.
+     * Must be followed by an identifier (letter).
+     */
+    private void scanHashSign() {
+        if (!CharacterScanner.isAlpha(scanner.peek())) {
+            throw scanner.error("Expected identifier after '#' (use #constant for explicit constant reference)");
+        }
+        String constName = extractIdentifierName();
+        addToken(TokenType.CONST_REF, "#" + constName);
     }
 
     // ==================== Number Scanning ====================
@@ -393,6 +435,25 @@ public final class TokenScanner {
         // Don't classify here - just emit as IDENTIFIER
         // Classification happens in Pass 2 (TokenClassifier)
         addToken(TokenType.IDENTIFIER, text);
+    }
+
+    /**
+     * Extracts an identifier name without creating a token.
+     * Used for explicit references (@unit, $var, #const).
+     *
+     * @return the identifier text
+     */
+    private String extractIdentifierName() {
+        int startPos = scanner.getPosition();
+        scanner.consumeWhile(CharacterScanner::isAlphaNumeric);
+        String text = scanner.substring(startPos, scanner.getPosition());
+
+        // Validate identifier length
+        if (text.length() > maxIdentifierLength) {
+            throw scanner.error("Identifier '" + text.substring(0, 20) + "...' exceeds maximum allowed length of " + maxIdentifierLength);
+        }
+
+        return text;
     }
 
     // ==================== Token Creation ====================

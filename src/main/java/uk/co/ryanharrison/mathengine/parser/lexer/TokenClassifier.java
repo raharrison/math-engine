@@ -2,7 +2,6 @@ package uk.co.ryanharrison.mathengine.parser.lexer;
 
 import uk.co.ryanharrison.mathengine.parser.registry.FunctionRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.KeywordRegistry;
-import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.Optional;
  * <ul>
  *     <li>KEYWORD - reserved words (for, in, if, step, true, false)</li>
  *     <li>AND, OR, XOR, NOT, MOD, OF - keyword operators</li>
- *     <li>UNIT - unit names from the unit registry</li>
  *     <li>FUNCTION - function names from the function registry</li>
  *     <li>IDENTIFIER - remains as generic identifier (variables, etc.)</li>
  * </ul>
@@ -24,7 +22,6 @@ import java.util.Optional;
  * <ol>
  *     <li>Keyword operators (and, or, xor, not, mod, of)</li>
  *     <li>Reserved keywords (for, in, if, step, true, false, to, as)</li>
- *     <li>Units (from UnitRegistry)</li>
  *     <li>Functions (from FunctionRegistry)</li>
  *     <li>Generic identifier (default)</li>
  * </ol>
@@ -32,28 +29,24 @@ import java.util.Optional;
  * <h2>Usage:</h2>
  * <pre>{@code
  * TokenClassifier classifier = new TokenClassifier(
- *     functionRegistry, unitRegistry, keywordRegistry);
+ *     functionRegistry, keywordRegistry);
  * List<Token> classified = classifier.classify(splitTokens);
  * }</pre>
  */
 public final class TokenClassifier {
 
     private final FunctionRegistry functionRegistry;
-    private final UnitRegistry unitRegistry;
     private final KeywordRegistry keywordRegistry;
 
     /**
      * Creates a new token classifier with the given registries.
      *
      * @param functionRegistry registry of known functions
-     * @param unitRegistry     registry of known units
      * @param keywordRegistry  registry of known keywords
      */
     public TokenClassifier(FunctionRegistry functionRegistry,
-                           UnitRegistry unitRegistry,
                            KeywordRegistry keywordRegistry) {
         this.functionRegistry = functionRegistry;
-        this.unitRegistry = unitRegistry;
         this.keywordRegistry = keywordRegistry;
     }
 
@@ -97,17 +90,17 @@ public final class TokenClassifier {
             return token.withType(TokenType.KEYWORD);
         }
 
-        // Check if it's a unit
-        if (unitRegistry.isUnit(text)) {
-            return token.withType(TokenType.UNIT);
-        }
-
         // Check if it's a function
         if (functionRegistry.isFunction(text)) {
             return token.withType(TokenType.FUNCTION);
         }
 
-        // Otherwise, keep as identifier
+        // Don't classify as UNIT here - units are resolved at evaluation time
+        // based on context (POSTFIX_UNIT vs GENERAL) by VariableResolver.
+        // This allows variables to shadow unit names and provides proper
+        // context-aware resolution.
+
+        // Keep as identifier - will be resolved by VariableResolver based on context
         return token;
     }
 }

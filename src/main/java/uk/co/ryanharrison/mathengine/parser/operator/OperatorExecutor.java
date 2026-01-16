@@ -7,8 +7,6 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * Executor for operators that manages registration and execution.
@@ -45,30 +43,6 @@ public final class OperatorExecutor {
     // ==================== Registration ====================
 
     /**
-     * Registers a binary operator for the given token type.
-     *
-     * @param tokenType the token type that triggers this operator
-     * @param operator  the operator implementation
-     * @return this executor for method chaining
-     */
-    public OperatorExecutor registerBinary(TokenType tokenType, BinaryOperator operator) {
-        binaryOperators.put(tokenType, operator);
-        return this;
-    }
-
-    /**
-     * Registers a unary operator for the given token type.
-     *
-     * @param tokenType the token type that triggers this operator
-     * @param operator  the operator implementation
-     * @return this executor for method chaining
-     */
-    public OperatorExecutor registerUnary(TokenType tokenType, UnaryOperator operator) {
-        unaryOperators.put(tokenType, operator);
-        return this;
-    }
-
-    /**
      * Registers multiple binary operators.
      *
      * @param operators map of token types to operators
@@ -88,66 +62,6 @@ public final class OperatorExecutor {
     public OperatorExecutor registerUnaryOperators(Map<TokenType, UnaryOperator> operators) {
         unaryOperators.putAll(operators);
         return this;
-    }
-
-    // ==================== Query ====================
-
-    /**
-     * Gets a binary operator by token type.
-     *
-     * @param tokenType the token type
-     * @return the operator, or empty if not registered
-     */
-    public Optional<BinaryOperator> getBinaryOperator(TokenType tokenType) {
-        return Optional.ofNullable(binaryOperators.get(tokenType));
-    }
-
-    /**
-     * Gets a unary operator by token type.
-     *
-     * @param tokenType the token type
-     * @return the operator, or empty if not registered
-     */
-    public Optional<UnaryOperator> getUnaryOperator(TokenType tokenType) {
-        return Optional.ofNullable(unaryOperators.get(tokenType));
-    }
-
-    /**
-     * Checks if a binary operator is registered for the given token type.
-     *
-     * @param tokenType the token type to check
-     * @return true if a binary operator is registered
-     */
-    public boolean hasBinaryOperator(TokenType tokenType) {
-        return binaryOperators.containsKey(tokenType);
-    }
-
-    /**
-     * Checks if a unary operator is registered for the given token type.
-     *
-     * @param tokenType the token type to check
-     * @return true if a unary operator is registered
-     */
-    public boolean hasUnaryOperator(TokenType tokenType) {
-        return unaryOperators.containsKey(tokenType);
-    }
-
-    /**
-     * Gets all registered binary operator token types.
-     *
-     * @return set of token types with registered binary operators
-     */
-    public Set<TokenType> getBinaryOperatorTypes() {
-        return Set.copyOf(binaryOperators.keySet());
-    }
-
-    /**
-     * Gets all registered unary operator token types.
-     *
-     * @return set of token types with registered unary operators
-     */
-    public Set<TokenType> getUnaryOperatorTypes() {
-        return Set.copyOf(unaryOperators.keySet());
     }
 
     // ==================== Execution ====================
@@ -226,35 +140,5 @@ public final class OperatorExecutor {
 
         OperatorContext ctx = new OperatorContext(context);
         return operator.apply(operand, ctx);
-    }
-
-    // ==================== Unregistration ====================
-
-    /**
-     * Unregisters a binary operator.
-     *
-     * @param tokenType the token type to unregister
-     * @return true if an operator was unregistered
-     */
-    public boolean unregisterBinary(TokenType tokenType) {
-        return binaryOperators.remove(tokenType) != null;
-    }
-
-    /**
-     * Unregisters a unary operator.
-     *
-     * @param tokenType the token type to unregister
-     * @return true if an operator was unregistered
-     */
-    public boolean unregisterUnary(TokenType tokenType) {
-        return unaryOperators.remove(tokenType) != null;
-    }
-
-    /**
-     * Clears all registered operators.
-     */
-    public void clear() {
-        binaryOperators.clear();
-        unaryOperators.clear();
     }
 }

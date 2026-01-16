@@ -80,7 +80,7 @@ public final class Lexer {
                  boolean implicitMultiplicationEnabled) {
         this.tokenScanner = new TokenScanner(maxIdentifierLength);
         this.identifierSplitter = new IdentifierSplitter(functionRegistry, unitRegistry, constantRegistry);
-        this.tokenClassifier = new TokenClassifier(functionRegistry, unitRegistry, keywordRegistry);
+        this.tokenClassifier = new TokenClassifier(functionRegistry, keywordRegistry);
         this.implicitMultiplicationInserter = new ImplicitMultiplicationInserter();
         this.implicitMultiplicationEnabled = implicitMultiplicationEnabled;
     }

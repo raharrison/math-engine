@@ -307,8 +307,8 @@ class LexerTest {
     void tokenizeUnits(String input) {
         List<Token> tokens = lexer.tokenize(input);
 
-        assertThat(tokens).hasSize(2); // UNIT + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.UNIT);
+        assertThat(tokens).hasSize(2);
+        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.IDENTIFIER);
         assertThat(tokens.getFirst().getLexeme()).isEqualTo(input);
     }
 
@@ -444,10 +444,10 @@ class LexerTest {
     void implicitMultiplicationNumberUnit() {
         List<Token> tokens = lexer.tokenize("100meters");
 
-        assertThat(tokens).hasSize(4); // INTEGER + MULTIPLY + UNIT + EOF
+        assertThat(tokens).hasSize(4);
         assertThat(tokens.get(0).getType()).isEqualTo(TokenType.INTEGER);
         assertThat(tokens.get(1).getType()).isEqualTo(TokenType.MULTIPLY);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.UNIT);
+        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.IDENTIFIER);
     }
 
     @Test
@@ -546,7 +546,7 @@ class LexerTest {
 
     @Test
     void unexpectedCharacterThrowsException() {
-        assertThatThrownBy(() -> lexer.tokenize("#"))
+        assertThatThrownBy(() -> lexer.tokenize("£"))
                 .isInstanceOf(LexerException.class)
                 .hasMessageContaining("Unexpected character");
     }

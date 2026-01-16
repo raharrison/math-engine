@@ -384,6 +384,18 @@ public final class PrecedenceParser {
         Node left = parseMultiplicative();
 
         while (stream.checkKeyword("in", "to", "as")) {
+            // Special case: if left is (number * identifier) and we're about to convert,
+            // replace the identifier with an explicit unit reference to force unit interpretation
+            // e.g., "50m in feet" where m is a variable → treat m as meter unit in this context
+            if (left instanceof NodeBinary binary &&
+                    binary.getOperator().getType() == TokenType.MULTIPLY &&
+                    binary.getRight() instanceof NodeVariable variable) {
+                // Replace the variable with an explicit unit reference
+                // This forces the identifier to be treated as a unit, not a variable
+                Node unitRef = new NodeUnitRef(variable.getName());
+                left = new NodeBinary(binary.getOperator(), binary.getLeft(), unitRef);
+            }
+
             stream.advance();
             // Accept both UNIT and IDENTIFIER tokens - unknown units will be caught during evaluation
             Token unitToken = expectUnitOrIdentifier();
@@ -394,15 +406,21 @@ public final class PrecedenceParser {
     }
 
     /**
-     * Expects a unit name token (UNIT or IDENTIFIER).
+     * Expects a unit name token (UNIT, IDENTIFIER, or UNIT_REF).
      * <p>
      * Allows unknown identifiers to be used as unit names, with validation
      * deferred to evaluation time. This provides better error messages and
-     * supports dynamic unit resolution.
+     * supports dynamic unit resolution. Also accepts explicit unit references (@unit).
      */
     private Token expectUnitOrIdentifier() {
-        if (stream.check(TokenType.UNIT) || stream.check(TokenType.IDENTIFIER)) {
-            return stream.advance();
+        if (stream.check(TokenType.UNIT) || stream.check(TokenType.IDENTIFIER) || stream.check(TokenType.UNIT_REF)) {
+            Token token = stream.advance();
+            // For UNIT_REF tokens, extract the unit name (remove @ prefix)
+            if (token.getType() == TokenType.UNIT_REF) {
+                String unitName = token.getLexeme().substring(1); // Remove @
+                return new Token(TokenType.UNIT, unitName, token.getLine(), token.getColumn());
+            }
+            return token;
         }
         throw stream.error(stream.peek(), "Expected unit name after conversion keyword");
     }
@@ -597,6 +615,30 @@ public final class PrecedenceParser {
         // Identifiers (variables, constants, functions)
         if (stream.match(TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.UNIT, TokenType.FUNCTION)) {
             return new NodeVariable(stream.previous().getLexeme());
+        }
+
+        // Explicit unit reference (@unit)
+        if (stream.match(TokenType.UNIT_REF)) {
+            String lexeme = stream.previous().getLexeme();
+            // Remove @ prefix to get unit name
+            String unitName = lexeme.substring(1);
+            return new NodeUnitRef(unitName);
+        }
+
+        // Explicit variable reference ($var)
+        if (stream.match(TokenType.VAR_REF)) {
+            String lexeme = stream.previous().getLexeme();
+            // Remove $ prefix to get variable name
+            String varName = lexeme.substring(1);
+            return new NodeVarRef(varName);
+        }
+
+        // Explicit constant reference (#const)
+        if (stream.match(TokenType.CONST_REF)) {
+            String lexeme = stream.previous().getLexeme();
+            // Remove # prefix to get constant name
+            String constName = lexeme.substring(1);
+            return new NodeConstRef(constName);
         }
 
         // Parenthesized expression

@@ -165,7 +165,22 @@ public final class Evaluator {
         }
 
         if (node instanceof NodeVariable variable) {
-            return variableResolver.resolve(variable, context);
+            return variableResolver.resolve(variable, context, uk.co.ryanharrison.mathengine.parser.evaluator.ResolutionContext.GENERAL);
+        }
+
+        // Explicit unit reference (@unit)
+        if (node instanceof NodeUnitRef unitRef) {
+            return variableResolver.resolveUnitRef(unitRef.getUnitName(), context);
+        }
+
+        // Explicit variable reference ($var)
+        if (node instanceof NodeVarRef varRef) {
+            return variableResolver.resolveVarRef(varRef.getVarName(), context);
+        }
+
+        // Explicit constant reference (#const)
+        if (node instanceof NodeConstRef constRef) {
+            return variableResolver.resolveConstRef(constRef.getConstName(), context);
         }
 
         if (node instanceof NodeBinary binary) {
@@ -309,7 +324,6 @@ public final class Evaluator {
      * Applies the function to each element of the vector.
      */
     private NodeConstant evaluateVectorMap(NodeVector vector, NodeFunction func) {
-        FunctionDefinition funcDef = func.getFunction();
         Node[] elements = vector.getElements();
         Node[] results = new Node[elements.length];
 

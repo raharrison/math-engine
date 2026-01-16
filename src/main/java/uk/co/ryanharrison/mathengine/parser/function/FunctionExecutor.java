@@ -6,6 +6,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationException;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
+import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 
 import java.util.*;
 
@@ -30,7 +31,7 @@ import java.util.*;
 public final class FunctionExecutor {
 
     private final Map<String, MathFunction> functions;
-    private FunctionContext.FunctionCaller functionCaller;
+    private FunctionCaller functionCaller;
 
     /**
      * Creates a new function executor with no registered functions.
@@ -45,7 +46,7 @@ public final class FunctionExecutor {
      *
      * @param caller the callback for calling user-defined functions
      */
-    public void setFunctionCaller(FunctionContext.FunctionCaller caller) {
+    public void setFunctionCaller(FunctionCaller caller) {
         this.functionCaller = caller;
     }
 
@@ -72,22 +73,6 @@ public final class FunctionExecutor {
     }
 
     /**
-     * Registers a function with an additional alias beyond those defined in the function itself.
-     * <p>
-     * This method first registers the function normally (including its built-in aliases),
-     * then adds the specified additional alias.
-     *
-     * @param function the function to register
-     * @param alias    the additional alias name
-     * @return this executor for method chaining
-     */
-    public FunctionExecutor registerWithAlias(MathFunction function, String alias) {
-        register(function);
-        functions.put(alias.toLowerCase(), function);
-        return this;
-    }
-
-    /**
      * Registers multiple functions.
      *
      * @param funcs collection of functions to register
@@ -100,30 +85,7 @@ public final class FunctionExecutor {
         return this;
     }
 
-    /**
-     * Registers multiple functions from a map (name -> function).
-     *
-     * @param funcs map of names to functions
-     * @return this executor for method chaining
-     */
-    public FunctionExecutor registerAll(Map<String, MathFunction> funcs) {
-        for (Map.Entry<String, MathFunction> entry : funcs.entrySet()) {
-            functions.put(entry.getKey().toLowerCase(), entry.getValue());
-        }
-        return this;
-    }
-
     // ==================== Query ====================
-
-    /**
-     * Gets a function by name.
-     *
-     * @param name the function name (case-insensitive)
-     * @return the function, or empty if not registered
-     */
-    public Optional<MathFunction> getFunction(String name) {
-        return Optional.ofNullable(functions.get(name.toLowerCase()));
-    }
 
     /**
      * Checks if a function is registered.
@@ -142,15 +104,6 @@ public final class FunctionExecutor {
      */
     public Set<String> getFunctionNames() {
         return Set.copyOf(functions.keySet());
-    }
-
-    /**
-     * Gets all registered functions.
-     *
-     * @return unmodifiable map of functions
-     */
-    public Map<String, MathFunction> getAllFunctions() {
-        return Collections.unmodifiableMap(functions);
     }
 
     /**
@@ -227,24 +180,5 @@ public final class FunctionExecutor {
         }
 
         return new NodeVector(results);
-    }
-
-    // ==================== Unregistration ====================
-
-    /**
-     * Unregisters a function by name.
-     *
-     * @param name the function name to unregister
-     * @return true if a function was unregistered
-     */
-    public boolean unregister(String name) {
-        return functions.remove(name.toLowerCase()) != null;
-    }
-
-    /**
-     * Clears all registered functions.
-     */
-    public void clear() {
-        functions.clear();
     }
 }
