@@ -73,6 +73,13 @@
             "notes": "Both variable and function exist, CALL uses function"
         },
         {
+            "id": "var_func_coexist_011",
+            "input": "sumrange := 10; sumrange + 5",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Variable as compound identifier with existing functions"
+        },
+        {
             "id": "builtin_shadow_001",
             "input": "min := 5; min(10, 20)",
             "expected": 10,

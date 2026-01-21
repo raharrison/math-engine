@@ -433,7 +433,7 @@ public final class TokenScanner {
         }
 
         // Don't classify here - just emit as IDENTIFIER
-        // Classification happens in Pass 2 (TokenClassifier)
+        // Classification happens in TokenProcessor
         addToken(TokenType.IDENTIFIER, text);
     }
 

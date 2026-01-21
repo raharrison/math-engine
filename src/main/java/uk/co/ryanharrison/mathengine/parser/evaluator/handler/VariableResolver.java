@@ -13,9 +13,6 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeUnit;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVariable;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Handles variable resolution with context-aware priority and explicit disambiguation support.
  * <p>
@@ -280,9 +277,10 @@ public final class VariableResolver {
     // ==================== Implicit Multiplication Support ====================
 
     /**
-     * Tries to split an identifier into multiple defined variables and multiply them.
+     * Tries to split an identifier into defined variables and multiply them.
      * <p>
-     * For example, "xy" would be split into "x" and "y" and multiplied if both are defined.
+     * For example, "xy" splits into "x" and "y" and returns x * y if both are defined.
+     * Uses recursive backtracking to find a valid split.
      *
      * @param name    the identifier to split
      * @param context the evaluation context
@@ -293,68 +291,37 @@ public final class VariableResolver {
         if (name.length() <= 1) {
             return null;
         }
-
-        List<String> parts = findValidSplit(name, context);
-        if (parts == null || parts.isEmpty()) {
-            return null;
-        }
-
-        NodeConstant result = null;
-        for (String part : parts) {
-            NodeConstant value = context.resolve(part);
-            if (result == null) {
-                result = value;
-            } else {
-                result = MultiplyOperator.INSTANCE.apply(result, value, opCtx);
-            }
-        }
-
-        return result;
+        return splitAndMultiply(name, 0, context, opCtx);
     }
 
     /**
-     * Finds a valid way to split the identifier into defined variable names.
-     * Uses a greedy approach, trying longer prefixes first.
-     *
-     * @param name    the identifier to split
-     * @param context the evaluation context
-     * @return list of variable names that form the split, or null if no valid split exists
+     * Recursively finds a valid split starting at position 'start' and computes the product.
+     * Returns null if no valid split exists from the given position.
      */
-    private List<String> findValidSplit(String name, EvaluationContext context) {
-        if (name.isEmpty()) {
-            return new ArrayList<>();
+    private NodeConstant splitAndMultiply(String name, int start, EvaluationContext context, OperatorContext opCtx) {
+        if (start == name.length()) {
+            return null; // Empty suffix - caller will handle
         }
 
-        for (int i = 1; i <= name.length(); i++) {
-            String prefix = name.substring(0, i);
-            String suffix = name.substring(i);
+        for (int end = start + 1; end <= name.length(); end++) {
+            String part = name.substring(start, end);
 
-            if (context.isDefined(prefix)) {
-                if (suffix.isEmpty()) {
-                    List<String> result = new ArrayList<>();
-                    result.add(prefix);
-                    return result;
+            if (context.isDefined(part)) {
+                NodeConstant partValue = context.resolve(part);
+
+                if (end == name.length()) {
+                    // Last part - return its value
+                    return partValue;
                 }
 
-                List<String> suffixSplit = findValidSplit(suffix, context);
-                if (suffixSplit != null) {
-                    List<String> result = new ArrayList<>();
-                    result.add(prefix);
-                    result.addAll(suffixSplit);
-                    return result;
+                // Try to split the remainder
+                NodeConstant restValue = splitAndMultiply(name, end, context, opCtx);
+                if (restValue != null) {
+                    return MultiplyOperator.INSTANCE.apply(partValue, restValue, opCtx);
                 }
             }
         }
 
         return null;
-    }
-
-    /**
-     * Checks if implicit multiplication is enabled in the current configuration.
-     *
-     * @return true if implicit multiplication is enabled
-     */
-    public boolean isImplicitMultiplicationEnabled() {
-        return config.implicitMultiplication();
     }
 }
