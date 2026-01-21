@@ -76,8 +76,8 @@ public final class ComprehensionHandler {
             throw new EvaluationException("List comprehensions are disabled in current configuration");
         }
 
-        List<Node> results = new ArrayList<>();
-        Map<String, NodeConstant> bindings = new HashMap<>();
+        var results = new ArrayList<Node>();
+        var bindings = new HashMap<String, NodeConstant>();
 
         // Use recursive helper to handle nested iterations
         evaluateIterators(node, context, bindings, 0, results);
@@ -149,7 +149,7 @@ public final class ComprehensionHandler {
         // Iterate over items and recurse to next iterator
         for (NodeConstant item : items) {
             // Create new bindings map with current variable
-            Map<String, NodeConstant> newBindings = new HashMap<>(bindings);
+            var newBindings = new HashMap<>(bindings);
             newBindings.put(iterator.getVariable(), item);
 
             // Recurse to next iterator
@@ -167,7 +167,7 @@ public final class ComprehensionHandler {
     private Iterable<NodeConstant> toIterable(NodeConstant value) {
         if (value instanceof NodeVector vector) {
             Node[] elements = vector.getElements();
-            List<NodeConstant> evaluatedElements = new ArrayList<>();
+            var evaluatedElements = new ArrayList<NodeConstant>();
             for (Node element : elements) {
                 evaluatedElements.add(evaluator.apply(element));
             }

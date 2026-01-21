@@ -149,7 +149,7 @@ public final class ResultFormatter {
      */
     private static String formatVector(NodeVector vector, int decimalPlaces) {
         Node[] elements = vector.getElements();
-        StringBuilder sb = new StringBuilder("{");
+        var sb = new StringBuilder("{");
 
         for (int i = 0; i < elements.length; i++) {
             if (i > 0) {
@@ -171,7 +171,7 @@ public final class ResultFormatter {
      */
     private static String formatMatrix(NodeMatrix matrix, int decimalPlaces) {
         Node[][] elements = matrix.getElements();
-        StringBuilder sb = new StringBuilder("[");
+        var sb = new StringBuilder("[");
 
         for (int i = 0; i < elements.length; i++) {
             if (i > 0) {

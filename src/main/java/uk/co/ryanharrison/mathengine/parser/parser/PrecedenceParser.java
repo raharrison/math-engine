@@ -202,7 +202,7 @@ public final class PrecedenceParser {
      * Parses a parameter list for function definitions.
      */
     private List<String> parseParamList() {
-        List<String> params = new ArrayList<>();
+        var params = new ArrayList<String>();
 
         if (!stream.check(TokenType.RPAREN)) {
             do {
@@ -243,7 +243,7 @@ public final class PrecedenceParser {
             Token param = stream.advance();
 
             if (stream.match(TokenType.LAMBDA)) {
-                List<String> params = new ArrayList<>();
+                var params = new ArrayList<String>();
                 params.add(param.lexeme());
                 Node body = parseExpression();
                 return new NodeLambda(params, body);
@@ -392,7 +392,7 @@ public final class PrecedenceParser {
                     binary.getRight() instanceof NodeVariable variable) {
                 // Replace the variable with an explicit unit reference
                 // This forces the identifier to be treated as a unit, not a variable
-                Node unitRef = new NodeUnitRef(variable.getName());
+                var unitRef = new NodeUnitRef(variable.getName());
                 left = new NodeBinary(binary.getOperator(), binary.getLeft(), unitRef);
             }
 
@@ -548,7 +548,7 @@ public final class PrecedenceParser {
      * Parses function arguments.
      */
     private List<Node> parseArguments() {
-        List<Node> args = new ArrayList<>();
+        var args = new ArrayList<Node>();
 
         if (!stream.check(TokenType.RPAREN)) {
             do {
@@ -684,11 +684,11 @@ public final class PrecedenceParser {
 
                 if (denominator == 0) {
                     // Lazy evaluation for division by zero
-                    Node left = forceDoubleArithmetic ?
+                    var left = forceDoubleArithmetic ?
                             new NodeDouble(numerator) : new NodeRational(numerator);
-                    Node right = forceDoubleArithmetic ?
+                    var right = forceDoubleArithmetic ?
                             new NodeDouble(0) : new NodeRational(0);
-                    Token divideToken = new Token(TokenType.DIVIDE, "/", null, token.line(), token.column());
+                    var divideToken = new Token(TokenType.DIVIDE, "/", null, token.line(), token.column());
                     return new NodeBinary(divideToken, left, right);
                 }
 
@@ -726,7 +726,7 @@ public final class PrecedenceParser {
 
             // Check for statement sequence
             if (stream.match(TokenType.SEMICOLON)) {
-                List<Node> statements = new ArrayList<>();
+                var statements = new ArrayList<Node>();
                 statements.add(firstExpr);
 
                 while (!stream.check(TokenType.RPAREN) && !stream.isAtEnd()) {
@@ -797,7 +797,7 @@ public final class PrecedenceParser {
      * Note: Opening paren already consumed by caller
      */
     private Node parseParenthesizedLambda() {
-        List<String> params = new ArrayList<>();
+        var params = new ArrayList<String>();
 
         Token firstParam = expectParameterName();
         params.add(firstParam.lexeme());

@@ -31,7 +31,7 @@ public class StackOverflowException extends EvaluationException {
 
     @Override
     public String formatMessage() {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.append(getMessage());
         if (trace != null) {
             sb.append("\n\n").append(trace);

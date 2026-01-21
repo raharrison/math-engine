@@ -93,7 +93,7 @@ public final class NodeComprehension extends NodeExpression {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.append("{").append(expression);
         for (Iterator iter : iterators) {
             sb.append(" for ").append(iter);

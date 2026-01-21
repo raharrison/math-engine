@@ -5,8 +5,18 @@ package uk.co.ryanharrison.mathengine.parser.parser.nodes;
  * <p>
  * NodeConstant instances are the final results of evaluation and don't require
  * further computation. They include numbers, booleans, strings, vectors, matrices, etc.
+ * <p>
+ * Sealed to enable exhaustiveness checking in pattern matching.
  */
-public abstract class NodeConstant extends Node {
+public abstract sealed class NodeConstant extends Node permits
+        NodeNumber,
+        NodeString,
+        NodeVector,
+        NodeMatrix,
+        NodeUnit,
+        NodeRange,
+        NodeLambda,
+        NodeFunction {
 
     /**
      * Convert this constant to a double value for numeric operations.

@@ -99,7 +99,7 @@ public class LexerException extends MathEngineException {
 
     @Override
     public String formatMessage() {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         // Main error message with position
         if (token != null) {
@@ -133,7 +133,7 @@ public class LexerException extends MathEngineException {
             return "";
         }
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         String sourceLine = lines[line - 1];
 
         // Show the line with error

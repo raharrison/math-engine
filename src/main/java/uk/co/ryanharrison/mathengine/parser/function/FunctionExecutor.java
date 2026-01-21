@@ -138,7 +138,7 @@ public final class FunctionExecutor {
         }
 
         // Execute the function
-        FunctionContext ctx = new FunctionContext(context, functionCaller);
+        var ctx = new FunctionContext(context, functionCaller);
         return function.apply(args, ctx);
     }
 
@@ -161,7 +161,7 @@ public final class FunctionExecutor {
      */
     private NodeConstant applyToVector(MathFunction function, NodeVector vector,
                                        EvaluationContext context, FunctionCaller functionCaller) {
-        FunctionContext ctx = new FunctionContext(context, functionCaller);
+        var ctx = new FunctionContext(context, functionCaller);
         Node[] elements = vector.getElements();
         Node[] results = new Node[elements.length];
 

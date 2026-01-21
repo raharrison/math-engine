@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.registry;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,10 +175,10 @@ public final class UnitRegistry {
      * Since units are stored by all their names (singular, plural, aliases),
      * this returns a distinct set based on the singular name.
      */
-    public java.util.Collection<UnitDefinition> getAllUnits() {
+    public Collection<UnitDefinition> getAllUnits() {
         // Units map contains the same UnitDefinition under multiple keys (singular, plural, aliases)
         // So we need to deduplicate based on singular name
-        Map<String, UnitDefinition> uniqueUnits = new java.util.LinkedHashMap<>();
+        var uniqueUnits = new java.util.LinkedHashMap<String, UnitDefinition>();
         for (UnitDefinition unit : units.values()) {
             uniqueUnits.putIfAbsent(unit.singularName(), unit);
         }

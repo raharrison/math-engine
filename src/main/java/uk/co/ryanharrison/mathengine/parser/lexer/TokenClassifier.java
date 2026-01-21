@@ -57,7 +57,7 @@ public final class TokenClassifier {
      * @return tokens with identifiers classified
      */
     public List<Token> classify(List<Token> tokens) {
-        List<Token> classified = new ArrayList<>();
+        var classified = new ArrayList<Token>();
 
         for (Token token : tokens) {
             if (token.type() == TokenType.IDENTIFIER) {

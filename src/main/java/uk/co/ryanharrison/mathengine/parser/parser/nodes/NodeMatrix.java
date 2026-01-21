@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public final class NodeMatrix extends NodeConstant {
 
     public Node[][] getElements() {
         // Deep clone for return
-        Node[][] copy = new Node[elements.length][];
+        var copy = new Node[elements.length][];
         for (int i = 0; i < elements.length; i++) {
             copy[i] = elements[i].clone();
         }
@@ -51,10 +52,10 @@ public final class NodeMatrix extends NodeConstant {
     /**
      * Get rows as a list of lists (useful for testing and iteration).
      */
-    public java.util.List<java.util.List<Node>> getRowsList() {
-        java.util.List<java.util.List<Node>> rows = new java.util.ArrayList<>();
+    public List<List<Node>> getRowsList() {
+        var rows = new ArrayList<List<Node>>();
         for (Node[] row : elements) {
-            rows.add(java.util.Arrays.asList(row));
+            rows.add(Arrays.asList(row));
         }
         return rows;
     }
@@ -76,7 +77,7 @@ public final class NodeMatrix extends NodeConstant {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("[");
+        var sb = new StringBuilder("[");
         for (int i = 0; i < elements.length; i++) {
             if (i > 0) sb.append(", ");
             sb.append("[");

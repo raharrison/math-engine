@@ -59,7 +59,7 @@ public final class IdentifierSplitter {
      * @return tokens with compound identifiers split
      */
     public List<Token> split(List<Token> tokens) {
-        List<Token> result = new ArrayList<>();
+        var result = new ArrayList<Token>();
 
         for (Token token : tokens) {
             if (token.type() == TokenType.IDENTIFIER) {
@@ -157,7 +157,7 @@ public final class IdentifierSplitter {
         String digits = text.substring(digitStart, digitEnd);
         String suffix = text.substring(digitEnd);
 
-        List<Token> result = new ArrayList<>();
+        var result = new ArrayList<Token>();
 
         // Add prefix as identifier
         result.add(new Token(TokenType.IDENTIFIER, prefix, line, col));
@@ -168,7 +168,7 @@ public final class IdentifierSplitter {
 
         // If there's a suffix, recursively process it
         if (!suffix.isEmpty()) {
-            Token suffixToken = new Token(TokenType.IDENTIFIER, suffix, line, col + digitEnd);
+            var suffixToken = new Token(TokenType.IDENTIFIER, suffix, line, col + digitEnd);
             List<Token> suffixTokens = trySplitIdentifier(suffixToken);
             result.addAll(suffixTokens);
         }
@@ -218,7 +218,7 @@ public final class IdentifierSplitter {
                 // Only split if prefix is a known identifier or single character
                 // This prevents "sumrange" from splitting while allowing "xsin" or "pilog"
                 if (isKnownIdentifier(prefix) || prefix.length() == 1) {
-                    List<Token> result = new ArrayList<>();
+                    var result = new ArrayList<Token>();
                     result.add(new Token(TokenType.IDENTIFIER, prefix, line, col));
                     result.add(new Token(TokenType.IDENTIFIER, suffix, line, col + i));
                     return result;

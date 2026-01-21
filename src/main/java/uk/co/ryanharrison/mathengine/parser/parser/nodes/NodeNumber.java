@@ -3,8 +3,14 @@ package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 /**
  * Abstract base class for all numeric node types.
  * Numeric nodes can be converted to double values and support arithmetic operations.
+ * <p>
+ * Sealed to enable exhaustiveness checking in pattern matching.
  */
-public abstract class NodeNumber extends NodeConstant {
+public abstract sealed class NodeNumber extends NodeConstant permits
+        NodeDouble,
+        NodeRational,
+        NodePercent,
+        NodeBoolean {
 
     @Override
     public boolean isNumeric() {

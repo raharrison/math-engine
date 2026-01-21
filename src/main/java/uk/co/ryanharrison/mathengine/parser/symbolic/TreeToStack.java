@@ -23,83 +23,70 @@ public final class TreeToStack {
      * @return a stack of expression items in postfix order
      */
     public static Deque<ExpressionItem> treeToStack(Node tree) {
-        Deque<ExpressionItem> stack = new ArrayDeque<>();
+        var stack = new ArrayDeque<ExpressionItem>();
         convert(tree, stack);
         return stack;
     }
 
     private static void convert(Node tree, Deque<ExpressionItem> stack) {
-        // Handle numeric constants
-        if (tree instanceof NodeDouble || tree instanceof NodeRational) {
-            stack.add(new ExpressionItem(tree.toString()));
-        }
-        // Handle variables and constants
-        else if (tree instanceof NodeVariable var) {
-            stack.add(new ExpressionItem(var.getName()));
-        }
-        // Handle binary operators
-        else if (tree instanceof NodeBinary binary) {
-            String treeStr = tree.toString();
-            TokenType opType = binary.getOperator().type();
+        switch (tree) {
+            // Handle numeric constants
+            case NodeDouble _, NodeRational _ -> stack.add(new ExpressionItem(tree.toString()));
 
-            // Map token type to operator character
-            char op = mapTokenToOperator(opType);
+            // Handle variables
+            case NodeVariable var -> stack.add(new ExpressionItem(var.getName()));
 
-            // Stack format: operator first, then operands (for processing with getFirst/pop)
-            stack.add(ExpressionItem.operator(treeStr, op));
-            convert(binary.getLeft(), stack);
-            convert(binary.getRight(), stack);
-        }
-        // Handle unary operators (negation)
-        else if (tree instanceof NodeUnary unary) {
-            TokenType opType = unary.getOperator().type();
-
-            if (opType.equals(TokenType.MINUS)) {
-                // Handle as multiplication by -1
-                stack.add(ExpressionItem.operator(tree.toString(), '*'));
-                stack.add(new ExpressionItem("-1"));
-                convert(unary.getOperand(), stack);
-            } else {
-                throw new UnsupportedOperationException(
-                        "Unsupported unary operator: " + opType.getName());
-            }
-        }
-        // Handle function calls (sin, cos, sqrt, etc.)
-        else if (tree instanceof NodeCall call) {
-            // Extract function name from the function node (should be a NodeVariable)
-            Node funcNode = call.getFunction();
-            if (!(funcNode instanceof NodeVariable funcVar)) {
-                throw new UnsupportedOperationException(
-                        "Symbolic computation only supports simple function names");
+            // Handle binary operators
+            case NodeBinary binary -> {
+                char op = mapTokenToOperator(binary.getOperator().type());
+                stack.add(ExpressionItem.operator(tree.toString(), op));
+                convert(binary.getLeft(), stack);
+                convert(binary.getRight(), stack);
             }
 
-            // Only single-argument functions are supported
-            if (call.getArguments().size() != 1) {
-                throw new UnsupportedOperationException(
-                        "Symbolic computation only supports single-argument functions");
+            // Handle unary operators (negation)
+            case NodeUnary unary -> {
+                TokenType opType = unary.getOperator().type();
+                if (opType.equals(TokenType.MINUS)) {
+                    // Handle as multiplication by -1
+                    stack.add(ExpressionItem.operator(tree.toString(), '*'));
+                    stack.add(new ExpressionItem("-1"));
+                    convert(unary.getOperand(), stack);
+                } else {
+                    throw new UnsupportedOperationException(
+                            "Unsupported unary operator: " + opType.getName());
+                }
             }
 
-            stack.add(ExpressionItem.function(tree.toString(), funcVar.getName()));
-        } else {
-            throw new UnsupportedOperationException("Unsupported node: "
-                    + tree.getClass().getCanonicalName());
+            // Handle function calls (sin, cos, sqrt, etc.)
+            case NodeCall call -> {
+                Node funcNode = call.getFunction();
+                if (!(funcNode instanceof NodeVariable funcVar)) {
+                    throw new UnsupportedOperationException(
+                            "Symbolic computation only supports simple function names");
+                }
+                if (call.getArguments().size() != 1) {
+                    throw new UnsupportedOperationException(
+                            "Symbolic computation only supports single-argument functions");
+                }
+                stack.add(ExpressionItem.function(tree.toString(), funcVar.getName()));
+            }
+
+            default -> throw new UnsupportedOperationException(
+                    "Unsupported node: " + tree.getClass().getCanonicalName());
         }
     }
 
-    private static char mapTokenToOperator(TokenType opType) {
-        if (opType.equals(TokenType.PLUS)) {
-            return '+';
-        } else if (opType.equals(TokenType.MINUS)) {
-            return '-';
-        } else if (opType.equals(TokenType.MULTIPLY)) {
-            return '*';
-        } else if (opType.equals(TokenType.DIVIDE)) {
-            return '/';
-        } else if (opType.equals(TokenType.POWER)) {
-            return '^';
-        } else {
-            throw new UnsupportedOperationException(
-                    "Unsupported binary operator: " + opType.getName());
-        }
+    private static char mapTokenToOperator(TokenType type) {
+        return switch (type) {
+            case TokenType.PLUS -> '+';
+            case TokenType.MINUS -> '-';
+            case TokenType.MULTIPLY -> '*';
+            case TokenType.DIVIDE -> '/';
+            case TokenType.POWER -> '^';
+            default -> throw new UnsupportedOperationException(
+                    "Unsupported binary operator: " + type.getName()
+            );
+        };
     }
 }

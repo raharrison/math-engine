@@ -20,7 +20,6 @@ public final class NodePercent extends NodeNumber {
      * Create a percent node from an already-converted decimal value.
      */
     public static NodePercent fromDecimal(double decimalValue) {
-        NodePercent percent = new NodePercent(0);
         return new NodePercent(decimalValue * 100);
     }
 

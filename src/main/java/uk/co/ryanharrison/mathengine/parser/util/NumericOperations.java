@@ -424,19 +424,13 @@ public final class NumericOperations {
      * Converts a node to a double value, extracting from any wrapper type.
      */
     public static double toDoubleValue(NodeConstant node) {
-        if (node instanceof NodeUnit unit) {
-            return unit.getValue();
-        }
-        if (node instanceof NodePercent pct) {
-            return pct.getValue();
-        }
-        if (node instanceof NodeNumber num) {
-            return num.doubleValue();
-        }
-        if (node instanceof NodeBoolean bool) {
-            return bool.getValue() ? 1.0 : 0.0;
-        }
-        throw new TypeError("Cannot convert to number: " + node.getClass().getSimpleName());
+        return switch (node) {
+            case NodeUnit unit -> unit.getValue();
+            case NodePercent pct -> pct.getValue();
+            case NodeBoolean bool -> bool.getValue() ? 1.0 : 0.0;
+            case NodeNumber num -> num.doubleValue();
+            default -> throw new TypeError("Cannot convert to number: " + node.getClass().getSimpleName());
+        };
     }
 
     // ==================== Comparison Operations ====================

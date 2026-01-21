@@ -1,122 +1,113 @@
 package uk.co.ryanharrison.mathengine.parser.lexer;
 
 /**
- * Represents the type of a token in the lexer.
- * <p>
- * This class uses a flexible design to allow for dynamic operator registration.
- * Instead of a fixed enum, token types are represented as constants that can be extended.
+ * Represents the type of token in the lexer.
  */
-public final class TokenType {
+public enum TokenType {
+
+    // Structural tokens
+    LPAREN("LPAREN", "'('"),
+    RPAREN("RPAREN", "')'"),
+    LBRACE("LBRACE", "'{'"),
+    RBRACE("RBRACE", "'}'"),
+    LBRACKET("LBRACKET", "'['"),
+    RBRACKET("RBRACKET", "']'"),
+    COMMA("COMMA", "','"),
+    SEMICOLON("SEMICOLON", "';'"),
+    COLON("COLON", "':'"),
+
+    // Literals
+    INTEGER("INTEGER", "number"),
+    DECIMAL("DECIMAL", "number"),
+    SCIENTIFIC("SCIENTIFIC", "number"),
+    RATIONAL("RATIONAL", "number"),
+    STRING("STRING", "string"),
+
+    // Operators - with precedence (lower number = higher precedence)
+    // Level 6: Power
+    POWER("POWER", "'^'"),
+
+    // Level 7: Multiplicative
+    MULTIPLY("MULTIPLY", "'*'"),
+    DIVIDE("DIVIDE", "'/'"),
+    AT("AT", "'@'"),
+    MOD("MOD", "'%'"),
+    OF("OF", "of"),
+
+    // Level 8: Additive
+    PLUS("PLUS", "'+'"),
+    MINUS("MINUS", "'-'"),
+
+    // Level 9: Range
+    RANGE("RANGE", "'..'"),
+
+    // Level 10: Relational
+    LT("LT", "'<'"),
+    GT("GT", "'>'"),
+    LTE("LTE", "'<='"),
+    GTE("GTE", "'>='"),
+
+    // Level 11: Equality
+    EQ("EQ", "'=='"),
+    NEQ("NEQ", "'!='"),
+
+    // Level 12: Logical AND
+    AND("AND", "and"),
+
+    // Level 13: Logical XOR
+    XOR("XOR", "xor"),
+
+    // Level 14: Logical OR
+    OR("OR", "or"),
+
+    // Level 15: Assignment
+    ASSIGN("ASSIGN", "':='"),
+
+    // Level 16: Lambda
+    LAMBDA("LAMBDA", "'->'"),
+
+    // Unary operators (no precedence - handled differently)
+    NOT("NOT", "not"),
+    FACTORIAL("FACTORIAL", "'!'"),
+    DOUBLE_FACTORIAL("DOUBLE_FACTORIAL", "'!!'"),
+    PERCENT("PERCENT", "'%'"),
+
+    // Special
+    IDENTIFIER("IDENTIFIER", "identifier"),
+    KEYWORD("KEYWORD", "keyword"),
+    UNIT("UNIT", "unit"),
+    FUNCTION("FUNCTION", "function"),
+    EOF("EOF", "end of expression"),
+    NEWLINE("NEWLINE", "newline"),
+
+    // Explicit unit reference: @fahrenheit
+    UNIT_REF("UNIT_REF", "unit reference"),
+
+    // Explicit variable reference: $x
+    VAR_REF("VAR_REF", "variable reference"),
+
+    // Explicit constant reference: #pi
+    CONST_REF("CONST_REF", "constant reference");
 
     private final String name;
+    private final String display;
 
-    private TokenType(String name) {
+    TokenType(String name, String display) {
         this.name = name;
+        this.display = display;
     }
 
     public String getName() {
         return name;
     }
 
+    public String getDisplay() {
+        return display;
+    }
+
     @Override
     public String toString() {
         return name;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        TokenType other = (TokenType) obj;
-        return name.equals(other.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-
-    // Structural tokens
-    public static final TokenType LPAREN = new TokenType("LPAREN");
-    public static final TokenType RPAREN = new TokenType("RPAREN");
-    public static final TokenType LBRACE = new TokenType("LBRACE");
-    public static final TokenType RBRACE = new TokenType("RBRACE");
-    public static final TokenType LBRACKET = new TokenType("LBRACKET");
-    public static final TokenType RBRACKET = new TokenType("RBRACKET");
-    public static final TokenType COMMA = new TokenType("COMMA");
-    public static final TokenType SEMICOLON = new TokenType("SEMICOLON");
-    public static final TokenType COLON = new TokenType("COLON");
-
-    // Literals
-    public static final TokenType INTEGER = new TokenType("INTEGER");
-    public static final TokenType DECIMAL = new TokenType("DECIMAL");
-    public static final TokenType SCIENTIFIC = new TokenType("SCIENTIFIC");
-    public static final TokenType RATIONAL = new TokenType("RATIONAL");
-    public static final TokenType STRING = new TokenType("STRING");
-
-    // Operators - with precedence (lower number = higher precedence)
-    // Level 6: Power
-    public static final TokenType POWER = new TokenType("POWER");
-
-    // Level 7: Multiplicative
-    public static final TokenType MULTIPLY = new TokenType("MULTIPLY");
-    public static final TokenType DIVIDE = new TokenType("DIVIDE");
-    public static final TokenType AT = new TokenType("AT");
-    public static final TokenType MOD = new TokenType("MOD");
-    public static final TokenType OF = new TokenType("OF");
-
-    // Level 8: Additive
-    public static final TokenType PLUS = new TokenType("PLUS");
-    public static final TokenType MINUS = new TokenType("MINUS");
-
-    // Level 9: Range
-    public static final TokenType RANGE = new TokenType("RANGE");
-
-    // Level 10: Relational
-    public static final TokenType LT = new TokenType("LT");
-    public static final TokenType GT = new TokenType("GT");
-    public static final TokenType LTE = new TokenType("LTE");
-    public static final TokenType GTE = new TokenType("GTE");
-
-    // Level 11: Equality
-    public static final TokenType EQ = new TokenType("EQ");
-    public static final TokenType NEQ = new TokenType("NEQ");
-
-    // Level 12: Logical AND
-    public static final TokenType AND = new TokenType("AND");
-
-    // Level 13: Logical XOR
-    public static final TokenType XOR = new TokenType("XOR");
-
-    // Level 14: Logical OR
-    public static final TokenType OR = new TokenType("OR");
-
-    // Level 15: Assignment
-    public static final TokenType ASSIGN = new TokenType("ASSIGN");
-
-    // Level 16: Lambda
-    public static final TokenType LAMBDA = new TokenType("LAMBDA");
-
-    // Unary operators (no precedence - handled differently)
-    public static final TokenType NOT = new TokenType("NOT");
-    public static final TokenType FACTORIAL = new TokenType("FACTORIAL");
-    public static final TokenType DOUBLE_FACTORIAL = new TokenType("DOUBLE_FACTORIAL");
-    public static final TokenType PERCENT = new TokenType("PERCENT");
-
-    // Special
-    public static final TokenType IDENTIFIER = new TokenType("IDENTIFIER");
-    public static final TokenType KEYWORD = new TokenType("KEYWORD");
-    public static final TokenType UNIT = new TokenType("UNIT");
-    public static final TokenType FUNCTION = new TokenType("FUNCTION");
-    public static final TokenType EOF = new TokenType("EOF");
-    public static final TokenType NEWLINE = new TokenType("NEWLINE");
-
-    // Explicit unit reference: @fahrenheit
-    public static final TokenType UNIT_REF = new TokenType("UNIT_REF");
-
-    // Explicit variable reference: $x
-    public static final TokenType VAR_REF = new TokenType("VAR_REF");
-
-    // Explicit constant reference: #pi
-    public static final TokenType CONST_REF = new TokenType("CONST_REF");
 }
+

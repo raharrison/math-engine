@@ -382,7 +382,7 @@ public final class TokenScanner {
      * Scans a string literal with escape sequence support.
      */
     private void scanString(char quote) {
-        StringBuilder value = new StringBuilder();
+        var value = new StringBuilder();
 
         while (!scanner.isAtEnd() && scanner.peek() != quote) {
             if (CharacterScanner.isNewline(scanner.peek())) {

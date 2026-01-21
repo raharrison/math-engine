@@ -78,7 +78,7 @@ public final class AtOperator implements BinaryOperator {
      */
     private NodeConstant vectorMap(NodeVector vector, NodeFunction func, OperatorContext ctx) {
         Node[] elements = vector.getElements();
-        Node[] results = new Node[elements.length];
+        var results = new Node[elements.length];
 
         for (int i = 0; i < elements.length; i++) {
             NodeConstant element = (NodeConstant) elements[i];

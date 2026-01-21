@@ -100,7 +100,7 @@ public class ParseException extends MathEngineException {
 
     @Override
     public String formatMessage() {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         // Main error message
         if (token != null) {
@@ -147,7 +147,7 @@ public class ParseException extends MathEngineException {
             return "";
         }
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         String sourceLine = lines[line - 1];
 
         // Show the line with error
@@ -166,37 +166,7 @@ public class ParseException extends MathEngineException {
      * Formats a token type for human-readable output.
      */
     private String formatTokenType(TokenType type) {
-        if (type == null) return "unknown";
-
-        return switch (type.getName()) {
-            case "LPAREN" -> "'('";
-            case "RPAREN" -> "')'";
-            case "LBRACE" -> "'{'";
-            case "RBRACE" -> "'}'";
-            case "LBRACKET" -> "'['";
-            case "RBRACKET" -> "']'";
-            case "COMMA" -> "','";
-            case "SEMICOLON" -> "';'";
-            case "COLON" -> "':'";
-            case "PLUS" -> "'+'";
-            case "MINUS" -> "'-'";
-            case "MULTIPLY" -> "'*'";
-            case "DIVIDE" -> "'/'";
-            case "POWER" -> "'^'";
-            case "ASSIGN" -> "':='";
-            case "EQ" -> "'=='";
-            case "NEQ" -> "'!='";
-            case "LT" -> "'<'";
-            case "GT" -> "'>'";
-            case "LTE" -> "'<='";
-            case "GTE" -> "'>='";
-            case "EOF" -> "end of expression";
-            case "INTEGER", "DECIMAL", "SCIENTIFIC" -> "number";
-            case "IDENTIFIER" -> "identifier";
-            case "FUNCTION" -> "function";
-            case "KEYWORD" -> "keyword";
-            default -> type.getName().toLowerCase();
-        };
+        return type == null ? "unknown" : type.getDisplay();
     }
 
     /**

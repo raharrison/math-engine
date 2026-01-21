@@ -49,21 +49,21 @@ public final class SubscriptHandler {
     public NodeConstant evaluate(NodeSubscript subscript) {
         NodeConstant target = evaluator.apply(subscript.getTarget());
 
-        if (target instanceof NodeVector vector) {
-            if (!config.vectorsEnabled()) {
-                throw new EvaluationException("Vectors are disabled in current configuration");
+        return switch (target) {
+            case NodeVector vector -> {
+                if (!config.vectorsEnabled()) {
+                    throw new EvaluationException("Vectors are disabled in current configuration");
+                }
+                yield evaluateVectorSubscript(vector, subscript.getIndices());
             }
-            return evaluateVectorSubscript(vector, subscript.getIndices());
-        }
-
-        if (target instanceof NodeMatrix matrix) {
-            if (!config.matricesEnabled()) {
-                throw new EvaluationException("Matrices are disabled in current configuration");
+            case NodeMatrix matrix -> {
+                if (!config.matricesEnabled()) {
+                    throw new EvaluationException("Matrices are disabled in current configuration");
+                }
+                yield evaluateMatrixSubscript(matrix, subscript.getIndices());
             }
-            return evaluateMatrixSubscript(matrix, subscript.getIndices());
-        }
-
-        throw new TypeError("Cannot subscript " + TypeCoercion.typeName(target));
+            default -> throw new TypeError("Cannot subscript " + TypeCoercion.typeName(target));
+        };
     }
 
     /**

@@ -68,7 +68,7 @@ public final class Parser {
 
         // Use a holder to break the circular initialization dependency
         // The supplier captures 'this' which is safe because it's only called after construction
-        CollectionParser collectionParser = new CollectionParser(stream, this::parseExpressionInternal);
+        var collectionParser = new CollectionParser(stream, this::parseExpressionInternal);
 
         // Create precedence parser with max expression depth and arithmetic mode
         this.precedenceParser = new PrecedenceParser(stream, collectionParser, maxExpressionDepth, forceDoubleArithmetic);
@@ -95,7 +95,7 @@ public final class Parser {
             throw stream.error(stream.peek(), "Empty expression");
         }
 
-        List<Node> statements = new ArrayList<>();
+        var statements = new ArrayList<Node>();
 
         // Parse first statement
         statements.add(precedenceParser.parseExpression());

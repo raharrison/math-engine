@@ -72,7 +72,7 @@ public final class StandardFunctions {
      * @return unmodifiable list of all functions
      */
     public static List<MathFunction> all() {
-        List<MathFunction> functions = new ArrayList<>();
+        var functions = new ArrayList<MathFunction>();
 
         // Trigonometric and hyperbolic
         functions.addAll(TrigonometricFunctions.all());
@@ -122,7 +122,7 @@ public final class StandardFunctions {
      * @return map of function name to function
      */
     public static Map<String, MathFunction> asMap() {
-        Map<String, MathFunction> map = new HashMap<>();
+        var map = new HashMap<String, MathFunction>();
         for (MathFunction func : all()) {
             map.put(func.name().toLowerCase(), func);
         }
@@ -149,7 +149,7 @@ public final class StandardFunctions {
      * @return unmodifiable list of basic math functions
      */
     public static List<MathFunction> basic() {
-        List<MathFunction> functions = new ArrayList<>();
+        var functions = new ArrayList<MathFunction>();
         functions.addAll(TrigonometricFunctions.all());
         functions.addAll(HyperbolicFunctions.all());
         functions.addAll(ExponentialFunctions.all());
@@ -262,7 +262,7 @@ public final class StandardFunctions {
      * Gets function names as a set for quick lookup.
      */
     public static Set<String> names() {
-        Set<String> names = new HashSet<>();
+        var names = new HashSet<String>();
         for (MathFunction func : all()) {
             names.add(func.name().toLowerCase());
         }

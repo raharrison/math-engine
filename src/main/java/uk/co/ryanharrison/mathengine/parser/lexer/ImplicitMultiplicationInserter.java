@@ -97,7 +97,7 @@ public final class ImplicitMultiplicationInserter {
      * @return tokens with implicit multiplication inserted
      */
     public List<Token> insert(List<Token> tokens) {
-        List<Token> result = new ArrayList<>();
+        var result = new ArrayList<Token>();
 
         for (int i = 0; i < tokens.size(); i++) {
             Token current = tokens.get(i);
@@ -107,7 +107,7 @@ public final class ImplicitMultiplicationInserter {
 
             if (next != null && shouldInsertMultiply(current, next)) {
                 // Create virtual multiply token at current position
-                Token multiplyToken = new Token(
+                var multiplyToken = new Token(
                         TokenType.MULTIPLY, "*",
                         current.line(), current.column()
                 );

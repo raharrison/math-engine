@@ -56,7 +56,7 @@ public final class NodeVector extends NodeConstant {
             return;
         }
 
-        Node[] newElements = new Node[newSize];
+        var newElements = new Node[newSize];
         System.arraycopy(elements, 0, newElements, 0, elements.length);
 
         // Fill remaining with zero
@@ -71,7 +71,7 @@ public final class NodeVector extends NodeConstant {
      * Convert to a list for iteration.
      */
     public List<NodeConstant> toList() {
-        List<NodeConstant> list = new ArrayList<>(elements.length);
+        var list = new ArrayList<NodeConstant>(elements.length);
         for (Node element : elements) {
             if (element instanceof NodeConstant) {
                 list.add((NodeConstant) element);

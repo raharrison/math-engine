@@ -114,17 +114,12 @@ public final class TypeCoercion {
      * @throws TypeError if the value cannot be converted
      */
     public static NodeNumber toNumber(NodeConstant value) {
-        if (value instanceof NodeBoolean bool) {
-            return new NodeRational(bool.getValue() ? 1 : 0);
-        }
-        // Units are stripped to just their numeric value
-        if (value instanceof NodeUnit unit) {
-            return new NodeDouble(unit.getValue());
-        }
-        if (value instanceof NodeNumber num) {
-            return num;
-        }
-        throw new TypeError("Cannot convert " + typeName(value) + " to number");
+        return switch (value) {
+            case NodeBoolean bool -> new NodeRational(bool.getValue() ? 1 : 0);
+            case NodeUnit unit -> new NodeDouble(unit.getValue());
+            case NodeNumber num -> num;
+            default -> throw new TypeError("Cannot convert " + typeName(value) + " to number");
+        };
     }
 
     /**
@@ -169,13 +164,11 @@ public final class TypeCoercion {
      * @throws TypeError if the value cannot be converted
      */
     public static boolean toBoolean(NodeConstant value) {
-        if (value instanceof NodeBoolean bool) {
-            return bool.getValue();
-        }
-        if (value instanceof NodeNumber num) {
-            return num.doubleValue() != 0.0;
-        }
-        throw new TypeError("Cannot convert " + typeName(value) + " to boolean");
+        return switch (value) {
+            case NodeBoolean bool -> bool.getValue();
+            case NodeNumber num -> num.doubleValue() != 0.0;
+            default -> throw new TypeError("Cannot convert " + typeName(value) + " to boolean");
+        };
     }
 
     /**
@@ -185,14 +178,12 @@ public final class TypeCoercion {
      * @return the value as NodeRational
      */
     public static NodeRational toRational(NodeConstant value) {
-        if (value instanceof NodeRational rat) {
-            return rat;
-        }
-        if (value instanceof NodeBoolean bool) {
-            return new NodeRational(bool.getValue() ? 1 : 0);
-        }
-        // Convert double to rational (may lose precision)
-        return new NodeRational(BigRational.of(toDouble(value)));
+        return switch (value) {
+            case NodeRational rat -> rat;
+            case NodeBoolean bool -> new NodeRational(bool.getValue() ? 1 : 0);
+            // Convert double to rational (may lose precision)
+            default -> new NodeRational(BigRational.of(toDouble(value)));
+        };
     }
 
     /**
@@ -202,10 +193,10 @@ public final class TypeCoercion {
      * @return the value as NodeDouble
      */
     public static NodeDouble toNodeDouble(NodeConstant value) {
-        if (value instanceof NodeDouble d) {
-            return d;
-        }
-        return new NodeDouble(toDouble(value));
+        return switch (value) {
+            case NodeDouble d -> d;
+            default -> new NodeDouble(toDouble(value));
+        };
     }
 
     // ==================== Type Promotion ====================

@@ -75,7 +75,7 @@ public final class CollectionParser {
         }
 
         // It's a vector literal
-        List<Node> elements = new ArrayList<>();
+        var elements = new ArrayList<Node>();
         elements.add(firstExpr);
 
         while (stream.match(TokenType.COMMA)) {
@@ -102,7 +102,7 @@ public final class CollectionParser {
     private Node parseComprehension() {
         Node expr = expressionParser.get();
 
-        List<NodeComprehension.Iterator> iterators = new ArrayList<>();
+        var iterators = new ArrayList<NodeComprehension.Iterator>();
 
         // Parse all 'for variable in iterable' clauses
         while (stream.checkKeyword("for")) {
@@ -155,7 +155,7 @@ public final class CollectionParser {
             return new NodeMatrix(new ArrayList<>());
         }
 
-        List<List<Node>> rows = new ArrayList<>();
+        var rows = new ArrayList<List<Node>>();
 
         // Parse first element/expression
         Node firstExpr = expressionParser.get();
@@ -183,7 +183,7 @@ public final class CollectionParser {
      * Parses a matrix in nested syntax: [[1, 2], [3, 4]].
      */
     private Node parseNestedMatrix(Node firstExpr, List<List<Node>> rows) {
-        List<Node> rowNodes = new ArrayList<>();
+        var rowNodes = new ArrayList<Node>();
         rowNodes.add(firstExpr);
 
         // Parse remaining rows (separated by comma or semicolon)
@@ -213,7 +213,7 @@ public final class CollectionParser {
      * Extracts row elements from a vector or matrix node.
      */
     private List<Node> extractRowElements(Node rowNode) {
-        List<Node> rowElements = new ArrayList<>();
+        var rowElements = new ArrayList<Node>();
 
         if (rowNode instanceof NodeVector vec) {
             for (int i = 0; i < vec.size(); i++) {
@@ -243,7 +243,7 @@ public final class CollectionParser {
      */
     private Node parseTraditionalMatrix(Node firstExpr, List<List<Node>> rows) {
         // Build first row
-        List<Node> firstRow = new ArrayList<>();
+        var firstRow = new ArrayList<Node>();
         firstRow.add(firstExpr);
 
         while (stream.match(TokenType.COMMA)) {
@@ -253,7 +253,7 @@ public final class CollectionParser {
 
         // Parse additional rows (separated by semicolon)
         while (stream.match(TokenType.SEMICOLON)) {
-            List<Node> row = new ArrayList<>();
+            var row = new ArrayList<Node>();
             row.add(expressionParser.get());
 
             while (stream.match(TokenType.COMMA)) {
@@ -289,7 +289,7 @@ public final class CollectionParser {
      * @return list of slice arguments
      */
     public List<NodeSubscript.SliceArg> parseSliceArgs() {
-        List<NodeSubscript.SliceArg> args = new ArrayList<>();
+        var args = new ArrayList<NodeSubscript.SliceArg>();
 
         do {
             Node start = null, end = null;

@@ -12,7 +12,6 @@ import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -73,7 +72,7 @@ public final class FunctionCallHandler implements FunctionCaller {
 
     @Override
     public NodeConstant call(NodeFunction function, List<NodeConstant> args, EvaluationContext context) {
-        List<Node> nodeArgs = new ArrayList<>(args);
+        var nodeArgs = new ArrayList<Node>(args);
         return evaluate(new NodeCall(function, nodeArgs), context);
     }
 
@@ -89,30 +88,29 @@ public final class FunctionCallHandler implements FunctionCaller {
     public NodeConstant evaluate(NodeCall call, EvaluationContext context) {
         Node funcExpr = call.getFunction();
 
-        // Handle named function calls
-        if (funcExpr instanceof NodeVariable variable) {
-            return evaluateNamedCall(variable.getName(), call.getArguments(), context);
-        }
+        return switch (funcExpr) {
+            // Handle named function calls
+            case NodeVariable variable -> evaluateNamedCall(variable.getName(), call.getArguments(), context);
 
-        // Handle inline lambda calls: (x -> x*2)(5)
-        if (funcExpr instanceof NodeLambda lambda) {
-            NodeFunction funcValue = evaluateLambda(lambda, context);
-            return callUserFunction(funcValue.getFunction(), call.getArguments(), context);
-        }
+            // Handle inline lambda calls: (x -> x*2)(5)
+            case NodeLambda lambda -> {
+                NodeFunction funcValue = evaluateLambda(lambda, context);
+                yield callUserFunction(funcValue.getFunction(), call.getArguments(), context);
+            }
 
-        // Handle already-evaluated function values
-        if (funcExpr instanceof NodeFunction func) {
-            return callUserFunction(func.getFunction(), call.getArguments(), context);
-        }
+            // Handle already-evaluated function values
+            case NodeFunction func -> callUserFunction(func.getFunction(), call.getArguments(), context);
 
-        // Evaluate the expression and try to call it
-        NodeConstant funcValue = evaluator.apply(funcExpr);
-        if (funcValue instanceof NodeFunction func) {
-            return callUserFunction(func.getFunction(), call.getArguments(), context);
-        }
-
-        // Fall back to implicit multiplication if enabled
-        return tryImplicitMultiplication(funcValue, call.getArguments(), null, context);
+            // Evaluate the expression and try to call it
+            default -> {
+                NodeConstant funcValue = evaluator.apply(funcExpr);
+                if (funcValue instanceof NodeFunction func) {
+                    yield callUserFunction(func.getFunction(), call.getArguments(), context);
+                }
+                // Fall back to implicit multiplication if enabled
+                yield tryImplicitMultiplication(funcValue, call.getArguments(), null, context);
+            }
+        };
     }
 
     /**
@@ -202,7 +200,7 @@ public final class FunctionCallHandler implements FunctionCaller {
             throw new EvaluationException("Lambda expressions are disabled in current configuration");
         }
 
-        FunctionDefinition functionDef = new FunctionDefinition(
+        var functionDef = new FunctionDefinition(
                 "<lambda>",
                 lambda.getParameters(),
                 lambda.getBody(),
@@ -223,7 +221,7 @@ public final class FunctionCallHandler implements FunctionCaller {
             throw new EvaluationException("User-defined functions are disabled in current configuration");
         }
 
-        FunctionDefinition function = new FunctionDefinition(
+        var function = new FunctionDefinition(
                 node.getName(),
                 node.getParameters(),
                 node.getBody(),
@@ -244,7 +242,7 @@ public final class FunctionCallHandler implements FunctionCaller {
         }
 
         // Evaluate arguments eagerly
-        Map<String, NodeConstant> bindings = new HashMap<>();
+        var bindings = new HashMap<String, NodeConstant>();
         List<String> params = function.parameters();
         for (int i = 0; i < params.size(); i++) {
             NodeConstant argValue = evaluator.apply(argumentNodes.get(i));
@@ -276,7 +274,7 @@ public final class FunctionCallHandler implements FunctionCaller {
      * Calls a built-in function with the given arguments.
      */
     private NodeConstant callBuiltinFunction(String name, List<Node> argumentNodes, EvaluationContext context) {
-        List<NodeConstant> arguments = new ArrayList<>();
+        var arguments = new ArrayList<NodeConstant>();
         for (Node argNode : argumentNodes) {
             arguments.add(evaluator.apply(argNode));
         }
@@ -317,7 +315,7 @@ public final class FunctionCallHandler implements FunctionCaller {
             NodeConstant argValue = evaluator.apply(args.getFirst());
 
             if (TypeCoercion.isNumericOrCollection(calleeValue) && TypeCoercion.isNumericOrCollection(argValue)) {
-                OperatorContext opCtx = new OperatorContext(context, this);
+                var opCtx = new OperatorContext(context, this);
                 return MultiplyOperator.INSTANCE.apply(calleeValue, argValue, opCtx);
             }
         }

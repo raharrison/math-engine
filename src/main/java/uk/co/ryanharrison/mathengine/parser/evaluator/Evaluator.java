@@ -134,98 +134,69 @@ public final class Evaluator {
      * @throws EvaluationException if evaluation fails
      */
     public NodeConstant evaluate(Node node) {
-        // Handle specific NodeConstant subclasses that need special handling FIRST
-        // because they extend NodeConstant but need conversion/evaluation
+        return switch (node) {
+            // === NodeConstant subclasses that need special handling ===
 
-        // NodeLambda extends NodeConstant but needs to be converted to NodeFunction
-        if (node instanceof NodeLambda lambda) {
-            return functionCallHandler.evaluateLambda(lambda, context);
-        }
+            // NodeLambda needs to be converted to NodeFunction
+            case NodeLambda lambda -> functionCallHandler.evaluateLambda(lambda, context);
 
-        // NodeRange extends NodeConstant but needs to be converted to NodeVector
-        if (node instanceof NodeRange range) {
-            return range.toVector();
-        }
+            // NodeRange needs to be converted to NodeVector
+            case NodeRange range -> range.toVector();
 
-        // NodeVector needs its elements evaluated (they might be unevaluated expressions)
-        if (node instanceof NodeVector vector) {
-            return evaluateVectorElements(vector);
-        }
+            // NodeVector needs its elements evaluated
+            case NodeVector vector -> evaluateVectorElements(vector);
 
-        // NodeMatrix needs its elements evaluated (they might be unevaluated expressions)
-        if (node instanceof NodeMatrix matrix) {
-            if (!config.matricesEnabled()) {
-                throw new EvaluationException("Matrices are disabled in current configuration");
+            // NodeMatrix needs its elements evaluated
+            case NodeMatrix matrix -> {
+                if (!config.matricesEnabled()) {
+                    throw new EvaluationException("Matrices are disabled in current configuration");
+                }
+                yield evaluateMatrixElements(matrix);
             }
-            return evaluateMatrixElements(matrix);
-        }
 
-        // Other NodeConstant subclasses can be returned directly
-        if (node instanceof NodeConstant constant) {
-            return constant;
-        }
+            // Other NodeConstant subclasses can be returned directly
+            case NodeConstant constant -> constant;
 
-        if (node instanceof NodeVariable variable) {
-            OperatorContext opCtx = new OperatorContext(context, functionCallHandler);
-            return variableResolver.resolve(variable, ResolutionContext.GENERAL, opCtx);
-        }
+            // === NodeExpression subclasses ===
 
-        // Explicit unit reference (@unit)
-        if (node instanceof NodeUnitRef unitRef) {
-            return variableResolver.resolveUnitRef(unitRef.getUnitName(), context);
-        }
+            case NodeVariable variable -> {
+                var opCtx = new OperatorContext(context, functionCallHandler);
+                yield variableResolver.resolve(variable, ResolutionContext.GENERAL, opCtx);
+            }
 
-        // Explicit variable reference ($var)
-        if (node instanceof NodeVarRef varRef) {
-            return variableResolver.resolveVarRef(varRef.getVarName(), context);
-        }
+            // Explicit references (@unit, $var, #const)
+            case NodeUnitRef unitRef -> variableResolver.resolveUnitRef(unitRef.getUnitName(), context);
+            case NodeVarRef varRef -> variableResolver.resolveVarRef(varRef.getVarName(), context);
+            case NodeConstRef constRef -> variableResolver.resolveConstRef(constRef.getConstName(), context);
 
-        // Explicit constant reference (#const)
-        if (node instanceof NodeConstRef constRef) {
-            return variableResolver.resolveConstRef(constRef.getConstName(), context);
-        }
+            // Binary and unary operations
+            case NodeBinary binary -> evaluateBinary(binary);
+            case NodeUnary unary -> evaluateUnary(unary);
 
-        if (node instanceof NodeBinary binary) {
-            return evaluateBinary(binary);
-        }
+            // Assignment
+            case NodeAssignment assignment -> evaluateAssignment(assignment);
 
-        if (node instanceof NodeUnary unary) {
-            return evaluateUnary(unary);
-        }
+            // Subscript/indexing
+            case NodeSubscript subscript -> subscriptHandler.evaluate(subscript);
 
-        if (node instanceof NodeAssignment assignment) {
-            return evaluateAssignment(assignment);
-        }
+            // Range expression (1..10)
+            case NodeRangeExpression rangeExpr -> evaluateRangeExpression(rangeExpr);
 
-        if (node instanceof NodeSubscript subscript) {
-            return subscriptHandler.evaluate(subscript);
-        }
+            // Function definition
+            case NodeFunctionDef funcDef -> functionCallHandler.evaluateFunctionDef(funcDef, context);
 
-        if (node instanceof NodeRangeExpression rangeExpr) {
-            return evaluateRangeExpression(rangeExpr);
-        }
+            // Function call
+            case NodeCall call -> functionCallHandler.evaluate(call, context);
 
-        if (node instanceof NodeFunctionDef funcDef) {
-            return functionCallHandler.evaluateFunctionDef(funcDef, context);
-        }
+            // Sequence of statements
+            case NodeSequence sequence -> evaluateSequence(sequence);
 
-        if (node instanceof NodeCall call) {
-            return functionCallHandler.evaluate(call, context);
-        }
+            // List comprehension
+            case NodeComprehension comprehension -> comprehensionHandler.evaluate(comprehension, context);
 
-        if (node instanceof NodeSequence sequence) {
-            return evaluateSequence(sequence);
-        }
-
-        if (node instanceof NodeComprehension comprehension) {
-            return comprehensionHandler.evaluate(comprehension, context);
-        }
-
-        if (node instanceof NodeUnitConversion unitConversion) {
-            return evaluateUnitConversion(unitConversion);
-        }
-
-        throw new EvaluationException("Cannot evaluate node type: " + node.getClass().getSimpleName());
+            // Unit conversion (100 meters in feet)
+            case NodeUnitConversion unitConversion -> evaluateUnitConversion(unitConversion);
+        };
     }
 
     // ==================== Vector Evaluation ====================
@@ -246,7 +217,7 @@ public final class Evaluator {
                     " exceeds maximum allowed size of " + config.maxVectorSize());
         }
 
-        Node[] evaluated = new Node[elements.length];
+        var evaluated = new Node[elements.length];
 
         for (int i = 0; i < elements.length; i++) {
             Node element = elements[i];
@@ -278,7 +249,7 @@ public final class Evaluator {
                     " exceeds maximum allowed dimension of " + config.maxMatrixDimension());
         }
 
-        Node[][] evaluated = new Node[elements.length][];
+        var evaluated = new Node[elements.length][];
 
         for (int i = 0; i < elements.length; i++) {
             evaluated[i] = new Node[elements[i].length];
@@ -313,7 +284,7 @@ public final class Evaluator {
         NodeConstant left = evaluate(node.getLeft());
         NodeConstant right = evaluate(node.getRight());
 
-        OperatorContext opCtx = new OperatorContext(context, functionCallHandler);
+        var opCtx = new OperatorContext(context, functionCallHandler);
         return operatorExecutor.executeBinary(opType, left, right, opCtx);
     }
 
@@ -323,7 +294,7 @@ public final class Evaluator {
     private NodeConstant evaluateWithShortCircuit(NodeBinary node, TokenType opType) {
         NodeConstant left = evaluate(node.getLeft());
 
-        OperatorContext opCtx = new OperatorContext(context, functionCallHandler);
+        var opCtx = new OperatorContext(context, functionCallHandler);
         return operatorExecutor.executeBinaryShortCircuit(
                 opType,
                 left,
@@ -340,7 +311,7 @@ public final class Evaluator {
     private NodeConstant evaluateUnary(NodeUnary node) {
         TokenType opType = node.getOperator().type();
         NodeConstant operand = evaluate(node.getOperand());
-        OperatorContext opCtx = new OperatorContext(context, functionCallHandler);
+        var opCtx = new OperatorContext(context, functionCallHandler);
         return operatorExecutor.executeUnary(opType, operand, opCtx);
     }
 
@@ -433,7 +404,7 @@ public final class Evaluator {
             Node[] elements = vector.getElements();
             Node[] converted = new Node[elements.length];
             for (int i = 0; i < elements.length; i++) {
-                NodeUnitConversion elemConversion = new NodeUnitConversion(elements[i], targetUnitName);
+                var elemConversion = new NodeUnitConversion(elements[i], targetUnitName);
                 converted[i] = evaluateUnitConversion(elemConversion);
             }
             return new NodeVector(converted);
@@ -446,7 +417,7 @@ public final class Evaluator {
             for (int i = 0; i < rows.length; i++) {
                 converted[i] = new Node[rows[i].length];
                 for (int j = 0; j < rows[i].length; j++) {
-                    NodeUnitConversion elemConversion = new NodeUnitConversion(rows[i][j], targetUnitName);
+                    var elemConversion = new NodeUnitConversion(rows[i][j], targetUnitName);
                     converted[i][j] = evaluateUnitConversion(elemConversion);
                 }
             }

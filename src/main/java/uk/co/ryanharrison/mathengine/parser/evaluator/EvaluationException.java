@@ -65,7 +65,7 @@ public class EvaluationException extends MathEngineException {
 
     @Override
     public String formatMessage() {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         // Main error message
         if (token != null) {
@@ -105,7 +105,7 @@ public class EvaluationException extends MathEngineException {
             return "";
         }
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         String sourceLine = lines[line - 1];
 
         // Show the line with error

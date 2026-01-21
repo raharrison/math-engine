@@ -54,7 +54,7 @@ public final class FunctionRegistry {
      * @return new registry with all function names from the executor
      */
     public static FunctionRegistry fromExecutor(FunctionExecutor executor) {
-        FunctionRegistry registry = new FunctionRegistry();
+        var registry = new FunctionRegistry();
         registry.functionNames.addAll(executor.getFunctionNames());
         return registry;
     }
@@ -68,7 +68,7 @@ public final class FunctionRegistry {
      * @return new registry with all function names
      */
     public static FunctionRegistry fromFunctions(Collection<MathFunction> functions) {
-        FunctionRegistry registry = new FunctionRegistry();
+        var registry = new FunctionRegistry();
         for (MathFunction func : functions) {
             registry.register(func.name());
             for (String alias : func.aliases()) {

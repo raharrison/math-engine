@@ -92,7 +92,7 @@ public final class MathEngine {
         this.config = builder.config;
 
         // Create executors
-        OperatorExecutor operatorExecutor = new OperatorExecutor();
+        var operatorExecutor = new OperatorExecutor();
         operatorExecutor.registerBinaryOperators(config.binaryOperators());
         operatorExecutor.registerUnaryOperators(config.unaryOperators());
 
@@ -362,7 +362,7 @@ public final class MathEngine {
      * Returns all registered functions grouped by category.
      */
     public Map<MathFunction.Category, List<MathFunction>> getFunctionsByCategory() {
-        Map<MathFunction.Category, List<MathFunction>> result = new EnumMap<>(MathFunction.Category.class);
+        var result = new EnumMap<MathFunction.Category, List<MathFunction>>(MathFunction.Category.class);
         for (MathFunction.Category category : MathFunction.Category.values()) {
             List<MathFunction> funcs = functionExecutor.getFunctionsByCategory(category);
             if (!funcs.isEmpty()) {

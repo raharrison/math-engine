@@ -26,7 +26,7 @@ public final class NodeSubscript extends NodeExpression {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.append(target).append("[");
         for (int i = 0; i < indices.size(); i++) {
             if (i > 0) sb.append(", ");

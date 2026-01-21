@@ -161,7 +161,7 @@ public final class KeywordRegistry {
      * @return unmodifiable set of all keywords (lowercase)
      */
     public Set<String> getAllKeywords() {
-        Set<String> all = new HashSet<>(reservedKeywords);
+        var all = new HashSet<>(reservedKeywords);
         all.addAll(keywordOperators.keySet());
         return Set.copyOf(all);
     }
