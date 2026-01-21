@@ -48,27 +48,6 @@ public final class PrecedenceParser {
     private int currentDepth;
 
     /**
-     * Creates a new precedence parser with default settings.
-     *
-     * @param stream           the token stream
-     * @param collectionParser parser for collections (vectors, matrices)
-     */
-    public PrecedenceParser(TokenStream stream, CollectionParser collectionParser) {
-        this(stream, collectionParser, DEFAULT_MAX_EXPRESSION_DEPTH, false);
-    }
-
-    /**
-     * Creates a new precedence parser with the specified maximum expression depth.
-     *
-     * @param stream             the token stream
-     * @param collectionParser   parser for collections (vectors, matrices)
-     * @param maxExpressionDepth maximum allowed nesting depth for expressions
-     */
-    public PrecedenceParser(TokenStream stream, CollectionParser collectionParser, int maxExpressionDepth) {
-        this(stream, collectionParser, maxExpressionDepth, false);
-    }
-
-    /**
      * Creates a new precedence parser with the specified configuration.
      *
      * @param stream                the token stream

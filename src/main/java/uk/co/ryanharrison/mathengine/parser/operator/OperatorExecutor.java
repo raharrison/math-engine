@@ -68,28 +68,8 @@ public final class OperatorExecutor {
 
     /**
      * Executes a binary operation.
-     *
-     * @param tokenType the operator token type
-     * @param left      the left operand
-     * @param right     the right operand
-     * @param ctx       the operator context (caller constructs with appropriate capabilities)
-     * @return the result of the operation
-     * @throws EvaluationException if the operator is not registered
-     */
-    public NodeConstant executeBinary(TokenType tokenType, NodeConstant left,
-                                      NodeConstant right, OperatorContext ctx) {
-        BinaryOperator operator = binaryOperators.get(tokenType);
-        if (operator == null) {
-            throw new EvaluationException("Unsupported binary operator: " + tokenType);
-        }
-
-        return operator.apply(left, right, ctx);
-    }
-
-    /**
-     * Executes a binary operation with short-circuit evaluation support.
      * <p>
-     * For operators that require short-circuit evaluation (like && and ||),
+     * Supports short-circuit evaluation: for operators that require it (like && and ||),
      * the right operand evaluator is only called if necessary.
      *
      * @param tokenType      the operator token type
@@ -97,10 +77,11 @@ public final class OperatorExecutor {
      * @param rightEvaluator lazy evaluator for the right operand
      * @param ctx            the operator context (caller constructs with appropriate capabilities)
      * @return the result of the operation
+     * @throws EvaluationException if the operator is not registered
      */
-    public NodeConstant executeBinaryShortCircuit(TokenType tokenType, NodeConstant left,
-                                                  Supplier<NodeConstant> rightEvaluator,
-                                                  OperatorContext ctx) {
+    public NodeConstant executeBinary(TokenType tokenType, NodeConstant left,
+                                      Supplier<NodeConstant> rightEvaluator,
+                                      OperatorContext ctx) {
         BinaryOperator operator = binaryOperators.get(tokenType);
         if (operator == null) {
             throw new EvaluationException("Unsupported binary operator: " + tokenType);

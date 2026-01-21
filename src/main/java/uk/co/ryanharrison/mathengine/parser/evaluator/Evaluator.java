@@ -270,32 +270,16 @@ public final class Evaluator {
 
     /**
      * Evaluates a binary operation.
-     * Implements short-circuit evaluation for logical operators (&&, ||).
+     * <p>
+     * Uses lazy evaluation for the right operand, allowing the operator executor
+     * to implement short-circuit evaluation when needed (e.g., for && and ||).
      */
     private NodeConstant evaluateBinary(NodeBinary node) {
         TokenType opType = node.getOperator().type();
-
-        // Short-circuit evaluation for logical operators
-        if (opType == TokenType.AND || opType == TokenType.OR) {
-            return evaluateWithShortCircuit(node, opType);
-        }
-
-        // Eager evaluation for all other operators
-        NodeConstant left = evaluate(node.getLeft());
-        NodeConstant right = evaluate(node.getRight());
-
-        var opCtx = new OperatorContext(context, functionCallHandler);
-        return operatorExecutor.executeBinary(opType, left, right, opCtx);
-    }
-
-    /**
-     * Evaluates a binary operation with short-circuit support.
-     */
-    private NodeConstant evaluateWithShortCircuit(NodeBinary node, TokenType opType) {
         NodeConstant left = evaluate(node.getLeft());
 
         var opCtx = new OperatorContext(context, functionCallHandler);
-        return operatorExecutor.executeBinaryShortCircuit(
+        return operatorExecutor.executeBinary(
                 opType,
                 left,
                 () -> evaluate(node.getRight()),
