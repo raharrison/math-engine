@@ -31,23 +31,12 @@ import java.util.*;
 public final class FunctionExecutor {
 
     private final Map<String, MathFunction> functions;
-    private FunctionCaller functionCaller;
 
     /**
      * Creates a new function executor with no registered functions.
      */
     public FunctionExecutor() {
         this.functions = new HashMap<>();
-        this.functionCaller = null;
-    }
-
-    /**
-     * Sets the function caller for higher-order functions (map, filter, reduce).
-     *
-     * @param caller the callback for calling user-defined functions
-     */
-    public void setFunctionCaller(FunctionCaller caller) {
-        this.functionCaller = caller;
     }
 
     // ==================== Registration ====================
@@ -124,14 +113,16 @@ public final class FunctionExecutor {
     /**
      * Executes a function by name.
      *
-     * @param name    the function name (case-insensitive)
-     * @param args    the evaluated arguments
-     * @param context the evaluation context
+     * @param name           the function name (case-insensitive)
+     * @param args           the evaluated arguments
+     * @param context        the evaluation context
+     * @param functionCaller callback for higher-order functions to call user functions
      * @return the result of the function
      * @throws EvaluationException if the function is not registered
      * @throws ArityException      if the argument count is invalid
      */
-    public NodeConstant execute(String name, List<NodeConstant> args, EvaluationContext context) {
+    public NodeConstant execute(String name, List<NodeConstant> args,
+                                EvaluationContext context, FunctionCaller functionCaller) {
         MathFunction function = functions.get(name.toLowerCase());
         if (function == null) {
             throw new EvaluationException("Unknown function: " + name);
@@ -143,7 +134,7 @@ public final class FunctionExecutor {
         // Check for vector broadcasting
         if (function.supportsVectorBroadcasting() && args.size() == 1 &&
                 args.getFirst() instanceof NodeVector vector) {
-            return applyToVector(function, vector, context);
+            return applyToVector(function, vector, context, functionCaller);
         }
 
         // Execute the function
@@ -169,7 +160,7 @@ public final class FunctionExecutor {
      * Applies a single-argument function to each element of a vector.
      */
     private NodeConstant applyToVector(MathFunction function, NodeVector vector,
-                                       EvaluationContext context) {
+                                       EvaluationContext context, FunctionCaller functionCaller) {
         FunctionContext ctx = new FunctionContext(context, functionCaller);
         Node[] elements = vector.getElements();
         Node[] results = new Node[elements.length];

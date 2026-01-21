@@ -30,7 +30,7 @@ public final class NodeFunction extends NodeConstant {
 
     @Override
     public String toString() {
-        return "<function:" + function.getName() + ">";
+        return "<function:" + function.name() + ">";
     }
 
     @Override

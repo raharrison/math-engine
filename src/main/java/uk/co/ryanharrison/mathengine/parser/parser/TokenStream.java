@@ -122,7 +122,7 @@ public final class TokenStream {
      * @return true if at end (current token is EOF)
      */
     public boolean isAtEnd() {
-        return peek().getType() == TokenType.EOF;
+        return peek().type() == TokenType.EOF;
     }
 
     /**
@@ -149,7 +149,7 @@ public final class TokenStream {
         if (isAtEnd()) {
             return false;
         }
-        TokenType currentType = peek().getType();
+        TokenType currentType = peek().type();
         for (TokenType type : types) {
             if (currentType == type) {
                 return true;
@@ -168,7 +168,7 @@ public final class TokenStream {
         if (!check(TokenType.KEYWORD)) {
             return false;
         }
-        String lexeme = peek().getLexeme();
+        String lexeme = peek().lexeme();
         for (String keyword : keywords) {
             if (lexeme.equals(keyword)) {
                 return true;
@@ -255,7 +255,7 @@ public final class TokenStream {
         if (current + offset >= tokens.size()) {
             return false;
         }
-        TokenType type = tokens.get(current + offset).getType();
+        TokenType type = tokens.get(current + offset).type();
         return type == TokenType.IDENTIFIER || type == TokenType.UNIT;
     }
 

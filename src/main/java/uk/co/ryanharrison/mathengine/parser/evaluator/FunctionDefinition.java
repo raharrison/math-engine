@@ -14,13 +14,10 @@ import java.util.List;
  *     <li><b>Lexical scoping</b> (closure != null): For lambdas (x -> ...).
  *         Free variables are captured at definition time.</li>
  * </ul>
+ *
+ * @param closure null for dynamic scoping, non-null for lexical scoping
  */
-public final class FunctionDefinition {
-
-    private final String name;
-    private final List<String> parameters;
-    private final Node body;
-    private final EvaluationContext closure;  // null for dynamic scoping, non-null for lexical scoping
+public record FunctionDefinition(String name, List<String> parameters, Node body, EvaluationContext closure) {
 
     public FunctionDefinition(String name, List<String> parameters, Node body, EvaluationContext closure) {
         this.name = name;
@@ -36,22 +33,6 @@ public final class FunctionDefinition {
         return closure != null;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public List<String> getParameters() {
-        return parameters;
-    }
-
-    public Node getBody() {
-        return body;
-    }
-
-    public EvaluationContext getClosure() {
-        return closure;
-    }
-
     public int getArity() {
         return parameters.size();
     }
@@ -59,18 +40,5 @@ public final class FunctionDefinition {
     @Override
     public String toString() {
         return name + "(" + String.join(", ", parameters) + ")";
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof FunctionDefinition)) return false;
-        FunctionDefinition other = (FunctionDefinition) obj;
-        return name.equals(other.name) && parameters.equals(other.parameters) && body.equals(other.body);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode() * 31 + parameters.hashCode() * 17 + body.hashCode();
     }
 }

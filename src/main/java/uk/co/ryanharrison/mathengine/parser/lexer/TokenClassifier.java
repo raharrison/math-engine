@@ -60,7 +60,7 @@ public final class TokenClassifier {
         List<Token> classified = new ArrayList<>();
 
         for (Token token : tokens) {
-            if (token.getType() == TokenType.IDENTIFIER) {
+            if (token.type() == TokenType.IDENTIFIER) {
                 classified.add(classifyIdentifier(token));
             } else {
                 classified.add(token);
@@ -77,7 +77,7 @@ public final class TokenClassifier {
      * @return the classified token (may have different type)
      */
     private Token classifyIdentifier(Token token) {
-        String text = token.getLexeme();
+        String text = token.lexeme();
 
         // Check if it's a keyword operator (convert to proper token type)
         Optional<TokenType> operatorType = keywordRegistry.getKeywordOperatorType(text);

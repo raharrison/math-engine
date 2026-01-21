@@ -43,8 +43,8 @@ public class TypeError extends EvaluationException {
     public String formatMessage() {
         if (operator != null && leftOperand != null && rightOperand != null) {
             return String.format("Type error at line %d, column %d: Cannot apply %s to %s and %s",
-                    operator.getLine(), operator.getColumn(),
-                    operator.getLexeme(),
+                    operator.line(), operator.column(),
+                    operator.lexeme(),
                     leftOperand.getClass().getSimpleName(),
                     rightOperand.getClass().getSimpleName());
         }

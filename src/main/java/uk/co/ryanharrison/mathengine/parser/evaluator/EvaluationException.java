@@ -70,7 +70,7 @@ public class EvaluationException extends MathEngineException {
         // Main error message
         if (token != null) {
             sb.append(String.format("Evaluation error at line %d, column %d: %s",
-                    token.getLine(), token.getColumn(), getMessage()));
+                    token.line(), token.column(), getMessage()));
         } else {
             sb.append(String.format("Evaluation error: %s", getMessage()));
         }
@@ -98,8 +98,8 @@ public class EvaluationException extends MathEngineException {
         }
 
         String[] lines = sourceCode.split("\n", -1);
-        int line = token.getLine();
-        int column = token.getColumn();
+        int line = token.line();
+        int column = token.column();
 
         if (line <= 0 || line > lines.length) {
             return "";

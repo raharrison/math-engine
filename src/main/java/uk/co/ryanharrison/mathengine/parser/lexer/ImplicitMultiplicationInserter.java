@@ -109,7 +109,7 @@ public final class ImplicitMultiplicationInserter {
                 // Create virtual multiply token at current position
                 Token multiplyToken = new Token(
                         TokenType.MULTIPLY, "*",
-                        current.getLine(), current.getColumn()
+                        current.line(), current.column()
                 );
                 result.add(multiplyToken);
             }
@@ -127,12 +127,12 @@ public final class ImplicitMultiplicationInserter {
      */
     private boolean shouldInsertMultiply(Token current, Token next) {
         // Don't insert implicit multiplication across different lines
-        if (current.getLine() != next.getLine()) {
+        if (current.line() != next.line()) {
             return false;
         }
 
-        TokenType currType = current.getType();
-        TokenType nextType = next.getType();
+        TokenType currType = current.type();
+        TokenType nextType = next.type();
 
         // Function call: identifier/function followed by LPAREN is NOT implicit multiplication
         if ((currType == TokenType.FUNCTION) && nextType == TokenType.LPAREN) {

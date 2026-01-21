@@ -16,7 +16,7 @@ import java.util.Map;
  *     <li>Arithmetic: +, -, *, /, ^, mod</li>
  *     <li>Comparison: <, >, <=, >=, ==, !=</li>
  *     <li>Logical: &&, ||, xor</li>
- *     <li>Special: of, @ (matrix multiply)</li>
+ *     <li>Special: of, @</li>
  * </ul>
  */
 public final class StandardBinaryOperators {
@@ -54,7 +54,7 @@ public final class StandardBinaryOperators {
 
                 // Special
                 Map.entry(TokenType.OF, OfOperator.INSTANCE),
-                Map.entry(TokenType.AT, MatrixMultiplyOperator.INSTANCE)
+                Map.entry(TokenType.AT, AtOperator.INSTANCE)
         );
     }
 

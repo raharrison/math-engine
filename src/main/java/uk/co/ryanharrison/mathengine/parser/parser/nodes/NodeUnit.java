@@ -63,10 +63,10 @@ public final class NodeUnit extends NodeConstant {
      * @throws TypeError if units are incompatible (different types)
      */
     public NodeUnit convertTo(UnitDefinition targetUnit) {
-        if (!unit.getType().equals(targetUnit.getType())) {
+        if (!unit.type().equals(targetUnit.type())) {
             throw new TypeError(
                     "Cannot convert between incompatible unit types: " +
-                            unit.getType() + " and " + targetUnit.getType());
+                            unit.type() + " and " + targetUnit.type());
         }
 
         // If same unit, return this

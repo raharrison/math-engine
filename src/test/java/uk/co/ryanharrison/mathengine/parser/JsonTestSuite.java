@@ -1,7 +1,5 @@
 package uk.co.ryanharrison.mathengine.parser;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 /**
@@ -24,60 +22,10 @@ import java.util.List;
  * }
  * }</pre>
  */
-public class JsonTestSuite {
-
-    @JsonProperty("category")
-    private String category;
-
-    @JsonProperty("description")
-    private String description;
-
-    @JsonProperty("defaultConfig")
-    private TestConfig defaultConfig;
-
-    @JsonProperty("tests")
-    private List<JsonTestCase> tests;
-
-    // Default constructor for Jackson
-    public JsonTestSuite() {
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public TestConfig getDefaultConfig() {
-        return defaultConfig;
-    }
-
-    public void setDefaultConfig(TestConfig defaultConfig) {
-        this.defaultConfig = defaultConfig;
-    }
-
-    /**
-     * Check if this suite has default configuration.
-     */
-    public boolean hasDefaultConfig() {
-        return defaultConfig != null;
-    }
-
-    public List<JsonTestCase> getTests() {
-        return tests;
-    }
-
-    public void setTests(List<JsonTestCase> tests) {
-        this.tests = tests;
-    }
+public record JsonTestSuite(
+        String category,
+        String description,
+        TestConfig defaultConfig,
+        List<JsonTestCase> tests
+) {
 }

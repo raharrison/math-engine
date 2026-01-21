@@ -152,9 +152,9 @@ public final class PrecedenceParser {
                 Node value = parseLambda();
 
                 if (params != null) {
-                    return new NodeFunctionDef(id.getLexeme(), params, value);
+                    return new NodeFunctionDef(id.lexeme(), params, value);
                 } else {
-                    return new NodeAssignment(id.getLexeme(), value);
+                    return new NodeAssignment(id.lexeme(), value);
                 }
             }
 
@@ -175,7 +175,7 @@ public final class PrecedenceParser {
 
         while (stream.getPosition() + lookAhead < stream.size()) {
             Token token = stream.getTokenAt(stream.getPosition() + lookAhead);
-            TokenType type = token.getType();
+            TokenType type = token.type();
 
             if (type == TokenType.LPAREN) {
                 depth++;
@@ -184,7 +184,7 @@ public final class PrecedenceParser {
                 if (depth == 0) {
                     if (stream.getPosition() + lookAhead + 1 < stream.size()) {
                         Token next = stream.getTokenAt(stream.getPosition() + lookAhead + 1);
-                        return next.getType() == TokenType.ASSIGN;
+                        return next.type() == TokenType.ASSIGN;
                     }
                     return false;
                 }
@@ -207,7 +207,7 @@ public final class PrecedenceParser {
         if (!stream.check(TokenType.RPAREN)) {
             do {
                 Token param = expectParameterName();
-                params.add(param.getLexeme());
+                params.add(param.lexeme());
             } while (stream.match(TokenType.COMMA));
         }
 
@@ -244,7 +244,7 @@ public final class PrecedenceParser {
 
             if (stream.match(TokenType.LAMBDA)) {
                 List<String> params = new ArrayList<>();
-                params.add(param.getLexeme());
+                params.add(param.lexeme());
                 Node body = parseExpression();
                 return new NodeLambda(params, body);
             }
@@ -388,7 +388,7 @@ public final class PrecedenceParser {
             // replace the identifier with an explicit unit reference to force unit interpretation
             // e.g., "50m in feet" where m is a variable → treat m as meter unit in this context
             if (left instanceof NodeBinary binary &&
-                    binary.getOperator().getType() == TokenType.MULTIPLY &&
+                    binary.getOperator().type() == TokenType.MULTIPLY &&
                     binary.getRight() instanceof NodeVariable variable) {
                 // Replace the variable with an explicit unit reference
                 // This forces the identifier to be treated as a unit, not a variable
@@ -399,7 +399,7 @@ public final class PrecedenceParser {
             stream.advance();
             // Accept both UNIT and IDENTIFIER tokens - unknown units will be caught during evaluation
             Token unitToken = expectUnitOrIdentifier();
-            left = new NodeUnitConversion(left, unitToken.getLexeme());
+            left = new NodeUnitConversion(left, unitToken.lexeme());
         }
 
         return left;
@@ -416,9 +416,9 @@ public final class PrecedenceParser {
         if (stream.check(TokenType.UNIT) || stream.check(TokenType.IDENTIFIER) || stream.check(TokenType.UNIT_REF)) {
             Token token = stream.advance();
             // For UNIT_REF tokens, extract the unit name (remove @ prefix)
-            if (token.getType() == TokenType.UNIT_REF) {
-                String unitName = token.getLexeme().substring(1); // Remove @
-                return new Token(TokenType.UNIT, unitName, token.getLine(), token.getColumn());
+            if (token.type() == TokenType.UNIT_REF) {
+                String unitName = token.lexeme().substring(1); // Remove @
+                return new Token(TokenType.UNIT, unitName, token.line(), token.column());
             }
             return token;
         }
@@ -568,7 +568,7 @@ public final class PrecedenceParser {
         // Integer literal
         if (stream.match(TokenType.INTEGER)) {
             Token token = stream.previous();
-            Object literal = token.getLiteral();
+            Object literal = token.literal();
             if (literal instanceof Long longVal) {
                 if (forceDoubleArithmetic) {
                     return new NodeDouble(longVal.doubleValue());
@@ -586,7 +586,7 @@ public final class PrecedenceParser {
         // Decimal/scientific literal
         if (stream.match(TokenType.DECIMAL, TokenType.SCIENTIFIC)) {
             Token token = stream.previous();
-            Object literal = token.getLiteral();
+            Object literal = token.literal();
             if (literal instanceof Double doubleVal) {
                 if (forceDoubleArithmetic) {
                     return new NodeDouble(doubleVal);
@@ -605,7 +605,7 @@ public final class PrecedenceParser {
         // String literal
         if (stream.match(TokenType.STRING)) {
             Token token = stream.previous();
-            Object literal = token.getLiteral();
+            Object literal = token.literal();
             if (literal instanceof String strVal) {
                 return new NodeString(strVal);
             }
@@ -614,12 +614,12 @@ public final class PrecedenceParser {
 
         // Identifiers (variables, constants, functions)
         if (stream.match(TokenType.IDENTIFIER, TokenType.KEYWORD, TokenType.UNIT, TokenType.FUNCTION)) {
-            return new NodeVariable(stream.previous().getLexeme());
+            return new NodeVariable(stream.previous().lexeme());
         }
 
         // Explicit unit reference (@unit)
         if (stream.match(TokenType.UNIT_REF)) {
-            String lexeme = stream.previous().getLexeme();
+            String lexeme = stream.previous().lexeme();
             // Remove @ prefix to get unit name
             String unitName = lexeme.substring(1);
             return new NodeUnitRef(unitName);
@@ -627,7 +627,7 @@ public final class PrecedenceParser {
 
         // Explicit variable reference ($var)
         if (stream.match(TokenType.VAR_REF)) {
-            String lexeme = stream.previous().getLexeme();
+            String lexeme = stream.previous().lexeme();
             // Remove $ prefix to get variable name
             String varName = lexeme.substring(1);
             return new NodeVarRef(varName);
@@ -635,7 +635,7 @@ public final class PrecedenceParser {
 
         // Explicit constant reference (#const)
         if (stream.match(TokenType.CONST_REF)) {
-            String lexeme = stream.previous().getLexeme();
+            String lexeme = stream.previous().lexeme();
             // Remove # prefix to get constant name
             String constName = lexeme.substring(1);
             return new NodeConstRef(constName);
@@ -674,7 +674,7 @@ public final class PrecedenceParser {
      */
     private Node parseRationalLiteral() {
         Token token = stream.previous();
-        String text = token.getLexeme();
+        String text = token.lexeme();
         String[] parts = text.split("/");
 
         if (parts.length == 2) {
@@ -688,7 +688,7 @@ public final class PrecedenceParser {
                             new NodeDouble(numerator) : new NodeRational(numerator);
                     Node right = forceDoubleArithmetic ?
                             new NodeDouble(0) : new NodeRational(0);
-                    Token divideToken = new Token(TokenType.DIVIDE, "/", null, token.getLine(), token.getColumn());
+                    Token divideToken = new Token(TokenType.DIVIDE, "/", null, token.line(), token.column());
                     return new NodeBinary(divideToken, left, right);
                 }
 
@@ -769,18 +769,18 @@ public final class PrecedenceParser {
         while (stream.getPosition() + lookAhead < stream.size()) {
             Token token = stream.getTokenAt(stream.getPosition() + lookAhead);
 
-            if (token.getType() == TokenType.COMMA) {
+            if (token.type() == TokenType.COMMA) {
                 lookAhead++;
                 if (!stream.isIdentifierAt(lookAhead)) {
                     return false;
                 }
                 lookAhead++;
-            } else if (token.getType() == TokenType.RPAREN) {
+            } else if (token.type() == TokenType.RPAREN) {
                 // Found closing paren, check if followed by LAMBDA
                 lookAhead++;
                 if (stream.getPosition() + lookAhead < stream.size()) {
                     Token next = stream.getTokenAt(stream.getPosition() + lookAhead);
-                    return next.getType() == TokenType.LAMBDA;
+                    return next.type() == TokenType.LAMBDA;
                 }
                 return false;
             } else {
@@ -800,11 +800,11 @@ public final class PrecedenceParser {
         List<String> params = new ArrayList<>();
 
         Token firstParam = expectParameterName();
-        params.add(firstParam.getLexeme());
+        params.add(firstParam.lexeme());
 
         while (stream.match(TokenType.COMMA)) {
             Token param = expectParameterName();
-            params.add(param.getLexeme());
+            params.add(param.lexeme());
         }
 
         stream.expect(TokenType.RPAREN, "Expected ')' after lambda parameters");

@@ -26,7 +26,7 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
  *     <li>{@code 5 * 10%} = {@code 5 * 0.1} = {@code 0.5}</li>
  * </ul>
  * <p>
- * Note: For true matrix multiplication, use the {@link MatrixMultiplyOperator} (@).
+ * Note: For true matrix multiplication, use the {@link AtOperator} (@).
  */
 public final class MultiplyOperator implements BinaryOperator {
 

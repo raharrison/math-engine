@@ -77,7 +77,7 @@ public class ParseException extends MathEngineException {
     public ParseException(String message, TokenType expected, Token actual, String sourceCode) {
         super(message, actual, sourceCode);
         this.expected = expected;
-        this.actual = actual != null ? actual.getType() : null;
+        this.actual = actual != null ? actual.type() : null;
     }
 
     /**
@@ -106,12 +106,12 @@ public class ParseException extends MathEngineException {
         if (token != null) {
             if (expected != null && actual != null) {
                 sb.append(String.format("Parse error at line %d, column %d: Expected %s but found %s",
-                        token.getLine(), token.getColumn(),
+                        token.line(), token.column(),
                         formatTokenType(expected),
                         formatTokenType(actual)));
             } else {
                 sb.append(String.format("Parse error at line %d, column %d: %s",
-                        token.getLine(), token.getColumn(), getMessage()));
+                        token.line(), token.column(), getMessage()));
             }
         } else {
             sb.append(String.format("Parse error: %s", getMessage()));
@@ -140,8 +140,8 @@ public class ParseException extends MathEngineException {
         }
 
         String[] lines = sourceCode.split("\n", -1);
-        int line = token.getLine();
-        int column = token.getColumn();
+        int line = token.line();
+        int column = token.column();
 
         if (line <= 0 || line > lines.length) {
             return "";

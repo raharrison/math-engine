@@ -32,7 +32,7 @@ public final class NodeBinary extends NodeExpression {
 
     @Override
     public String toString() {
-        return String.format("(%s %s %s)", left, operator.getLexeme(), right);
+        return String.format("(%s %s %s)", left, operator.lexeme(), right);
     }
 
     @Override

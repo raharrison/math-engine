@@ -67,21 +67,21 @@ public class MathEngineTest {
         for (String resourcePath : resourcePaths) {
             try {
                 JsonTestSuite suite = JsonTestLoader.loadFromResource(resourcePath);
-                TestConfig suiteConfig = suite.getDefaultConfig();
+                TestConfig suiteConfig = suite.defaultConfig();
 
                 // Build the dynamic tests for this suite
-                Stream<DynamicTest> suiteTests = suite.getTests().stream().map(testCase -> {
+                Stream<DynamicTest> suiteTests = suite.tests().stream().map(testCase -> {
                     String displayName = String.format("%s: %s - %s",
-                            testCase.getId(),
-                            testCase.getInput(),
-                            testCase.getNotes());
+                            testCase.id(),
+                            testCase.input(),
+                            testCase.notes());
 
                     return DynamicTest.dynamicTest(displayName, () -> {
                         // Skip tests marked with skipTest: true
-                        assumeTrue(!testCase.shouldSkip(), "Test marked as skipped: " + testCase.getNotes());
+                        assumeTrue(!testCase.shouldSkip(), "Test marked as skipped: " + testCase.notes());
 
                         // Determine config: test case overrides suite defaults
-                        MathEngineConfig config = resolveConfig(suiteConfig, testCase.getConfig());
+                        MathEngineConfig config = resolveConfig(suiteConfig, testCase.config());
 
                         executeTest(testCase, config);
                     });
@@ -89,7 +89,7 @@ public class MathEngineTest {
 
                 // Create a container for the test suite with its tests
                 DynamicContainer suiteContainer = DynamicContainer.dynamicContainer(
-                        suite.getCategory(),
+                        suite.category(),
                         suiteTests.toList() // Convert the Stream<DynamicTest> to a List
                 );
 
@@ -139,11 +139,11 @@ public class MathEngineTest {
      * Execute a test that expects an error to be thrown.
      */
     private void executeErrorTest(JsonTestCase testCase, MathEngineConfig config) {
-        String input = testCase.getInput();
-        String expectedErrorType = testCase.getExpectedErrorType();
+        String input = testCase.input();
+        String expectedErrorType = testCase.expectedErrorType();
 
         assertThatThrownBy(() -> parseAndEvaluate(input, config))
-                .as("Test %s: Expected error %s", testCase.getId(), expectedErrorType)
+                .as("Test %s: Expected error %s", testCase.id(), expectedErrorType)
                 .isInstanceOf(getExceptionClass(expectedErrorType));
     }
 
@@ -151,21 +151,21 @@ public class MathEngineTest {
      * Execute a test that expects a successful result.
      */
     private void executeSuccessTest(JsonTestCase testCase, MathEngineConfig config) {
-        String input = testCase.getInput();
-        Object expected = testCase.getExpected();
-        String expectedType = testCase.getExpectedType();
+        String input = testCase.input();
+        Object expected = testCase.expected();
+        String expectedType = testCase.expectedType();
 
         // Get custom tolerance or use default
-        double tolerance = testCase.hasTolerance() ? testCase.getTolerance() : TOLERANCE;
+        double tolerance = testCase.hasTolerance() ? testCase.tolerance() : TOLERANCE;
 
         // Parse and evaluate the expression
         NodeConstant result = parseAndEvaluate(input, config);
 
         // Verify the result type matches
-        verifyType(result, expectedType, testCase.getId());
+        verifyType(result, expectedType, testCase.id());
 
         // Verify the result value matches
-        verifyValue(result, expected, expectedType, testCase.getId(), tolerance);
+        verifyValue(result, expected, expectedType, testCase.id(), tolerance);
     }
 
     /**
@@ -548,7 +548,7 @@ public class MathEngineTest {
                 .isInstanceOf(NodeFunction.class);
 
         NodeFunction func = (NodeFunction) result;
-        String actualName = func.getFunction().getName();
+        String actualName = func.getFunction().name();
 
         // Expected can be just the function name or "<function:name>" format
         String expectedName = expected;

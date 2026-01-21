@@ -40,9 +40,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("0");
 
         assertThat(tokens).hasSize(2); // INTEGER + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.INTEGER);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo("0");
-        assertThat(tokens.getFirst().getLiteral()).isEqualTo(0L);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo("0");
+        assertThat(tokens.getFirst().literal()).isEqualTo(0L);
     }
 
     @ParameterizedTest
@@ -55,9 +55,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize(input);
 
         assertThat(tokens).hasSize(2); // INTEGER + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.INTEGER);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo(input);
-        assertThat(tokens.getFirst().getLiteral()).isEqualTo(expected);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
+        assertThat(tokens.getFirst().literal()).isEqualTo(expected);
     }
 
     // ==================== Decimal Literals ====================
@@ -75,9 +75,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize(input);
 
         assertThat(tokens).hasSize(2); // DECIMAL + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.DECIMAL);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo(input);
-        assertThat((Double) tokens.getFirst().getLiteral()).isCloseTo(expected, within(0.000001));
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.DECIMAL);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
+        assertThat((Double) tokens.getFirst().literal()).isCloseTo(expected, within(0.000001));
     }
 
     @Test
@@ -85,9 +85,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize(".5");
 
         assertThat(tokens).hasSize(2); // DECIMAL + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.DECIMAL);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo(".5");
-        assertThat((Double) tokens.getFirst().getLiteral()).isCloseTo(0.5, within(0.000001));
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.DECIMAL);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(".5");
+        assertThat((Double) tokens.getFirst().literal()).isCloseTo(0.5, within(0.000001));
     }
 
     // ==================== Scientific Notation ====================
@@ -103,9 +103,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize(input);
 
         assertThat(tokens).hasSize(2); // SCIENTIFIC + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.SCIENTIFIC);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo(input);
-        assertThat((Double) tokens.getFirst().getLiteral()).isCloseTo(expected, within(0.000001));
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.SCIENTIFIC);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
+        assertThat((Double) tokens.getFirst().literal()).isCloseTo(expected, within(0.000001));
     }
 
     // ==================== Rational Literals ====================
@@ -121,8 +121,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize(input);
 
         assertThat(tokens).hasSize(2); // RATIONAL + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.RATIONAL);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo(input);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.RATIONAL);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
     }
 
     // ==================== Decimal vs Range Disambiguation ====================
@@ -132,8 +132,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("1.5");
 
         assertThat(tokens).hasSize(2); // DECIMAL + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.DECIMAL);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo("1.5");
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.DECIMAL);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo("1.5");
     }
 
     @Test
@@ -141,12 +141,12 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("1..5");
 
         assertThat(tokens).hasSize(4); // INTEGER + RANGE + INTEGER + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.INTEGER);
-        assertThat(tokens.get(0).getLexeme()).isEqualTo("1");
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.RANGE);
-        assertThat(tokens.get(1).getLexeme()).isEqualTo("..");
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.INTEGER);
-        assertThat(tokens.get(2).getLexeme()).isEqualTo("5");
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.get(0).lexeme()).isEqualTo("1");
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.RANGE);
+        assertThat(tokens.get(1).lexeme()).isEqualTo("..");
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.get(2).lexeme()).isEqualTo("5");
     }
 
     @Test
@@ -154,9 +154,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("1.0..10.5");
 
         assertThat(tokens).hasSize(4); // DECIMAL + RANGE + DECIMAL + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.DECIMAL);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.RANGE);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.DECIMAL);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.DECIMAL);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.RANGE);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.DECIMAL);
     }
 
     // ==================== String Literals ====================
@@ -166,8 +166,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("\"hello world\"");
 
         assertThat(tokens).hasSize(2); // STRING + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.STRING);
-        assertThat(tokens.getFirst().getLiteral()).isEqualTo("hello world");
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.STRING);
+        assertThat(tokens.getFirst().literal()).isEqualTo("hello world");
     }
 
     @Test
@@ -175,8 +175,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("'hello world'");
 
         assertThat(tokens).hasSize(2); // STRING + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.STRING);
-        assertThat(tokens.getFirst().getLiteral()).isEqualTo("hello world");
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.STRING);
+        assertThat(tokens.getFirst().literal()).isEqualTo("hello world");
     }
 
     @Test
@@ -184,8 +184,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("\"hello\\nworld\\t!\"");
 
         assertThat(tokens).hasSize(2); // STRING + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.STRING);
-        assertThat(tokens.getFirst().getLiteral()).isEqualTo("hello\nworld\t!");
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.STRING);
+        assertThat(tokens.getFirst().literal()).isEqualTo("hello\nworld\t!");
     }
 
     @Test
@@ -193,8 +193,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("\"\"");
 
         assertThat(tokens).hasSize(2); // STRING + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.STRING);
-        assertThat(tokens.getFirst().getLiteral()).isEqualTo("");
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.STRING);
+        assertThat(tokens.getFirst().literal()).isEqualTo("");
     }
 
     @Test
@@ -219,8 +219,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize(input);
 
         assertThat(tokens).hasSize(2); // IDENTIFIER + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.IDENTIFIER);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo(input);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.IDENTIFIER);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
     }
 
     // ==================== Keywords ====================
@@ -240,8 +240,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize(input);
 
         assertThat(tokens).hasSize(2); // KEYWORD + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.KEYWORD);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo(input);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.KEYWORD);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
     }
 
     @Test
@@ -250,22 +250,22 @@ class LexerTest {
         List<Token> tokens;
 
         tokens = lexer.tokenize("and");
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.AND);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.AND);
 
         tokens = lexer.tokenize("or");
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.OR);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.OR);
 
         tokens = lexer.tokenize("not");
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.NOT);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.NOT);
 
         tokens = lexer.tokenize("xor");
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.XOR);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.XOR);
 
         tokens = lexer.tokenize("of");
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.OF);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.OF);
 
         tokens = lexer.tokenize("mod");
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.MOD);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.MOD);
     }
 
     // ==================== Functions ====================
@@ -287,8 +287,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize(input);
 
         assertThat(tokens).hasSize(2); // FUNCTION + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.FUNCTION);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo(input);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.FUNCTION);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
     }
 
     // ==================== Units ====================
@@ -308,8 +308,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize(input);
 
         assertThat(tokens).hasSize(2);
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.IDENTIFIER);
-        assertThat(tokens.getFirst().getLexeme()).isEqualTo(input);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.IDENTIFIER);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
     }
 
     // ==================== Operators ====================
@@ -319,12 +319,12 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("+ - * / ^ @");
 
         assertThat(tokens).hasSize(7); // 6 operators + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.PLUS);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.MINUS);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.MULTIPLY);
-        assertThat(tokens.get(3).getType()).isEqualTo(TokenType.DIVIDE);
-        assertThat(tokens.get(4).getType()).isEqualTo(TokenType.POWER);
-        assertThat(tokens.get(5).getType()).isEqualTo(TokenType.AT);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.PLUS);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.MINUS);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.MULTIPLY);
+        assertThat(tokens.get(3).type()).isEqualTo(TokenType.DIVIDE);
+        assertThat(tokens.get(4).type()).isEqualTo(TokenType.POWER);
+        assertThat(tokens.get(5).type()).isEqualTo(TokenType.AT);
     }
 
     @Test
@@ -332,12 +332,12 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("< > <= >= == !=");
 
         assertThat(tokens).hasSize(7); // 6 operators + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.LT);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.GT);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.LTE);
-        assertThat(tokens.get(3).getType()).isEqualTo(TokenType.GTE);
-        assertThat(tokens.get(4).getType()).isEqualTo(TokenType.EQ);
-        assertThat(tokens.get(5).getType()).isEqualTo(TokenType.NEQ);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.LT);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.GT);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.LTE);
+        assertThat(tokens.get(3).type()).isEqualTo(TokenType.GTE);
+        assertThat(tokens.get(4).type()).isEqualTo(TokenType.EQ);
+        assertThat(tokens.get(5).type()).isEqualTo(TokenType.NEQ);
     }
 
     @Test
@@ -345,8 +345,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("&& ||");
 
         assertThat(tokens).hasSize(3); // AND + OR + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.AND);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.OR);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.AND);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.OR);
     }
 
     @Test
@@ -354,9 +354,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("! !! %");
 
         assertThat(tokens).hasSize(4); // 3 operators + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.FACTORIAL);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.DOUBLE_FACTORIAL);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.PERCENT);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.FACTORIAL);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.DOUBLE_FACTORIAL);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.PERCENT);
     }
 
     @Test
@@ -364,8 +364,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize(":= ->");
 
         assertThat(tokens).hasSize(3); // ASSIGN + LAMBDA + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.ASSIGN);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.LAMBDA);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.ASSIGN);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.LAMBDA);
     }
 
     @Test
@@ -373,7 +373,7 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("..");
 
         assertThat(tokens).hasSize(2); // RANGE + EOF
-        assertThat(tokens.getFirst().getType()).isEqualTo(TokenType.RANGE);
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.RANGE);
     }
 
     // ==================== Structural Tokens ====================
@@ -383,15 +383,15 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("( ) { } [ ] , ; :");
 
         assertThat(tokens).hasSize(10); // 9 tokens + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.LPAREN);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.RPAREN);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.LBRACE);
-        assertThat(tokens.get(3).getType()).isEqualTo(TokenType.RBRACE);
-        assertThat(tokens.get(4).getType()).isEqualTo(TokenType.LBRACKET);
-        assertThat(tokens.get(5).getType()).isEqualTo(TokenType.RBRACKET);
-        assertThat(tokens.get(6).getType()).isEqualTo(TokenType.COMMA);
-        assertThat(tokens.get(7).getType()).isEqualTo(TokenType.SEMICOLON);
-        assertThat(tokens.get(8).getType()).isEqualTo(TokenType.COLON);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.LPAREN);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.RPAREN);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.LBRACE);
+        assertThat(tokens.get(3).type()).isEqualTo(TokenType.RBRACE);
+        assertThat(tokens.get(4).type()).isEqualTo(TokenType.LBRACKET);
+        assertThat(tokens.get(5).type()).isEqualTo(TokenType.RBRACKET);
+        assertThat(tokens.get(6).type()).isEqualTo(TokenType.COMMA);
+        assertThat(tokens.get(7).type()).isEqualTo(TokenType.SEMICOLON);
+        assertThat(tokens.get(8).type()).isEqualTo(TokenType.COLON);
     }
 
     // ==================== Implicit Multiplication ====================
@@ -401,11 +401,11 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("2x");
 
         assertThat(tokens).hasSize(4); // INTEGER + MULTIPLY + IDENTIFIER + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.INTEGER);
-        assertThat(tokens.get(0).getLexeme()).isEqualTo("2");
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.MULTIPLY);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.IDENTIFIER);
-        assertThat(tokens.get(2).getLexeme()).isEqualTo("x");
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.get(0).lexeme()).isEqualTo("2");
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.MULTIPLY);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.IDENTIFIER);
+        assertThat(tokens.get(2).lexeme()).isEqualTo("x");
     }
 
     @Test
@@ -413,10 +413,10 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("2(x+1)");
 
         assertThat(tokens).hasSize(8); // INTEGER + MULTIPLY + LPAREN + IDENTIFIER + PLUS + INTEGER + RPAREN + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.INTEGER);
-        assertThat(tokens.get(0).getLexeme()).isEqualTo("2");
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.MULTIPLY);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.LPAREN);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.get(0).lexeme()).isEqualTo("2");
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.MULTIPLY);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.LPAREN);
     }
 
     @Test
@@ -424,9 +424,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("(a)(b)");
 
         assertThat(tokens).hasSize(8); // LPAREN + IDENTIFIER + RPAREN + MULTIPLY + LPAREN + IDENTIFIER + RPAREN + EOF
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.RPAREN);
-        assertThat(tokens.get(3).getType()).isEqualTo(TokenType.MULTIPLY);
-        assertThat(tokens.get(4).getType()).isEqualTo(TokenType.LPAREN);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.RPAREN);
+        assertThat(tokens.get(3).type()).isEqualTo(TokenType.MULTIPLY);
+        assertThat(tokens.get(4).type()).isEqualTo(TokenType.LPAREN);
     }
 
     @Test
@@ -434,10 +434,10 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("2pi");
 
         assertThat(tokens).hasSize(4); // INTEGER + MULTIPLY + IDENTIFIER(pi) + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.INTEGER);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.MULTIPLY);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.IDENTIFIER);
-        assertThat(tokens.get(2).getLexeme()).isEqualTo("pi");
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.MULTIPLY);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.IDENTIFIER);
+        assertThat(tokens.get(2).lexeme()).isEqualTo("pi");
     }
 
     @Test
@@ -445,9 +445,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("100meters");
 
         assertThat(tokens).hasSize(4);
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.INTEGER);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.MULTIPLY);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.IDENTIFIER);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.MULTIPLY);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.IDENTIFIER);
     }
 
     @Test
@@ -455,9 +455,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("(x)2");
 
         assertThat(tokens).hasSize(6); // LPAREN + IDENTIFIER + RPAREN + MULTIPLY + INTEGER + EOF
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.RPAREN);
-        assertThat(tokens.get(3).getType()).isEqualTo(TokenType.MULTIPLY);
-        assertThat(tokens.get(4).getType()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.RPAREN);
+        assertThat(tokens.get(3).type()).isEqualTo(TokenType.MULTIPLY);
+        assertThat(tokens.get(4).type()).isEqualTo(TokenType.INTEGER);
     }
 
     @Test
@@ -465,8 +465,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("sin(x)");
 
         assertThat(tokens).hasSize(5); // FUNCTION + LPAREN + IDENTIFIER + RPAREN + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.FUNCTION);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.LPAREN);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.FUNCTION);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.LPAREN);
         // No MULTIPLY token between FUNCTION and LPAREN
     }
 
@@ -477,11 +477,11 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("2 + 3 * 4");
 
         assertThat(tokens).hasSize(6); // INTEGER + PLUS + INTEGER + MULTIPLY + INTEGER + EOF
-        assertThat(tokens.get(0).getLexeme()).isEqualTo("2");
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.PLUS);
-        assertThat(tokens.get(2).getLexeme()).isEqualTo("3");
-        assertThat(tokens.get(3).getType()).isEqualTo(TokenType.MULTIPLY);
-        assertThat(tokens.get(4).getLexeme()).isEqualTo("4");
+        assertThat(tokens.get(0).lexeme()).isEqualTo("2");
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.PLUS);
+        assertThat(tokens.get(2).lexeme()).isEqualTo("3");
+        assertThat(tokens.get(3).type()).isEqualTo(TokenType.MULTIPLY);
+        assertThat(tokens.get(4).lexeme()).isEqualTo("4");
     }
 
     @Test
@@ -489,9 +489,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("x := 5");
 
         assertThat(tokens).hasSize(4); // IDENTIFIER + ASSIGN + INTEGER + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.IDENTIFIER);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.ASSIGN);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.IDENTIFIER);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.ASSIGN);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.INTEGER);
     }
 
     @Test
@@ -499,10 +499,10 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("x -> x^2");
 
         assertThat(tokens).hasSize(6); // IDENTIFIER + LAMBDA + IDENTIFIER + POWER + INTEGER + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.IDENTIFIER);
-        assertThat(tokens.get(1).getType()).isEqualTo(TokenType.LAMBDA);
-        assertThat(tokens.get(2).getType()).isEqualTo(TokenType.IDENTIFIER);
-        assertThat(tokens.get(3).getType()).isEqualTo(TokenType.POWER);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.IDENTIFIER);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.LAMBDA);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.IDENTIFIER);
+        assertThat(tokens.get(3).type()).isEqualTo(TokenType.POWER);
     }
 
     @Test
@@ -510,8 +510,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("{1, 2, 3}");
 
         assertThat(tokens).hasSize(8); // LBRACE + INTEGER + COMMA + INTEGER + COMMA + INTEGER + RBRACE + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.LBRACE);
-        assertThat(tokens.get(6).getType()).isEqualTo(TokenType.RBRACE);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.LBRACE);
+        assertThat(tokens.get(6).type()).isEqualTo(TokenType.RBRACE);
     }
 
     @Test
@@ -519,9 +519,9 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("[1, 2; 3, 4]");
 
         assertThat(tokens).hasSize(10); // LBRACKET + ... + RBRACKET + EOF
-        assertThat(tokens.get(0).getType()).isEqualTo(TokenType.LBRACKET);
-        assertThat(tokens.get(4).getType()).isEqualTo(TokenType.SEMICOLON);
-        assertThat(tokens.get(8).getType()).isEqualTo(TokenType.RBRACKET);
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.LBRACKET);
+        assertThat(tokens.get(4).type()).isEqualTo(TokenType.SEMICOLON);
+        assertThat(tokens.get(8).type()).isEqualTo(TokenType.RBRACKET);
     }
 
     // ==================== Whitespace Handling ====================
@@ -538,8 +538,8 @@ class LexerTest {
         List<Token> tokens = lexer.tokenize("x := 5\ny := 10");
 
         assertThat(tokens).hasSize(7); // IDENTIFIER + ASSIGN + INTEGER + IDENTIFIER + ASSIGN + INTEGER + EOF (no implicit mult across lines)
-        assertThat(tokens.get(0).getLine()).isEqualTo(1);
-        assertThat(tokens.get(3).getLine()).isEqualTo(2); // y is on line 2
+        assertThat(tokens.get(0).line()).isEqualTo(1);
+        assertThat(tokens.get(3).line()).isEqualTo(2); // y is on line 2
     }
 
     // ==================== Error Cases ====================
@@ -585,11 +585,11 @@ class LexerTest {
     void trackLineAndColumnNumbers() {
         List<Token> tokens = lexer.tokenize("2 + 3");
 
-        assertThat(tokens.get(0).getLine()).isEqualTo(1);
-        assertThat(tokens.get(0).getColumn()).isEqualTo(1);
-        assertThat(tokens.get(1).getLine()).isEqualTo(1);
-        assertThat(tokens.get(1).getColumn()).isEqualTo(3);
-        assertThat(tokens.get(2).getLine()).isEqualTo(1);
-        assertThat(tokens.get(2).getColumn()).isEqualTo(5);
+        assertThat(tokens.get(0).line()).isEqualTo(1);
+        assertThat(tokens.get(0).column()).isEqualTo(1);
+        assertThat(tokens.get(1).line()).isEqualTo(1);
+        assertThat(tokens.get(1).column()).isEqualTo(3);
+        assertThat(tokens.get(2).line()).isEqualTo(1);
+        assertThat(tokens.get(2).column()).isEqualTo(5);
     }
 }

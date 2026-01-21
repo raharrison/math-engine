@@ -1,17 +1,15 @@
 package uk.co.ryanharrison.mathengine.parser.operator.binary;
 
-import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
 import uk.co.ryanharrison.mathengine.parser.operator.MatrixOperations;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeMatrix;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+
+import java.util.List;
 
 /**
- * Matrix multiplication operator (@).
+ * At (@).
  * <p>
  * Supports:
  * <ul>
@@ -22,14 +20,14 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
  * <p>
  * This is NOT element-wise multiplication. For element-wise, use {@link MultiplyOperator} (*).
  */
-public final class MatrixMultiplyOperator implements BinaryOperator {
+public final class AtOperator implements BinaryOperator {
 
     /**
      * Singleton instance
      */
-    public static final MatrixMultiplyOperator INSTANCE = new MatrixMultiplyOperator();
+    public static final AtOperator INSTANCE = new AtOperator();
 
-    private MatrixMultiplyOperator() {
+    private AtOperator() {
     }
 
     @Override
@@ -39,7 +37,7 @@ public final class MatrixMultiplyOperator implements BinaryOperator {
 
     @Override
     public String displayName() {
-        return "matrix multiplication";
+        return "at";
     }
 
     @Override
@@ -61,7 +59,7 @@ public final class MatrixMultiplyOperator implements BinaryOperator {
 
         // Vector @ Function: map operation
         if (left instanceof NodeVector vector && right instanceof NodeFunction func) {
-            return vectorMap(vector, func.getFunction(), ctx);
+            return vectorMap(vector, func, ctx);
         }
 
         throw new TypeError("@ operator requires (Matrix @ Matrix), (Vector @ Vector), or (Vector @ Function), got " +
@@ -70,13 +68,24 @@ public final class MatrixMultiplyOperator implements BinaryOperator {
 
     /**
      * Applies a function to each element of a vector (map operation).
-     * {1,2,3} @ (x -> x*2) → {2,4,6}
+     * <p>
+     * Example: {1,2,3} @ (x -> x*2) → {2,4,6}
+     *
+     * @param vector the input vector
+     * @param func   the function to apply to each element
+     * @param ctx    the operator context (must have function calling capability)
+     * @return a new vector with the function applied to each element
      */
-    private NodeConstant vectorMap(NodeVector vector, FunctionDefinition func, OperatorContext ctx) {
-        // Note: This requires access to the evaluator to call the function.
-        // For now, we throw an error. The Evaluator will handle this specially.
-        throw new UnsupportedOperationException(
-                "Vector @ Function map operation must be handled by the Evaluator");
+    private NodeConstant vectorMap(NodeVector vector, NodeFunction func, OperatorContext ctx) {
+        Node[] elements = vector.getElements();
+        Node[] results = new Node[elements.length];
+
+        for (int i = 0; i < elements.length; i++) {
+            NodeConstant element = (NodeConstant) elements[i];
+            results[i] = ctx.callFunction(func, List.of(element));
+        }
+
+        return new NodeVector(results);
     }
 }
 

@@ -91,7 +91,7 @@ public final class Parser {
      * @throws ParseException if a syntax error occurs
      */
     public Node parse() {
-        if (stream.size() == 0 || (stream.size() == 1 && stream.peek().getType() == TokenType.EOF)) {
+        if (stream.size() == 0 || (stream.size() == 1 && stream.peek().type() == TokenType.EOF)) {
             throw stream.error(stream.peek(), "Empty expression");
         }
 

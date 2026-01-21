@@ -1,12 +1,12 @@
 package uk.co.ryanharrison.mathengine.parser.operator;
 
-import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationException;
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Executor for operators that manages registration and execution.
@@ -72,18 +72,17 @@ public final class OperatorExecutor {
      * @param tokenType the operator token type
      * @param left      the left operand
      * @param right     the right operand
-     * @param context   the evaluation context
+     * @param ctx       the operator context (caller constructs with appropriate capabilities)
      * @return the result of the operation
      * @throws EvaluationException if the operator is not registered
      */
     public NodeConstant executeBinary(TokenType tokenType, NodeConstant left,
-                                      NodeConstant right, EvaluationContext context) {
+                                      NodeConstant right, OperatorContext ctx) {
         BinaryOperator operator = binaryOperators.get(tokenType);
         if (operator == null) {
             throw new EvaluationException("Unsupported binary operator: " + tokenType);
         }
 
-        OperatorContext ctx = new OperatorContext(context);
         return operator.apply(left, right, ctx);
     }
 
@@ -96,18 +95,16 @@ public final class OperatorExecutor {
      * @param tokenType      the operator token type
      * @param left           the evaluated left operand
      * @param rightEvaluator lazy evaluator for the right operand
-     * @param context        the evaluation context
+     * @param ctx            the operator context (caller constructs with appropriate capabilities)
      * @return the result of the operation
      */
     public NodeConstant executeBinaryShortCircuit(TokenType tokenType, NodeConstant left,
-                                                  java.util.function.Supplier<NodeConstant> rightEvaluator,
-                                                  EvaluationContext context) {
+                                                  Supplier<NodeConstant> rightEvaluator,
+                                                  OperatorContext ctx) {
         BinaryOperator operator = binaryOperators.get(tokenType);
         if (operator == null) {
             throw new EvaluationException("Unsupported binary operator: " + tokenType);
         }
-
-        OperatorContext ctx = new OperatorContext(context);
 
         // Check for short-circuit
         if (operator.requiresShortCircuit()) {
@@ -127,18 +124,17 @@ public final class OperatorExecutor {
      *
      * @param tokenType the operator token type
      * @param operand   the operand
-     * @param context   the evaluation context
+     * @param ctx       the operator context
      * @return the result of the operation
      * @throws EvaluationException if the operator is not registered
      */
     public NodeConstant executeUnary(TokenType tokenType, NodeConstant operand,
-                                     EvaluationContext context) {
+                                     OperatorContext ctx) {
         UnaryOperator operator = unaryOperators.get(tokenType);
         if (operator == null) {
             throw new EvaluationException("Unsupported unary operator: " + tokenType);
         }
 
-        OperatorContext ctx = new OperatorContext(context);
         return operator.apply(operand, ctx);
     }
 }

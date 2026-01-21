@@ -9,15 +9,8 @@ import java.util.List;
  * Supports singular and plural forms for proper grammatical output.
  * </p>
  */
-public final class UnitDefinition {
-
-    private final String singularName;
-    private final String pluralName;
-    private final String type;
-    private final String baseUnit;
-    private final double multiplier;
-    private final double offset;
-    private final List<String> aliases;
+public record UnitDefinition(String singularName, String pluralName, String type, String baseUnit, double multiplier,
+                             double offset, List<String> aliases) {
 
     /**
      * Creates a unit definition with singular and plural names.
@@ -51,14 +44,16 @@ public final class UnitDefinition {
     /**
      * Returns the singular form of the unit name.
      */
-    public String getSingularName() {
+    @Override
+    public String singularName() {
         return singularName;
     }
 
     /**
      * Returns the plural form of the unit name.
      */
-    public String getPluralName() {
+    @Override
+    public String pluralName() {
         return pluralName;
     }
 
@@ -71,26 +66,6 @@ public final class UnitDefinition {
      */
     public String getDisplayName(double value) {
         return value == 1.0 ? singularName : pluralName;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getBaseUnit() {
-        return baseUnit;
-    }
-
-    public double getMultiplier() {
-        return multiplier;
-    }
-
-    public double getOffset() {
-        return offset;
-    }
-
-    public List<String> getAliases() {
-        return aliases;
     }
 
     /**

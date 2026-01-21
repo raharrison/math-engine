@@ -144,13 +144,13 @@ public final class UnitRegistry {
      */
     public void register(UnitDefinition unit) {
         // Register singular name
-        units.put(unit.getSingularName().toLowerCase(), unit);
+        units.put(unit.singularName().toLowerCase(), unit);
 
         // Register plural name
-        units.put(unit.getPluralName().toLowerCase(), unit);
+        units.put(unit.pluralName().toLowerCase(), unit);
 
         // Register aliases
-        for (String alias : unit.getAliases()) {
+        for (String alias : unit.aliases()) {
             units.put(alias.toLowerCase(), unit);
         }
     }
@@ -179,7 +179,7 @@ public final class UnitRegistry {
         // So we need to deduplicate based on singular name
         Map<String, UnitDefinition> uniqueUnits = new java.util.LinkedHashMap<>();
         for (UnitDefinition unit : units.values()) {
-            uniqueUnits.putIfAbsent(unit.getSingularName(), unit);
+            uniqueUnits.putIfAbsent(unit.singularName(), unit);
         }
         return uniqueUnits.values();
     }

@@ -62,7 +62,7 @@ public final class IdentifierSplitter {
         List<Token> result = new ArrayList<>();
 
         for (Token token : tokens) {
-            if (token.getType() == TokenType.IDENTIFIER) {
+            if (token.type() == TokenType.IDENTIFIER) {
                 List<Token> splitTokens = trySplitIdentifier(token);
                 result.addAll(splitTokens);
             } else {
@@ -80,7 +80,7 @@ public final class IdentifierSplitter {
      * @return list containing split tokens, or just the original token if no split
      */
     private List<Token> trySplitIdentifier(Token token) {
-        String text = token.getLexeme();
+        String text = token.lexeme();
 
         // If it's a known function/unit/constant as-is, don't split
         if (isKnownIdentifier(text)) {
@@ -124,9 +124,9 @@ public final class IdentifierSplitter {
      * @return split tokens, or null if no split possible
      */
     private List<Token> trySplitAtDigits(Token token) {
-        String text = token.getLexeme();
-        int line = token.getLine();
-        int col = token.getColumn();
+        String text = token.lexeme();
+        int line = token.line();
+        int col = token.column();
 
         // Find first digit
         int digitStart = findFirstDigit(text);
@@ -204,9 +204,9 @@ public final class IdentifierSplitter {
      * @return split tokens, or null if no split possible
      */
     private List<Token> trySplitAtFunctionSuffix(Token token) {
-        String text = token.getLexeme();
-        int line = token.getLine();
-        int col = token.getColumn();
+        String text = token.lexeme();
+        int line = token.line();
+        int col = token.column();
 
         // Try progressively shorter prefixes to find the longest matching suffix
         for (int i = 1; i < text.length(); i++) {

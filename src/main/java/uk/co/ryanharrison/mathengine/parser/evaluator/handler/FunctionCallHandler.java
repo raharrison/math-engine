@@ -3,9 +3,10 @@ package uk.co.ryanharrison.mathengine.parser.evaluator.handler;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
 import uk.co.ryanharrison.mathengine.parser.evaluator.*;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
-import uk.co.ryanharrison.mathengine.parser.operator.BroadcastingDispatcher;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
+import uk.co.ryanharrison.mathengine.parser.operator.binary.MultiplyOperator;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import java.util.function.Function;
  *     <li>Regular functions use dynamic scoping (use context at call time)</li>
  * </ul>
  */
-public final class FunctionCallHandler {
+public final class FunctionCallHandler implements FunctionCaller {
 
     private final MathEngineConfig config;
     private final FunctionExecutor functionExecutor;
@@ -66,54 +67,14 @@ public final class FunctionCallHandler {
         this.evaluator = evaluator;
         this.contextPusher = contextPusher;
         this.contextPopper = contextPopper;
-
-        // Set up function caller for higher-order functions (map, filter, reduce)
-        functionExecutor.setFunctionCaller((function, args, context) -> {
-            // Call the user function with already-evaluated arguments
-            return callUserFunctionWithEvaluatedArgs(function.getFunction(), args, context);
-        });
     }
 
-    /**
-     * Calls a user-defined function with already-evaluated arguments.
-     * Used by higher-order functions (map, filter, reduce).
-     */
-    private NodeConstant callUserFunctionWithEvaluatedArgs(
-            FunctionDefinition function,
-            List<NodeConstant> evaluatedArgs,
-            EvaluationContext context) {
+    // ==================== FunctionCaller Implementation ====================
 
-        if (evaluatedArgs.size() != function.getArity()) {
-            throw new ArityException("Function '" + function.getName() + "' expects " +
-                    function.getArity() + " argument(s), got " + evaluatedArgs.size());
-        }
-
-        // Create bindings from evaluated arguments
-        Map<String, NodeConstant> bindings = new HashMap<>();
-        List<String> params = function.getParameters();
-        for (int i = 0; i < params.size(); i++) {
-            bindings.put(params.get(i), evaluatedArgs.get(i));
-        }
-
-        // Determine parent context based on scoping rules
-        EvaluationContext parentContext = function.hasLexicalScope()
-                ? function.getClosure()
-                : context;
-
-        // Create child context with parameter bindings
-        EvaluationContext childContext = parentContext.withBindings(bindings);
-        childContext.enterFunction(function.getName());
-
-        try {
-            EvaluationContext oldContext = contextPusher.apply(childContext);
-            try {
-                return evaluator.apply(function.getBody());
-            } finally {
-                contextPopper.accept(childContext, oldContext);
-            }
-        } finally {
-            childContext.exitFunction();
-        }
+    @Override
+    public NodeConstant call(NodeFunction function, List<NodeConstant> args, EvaluationContext context) {
+        List<Node> nodeArgs = new ArrayList<>(args);
+        return evaluate(new NodeCall(function, nodeArgs), context);
     }
 
     /**
@@ -219,10 +180,8 @@ public final class FunctionCallHandler {
                 NodeConstant funcResult = callBuiltinFunction(funcPart, arguments, context);
 
                 if (TypeCoercion.isNumericOrCollection(varValue) && TypeCoercion.isNumericOrCollection(funcResult)) {
-                    OperatorContext opCtx = new OperatorContext(context);
-                    return BroadcastingDispatcher.dispatch(varValue, funcResult, opCtx, (l, r) ->
-                            opCtx.applyNumericBinary(l, r, uk.co.ryanharrison.mathengine.core.BigRational::multiply, (a, b) -> a * b)
-                    );
+                    OperatorContext opCtx = new OperatorContext(context, this);
+                    return MultiplyOperator.INSTANCE.apply(varValue, funcResult, opCtx);
                 }
             }
         }
@@ -280,13 +239,13 @@ public final class FunctionCallHandler {
      */
     private NodeConstant callUserFunction(FunctionDefinition function, List<Node> argumentNodes, EvaluationContext context) {
         if (argumentNodes.size() != function.getArity()) {
-            throw new ArityException("Function '" + function.getName() + "' expects " +
+            throw new ArityException("Function '" + function.name() + "' expects " +
                     function.getArity() + " argument(s), got " + argumentNodes.size());
         }
 
         // Evaluate arguments eagerly
         Map<String, NodeConstant> bindings = new HashMap<>();
-        List<String> params = function.getParameters();
+        List<String> params = function.parameters();
         for (int i = 0; i < params.size(); i++) {
             NodeConstant argValue = evaluator.apply(argumentNodes.get(i));
             bindings.put(params.get(i), argValue);
@@ -294,17 +253,17 @@ public final class FunctionCallHandler {
 
         // Determine parent context based on scoping rules
         EvaluationContext parentContext = function.hasLexicalScope()
-                ? function.getClosure()
+                ? function.closure()
                 : context;
 
         // Create child context with parameter bindings
         EvaluationContext childContext = parentContext.withBindings(bindings);
-        childContext.enterFunction(function.getName());
+        childContext.enterFunction(function.name());
 
         try {
             EvaluationContext oldContext = contextPusher.apply(childContext);
             try {
-                return evaluator.apply(function.getBody());
+                return evaluator.apply(function.body());
             } finally {
                 contextPopper.accept(childContext, oldContext);
             }
@@ -321,7 +280,7 @@ public final class FunctionCallHandler {
         for (Node argNode : argumentNodes) {
             arguments.add(evaluator.apply(argNode));
         }
-        return functionExecutor.execute(name, arguments, context);
+        return functionExecutor.execute(name, arguments, context, this);
     }
 
     /**
@@ -358,10 +317,8 @@ public final class FunctionCallHandler {
             NodeConstant argValue = evaluator.apply(args.getFirst());
 
             if (TypeCoercion.isNumericOrCollection(calleeValue) && TypeCoercion.isNumericOrCollection(argValue)) {
-                OperatorContext opCtx = new OperatorContext(context);
-                return BroadcastingDispatcher.dispatch(calleeValue, argValue, opCtx, (l, r) ->
-                        opCtx.applyNumericBinary(l, r, uk.co.ryanharrison.mathengine.core.BigRational::multiply, (a, b) -> a * b)
-                );
+                OperatorContext opCtx = new OperatorContext(context, this);
+                return MultiplyOperator.INSTANCE.apply(calleeValue, argValue, opCtx);
             }
         }
 

@@ -62,7 +62,7 @@ public class JsonTestLoader {
      */
     public static List<JsonTestCase> loadAllTestCases(List<JsonTestSuite> suites) {
         return suites.stream()
-                .flatMap(suite -> suite.getTests().stream())
+                .flatMap(suite -> suite.tests().stream())
                 .collect(Collectors.toList());
     }
 }

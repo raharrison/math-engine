@@ -1,13 +1,12 @@
 package uk.co.ryanharrison.mathengine.parser.evaluator.handler;
 
-import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
 import uk.co.ryanharrison.mathengine.parser.evaluator.ResolutionContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.UndefinedVariableException;
-import uk.co.ryanharrison.mathengine.parser.operator.BroadcastingDispatcher;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
+import uk.co.ryanharrison.mathengine.parser.operator.binary.MultiplyOperator;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeUnit;
@@ -91,13 +90,14 @@ public final class VariableResolver {
      * could represent multiple entities (variable, function, unit).
      *
      * @param node              the variable node to resolve
-     * @param context           the evaluation context containing variables and functions
      * @param resolutionContext the syntactic context (determines priority)
+     * @param opCtx             the operator context (contains evaluation context, used for implicit multiplication)
      * @return the resolved value
      * @throws UndefinedVariableException if the variable cannot be resolved
      */
-    public NodeConstant resolve(NodeVariable node, EvaluationContext context, ResolutionContext resolutionContext) {
+    public NodeConstant resolve(NodeVariable node, ResolutionContext resolutionContext, OperatorContext opCtx) {
         String name = node.getName();
+        EvaluationContext context = opCtx.getEvaluationContext();
 
         return switch (resolutionContext) {
             case ASSIGNMENT_TARGET ->
@@ -106,8 +106,8 @@ public final class VariableResolver {
                     throw new IllegalStateException("ASSIGNMENT_TARGET context not supported for variable resolution");
 
             case CALL_TARGET -> resolveAsCallTarget(name, context);
-            case POSTFIX_UNIT -> resolveAsPostfixUnit(name, context);
-            case GENERAL -> resolveAsGeneral(name, context);
+            case POSTFIX_UNIT -> resolveAsPostfixUnit(name, context, opCtx);
+            case GENERAL -> resolveAsGeneral(name, context, opCtx);
         };
     }
 
@@ -150,10 +150,11 @@ public final class VariableResolver {
      *
      * @param name    the identifier name
      * @param context the evaluation context
+     * @param opCtx   the operator context for implicit multiplication
      * @return the resolved value
      * @throws UndefinedVariableException if not found
      */
-    private NodeConstant resolveAsPostfixUnit(String name, EvaluationContext context) {
+    private NodeConstant resolveAsPostfixUnit(String name, EvaluationContext context, OperatorContext opCtx) {
         // Units have priority after numbers
         UnitRegistry unitRegistry = context.getUnitRegistry();
         if (unitRegistry != null && unitRegistry.isUnit(name)) {
@@ -166,8 +167,8 @@ public final class VariableResolver {
         }
 
         // Try implicit multiplication
-        if (config.implicitMultiplication()) {
-            NodeConstant splitResult = trySplitIntoVariables(name, context);
+        if (config.implicitMultiplication() && opCtx != null) {
+            NodeConstant splitResult = trySplitIntoVariables(name, context, opCtx);
             if (splitResult != null) {
                 return splitResult;
             }
@@ -186,10 +187,11 @@ public final class VariableResolver {
      *
      * @param name    the identifier name
      * @param context the evaluation context
+     * @param opCtx   the operator context for implicit multiplication
      * @return the resolved value
      * @throws UndefinedVariableException if not found
      */
-    private NodeConstant resolveAsGeneral(String name, EvaluationContext context) {
+    private NodeConstant resolveAsGeneral(String name, EvaluationContext context, OperatorContext opCtx) {
         // Variables have highest priority (allows shadowing units/functions)
         if (context.isDefined(name)) {
             return context.resolve(name);
@@ -208,8 +210,8 @@ public final class VariableResolver {
         }
 
         // Implicit multiplication as last resort
-        if (config.implicitMultiplication()) {
-            NodeConstant splitResult = trySplitIntoVariables(name, context);
+        if (config.implicitMultiplication() && opCtx != null) {
+            NodeConstant splitResult = trySplitIntoVariables(name, context, opCtx);
             if (splitResult != null) {
                 return splitResult;
             }
@@ -284,9 +286,10 @@ public final class VariableResolver {
      *
      * @param name    the identifier to split
      * @param context the evaluation context
+     * @param opCtx   the operator context for multiplication
      * @return the result of multiplying the split variables, or null if not possible
      */
-    private NodeConstant trySplitIntoVariables(String name, EvaluationContext context) {
+    private NodeConstant trySplitIntoVariables(String name, EvaluationContext context, OperatorContext opCtx) {
         if (name.length() <= 1) {
             return null;
         }
@@ -297,15 +300,12 @@ public final class VariableResolver {
         }
 
         NodeConstant result = null;
-        OperatorContext opCtx = new OperatorContext(context);
         for (String part : parts) {
             NodeConstant value = context.resolve(part);
             if (result == null) {
                 result = value;
             } else {
-                result = BroadcastingDispatcher.dispatch(result, value, opCtx, (l, r) ->
-                        opCtx.applyNumericBinary(l, r, BigRational::multiply, (a, b) -> a * b)
-                );
+                result = MultiplyOperator.INSTANCE.apply(result, value, opCtx);
             }
         }
 

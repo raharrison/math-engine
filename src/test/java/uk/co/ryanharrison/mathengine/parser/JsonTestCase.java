@@ -1,7 +1,5 @@
 package uk.co.ryanharrison.mathengine.parser;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Represents a test case loaded from JSON.
  * <p>
@@ -35,146 +33,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *     <li>maxRecursionDepth: int</li>
  * </ul>
  */
-public class JsonTestCase {
+public record JsonTestCase(
+        String id,
+        String input,
+        Object expected,
+        String expectedType,
+        String evaluationOrder,
+        String notes,
+        Boolean skipTest,
+        Boolean expectError,
+        String expectedErrorType,
+        TestConfig config,
+        Double tolerance
+) {
 
-    @JsonProperty("id")
-    private String id;
-
-    @JsonProperty("input")
-    private String input;
-
-    @JsonProperty("expected")
-    private Object expected;
-
-    @JsonProperty("expectedType")
-    private String expectedType;
-
-    @JsonProperty("evaluationOrder")
-    private String evaluationOrder;
-
-    @JsonProperty("notes")
-    private String notes;
-
-    @JsonProperty("skipTest")
-    private Boolean skipTest;
-
-    @JsonProperty("expectError")
-    private Boolean expectError;
-
-    @JsonProperty("expectedErrorType")
-    private String expectedErrorType;
-
-    @JsonProperty("config")
-    private TestConfig config;
-
-    @JsonProperty("tolerance")
-    private Double tolerance;
-
-    // Default constructor for Jackson
-    public JsonTestCase() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getInput() {
-        return input;
-    }
-
-    public void setInput(String input) {
-        this.input = input;
-    }
-
-    public Object getExpected() {
-        return expected;
-    }
-
-    public void setExpected(Object expected) {
-        this.expected = expected;
-    }
-
-    public String getExpectedType() {
-        return expectedType;
-    }
-
-    public void setExpectedType(String expectedType) {
-        this.expectedType = expectedType;
-    }
-
-    public String getEvaluationOrder() {
-        return evaluationOrder;
-    }
-
-    public void setEvaluationOrder(String evaluationOrder) {
-        this.evaluationOrder = evaluationOrder;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public Boolean getSkipTest() {
-        return skipTest;
-    }
-
-    public void setSkipTest(Boolean skipTest) {
-        this.skipTest = skipTest;
-    }
-
+    /**
+     * Check if this test should be skipped.
+     */
     public boolean shouldSkip() {
         return Boolean.TRUE.equals(skipTest);
     }
 
-    public Boolean getExpectError() {
-        return expectError;
-    }
-
-    public void setExpectError(Boolean expectError) {
-        this.expectError = expectError;
-    }
-
+    /**
+     * Check if this test expects an error.
+     */
     public boolean shouldExpectError() {
         return Boolean.TRUE.equals(expectError);
-    }
-
-    public String getExpectedErrorType() {
-        return expectedErrorType;
-    }
-
-    public void setExpectedErrorType(String expectedErrorType) {
-        this.expectedErrorType = expectedErrorType;
-    }
-
-    public TestConfig getConfig() {
-        return config;
-    }
-
-    public void setConfig(TestConfig config) {
-        this.config = config;
-    }
-
-    /**
-     * Check if this test has configuration overrides.
-     */
-    public boolean hasConfig() {
-        return config != null;
-    }
-
-    public Double getTolerance() {
-        return tolerance;
-    }
-
-    public void setTolerance(Double tolerance) {
-        this.tolerance = tolerance;
     }
 
     /**

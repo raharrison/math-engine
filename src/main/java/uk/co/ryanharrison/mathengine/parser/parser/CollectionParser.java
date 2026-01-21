@@ -118,7 +118,7 @@ public final class CollectionParser {
 
             stream.expectKeyword("in");
             Node iterable = expressionParser.get();
-            iterators.add(new NodeComprehension.Iterator(var.getLexeme(), iterable));
+            iterators.add(new NodeComprehension.Iterator(var.lexeme(), iterable));
         }
 
         Node condition = null;

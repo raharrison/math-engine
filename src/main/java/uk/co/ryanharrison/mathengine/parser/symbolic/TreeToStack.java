@@ -40,7 +40,7 @@ public final class TreeToStack {
         // Handle binary operators
         else if (tree instanceof NodeBinary binary) {
             String treeStr = tree.toString();
-            TokenType opType = binary.getOperator().getType();
+            TokenType opType = binary.getOperator().type();
 
             // Map token type to operator character
             char op = mapTokenToOperator(opType);
@@ -52,7 +52,7 @@ public final class TreeToStack {
         }
         // Handle unary operators (negation)
         else if (tree instanceof NodeUnary unary) {
-            TokenType opType = unary.getOperator().getType();
+            TokenType opType = unary.getOperator().type();
 
             if (opType.equals(TokenType.MINUS)) {
                 // Handle as multiplication by -1

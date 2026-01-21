@@ -51,14 +51,14 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level should be addition
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("+");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("+");
         assertThat(binary.getLeft()).isInstanceOf(NodeRational.class);
         assertThat(((NodeRational) binary.getLeft()).getValue().longValue()).isEqualTo(2);
 
         // Right side should be multiplication
         assertThat(binary.getRight()).isInstanceOf(NodeBinary.class);
         NodeBinary mult = (NodeBinary) binary.getRight();
-        assertThat(mult.getOperator().getLexeme()).isEqualTo("*");
+        assertThat(mult.getOperator().lexeme()).isEqualTo("*");
     }
 
     @Test
@@ -70,12 +70,12 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level should be addition
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("+");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("+");
 
         // Left side should be division
         assertThat(binary.getLeft()).isInstanceOf(NodeBinary.class);
         NodeBinary div = (NodeBinary) binary.getLeft();
-        assertThat(div.getOperator().getLexeme()).isEqualTo("/");
+        assertThat(div.getOperator().lexeme()).isEqualTo("/");
     }
 
     @Test
@@ -87,12 +87,12 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level should be multiplication
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("*");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("*");
 
         // Right side should be exponentiation
         assertThat(binary.getRight()).isInstanceOf(NodeBinary.class);
         NodeBinary pow = (NodeBinary) binary.getRight();
-        assertThat(pow.getOperator().getLexeme()).isEqualTo("^");
+        assertThat(pow.getOperator().lexeme()).isEqualTo("^");
     }
 
     @Test
@@ -105,12 +105,12 @@ class ParserTest {
         NodeUnary unary = (NodeUnary) node;
 
         // Top level should be negation
-        assertThat(unary.getOperator().getLexeme()).isEqualTo("-");
+        assertThat(unary.getOperator().lexeme()).isEqualTo("-");
 
         // Child should be exponentiation
         assertThat(unary.getOperand()).isInstanceOf(NodeBinary.class);
         NodeBinary binary = (NodeBinary) unary.getOperand();
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("^");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("^");
     }
 
     @Test
@@ -122,12 +122,12 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level should be exponentiation
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("^");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("^");
 
         // Left side should be negation
         assertThat(binary.getLeft()).isInstanceOf(NodeUnary.class);
         NodeUnary unary = (NodeUnary) binary.getLeft();
-        assertThat(unary.getOperator().getLexeme()).isEqualTo("-");
+        assertThat(unary.getOperator().lexeme()).isEqualTo("-");
     }
 
     @Test
@@ -139,12 +139,12 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level should be less-than comparison
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("<");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("<");
 
         // Left side should be addition
         assertThat(binary.getLeft()).isInstanceOf(NodeBinary.class);
         NodeBinary add = (NodeBinary) binary.getLeft();
-        assertThat(add.getOperator().getLexeme()).isEqualTo("+");
+        assertThat(add.getOperator().lexeme()).isEqualTo("+");
     }
 
     @Test
@@ -156,7 +156,7 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level should be AND
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("&&");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("&&");
 
         // Both sides should be comparisons
         assertThat(binary.getLeft()).isInstanceOf(NodeBinary.class);
@@ -165,8 +165,8 @@ class ParserTest {
         NodeBinary leftComp = (NodeBinary) binary.getLeft();
         NodeBinary rightComp = (NodeBinary) binary.getRight();
 
-        assertThat(leftComp.getOperator().getLexeme()).isEqualTo(">");
-        assertThat(rightComp.getOperator().getLexeme()).isEqualTo("<");
+        assertThat(leftComp.getOperator().lexeme()).isEqualTo(">");
+        assertThat(rightComp.getOperator().lexeme()).isEqualTo("<");
     }
 
     @Test
@@ -178,17 +178,17 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level: addition
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("+");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("+");
 
         // Right side: multiplication
         assertThat(binary.getRight()).isInstanceOf(NodeBinary.class);
         NodeBinary mult = (NodeBinary) binary.getRight();
-        assertThat(mult.getOperator().getLexeme()).isEqualTo("*");
+        assertThat(mult.getOperator().lexeme()).isEqualTo("*");
 
         // Right side of multiplication: exponentiation
         assertThat(mult.getRight()).isInstanceOf(NodeBinary.class);
         NodeBinary pow = (NodeBinary) mult.getRight();
-        assertThat(pow.getOperator().getLexeme()).isEqualTo("^");
+        assertThat(pow.getOperator().lexeme()).isEqualTo("^");
     }
 
     // ==================== Associativity Tests ====================
@@ -202,12 +202,12 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level should be subtraction
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("-");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("-");
 
         // Left side should also be subtraction
         assertThat(binary.getLeft()).isInstanceOf(NodeBinary.class);
         NodeBinary leftSub = (NodeBinary) binary.getLeft();
-        assertThat(leftSub.getOperator().getLexeme()).isEqualTo("-");
+        assertThat(leftSub.getOperator().lexeme()).isEqualTo("-");
 
         // Right side should be a number
         assertThat(binary.getRight()).isInstanceOf(NodeNumber.class);
@@ -222,12 +222,12 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level should be division
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("/");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("/");
 
         // Left side should also be division
         assertThat(binary.getLeft()).isInstanceOf(NodeBinary.class);
         NodeBinary leftDiv = (NodeBinary) binary.getLeft();
-        assertThat(leftDiv.getOperator().getLexeme()).isEqualTo("/");
+        assertThat(leftDiv.getOperator().lexeme()).isEqualTo("/");
     }
 
     @Test
@@ -239,12 +239,12 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level should be exponentiation
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("^");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("^");
 
         // Right side should also be exponentiation (NOT left side)
         assertThat(binary.getRight()).isInstanceOf(NodeBinary.class);
         NodeBinary rightPow = (NodeBinary) binary.getRight();
-        assertThat(rightPow.getOperator().getLexeme()).isEqualTo("^");
+        assertThat(rightPow.getOperator().lexeme()).isEqualTo("^");
 
         // Left side should be a number
         assertThat(binary.getLeft()).isInstanceOf(NodeNumber.class);
@@ -259,18 +259,18 @@ class ParserTest {
         NodeBinary binary = (NodeBinary) node;
 
         // Top level should be exponentiation
-        assertThat(binary.getOperator().getLexeme()).isEqualTo("^");
+        assertThat(binary.getOperator().lexeme()).isEqualTo("^");
 
         // Left is number, right is more exponentiations
         assertThat(binary.getLeft()).isInstanceOf(NodeNumber.class);
         assertThat(binary.getRight()).isInstanceOf(NodeBinary.class);
 
         NodeBinary right1 = (NodeBinary) binary.getRight();
-        assertThat(right1.getOperator().getLexeme()).isEqualTo("^");
+        assertThat(right1.getOperator().lexeme()).isEqualTo("^");
         assertThat(right1.getRight()).isInstanceOf(NodeBinary.class);
 
         NodeBinary right2 = (NodeBinary) right1.getRight();
-        assertThat(right2.getOperator().getLexeme()).isEqualTo("^");
+        assertThat(right2.getOperator().lexeme()).isEqualTo("^");
     }
 
     @Test
@@ -280,11 +280,11 @@ class ParserTest {
 
         assertThat(node).isInstanceOf(NodeUnary.class);
         NodeUnary unary1 = (NodeUnary) node;
-        assertThat(unary1.getOperator().getLexeme()).isEqualTo("-");
+        assertThat(unary1.getOperator().lexeme()).isEqualTo("-");
 
         assertThat(unary1.getOperand()).isInstanceOf(NodeUnary.class);
         NodeUnary unary2 = (NodeUnary) unary1.getOperand();
-        assertThat(unary2.getOperator().getLexeme()).isEqualTo("-");
+        assertThat(unary2.getOperator().lexeme()).isEqualTo("-");
 
         assertThat(unary2.getOperand()).isInstanceOf(NodeNumber.class);
     }

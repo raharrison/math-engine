@@ -37,9 +37,9 @@ public final class NodeUnary extends NodeExpression {
     @Override
     public String toString() {
         if (isPrefix) {
-            return String.format("(%s%s)", operator.getLexeme(), operand);
+            return String.format("(%s%s)", operator.lexeme(), operand);
         } else {
-            return String.format("(%s%s)", operand, operator.getLexeme());
+            return String.format("(%s%s)", operand, operator.lexeme());
         }
     }
 

@@ -5,6 +5,7 @@ import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
@@ -41,14 +42,41 @@ import java.util.function.UnaryOperator;
 public final class OperatorContext {
 
     private final EvaluationContext evaluationContext;
+    private final FunctionCaller functionCaller;
 
     /**
-     * Creates an operator context wrapping the given evaluation context.
+     * Creates an operator context with function calling capability.
      *
      * @param evaluationContext the evaluation context
+     * @param functionCaller    callback for calling user functions/lambdas (may be null)
      */
-    public OperatorContext(EvaluationContext evaluationContext) {
+    public OperatorContext(EvaluationContext evaluationContext, FunctionCaller functionCaller) {
         this.evaluationContext = evaluationContext;
+        this.functionCaller = functionCaller;
+    }
+
+    /**
+     * Calls a user-defined function or lambda with the given arguments.
+     *
+     * @param function the function to call
+     * @param args     the arguments to pass
+     * @return the result of calling the function
+     * @throws IllegalStateException if this context was created without a FunctionCaller
+     */
+    public NodeConstant callFunction(NodeFunction function, java.util.List<NodeConstant> args) {
+        if (functionCaller == null) {
+            throw new IllegalStateException(
+                    "Cannot call functions from this operator context. " +
+                            "This is a bug - the operator requires function calling capability.");
+        }
+        return functionCaller.call(function, args, evaluationContext);
+    }
+
+    /**
+     * Gets the underlying evaluation context.
+     */
+    public EvaluationContext getEvaluationContext() {
+        return evaluationContext;
     }
 
     /**

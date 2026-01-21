@@ -45,8 +45,8 @@ public class LexerException extends MathEngineException {
      */
     public LexerException(String message, Token token) {
         super(message, token);
-        this.lineNumber = token != null ? token.getLine() : -1;
-        this.columnNumber = token != null ? token.getColumn() : -1;
+        this.lineNumber = token != null ? token.line() : -1;
+        this.columnNumber = token != null ? token.column() : -1;
         this.source = null;
     }
 
@@ -74,8 +74,8 @@ public class LexerException extends MathEngineException {
      */
     public LexerException(String message, Token token, String sourceCode) {
         super(message, token, sourceCode);
-        this.lineNumber = token != null ? token.getLine() : -1;
-        this.columnNumber = token != null ? token.getColumn() : -1;
+        this.lineNumber = token != null ? token.line() : -1;
+        this.columnNumber = token != null ? token.column() : -1;
         this.source = sourceCode;
     }
 
@@ -104,7 +104,7 @@ public class LexerException extends MathEngineException {
         // Main error message with position
         if (token != null) {
             sb.append(String.format("Lexer error at line %d, column %d: %s",
-                    token.getLine(), token.getColumn(), getMessage()));
+                    token.line(), token.column(), getMessage()));
         } else if (lineNumber > 0) {
             sb.append(String.format("Lexer error at line %d, column %d: %s",
                     lineNumber, columnNumber, getMessage()));
@@ -114,8 +114,8 @@ public class LexerException extends MathEngineException {
 
         // Add source context if available
         String src = source != null ? source : getSourceCode();
-        int line = token != null ? token.getLine() : lineNumber;
-        int col = token != null ? token.getColumn() : columnNumber;
+        int line = token != null ? token.line() : lineNumber;
+        int col = token != null ? token.column() : columnNumber;
 
         if (src != null && line > 0) {
             sb.append("\n").append(formatSourceContext(src, line, col));

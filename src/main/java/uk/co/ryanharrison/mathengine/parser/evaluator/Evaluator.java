@@ -7,6 +7,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.handler.SubscriptHandler;
 import uk.co.ryanharrison.mathengine.parser.evaluator.handler.VariableResolver;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
+import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorExecutor;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
@@ -165,7 +166,8 @@ public final class Evaluator {
         }
 
         if (node instanceof NodeVariable variable) {
-            return variableResolver.resolve(variable, context, uk.co.ryanharrison.mathengine.parser.evaluator.ResolutionContext.GENERAL);
+            OperatorContext opCtx = new OperatorContext(context, functionCallHandler);
+            return variableResolver.resolve(variable, ResolutionContext.GENERAL, opCtx);
         }
 
         // Explicit unit reference (@unit)
@@ -300,7 +302,7 @@ public final class Evaluator {
      * Implements short-circuit evaluation for logical operators (&&, ||).
      */
     private NodeConstant evaluateBinary(NodeBinary node) {
-        TokenType opType = node.getOperator().getType();
+        TokenType opType = node.getOperator().type();
 
         // Short-circuit evaluation for logical operators
         if (opType == TokenType.AND || opType == TokenType.OR) {
@@ -311,32 +313,8 @@ public final class Evaluator {
         NodeConstant left = evaluate(node.getLeft());
         NodeConstant right = evaluate(node.getRight());
 
-        // Special case: Vector @ Function (map operation) needs evaluator access
-        if (opType == TokenType.AT && left instanceof NodeVector vector && right instanceof NodeFunction func) {
-            return evaluateVectorMap(vector, func);
-        }
-
-        return operatorExecutor.executeBinary(opType, left, right, context);
-    }
-
-    /**
-     * Evaluates vector map operation: Vector @ Function.
-     * Applies the function to each element of the vector.
-     */
-    private NodeConstant evaluateVectorMap(NodeVector vector, NodeFunction func) {
-        Node[] elements = vector.getElements();
-        Node[] results = new Node[elements.length];
-
-        for (int i = 0; i < elements.length; i++) {
-            NodeConstant element = evaluate(elements[i]);
-            // Call function with single argument
-            results[i] = functionCallHandler.evaluate(
-                    new NodeCall(func, java.util.List.of(element)),
-                    context
-            );
-        }
-
-        return new NodeVector(results);
+        OperatorContext opCtx = new OperatorContext(context, functionCallHandler);
+        return operatorExecutor.executeBinary(opType, left, right, opCtx);
     }
 
     /**
@@ -345,11 +323,12 @@ public final class Evaluator {
     private NodeConstant evaluateWithShortCircuit(NodeBinary node, TokenType opType) {
         NodeConstant left = evaluate(node.getLeft());
 
+        OperatorContext opCtx = new OperatorContext(context, functionCallHandler);
         return operatorExecutor.executeBinaryShortCircuit(
                 opType,
                 left,
                 () -> evaluate(node.getRight()),
-                context
+                opCtx
         );
     }
 
@@ -359,9 +338,10 @@ public final class Evaluator {
      * Evaluates a unary operation.
      */
     private NodeConstant evaluateUnary(NodeUnary node) {
-        TokenType opType = node.getOperator().getType();
+        TokenType opType = node.getOperator().type();
         NodeConstant operand = evaluate(node.getOperand());
-        return operatorExecutor.executeUnary(opType, operand, context);
+        OperatorContext opCtx = new OperatorContext(context, functionCallHandler);
+        return operatorExecutor.executeUnary(opType, operand, opCtx);
     }
 
     // ==================== Assignment ====================

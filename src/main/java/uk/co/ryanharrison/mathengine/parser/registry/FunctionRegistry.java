@@ -79,16 +79,6 @@ public final class FunctionRegistry {
     }
 
     /**
-     * Synchronizes this registry with a FunctionExecutor.
-     * Adds all function names from the executor to this registry.
-     *
-     * @param executor the function executor to sync with
-     */
-    public void syncWith(FunctionExecutor executor) {
-        functionNames.addAll(executor.getFunctionNames());
-    }
-
-    /**
      * Register a function name.
      *
      * @param name the function name (case-insensitive)

@@ -85,9 +85,9 @@ public final class NumericOperations {
                                                   DoubleBinaryOperator doubleOp) {
         // unit + unit (same type) → unit
         if (left instanceof NodeUnit leftUnit && right instanceof NodeUnit rightUnit) {
-            if (!leftUnit.getUnit().getType().equals(rightUnit.getUnit().getType())) {
+            if (!leftUnit.getUnit().type().equals(rightUnit.getUnit().type())) {
                 throw new TypeError("Cannot combine units of different types: " +
-                        leftUnit.getUnit().getType() + " and " + rightUnit.getUnit().getType());
+                        leftUnit.getUnit().type() + " and " + rightUnit.getUnit().type());
             }
             NodeUnit convertedRight = rightUnit.convertTo(leftUnit.getUnit());
             double result = doubleOp.applyAsDouble(leftUnit.getValue(), convertedRight.getValue());
@@ -197,9 +197,9 @@ public final class NumericOperations {
             }
             // unit / unit (same type) → ratio
             if (left instanceof NodeUnit leftUnit && right instanceof NodeUnit rightUnit) {
-                if (!leftUnit.getUnit().getType().equals(rightUnit.getUnit().getType())) {
+                if (!leftUnit.getUnit().type().equals(rightUnit.getUnit().type())) {
                     throw new TypeError("Cannot divide units of different types: " +
-                            leftUnit.getUnit().getType() + " and " + rightUnit.getUnit().getType());
+                            leftUnit.getUnit().type() + " and " + rightUnit.getUnit().type());
                 }
                 NodeUnit convertedRight = rightUnit.convertTo(leftUnit.getUnit());
                 return new NodeDouble(leftUnit.getValue() / convertedRight.getValue());
@@ -452,7 +452,7 @@ public final class NumericOperations {
     public static int compareNumeric(NodeConstant left, NodeConstant right) {
         // Unit vs Unit comparison
         if (left instanceof NodeUnit leftUnit && right instanceof NodeUnit rightUnit) {
-            if (!leftUnit.getUnit().getType().equals(rightUnit.getUnit().getType())) {
+            if (!leftUnit.getUnit().type().equals(rightUnit.getUnit().type())) {
                 return Double.compare(leftUnit.getValue(), rightUnit.getValue());
             }
             NodeUnit convertedRight = rightUnit.convertTo(leftUnit.getUnit());
@@ -489,7 +489,7 @@ public final class NumericOperations {
 
         // Unit vs Unit
         if (left instanceof NodeUnit leftUnit && right instanceof NodeUnit rightUnit) {
-            if (!leftUnit.getUnit().getType().equals(rightUnit.getUnit().getType())) {
+            if (!leftUnit.getUnit().type().equals(rightUnit.getUnit().type())) {
                 return false;
             }
             NodeUnit convertedRight = rightUnit.convertTo(leftUnit.getUnit());

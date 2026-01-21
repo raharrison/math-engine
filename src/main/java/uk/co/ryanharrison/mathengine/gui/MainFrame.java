@@ -492,14 +492,14 @@ public final class MainFrame extends JFrame {
                 doc.insertString(doc.getLength(), String.format("[%2d] ", i), commentStyle);
 
                 // Token type
-                String typeStr = String.format("%-20s", token.getType());
+                String typeStr = String.format("%-20s", token.type());
                 doc.insertString(doc.getLength(), typeStr, normalStyle);
 
                 // Token lexeme
-                doc.insertString(doc.getLength(), " \"" + token.getLexeme() + "\"", promptStyle);
+                doc.insertString(doc.getLength(), " \"" + token.lexeme() + "\"", promptStyle);
 
                 // Position
-                doc.insertString(doc.getLength(), String.format("  @%d:%d", token.getLine(), token.getColumn()), commentStyle);
+                doc.insertString(doc.getLength(), String.format("  @%d:%d", token.line(), token.column()), commentStyle);
 
                 doc.insertString(doc.getLength(), "\n", normalStyle);
             }
@@ -871,7 +871,7 @@ public final class MainFrame extends JFrame {
                 for (String name : names) {
                     FunctionDefinition func = userFunctions.get(name);
                     doc.insertString(doc.getLength(), "  " + name, promptStyle);
-                    doc.insertString(doc.getLength(), "(" + String.join(", ", func.getParameters()) + ")", normalStyle);
+                    doc.insertString(doc.getLength(), "(" + String.join(", ", func.parameters()) + ")", normalStyle);
                     doc.insertString(doc.getLength(), "\n", normalStyle);
                 }
 
@@ -1007,7 +1007,7 @@ public final class MainFrame extends JFrame {
                     new TreeMap<>();
 
             for (UnitDefinition unit : units) {
-                unitsByType.computeIfAbsent(unit.getType(), k -> new ArrayList<>()).add(unit);
+                unitsByType.computeIfAbsent(unit.type(), k -> new ArrayList<>()).add(unit);
             }
 
             // Display each type/category
@@ -1023,11 +1023,11 @@ public final class MainFrame extends JFrame {
                 StringBuilder line = new StringBuilder("  ");
 
                 for (UnitDefinition unit : typeUnits) {
-                    String unitName = unit.getSingularName();
+                    String unitName = unit.singularName();
 
                     // Add short form/alias if available
-                    if (!unit.getAliases().isEmpty()) {
-                        String firstAlias = unit.getAliases().getFirst();
+                    if (!unit.aliases().isEmpty()) {
+                        String firstAlias = unit.aliases().getFirst();
                         if (firstAlias.length() <= 4) { // Show short aliases
                             unitName += " (" + firstAlias + ")";
                         }
