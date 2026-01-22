@@ -319,6 +319,13 @@
             "notes": "Variable shadows temperature unit name"
         },
         {
+            "id": "unit_shadow_004",
+            "input": "m1 := 2; m1",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Variable takes precedence over unit (1 meter)"
+        },
+        {
             "id": "explicit_unit_001",
             "input": "@meter",
             "expectedType": "NodeUnit",

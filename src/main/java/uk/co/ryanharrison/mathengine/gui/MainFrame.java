@@ -121,7 +121,9 @@ public final class MainFrame extends JFrame {
         numberStyle = createStyle(new Color(9, 134, 88), false);
 
         // Initialize engine with default config
-        currentConfig = MathEngineConfig.defaults();
+        currentConfig = MathEngineConfig.builder()
+                .decimalPlaces(6)
+                .build();
         mathEngine = MathEngine.create(currentConfig);
 
         // Create components
@@ -633,45 +635,47 @@ public final class MainFrame extends JFrame {
             doc.insertString(doc.getLength(), "  Assignment:  :=\n", normalStyle);
             doc.insertString(doc.getLength(), "  Lambda:      ->\n\n", normalStyle);
 
-            doc.insertString(doc.getLength(), "EXAMPLES\n", keywordStyle);
-            doc.insertString(doc.getLength(), "  Basic Arithmetic:\n", normalStyle);
-            doc.insertString(doc.getLength(), "    2 + 3 * 4        → 14\n", commentStyle);
-            doc.insertString(doc.getLength(), "    2^10             → 1024\n", commentStyle);
-            doc.insertString(doc.getLength(), "    5! / 3!          → 20\n", commentStyle);
-            doc.insertString(doc.getLength(), "    50% of 200       → 100\n\n", commentStyle);
+            doc.insertString(doc.getLength(), "REFERENCE SYMBOLS\n", keywordStyle);
+            doc.insertString(doc.getLength(), "  @unit   Force unit resolution (e.g., @m for meters)\n", normalStyle);
+            doc.insertString(doc.getLength(), "  $var    Force variable resolution (e.g., $m1)\n", normalStyle);
+            doc.insertString(doc.getLength(), "  #const  Force constant resolution (e.g., #pi, #e)\n\n", normalStyle);
 
-            doc.insertString(doc.getLength(), "  Variables & Functions:\n", normalStyle);
-            doc.insertString(doc.getLength(), "    x := 5\n", commentStyle);
-            doc.insertString(doc.getLength(), "    f(x) := x^2 + 2*x\n", commentStyle);
-            doc.insertString(doc.getLength(), "    f(3)             → 15\n\n", commentStyle);
+            doc.insertString(doc.getLength(), "BASIC ARITHMETIC\n", keywordStyle);
+            doc.insertString(doc.getLength(), "  2 + 3 * 4        → 14\n", commentStyle);
+            doc.insertString(doc.getLength(), "  2^10             → 1024\n", commentStyle);
+            doc.insertString(doc.getLength(), "  5! / 3!          → 20\n", commentStyle);
+            doc.insertString(doc.getLength(), "  50% of 200       → 100\n\n", commentStyle);
 
-            doc.insertString(doc.getLength(), "  Vectors & Matrices:\n", normalStyle);
-            doc.insertString(doc.getLength(), "    v := {1, 2, 3}\n", commentStyle);
-            doc.insertString(doc.getLength(), "    m := [[1, 2], [3, 4]]\n", commentStyle);
-            doc.insertString(doc.getLength(), "    v[0]             → 1 (subscript)\n", commentStyle);
-            doc.insertString(doc.getLength(), "    m[0,1]           → 2\n", commentStyle);
-            doc.insertString(doc.getLength(), "    m @ m            → [[7, 10], [15, 22]] (matrix mult)\n\n", commentStyle);
+            doc.insertString(doc.getLength(), "VARIABLES & FUNCTIONS\n", keywordStyle);
+            doc.insertString(doc.getLength(), "  x := 5\n", commentStyle);
+            doc.insertString(doc.getLength(), "  f(x) := x^2 + 2*x\n", commentStyle);
+            doc.insertString(doc.getLength(), "  f(3)             → 15\n\n", commentStyle);
 
-            doc.insertString(doc.getLength(), "  Built-in Functions:\n", normalStyle);
-            doc.insertString(doc.getLength(), "    sin(pi/2)        → 1\n", commentStyle);
-            doc.insertString(doc.getLength(), "    ln(e)            → 1\n", commentStyle);
-            doc.insertString(doc.getLength(), "    sqrt(16)         → 4\n", commentStyle);
-            doc.insertString(doc.getLength(), "    abs(-5)          → 5\n\n", commentStyle);
+            doc.insertString(doc.getLength(), "VECTORS & MATRICES\n", keywordStyle);
+            doc.insertString(doc.getLength(), "  v := {1, 2, 3}\n", commentStyle);
+            doc.insertString(doc.getLength(), "  m := [[1, 2], [3, 4]]\n", commentStyle);
+            doc.insertString(doc.getLength(), "  v[0]             → 1 (subscript)\n", commentStyle);
+            doc.insertString(doc.getLength(), "  m[0,1]           → 2\n", commentStyle);
+            doc.insertString(doc.getLength(), "  m @ m            → [[7, 10], [15, 22]] (matrix mult)\n\n", commentStyle);
 
-            doc.insertString(doc.getLength(), "  Ranges & Comprehensions:\n", normalStyle);
-            doc.insertString(doc.getLength(), "    1..5             → {1, 2, 3, 4, 5}\n", commentStyle);
-            doc.insertString(doc.getLength(), "    {x^2 for x in 1..5} → {1, 4, 9, 16, 25}\n", commentStyle);
-            doc.insertString(doc.getLength(), "    sum({x for x in 1..100 if x mod 2 == 0})\n\n", commentStyle);
+            doc.insertString(doc.getLength(), "BUILT-IN FUNCTIONS\n", keywordStyle);
+            doc.insertString(doc.getLength(), "  sin(pi/2)        → 1\n", commentStyle);
+            doc.insertString(doc.getLength(), "  ln(e)            → 1\n", commentStyle);
+            doc.insertString(doc.getLength(), "  sqrt(16)         → 4\n", commentStyle);
+            doc.insertString(doc.getLength(), "  abs(-5)          → 5\n\n", commentStyle);
 
-            doc.insertString(doc.getLength(), "  Lambdas & Higher-Order:\n", normalStyle);
-            doc.insertString(doc.getLength(), "    map(x -> x*2, {1,2,3})  → {2, 4, 6}\n", commentStyle);
-            doc.insertString(doc.getLength(), "    filter(x -> x > 5, 1..10)\n\n", commentStyle);
+            doc.insertString(doc.getLength(), "RANGES & COMPREHENSIONS\n", keywordStyle);
+            doc.insertString(doc.getLength(), "  1..5             → {1, 2, 3, 4, 5}\n", commentStyle);
+            doc.insertString(doc.getLength(), "  {x^2 for x in 1..5} → {1, 4, 9, 16, 25}\n", commentStyle);
+            doc.insertString(doc.getLength(), "  sum({x for x in 1..100 if x mod 2 == 0})\n\n", commentStyle);
 
-            doc.insertString(doc.getLength(), "  Unit Conversions:\n", normalStyle);
-            doc.insertString(doc.getLength(), "    100 meters in feet     → 328.084 feet\n", commentStyle);
-            doc.insertString(doc.getLength(), "    32 fahrenheit to celsius → 0 celsius\n\n", commentStyle);
+            doc.insertString(doc.getLength(), "LAMBDAS & HIGHER-ORDER\n", keywordStyle);
+            doc.insertString(doc.getLength(), "  map(x -> x*2, {1,2,3})  → {2, 4, 6}\n", commentStyle);
+            doc.insertString(doc.getLength(), "  filter(x -> x > 5, 1..10)\n\n", commentStyle);
 
-            doc.insertString(doc.getLength(), "For complete documentation, see docs/GRAMMAR.md\n", commentStyle);
+            doc.insertString(doc.getLength(), "UNIT CONVERSIONS\n", keywordStyle);
+            doc.insertString(doc.getLength(), "  100 meters in feet     → 328.084 feet\n", commentStyle);
+            doc.insertString(doc.getLength(), "  32 fahrenheit to celsius → 0 celsius\n\n", commentStyle);
 
         } catch (BadLocationException e) {
             // Ignore
@@ -1072,7 +1076,7 @@ public final class MainFrame extends JFrame {
                     }
 
                     if (line.length() + unitName.length() + 2 > 60) {
-                        doc.insertString(doc.getLength(), line.toString() + "\n", normalStyle);
+                        doc.insertString(doc.getLength(), line + "\n", normalStyle);
                         line = new StringBuilder("  ");
                     }
                     line.append(unitName).append(", ");

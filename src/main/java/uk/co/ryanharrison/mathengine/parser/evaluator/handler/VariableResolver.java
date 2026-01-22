@@ -277,15 +277,26 @@ public final class VariableResolver {
     // ==================== Implicit Multiplication Support ====================
 
     /**
-     * Tries to split an identifier into defined variables and multiply them.
+     * Tries to split an identifier into resolvable parts (variables, constants, functions) and multiply them.
      * <p>
-     * For example, "xy" splits into "x" and "y" and returns x * y if both are defined.
-     * Uses recursive backtracking to find a valid split.
+     * <b>Examples:</b>
+     * <ul>
+     *     <li>"xy" where x=2, y=3 → 2 * 3 = 6</li>
+     *     <li>"xpi" where x=2 → 2 * π ≈ 6.28</li>
+     *     <li>"abc" where a=1, b=2, c=3 → 1 * 2 * 3 = 6</li>
+     * </ul>
+     * <p>
+     * Uses recursive backtracking to find a valid split. Checks for:
+     * <ol>
+     *     <li>User-defined variables</li>
+     *     <li>Constants (pi, e, etc.)</li>
+     *     <li>User-defined functions</li>
+     * </ol>
      *
      * @param name    the identifier to split
      * @param context the evaluation context
      * @param opCtx   the operator context for multiplication
-     * @return the result of multiplying the split variables, or null if not possible
+     * @return the result of multiplying the split parts, or null if no valid split exists
      */
     private NodeConstant trySplitIntoVariables(String name, EvaluationContext context, OperatorContext opCtx) {
         if (name.length() <= 1) {
@@ -296,7 +307,15 @@ public final class VariableResolver {
 
     /**
      * Recursively finds a valid split starting at position 'start' and computes the product.
-     * Returns null if no valid split exists from the given position.
+     * <p>
+     * Checks each substring to see if it can be resolved as:
+     * <ul>
+     *     <li>A defined variable</li>
+     *     <li>A mathematical constant (from constant registry)</li>
+     *     <li>A user-defined function</li>
+     * </ul>
+     *
+     * @return the product of all parts, or null if no valid split exists from the given position
      */
     private NodeConstant splitAndMultiply(String name, int start, EvaluationContext context, OperatorContext opCtx) {
         if (start == name.length()) {
@@ -306,9 +325,10 @@ public final class VariableResolver {
         for (int end = start + 1; end <= name.length(); end++) {
             String part = name.substring(start, end);
 
-            if (context.isDefined(part)) {
-                NodeConstant partValue = context.resolve(part);
+            // Try to resolve this part (variable, constant, or function)
+            NodeConstant partValue = tryResolvePart(part, context);
 
+            if (partValue != null) {
                 if (end == name.length()) {
                     // Last part - return its value
                     return partValue;
@@ -320,6 +340,41 @@ public final class VariableResolver {
                     return MultiplyOperator.INSTANCE.apply(partValue, restValue, opCtx);
                 }
             }
+        }
+
+        return null;
+    }
+
+    /**
+     * Attempts to resolve a string as a variable, constant, or function.
+     * <p>
+     * <b>Resolution order:</b>
+     * <ol>
+     *     <li>Variable (highest priority - allows shadowing)</li>
+     *     <li>Constant (from constant registry)</li>
+     *     <li>User-defined function (for first-class function support)</li>
+     * </ol>
+     *
+     * @param part    the string to resolve
+     * @param context the evaluation context
+     * @return the resolved value, or null if not resolvable
+     */
+    private NodeConstant tryResolvePart(String part, EvaluationContext context) {
+        // Variables have highest priority (allows shadowing)
+        if (context.isDefined(part)) {
+            return context.resolve(part);
+        }
+
+        // Constants from registry
+        var constantValue = context.getConfig().constantRegistry().getValue(part);
+        if (constantValue.isPresent()) {
+            return constantValue.get();
+        }
+
+        // User-defined functions (for first-class function support)
+        FunctionDefinition func = context.resolveFunction(part);
+        if (func != null) {
+            return new NodeFunction(func);
         }
 
         return null;

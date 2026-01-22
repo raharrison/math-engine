@@ -227,7 +227,18 @@ public final class TokenProcessor {
     }
 
     /**
-     * Splits at digit boundaries: "pi2e" → ["pi", "2", "e"]
+     * Splits at digit boundaries for unambiguous cases: "pi2e" → ["pi", "2", "e"]
+     * <p>
+     * <b>Splitting rules:</b>
+     * <ul>
+     *     <li>Split for constants (pi, e) - these are fixed values, not user-definable</li>
+     *     <li>Split for functions - unambiguous and cannot be shadowed by variables</li>
+     *     <li>DON'T split for units - they can be shadowed by variables and need runtime resolution</li>
+     * </ul>
+     * <p>
+     * <b>Rationale:</b> Units must be resolved at runtime because variable precedence is context-dependent.
+     * In general expressions, variables take precedence over units (e.g., {@code m1 := 2; m1} returns 2).
+     * In unit contexts, units are explicit (e.g., {@code 100 m in feet} uses spaces).
      */
     private List<Token> trySplitAtDigits(Token token) {
         String text = token.lexeme();
@@ -238,7 +249,13 @@ public final class TokenProcessor {
         }
 
         String prefix = text.substring(0, digitStart);
-        if (!isKnownIdentifier(prefix)) {
+
+        // Only split if prefix is a constant or function
+        // Units are NOT split here - they're resolved at runtime where variable context is available
+        boolean isConstant = constantRegistry.isConstant(prefix);
+        boolean isFunc = isFunction(prefix);
+
+        if (!isConstant && !isFunc) {
             return null;
         }
 
@@ -285,8 +302,10 @@ public final class TokenProcessor {
     }
 
     /**
-     * Splits at function suffix: "xsqrt" → ["x", "sqrt"]
-     * Only splits for single-char, constant, or unit prefixes (not function prefixes).
+     * Splits at function suffix: "xsqrt" → ["x", "sqrt"], "pisqrt" → ["pi", "sqrt"]
+     * <p>
+     * Only splits for single-char or constant prefixes.
+     * Does NOT split for units or functions (these can be shadowed by user variables/functions).
      */
     private List<Token> trySplitAtFunctionSuffix(Token token) {
         String text = token.lexeme();
@@ -309,13 +328,34 @@ public final class TokenProcessor {
     }
 
     /**
-     * Determines if splitting is appropriate for the given prefix.
-     * Split for: single-char, constants, units. Don't split for: functions.
+     * Determines if splitting is appropriate for the given prefix when followed by a function.
+     * <p>
+     * <b>Splitting rules:</b>
+     * <ul>
+     *     <li>Split for single characters - likely variables (e.g., "xsqrt" → "x", "sqrt")</li>
+     *     <li>Split for constants - unambiguous (e.g., "pisqrt" → "pi", "sqrt")</li>
+     *     <li>DON'T split for units - can be shadowed (e.g., "msqrt" might be a variable name)</li>
+     *     <li>DON'T split for functions - ambiguous (e.g., "sincos" could be a variable)</li>
+     * </ul>
      */
     private boolean shouldSplitForPrefix(String prefix) {
-        return prefix.length() == 1 ||
-                constantRegistry.isConstant(prefix) ||
-                unitRegistry.isUnit(prefix);
+        // Single character is fine - likely a variable, and splitting makes sense
+        // e.g., "xsqrt" → "x" * "sqrt"
+        if (prefix.length() == 1) {
+            return true;
+        }
+
+        // Constants are unambiguous - they can't be redefined as variables
+        // e.g., "pisqrt" → "pi" * "sqrt"
+        if (constantRegistry.isConstant(prefix)) {
+            return true;
+        }
+
+        // Units should NOT trigger splitting - they can be shadowed by variables
+        // e.g., "msqrt" could be a variable name, not "m" (meter) * "sqrt"
+        // Functions also should not - "sincos" could be a variable name
+
+        return false;
     }
 
     // ==================== Implicit Multiplication ====================
