@@ -9,22 +9,28 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * Executor for operators that manages registration and execution.
+ * Immutable executor for operators.
  * <p>
- * This class serves as the central registry for all operators and handles
- * dispatching operations to the appropriate operator implementation.
+ * Once created, the executor cannot be modified, making it thread-safe.
+ * All operators must be provided at construction time.
  *
  * <h2>Usage:</h2>
  * <pre>{@code
- * OperatorExecutor executor = new OperatorExecutor();
+ * // Create with standard operators
+ * OperatorExecutor executor = OperatorExecutor.of(
+ *     StandardBinaryOperators.all(),
+ *     StandardUnaryOperators.all()
+ * );
  *
- * // Register standard operators
- * executor.registerBinaryOperators(StandardBinaryOperators.all());
- * executor.registerUnaryOperators(StandardUnaryOperators.all());
+ * // Create with custom operators
+ * OperatorExecutor executor = OperatorExecutor.builder()
+ *     .binary(TokenType.PLUS, new AddOperator())
+ *     .unary(TokenType.MINUS, new NegateOperator())
+ *     .build();
  *
  * // Execute operations
- * NodeConstant result = executor.executeBinary(TokenType.PLUS, left, right, context);
- * NodeConstant negated = executor.executeUnary(TokenType.MINUS, operand, context);
+ * NodeConstant result = executor.executeBinary(TokenType.PLUS, left, () -> right, ctx);
+ * NodeConstant negated = executor.executeUnary(TokenType.MINUS, operand, ctx);
  * }</pre>
  */
 public final class OperatorExecutor {
@@ -32,36 +38,42 @@ public final class OperatorExecutor {
     private final Map<TokenType, BinaryOperator> binaryOperators;
     private final Map<TokenType, UnaryOperator> unaryOperators;
 
-    /**
-     * Creates a new operator executor with no registered operators.
-     */
-    public OperatorExecutor() {
-        this.binaryOperators = new HashMap<>();
-        this.unaryOperators = new HashMap<>();
+    private OperatorExecutor(Map<TokenType, BinaryOperator> binaryOperators,
+                             Map<TokenType, UnaryOperator> unaryOperators) {
+        this.binaryOperators = Map.copyOf(binaryOperators);
+        this.unaryOperators = Map.copyOf(unaryOperators);
     }
 
-    // ==================== Registration ====================
+    // ==================== Factory Methods ====================
 
     /**
-     * Registers multiple binary operators.
+     * Creates an empty operator executor.
      *
-     * @param operators map of token types to operators
-     * @return this executor for method chaining
+     * @return new empty executor
      */
-    public OperatorExecutor registerBinaryOperators(Map<TokenType, BinaryOperator> operators) {
-        binaryOperators.putAll(operators);
-        return this;
+    public static OperatorExecutor empty() {
+        return new OperatorExecutor(Map.of(), Map.of());
     }
 
     /**
-     * Registers multiple unary operators.
+     * Creates an operator executor with the given operators.
      *
-     * @param operators map of token types to operators
-     * @return this executor for method chaining
+     * @param binaryOperators the binary operators
+     * @param unaryOperators  the unary operators
+     * @return new executor with all operators registered
      */
-    public OperatorExecutor registerUnaryOperators(Map<TokenType, UnaryOperator> operators) {
-        unaryOperators.putAll(operators);
-        return this;
+    public static OperatorExecutor of(Map<TokenType, BinaryOperator> binaryOperators,
+                                      Map<TokenType, UnaryOperator> unaryOperators) {
+        return new OperatorExecutor(binaryOperators, unaryOperators);
+    }
+
+    /**
+     * Creates a new builder for constructing operator executors.
+     *
+     * @return new builder instance
+     */
+    public static Builder builder() {
+        return new Builder();
     }
 
     // ==================== Execution ====================
@@ -117,5 +129,89 @@ public final class OperatorExecutor {
         }
 
         return operator.apply(operand, ctx);
+    }
+
+    // ==================== Builder ====================
+
+    /**
+     * Builder for constructing {@link OperatorExecutor} instances.
+     */
+    public static final class Builder {
+        private final Map<TokenType, BinaryOperator> binaryOperators = new HashMap<>();
+        private final Map<TokenType, UnaryOperator> unaryOperators = new HashMap<>();
+
+        private Builder() {
+        }
+
+        /**
+         * Adds a binary operator.
+         *
+         * @param tokenType the token type
+         * @param operator  the operator implementation
+         * @return this builder
+         */
+        public Builder binary(TokenType tokenType, BinaryOperator operator) {
+            if (tokenType == null) {
+                throw new IllegalArgumentException("Token type cannot be null");
+            }
+            if (operator == null) {
+                throw new IllegalArgumentException("Operator cannot be null");
+            }
+            binaryOperators.put(tokenType, operator);
+            return this;
+        }
+
+        /**
+         * Adds multiple binary operators.
+         *
+         * @param operators map of token types to operators
+         * @return this builder
+         */
+        public Builder binaryAll(Map<TokenType, BinaryOperator> operators) {
+            for (var entry : operators.entrySet()) {
+                binary(entry.getKey(), entry.getValue());
+            }
+            return this;
+        }
+
+        /**
+         * Adds a unary operator.
+         *
+         * @param tokenType the token type
+         * @param operator  the operator implementation
+         * @return this builder
+         */
+        public Builder unary(TokenType tokenType, UnaryOperator operator) {
+            if (tokenType == null) {
+                throw new IllegalArgumentException("Token type cannot be null");
+            }
+            if (operator == null) {
+                throw new IllegalArgumentException("Operator cannot be null");
+            }
+            unaryOperators.put(tokenType, operator);
+            return this;
+        }
+
+        /**
+         * Adds multiple unary operators.
+         *
+         * @param operators map of token types to operators
+         * @return this builder
+         */
+        public Builder unaryAll(Map<TokenType, UnaryOperator> operators) {
+            for (var entry : operators.entrySet()) {
+                unary(entry.getKey(), entry.getValue());
+            }
+            return this;
+        }
+
+        /**
+         * Builds the operator executor.
+         *
+         * @return new operator executor
+         */
+        public OperatorExecutor build() {
+            return new OperatorExecutor(binaryOperators, unaryOperators);
+        }
     }
 }

@@ -19,7 +19,7 @@ import java.util.List;
  * <ul>
  *     <li>{@code map(f, collection)} - apply function to each element</li>
  *     <li>{@code filter(predicate, collection)} - filter elements</li>
- *     <li>{@code reduce(f, initial, collection)} - reduce to single value</li>
+ *     <li>{@code reduce(f, collection, initial)} - reduce to single value</li>
  * </ul>
  */
 public final class HigherOrderFunctions {
@@ -166,12 +166,12 @@ public final class HigherOrderFunctions {
     /**
      * Reduce function: reduces a collection to a single value using a binary function.
      * <p>
-     * Syntax: {@code reduce(f, initial, collection)}
+     * Syntax: {@code reduce(f, collection, initial)}
      * <p>
      * Examples:
      * <ul>
-     *     <li>{@code reduce((acc, x) -> acc + x, 0, {1, 2, 3, 4, 5})} → {@code 15}</li>
-     *     <li>{@code reduce((acc, x) -> acc * x, 1, {1, 2, 3, 4, 5})} → {@code 120}</li>
+     *     <li>{@code reduce((acc, x) -> acc + x, {1, 2, 3, 4, 5}, 0)} → {@code 15}</li>
+     *     <li>{@code reduce((acc, x) -> acc * x, {1, 2, 3, 4, 5}, 1)} → {@code 120}</li>
      * </ul>
      */
     public static final MathFunction REDUCE = new MathFunction() {
@@ -208,8 +208,8 @@ public final class HigherOrderFunctions {
         @Override
         public NodeConstant apply(List<NodeConstant> args, FunctionContext ctx) {
             NodeConstant function = args.get(0);
-            NodeConstant initial = args.get(1);
-            NodeConstant collection = args.get(2);
+            NodeConstant collection = args.get(1);
+            NodeConstant initial = args.get(2);
 
             if (!(function instanceof NodeFunction func)) {
                 throw new TypeError("reduce: first argument must be a function, got " +

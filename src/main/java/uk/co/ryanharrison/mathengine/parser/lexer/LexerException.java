@@ -21,10 +21,6 @@ import uk.co.ryanharrison.mathengine.parser.MathEngineException;
  */
 public class LexerException extends MathEngineException {
 
-    private final int lineNumber;
-    private final int columnNumber;
-    private final String source;
-
     /**
      * Creates a lexer exception with just a message.
      *
@@ -32,9 +28,6 @@ public class LexerException extends MathEngineException {
      */
     public LexerException(String message) {
         super(message);
-        this.lineNumber = -1;
-        this.columnNumber = -1;
-        this.source = null;
     }
 
     /**
@@ -45,13 +38,11 @@ public class LexerException extends MathEngineException {
      */
     public LexerException(String message, Token token) {
         super(message, token);
-        this.lineNumber = token != null ? token.line() : -1;
-        this.columnNumber = token != null ? token.column() : -1;
-        this.source = null;
     }
 
     /**
      * Creates a lexer exception with explicit position info.
+     * Creates a synthetic ERROR token for the given position.
      *
      * @param message    the error message
      * @param line       the line number (1-based)
@@ -59,10 +50,7 @@ public class LexerException extends MathEngineException {
      * @param sourceCode the source code being tokenized
      */
     public LexerException(String message, int line, int column, String sourceCode) {
-        super(message, null, sourceCode);
-        this.lineNumber = line;
-        this.columnNumber = column;
-        this.source = sourceCode;
+        super(message, new Token(TokenType.ERROR, "", line, column), sourceCode);
     }
 
     /**
@@ -74,77 +62,7 @@ public class LexerException extends MathEngineException {
      */
     public LexerException(String message, Token token, String sourceCode) {
         super(message, token, sourceCode);
-        this.lineNumber = token != null ? token.line() : -1;
-        this.columnNumber = token != null ? token.column() : -1;
-        this.source = sourceCode;
     }
 
-    /**
-     * Gets the line number where the error occurred.
-     *
-     * @return the line number (1-based), or -1 if unknown
-     */
-    public int getLineNumber() {
-        return lineNumber;
-    }
-
-    /**
-     * Gets the column number where the error occurred.
-     *
-     * @return the column number (1-based), or -1 if unknown
-     */
-    public int getColumnNumber() {
-        return columnNumber;
-    }
-
-    @Override
-    public String formatMessage() {
-        var sb = new StringBuilder();
-
-        // Main error message with position
-        if (token != null) {
-            sb.append(String.format("Lexer error at line %d, column %d: %s",
-                    token.line(), token.column(), getMessage()));
-        } else if (lineNumber > 0) {
-            sb.append(String.format("Lexer error at line %d, column %d: %s",
-                    lineNumber, columnNumber, getMessage()));
-        } else {
-            sb.append(String.format("Lexer error: %s", getMessage()));
-        }
-
-        // Add source context if available
-        String src = source != null ? source : getSourceCode();
-        int line = token != null ? token.line() : lineNumber;
-        int col = token != null ? token.column() : columnNumber;
-
-        if (src != null && line > 0) {
-            sb.append("\n").append(formatSourceContext(src, line, col));
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Formats source code context with a caret pointing to the error.
-     */
-    private String formatSourceContext(String sourceCode, int line, int column) {
-        String[] lines = sourceCode.split("\n", -1);
-        if (line <= 0 || line > lines.length) {
-            return "";
-        }
-
-        var sb = new StringBuilder();
-        String sourceLine = lines[line - 1];
-
-        // Show the line with error
-        sb.append(String.format("  %4d | %s\n", line, sourceLine));
-
-        // Show caret pointing to error position
-        sb.append("       | ");
-        int caretPos = Math.max(0, column - 1);
-        sb.append(" ".repeat(caretPos));
-        sb.append("^");
-
-        return sb.toString();
-    }
+    // Uses default formatMessage() implementation from MathEngineException
 }

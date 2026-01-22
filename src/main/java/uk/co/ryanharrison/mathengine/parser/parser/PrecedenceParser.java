@@ -389,14 +389,17 @@ public final class PrecedenceParser {
      * <p>
      * Allows unknown identifiers to be used as unit names, with validation
      * deferred to evaluation time. This provides better error messages and
-     * supports dynamic unit resolution. Also accepts explicit unit references (@unit).
+     * supports dynamic unit resolution.
+     * <p>
+     * Accepts explicit unit references: {@code @fahrenheit} or {@code @"km/h"}.
+     * The quoted form allows complex unit names containing operators.
      */
     private Token expectUnitOrIdentifier() {
         if (stream.check(TokenType.UNIT) || stream.check(TokenType.IDENTIFIER) || stream.check(TokenType.UNIT_REF)) {
             Token token = stream.advance();
-            // For UNIT_REF tokens, extract the unit name (remove @ prefix)
+            // For UNIT_REF tokens, extract the unit name from the literal
             if (token.type() == TokenType.UNIT_REF) {
-                String unitName = token.lexeme().substring(1); // Remove @
+                String unitName = (String) token.literal();
                 return new Token(TokenType.UNIT, unitName, token.line(), token.column());
             }
             return token;
@@ -596,11 +599,9 @@ public final class PrecedenceParser {
             return new NodeVariable(stream.previous().lexeme());
         }
 
-        // Explicit unit reference (@unit)
+        // Explicit unit reference (@unit or @"km/h")
         if (stream.match(TokenType.UNIT_REF)) {
-            String lexeme = stream.previous().lexeme();
-            // Remove @ prefix to get unit name
-            String unitName = lexeme.substring(1);
+            String unitName = (String) stream.previous().literal();
             return new NodeUnitRef(unitName);
         }
 

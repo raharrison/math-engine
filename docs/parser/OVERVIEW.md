@@ -300,25 +300,19 @@ Registries provide lookup services for the lexer and evaluator.
 
 ### Registry Types
 
-**1. FunctionRegistry**
-
-- **Purpose:** Tell lexer which identifiers are functions
-- **Used by:** TokenClassifier during lexical analysis
-- **Content:** Function names and aliases
-
-**2. UnitRegistry**
+**1. UnitRegistry**
 
 - **Purpose:** Unit definitions for conversion
 - **Used by:** TokenClassifier (lexer) and unit conversion evaluation
 - **Content:** `UnitDefinition` objects with conversion factors
 
-**3. ConstantRegistry**
+**2. ConstantRegistry**
 
 - **Purpose:** Predefined mathematical constants
 - **Used by:** TokenClassifier (lexer) and context initialization
 - **Content:** `ConstantDefinition` with name, value, and aliases
 
-**4. KeywordRegistry**
+**3. KeywordRegistry**
 
 - **Purpose:** Reserved keywords (and, or, not, for, in, if, etc.)
 - **Used by:** TokenClassifier during lexical analysis
@@ -502,7 +496,6 @@ parser/                         (5 files)    # Core entry points
 - **[REGISTRIES.md](./REGISTRIES.md)** - Registry system details
 - **[TESTING.md](./TESTING.md)** - Testing infrastructure and patterns
 - **[../GRAMMAR.md](../GRAMMAR.md)** - Grammar specification
-- **[../GRAMMAR_IMPLEMENTATION_PLAN.md](../GRAMMAR_IMPLEMENTATION_PLAN.md)** - Implementation guide
 
 ---
 

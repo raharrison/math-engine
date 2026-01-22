@@ -159,7 +159,6 @@ With splitting, we can unambiguously handle:
     - Looked up in UnitRegistry
     - `meters`, `feet`, `celsius`, `fahrenheit`, etc.
 3. **Functions** → FUNCTION token
-    - Looked up in FunctionRegistry
     - `sin`, `cos`, `log`, `max`, etc.
 4. **Constants** → CONSTANT token
     - Looked up in ConstantRegistry
@@ -394,14 +393,12 @@ Error: Unterminated string literal
 
 ```java
 // Create registries
-FunctionRegistry functionRegistry = FunctionRegistry.standard();
 UnitRegistry unitRegistry = UnitRegistry.standard();
 ConstantRegistry constantRegistry = ConstantRegistry.standard();
 KeywordRegistry keywordRegistry = KeywordRegistry.standard();
 
 // Create lexer
 Lexer lexer = new Lexer(
-    functionRegistry,
     unitRegistry,
     constantRegistry,
     keywordRegistry
@@ -413,24 +410,6 @@ List<Token> tokens = lexer.tokenize("sin(pi * x) + 2");
 // Result:
 // [FUNCTION(sin), LPAREN, CONSTANT(pi), MULTIPLY, IDENTIFIER(x), RPAREN,
 //  PLUS, INTEGER(2), EOF]
-```
-
-### Custom Registries
-
-```java
-// Add custom function
-FunctionRegistry functions = FunctionRegistry.standard();
-functions.register("myFunc");
-
-// Add custom unit
-UnitRegistry units = UnitRegistry.standard();
-units.register(UnitDefinition.of("myunit", 1.5));
-
-// Add custom constant
-ConstantRegistry constants = ConstantRegistry.standard();
-constants.register(ConstantDefinition.of("MY_CONST", new NodeDouble(42.0)));
-
-Lexer lexer = new Lexer(functions, units, constants, KeywordRegistry.standard());
 ```
 
 ---

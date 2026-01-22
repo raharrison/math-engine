@@ -361,6 +361,18 @@
             "notes": "Unit arithmetic with explicit references and variable shadowing"
         },
         {
+            "id": "explicit_unit_008",
+            "input": "5 @\"km/h\" in @mph",
+            "expectedType": "NodeUnit",
+            "notes": "Unit arithmetic with quoted explicit reference"
+        },
+        {
+            "id": "explicit_unit_009",
+            "input": "5 mph in @\"km/h\"",
+            "expectedType": "NodeUnit",
+            "notes": "Unit arithmetic with quoted explicit reference"
+        },
+        {
             "id": "explicit_var_001",
             "input": "m := 5; $m + 10",
             "expected": 15,

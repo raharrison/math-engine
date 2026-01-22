@@ -10,8 +10,7 @@ import static org.assertj.core.api.Assertions.*;
  * Comprehensive test suite for the {@link Matrix} class.
  * <p>
  * Tests cover all factory methods, arithmetic operations, matrix properties, transformations,
- * linear algebra operations, and edge cases. This test suite follows the standards outlined
- * in CLAUDE.md for code quality and testing practices.
+ * linear algebra operations, and edge cases.
  * </p>
  */
 class MatrixTest {

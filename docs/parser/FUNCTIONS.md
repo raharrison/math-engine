@@ -296,7 +296,7 @@ filter(x -> x > 5, {3, 6, 2, 8})  →  {6, 8}
 **reduce/fold:**
 
 ```java
-reduce((acc, x) -> acc + x, 0, {1, 2, 3, 4})  →  10
+reduce((acc, x) ->acc +x,{1,2,3,4},0)  →  10
 ```
 
 **Implementation Pattern:**

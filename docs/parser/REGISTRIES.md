@@ -9,65 +9,11 @@
 Registries are simple lookup tables that enable extensibility without modifying core code:
 
 ```
-Lexer needs: "Is 'sin' a function?" → FunctionRegistry
+Lexer needs: "Is 'sin' a function?" → FunctionNames
 Lexer needs: "Is 'meters' a unit?" → UnitRegistry
 Lexer needs: "Is 'pi' a constant?" → ConstantRegistry
 Lexer needs: "Is 'and' a keyword?" → KeywordRegistry
 ```
-
----
-
-## FunctionRegistry
-
-**File:** `registry/FunctionRegistry.java`
-
-**Purpose:** Tell lexer which identifiers are functions (not variables)
-
-**Interface:**
-
-```java
-class FunctionRegistry {
-    void register(String name);
-    boolean isFunction(String name);
-    Set<String> getAllNames();
-
-    static FunctionRegistry fromExecutor(FunctionExecutor executor);
-}
-```
-
-**Usage:**
-
-```java
-FunctionRegistry registry = new FunctionRegistry();
-registry.register("sin");
-registry.register("cos");
-registry.register("myCustomFunc");
-
-boolean isFn = registry.isFunction("sin");  // true
-boolean isFn = registry.isFunction("x");    // false
-```
-
-**Population:**
-
-Typically populated from `FunctionExecutor`:
-
-```java
-FunctionRegistry registry = FunctionRegistry.fromExecutor(functionExecutor);
-// Automatically includes all function names and aliases
-```
-
-**Why Needed:**
-
-Without registry, lexer can't distinguish:
-
-- `sin(x)` - function call
-- `sin` - variable named "sin"
-
-With registry:
-
-- Lexer emits `FUNCTION` token for known functions
-- Parser can optimize function call parsing
-
 ---
 
 ## UnitRegistry
@@ -375,15 +321,6 @@ keywords.register("unless");
 ### Unit Tests
 
 ```java
-@Test
-void functionRegistry() {
-    FunctionRegistry registry = new FunctionRegistry();
-    registry.register("myFunc");
-
-    assertThat(registry.isFunction("myFunc")).isTrue();
-    assertThat(registry.isFunction("unknown")).isFalse();
-}
-
 @Test
 void constantRegistry() {
     ConstantRegistry registry = new ConstantRegistry();

@@ -5,12 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
 import uk.co.ryanharrison.mathengine.parser.registry.ConstantRegistry;
-import uk.co.ryanharrison.mathengine.parser.registry.FunctionRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.KeywordRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -26,11 +27,11 @@ class LexerTest {
     void setUp() {
         // Create lexer with all default registries from config
         MathEngineConfig config = MathEngineConfig.defaults();
-        FunctionRegistry functionRegistry = FunctionRegistry.fromFunctions(config.functions());
-        UnitRegistry unitRegistry = new UnitRegistry();
+        Set<String> functionNames = FunctionExecutor.of(config.functions()).getFunctionNames();
+        UnitRegistry unitRegistry = config.unitRegistry();
         ConstantRegistry constantRegistry = config.constantRegistry();
         KeywordRegistry keywordRegistry = config.keywordRegistry();
-        lexer = new Lexer(functionRegistry, unitRegistry, constantRegistry, keywordRegistry, 256, true);
+        lexer = new Lexer(functionNames, unitRegistry, constantRegistry, keywordRegistry, 256, true);
     }
 
     // ==================== Integer Literals ====================

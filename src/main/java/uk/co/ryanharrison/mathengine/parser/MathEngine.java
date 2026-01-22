@@ -1,6 +1,5 @@
 package uk.co.ryanharrison.mathengine.parser;
 
-import uk.co.ryanharrison.mathengine.core.AngleUnit;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.Evaluator;
 import uk.co.ryanharrison.mathengine.parser.evaluator.RecursionTracker;
@@ -12,7 +11,10 @@ import uk.co.ryanharrison.mathengine.parser.operator.OperatorExecutor;
 import uk.co.ryanharrison.mathengine.parser.parser.Parser;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.registry.*;
+import uk.co.ryanharrison.mathengine.parser.registry.ConstantDefinition;
+import uk.co.ryanharrison.mathengine.parser.registry.ConstantRegistry;
+import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
+import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 import uk.co.ryanharrison.mathengine.parser.util.ResultFormatter;
 
 import java.util.*;
@@ -20,26 +22,21 @@ import java.util.*;
 /**
  * Main entry point for the Math Engine parser and evaluator.
  * <p>
- * MathEngine is the central configuration point for the parser system.
- * It creates and manages all components:
- * <ul>
- *     <li>{@link OperatorExecutor} - handles operator implementations</li>
- *     <li>{@link FunctionExecutor} - handles built-in function implementations</li>
- *     <li>{@link FunctionRegistry} - provides function names for lexer</li>
- *     <li>{@link Evaluator} - evaluates parsed expressions</li>
- * </ul>
+ * MathEngine is an immutable, thread-safe facade for the parser system.
+ * All configuration is provided via {@link MathEngineConfig}.
  *
  * <h2>Quick Start:</h2>
  * <pre>{@code
- * // Simple evaluation
+ * // Simple evaluation with defaults
  * MathEngine engine = MathEngine.create();
  * NodeConstant result = engine.evaluate("2 + 3 * 4");
  * System.out.println(result); // 14
  *
  * // With custom configuration
- * MathEngine engine = MathEngine.builder()
+ * MathEngineConfig config = MathEngineConfig.builder()
  *     .angleUnit(AngleUnit.DEGREES)
  *     .build();
+ * MathEngine engine = MathEngine.create(config);
  * NodeConstant result = engine.evaluate("sin(90)");
  * System.out.println(result); // 1.0
  * }</pre>
@@ -60,60 +57,56 @@ import java.util.*;
  * engine.evaluate("square(5)"); // 25
  * }</pre>
  *
- * <h2>Custom Functions:</h2>
+ * <h2>Custom Built-in Functions:</h2>
  * <pre>{@code
+ * // Option 1: Configure in MathEngineConfig (preferred)
+ * var functions = new ArrayList<>(StandardFunctions.all());
+ * functions.add(myCustomFunction);
+ * MathEngineConfig config = MathEngineConfig.builder()
+ *     .functions(functions)
+ *     .build();
+ * MathEngine engine = MathEngine.create(config);
+ *
+ * // Option 2: Use withFunction (creates new engine)
  * MathEngine engine = MathEngine.create();
- *
- * // Register a custom built-in function using MathFunction
- * engine.registerFunction(new MathFunction() {
- *     public String name() { return "double"; }
- *     public int minArity() { return 1; }
- *     public int maxArity() { return 1; }
- *     public NodeConstant apply(List<NodeConstant> args, FunctionContext ctx) {
- *         return new NodeDouble(args.get(0).doubleValue() * 2);
- *     }
- * });
- *
- * engine.evaluate("double(21)"); // 42
+ * engine = engine.withFunction(myCustomFunction);
  * }</pre>
  */
 public final class MathEngine {
 
     private final MathEngineConfig config;
     private final FunctionExecutor functionExecutor;
-    private final FunctionRegistry functionRegistry;
     private final UnitRegistry unitRegistry;
     private final ConstantRegistry constantRegistry;
     private final EvaluationContext context;
     private final Evaluator evaluator;
     private final Lexer lexer;
 
-    private MathEngine(Builder builder) {
-        this.config = builder.config;
+    private MathEngine(MathEngineConfig config) {
+        this.config = config;
 
-        // Create executors
-        var operatorExecutor = new OperatorExecutor();
-        operatorExecutor.registerBinaryOperators(config.binaryOperators());
-        operatorExecutor.registerUnaryOperators(config.unaryOperators());
+        // Create immutable executors
+        var operatorExecutor = OperatorExecutor.of(config.binaryOperators(), config.unaryOperators());
+        this.functionExecutor = FunctionExecutor.of(config.functions());
 
-        this.functionExecutor = new FunctionExecutor();
-        this.functionExecutor.registerAll(config.functions());
-
-        // Registries
+        // Immutable registries
         this.constantRegistry = config.constantRegistry();
-        this.functionRegistry = builder.functionRegistry != null
-                ? builder.functionRegistry
-                : FunctionRegistry.fromExecutor(functionExecutor);
         this.unitRegistry = config.unitRegistry();
 
-        // Evaluation context
+        // Evaluation context (mutable for user-defined variables/functions)
         this.context = new EvaluationContext(config, new RecursionTracker(config.maxRecursionDepth()));
         initializePredefinedConstants();
 
         // Core components
         this.evaluator = new Evaluator(config, context, operatorExecutor, functionExecutor);
-        this.lexer = new Lexer(functionRegistry, unitRegistry, constantRegistry,
-                config.keywordRegistry(), config.maxIdentifierLength(), config.implicitMultiplication());
+        this.lexer = new Lexer(
+                functionExecutor.getFunctionNames(),
+                unitRegistry,
+                constantRegistry,
+                config.keywordRegistry(),
+                config.maxIdentifierLength(),
+                config.implicitMultiplication()
+        );
     }
 
     private void initializePredefinedConstants() {
@@ -133,7 +126,7 @@ public final class MathEngine {
      * @return new MathEngine instance
      */
     public static MathEngine create() {
-        return builder().build();
+        return new MathEngine(MathEngineConfig.defaults());
     }
 
     /**
@@ -143,16 +136,10 @@ public final class MathEngine {
      * @return new MathEngine instance
      */
     public static MathEngine create(MathEngineConfig config) {
-        return builder().config(config).build();
-    }
-
-    /**
-     * Creates a new builder for constructing a customized MathEngine.
-     *
-     * @return new builder instance
-     */
-    public static Builder builder() {
-        return new Builder();
+        if (config == null) {
+            throw new IllegalArgumentException("Config cannot be null");
+        }
+        return new MathEngine(config);
     }
 
     /**
@@ -165,7 +152,7 @@ public final class MathEngine {
      * @see MathEngineConfig#arithmetic()
      */
     public static MathEngine arithmetic() {
-        return create(MathEngineConfig.arithmetic());
+        return new MathEngine(MathEngineConfig.arithmetic());
     }
 
     /**
@@ -178,7 +165,7 @@ public final class MathEngine {
      * @see MathEngineConfig#basic()
      */
     public static MathEngine basic() {
-        return create(MathEngineConfig.basic());
+        return new MathEngine(MathEngineConfig.basic());
     }
 
     /**
@@ -208,6 +195,47 @@ public final class MathEngine {
         MathEngine newEngine = MathEngine.create(newConfig);
         context.getLocalVariables().forEach(newEngine.context::define);
         context.getLocalFunctions().forEach(newEngine.context::defineFunction);
+        return newEngine;
+    }
+
+    /**
+     * Creates a new engine with an additional custom built-in function.
+     * <p>
+     * This method returns a new MathEngine instance with the function added.
+     * The original engine remains unchanged. Session state (variables, user functions)
+     * is preserved in the new engine.
+     *
+     * <h2>Usage:</h2>
+     * <pre>{@code
+     * MathEngine engine = MathEngine.create();
+     * engine = engine.withFunction(myCustomFunction);
+     * engine.evaluate("myFunction(21)");
+     * }</pre>
+     *
+     * <p>For defining functions at configuration time, prefer using
+     * {@link MathEngineConfig.Builder#functions(List)}.
+     *
+     * @param function the function implementation
+     * @return new engine with the function added
+     */
+    public MathEngine withFunction(MathFunction function) {
+        if (function == null) {
+            throw new IllegalArgumentException("Function cannot be null");
+        }
+        if (function.name() == null || function.name().isBlank()) {
+            throw new IllegalArgumentException("Function name cannot be null or empty");
+        }
+
+        // Create new config with additional function
+        var newFunctions = new ArrayList<>(config.functions());
+        newFunctions.add(function);
+        MathEngineConfig newConfig = config.toBuilder().functions(newFunctions).build();
+
+        // Create new engine and transfer session state
+        MathEngine newEngine = MathEngine.create(newConfig);
+        context.getLocalVariables().forEach(newEngine.context::define);
+        context.getLocalFunctions().forEach(newEngine.context::defineFunction);
+
         return newEngine;
     }
 
@@ -306,26 +334,6 @@ public final class MathEngine {
         evaluate(definition);
     }
 
-    /**
-     * Registers a custom built-in function.
-     * The function is registered for both execution and lexer recognition.
-     *
-     * @param function the function implementation
-     */
-    public void registerFunction(MathFunction function) {
-        if (function == null) {
-            throw new IllegalArgumentException("Function cannot be null");
-        }
-        if (function.name() == null || function.name().isBlank()) {
-            throw new IllegalArgumentException("Function name cannot be null or empty");
-        }
-        functionExecutor.register(function);
-        functionRegistry.register(function.name());
-        for (String alias : function.aliases()) {
-            functionRegistry.register(alias);
-        }
-    }
-
     // ==================== Accessors ====================
 
     /**
@@ -391,50 +399,5 @@ public final class MathEngine {
      */
     public List<Token> tokenize(String expression) {
         return lexer.tokenize(expression);
-    }
-
-    // ==================== Builder ====================
-
-    /**
-     * Builder for constructing customized {@link MathEngine} instances.
-     */
-    public static final class Builder {
-        private MathEngineConfig config = MathEngineConfig.defaults();
-        private FunctionRegistry functionRegistry;
-
-        private Builder() {
-        }
-
-        /**
-         * Sets the configuration to use.
-         */
-        public Builder config(MathEngineConfig config) {
-            if (config == null) throw new IllegalArgumentException("Config cannot be null");
-            this.config = config;
-            return this;
-        }
-
-        /**
-         * Sets the angle unit (convenience method that updates the config).
-         */
-        public Builder angleUnit(AngleUnit angleUnit) {
-            this.config = config.toBuilder().angleUnit(angleUnit).build();
-            return this;
-        }
-
-        /**
-         * Sets a custom function registry (overrides auto-generated from config functions).
-         */
-        public Builder functionRegistry(FunctionRegistry functionRegistry) {
-            this.functionRegistry = functionRegistry;
-            return this;
-        }
-
-        /**
-         * Builds the MathEngine instance.
-         */
-        public MathEngine build() {
-            return new MathEngine(this);
-        }
     }
 }

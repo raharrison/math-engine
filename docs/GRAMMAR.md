@@ -696,14 +696,14 @@ cannot be redefined.
 
 - `map(function, vector)` - Apply function to each element
 - `filter(function, vector)` - Keep elements where function returns true
-- `reduce(function, initial, vector)` - Fold/accumulate (e.g., sum, product)
+- `reduce(function, vector, initial)` - Fold/accumulate (e.g., sum, product)
 
 **Examples:**
 
 ```
 map(x -> x * 2, {1, 2, 3})                    → {2, 4, 6}
 filter(x -> x > 3, {1, 2, 3, 4, 5})           → {4, 5}
-reduce((acc, x) -> acc + x, 0, {1, 2, 3})     → 6
+reduce((acc, x) -> acc + x, {1, 2, 3}, 0)     → 6
 ```
 
 ### Conditional Function
@@ -1194,7 +1194,7 @@ map(x -> x^2, {1,2,3}) → {1,4,9}
 ```
 map(x -> x * 2, {1,2,3})                 → {2,4,6}
 filter(x -> x > 3, {1,2,3,4,5})          → {4,5}
-reduce((a,b) -> a + b, 0, {1,2,3,4,5})   → 15
+reduce((a,b) -> a + b, {1,2,3,4,5}, 0)   → 15
 ```
 
 ### String Functions
@@ -1324,12 +1324,6 @@ mean({x meters in centimeters for x in 1..5}) → 300 cm
 
 ## Critical Edge Cases
 
-### Deeply Nested Expressions
-
-- Maximum recursion depth should be configurable (default: 1000)
-- Parser should detect stack overflow risk and fail gracefully
-- Error message: "Expression too deeply nested (max depth: N)"
-
 ### Empty Expressions
 
 - `()` → Error: "Empty parentheses"
@@ -1362,35 +1356,3 @@ mean({x meters in centimeters for x in 1..5}) → 300 cm
 - `x + 5` → Store as AST if `x` undefined (lazy evaluation)
 - Error only on actual evaluation attempt
 - Implementation choice: Eager vs lazy variable resolution
-
----
-
-## Implementation Constraints
-
-### Maximum Limits (Recommended)
-
-- Maximum identifier length: 256 characters
-- Maximum string literal length: 65,535 characters
-- Maximum vector size: 1,000,000 elements
-- Maximum matrix dimension: 10,000 × 10,000
-- Maximum function parameters: 255
-- Maximum recursion depth: 1,000
-- Maximum expression nesting: 1,000
-
-### Numeric Precision
-
-- `NodeDouble`: IEEE 754 double precision (15-17 significant digits)
-- `NodeRational`: Arbitrary precision (limited by memory)
-- Overflow behavior: `NodeRational` overflow → promote to `NodeDouble`
-- Underflow: Very small rationals stay exact until converted
-
----
-
-**Version 2.1 - Comprehensive Grammar and Function Reference**
-
-**Changelog:**
-
-- **v2.1 (2026-01-12):** Added comprehensive built-in function reference (150+ functions), expanded semantics documentation (
-  statement sequences, vectorization, detailed broadcasting rules, matrix subscripting, scoping/closures), updated grammar for
-  statement sequences, expanded examples covering all major features
-- **v2.0:** Initial formal grammar specification

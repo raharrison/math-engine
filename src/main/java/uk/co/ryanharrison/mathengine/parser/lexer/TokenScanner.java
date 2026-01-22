@@ -27,22 +27,12 @@ import java.util.List;
  */
 public final class TokenScanner {
 
-    private static final int DEFAULT_MAX_IDENTIFIER_LENGTH = 256;
-
     private final int maxIdentifierLength;
     private CharacterScanner scanner;
-    private String source;
     private int start;
     private int tokenStartLine;
     private int tokenStartColumn;
     private List<Token> tokens;
-
-    /**
-     * Creates a new token scanner with default maximum identifier length.
-     */
-    public TokenScanner() {
-        this(DEFAULT_MAX_IDENTIFIER_LENGTH);
-    }
 
     /**
      * Creates a new token scanner with the specified maximum identifier length.
@@ -65,8 +55,7 @@ public final class TokenScanner {
      * @throws LexerException if a lexical error occurs
      */
     public List<Token> scan(String source) {
-        this.source = source != null ? source : "";
-        this.scanner = new CharacterScanner(this.source);
+        this.scanner = new CharacterScanner(source != null ? source : "");
         this.tokens = new ArrayList<>();
         this.start = 0;
 
@@ -223,15 +212,29 @@ public final class TokenScanner {
 
     /**
      * Scans @ character - either matrix multiplication or explicit unit reference.
-     * If immediately followed by a letter (no space), it's a unit reference (@fahrenheit).
-     * Otherwise, it's matrix multiplication operator (@).
+     * <ul>
+     *     <li>{@code @fahrenheit} - unit reference with identifier</li>
+     *     <li>{@code @"km/h"} - unit reference with quoted string (for complex units)</li>
+     *     <li>{@code @} alone - at operator</li>
+     * </ul>
      */
     private void scanAtSign() {
-        // Look ahead to see if it's @identifier (unit reference) or standalone @ (matrix mult)
         if (CharacterScanner.isAlpha(scanner.peek())) {
             // Explicit unit reference: @fahrenheit
             String unitName = extractIdentifierName();
-            addToken(TokenType.UNIT_REF, "@" + unitName);
+            addToken(TokenType.UNIT_REF, "@" + unitName, unitName);
+        } else if (scanner.peek() == '"' || scanner.peek() == '\'') {
+            // Quoted unit reference: @"km/h" or @'km/h'
+            char quote = scanner.advance();
+            int unitStart = scanner.getPosition();
+            scanner.consumeWhile(c -> c != quote && !CharacterScanner.isNewline((char) c));
+            if (scanner.isAtEnd() || scanner.peek() != quote) {
+                throw scanner.error("Unterminated unit reference string");
+            }
+            String unitName = scanner.substring(unitStart, scanner.getPosition());
+            scanner.advance(); // consume closing quote
+            String text = scanner.substring(start, scanner.getPosition());
+            addToken(TokenType.UNIT_REF, text, unitName);
         } else {
             addToken(TokenType.AT, "@");
         }

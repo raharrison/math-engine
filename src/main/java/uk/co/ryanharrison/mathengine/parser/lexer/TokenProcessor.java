@@ -1,7 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.lexer;
 
 import uk.co.ryanharrison.mathengine.parser.registry.ConstantRegistry;
-import uk.co.ryanharrison.mathengine.parser.registry.FunctionRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.KeywordRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
@@ -42,18 +41,18 @@ public final class TokenProcessor {
             TokenType.UNIT_REF, TokenType.VAR_REF, TokenType.CONST_REF, TokenType.FUNCTION
     );
 
-    private final FunctionRegistry functionRegistry;
+    private final Set<String> functionNames;
     private final UnitRegistry unitRegistry;
     private final ConstantRegistry constantRegistry;
     private final KeywordRegistry keywordRegistry;
     private final boolean implicitMultiplicationEnabled;
 
-    public TokenProcessor(FunctionRegistry functionRegistry,
+    public TokenProcessor(Set<String> functionNames,
                           UnitRegistry unitRegistry,
                           ConstantRegistry constantRegistry,
                           KeywordRegistry keywordRegistry,
                           boolean implicitMultiplicationEnabled) {
-        this.functionRegistry = functionRegistry;
+        this.functionNames = functionNames;
         this.unitRegistry = unitRegistry;
         this.constantRegistry = constantRegistry;
         this.keywordRegistry = keywordRegistry;
@@ -167,7 +166,7 @@ public final class TokenProcessor {
         }
 
         // Functions
-        if (functionRegistry.isFunction(text)) {
+        if (isFunction(text)) {
             return token.withType(TokenType.FUNCTION);
         }
 
@@ -217,8 +216,12 @@ public final class TokenProcessor {
 
     // ==================== Identifier Splitting ====================
 
+    private boolean isFunction(String text) {
+        return functionNames.contains(text.toLowerCase());
+    }
+
     private boolean isKnownIdentifier(String text) {
-        return functionRegistry.isFunction(text) ||
+        return isFunction(text) ||
                 unitRegistry.isUnit(text) ||
                 constantRegistry.isConstant(text);
     }
@@ -294,7 +297,7 @@ public final class TokenProcessor {
             String prefix = text.substring(0, i);
             String suffix = text.substring(i);
 
-            if (functionRegistry.isFunction(suffix) && shouldSplitForPrefix(prefix)) {
+            if (isFunction(suffix) && shouldSplitForPrefix(prefix)) {
                 var result = new ArrayList<Token>(2);
                 result.add(new Token(TokenType.IDENTIFIER, prefix, line, col));
                 result.add(new Token(TokenType.IDENTIFIER, suffix, line, col + i));

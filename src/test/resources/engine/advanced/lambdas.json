@@ -146,21 +146,21 @@
         },
         {
             "id": "reduce_001",
-            "input": "reduce((acc, x) -> acc + x, 0, {1, 2, 3, 4, 5})",
+            "input": "reduce((acc, x) -> acc + x, {1, 2, 3, 4, 5}, 0)",
             "expected": 15,
             "expectedType": "NodeRational",
             "notes": "Reduce sum"
         },
         {
             "id": "reduce_002",
-            "input": "reduce((acc, x) -> acc * x, 1, {1, 2, 3, 4, 5})",
+            "input": "reduce((acc, x) -> acc * x, {1, 2, 3, 4, 5}, 1)",
             "expected": 120,
             "expectedType": "NodeRational",
             "notes": "Reduce product"
         },
         {
             "id": "reduce_003",
-            "input": "reduce((a, b) -> if(a > b, a, b), 0, {3, 1, 4, 1, 5, 9})",
+            "input": "reduce((a, b) -> if(a > b, a, b), {3, 1, 4, 1, 5, 9}, 0)",
             "expected": 9,
             "expectedType": "NodeDouble",
             "notes": "Reduce max"

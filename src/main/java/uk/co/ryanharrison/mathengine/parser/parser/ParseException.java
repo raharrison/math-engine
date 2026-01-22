@@ -102,7 +102,7 @@ public class ParseException extends MathEngineException {
     public String formatMessage() {
         var sb = new StringBuilder();
 
-        // Main error message
+        // Main error message with expected/actual token info if available
         if (token != null) {
             if (expected != null && actual != null) {
                 sb.append(String.format("Parse error at line %d, column %d: Expected %s but found %s",
@@ -117,9 +117,9 @@ public class ParseException extends MathEngineException {
             sb.append(String.format("Parse error: %s", getMessage()));
         }
 
-        // Add source context if available
+        // Add source context if available (using base class method)
         if (sourceCode != null && token != null) {
-            sb.append("\n").append(formatSourceContext());
+            sb.append("\n").append(formatSourceContext(sourceCode, token.line(), token.column()));
         }
 
         // Add helpful suggestions
@@ -127,37 +127,6 @@ public class ParseException extends MathEngineException {
         if (suggestion != null) {
             sb.append("\n\nHint: ").append(suggestion);
         }
-
-        return sb.toString();
-    }
-
-    /**
-     * Formats source code context with a caret pointing to the error.
-     */
-    private String formatSourceContext() {
-        if (sourceCode == null || token == null) {
-            return "";
-        }
-
-        String[] lines = sourceCode.split("\n", -1);
-        int line = token.line();
-        int column = token.column();
-
-        if (line <= 0 || line > lines.length) {
-            return "";
-        }
-
-        var sb = new StringBuilder();
-        String sourceLine = lines[line - 1];
-
-        // Show the line with error
-        sb.append(String.format("  %4d | %s\n", line, sourceLine));
-
-        // Show caret pointing to error position
-        sb.append("       | ");
-        int caretPos = Math.max(0, column - 1);
-        sb.append(" ".repeat(caretPos));
-        sb.append("^");
 
         return sb.toString();
     }

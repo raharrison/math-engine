@@ -74,7 +74,7 @@
         },
         {
             "id": "complex_011",
-            "input": "reduce((a, b) -> a + b, 0, {x^2 for x in 1..5})",
+            "input": "reduce((a, b) -> a + b, {x^2 for x in 1..5}, 0)",
             "expected": 55,
             "expectedType": "NodeRational",
             "notes": "Reduce with comprehension"

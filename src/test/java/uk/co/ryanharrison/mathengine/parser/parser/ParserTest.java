@@ -3,15 +3,16 @@ package uk.co.ryanharrison.mathengine.parser.parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
 import uk.co.ryanharrison.mathengine.parser.lexer.Lexer;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.registry.ConstantRegistry;
-import uk.co.ryanharrison.mathengine.parser.registry.FunctionRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.KeywordRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -27,11 +28,11 @@ class ParserTest {
     void setUp() {
         // Create registries from default config
         MathEngineConfig config = MathEngineConfig.defaults();
-        FunctionRegistry functionRegistry = FunctionRegistry.fromFunctions(config.functions());
-        UnitRegistry unitRegistry = new UnitRegistry();
+        Set<String> functionNames = FunctionExecutor.of(config.functions()).getFunctionNames();
+        UnitRegistry unitRegistry = config.unitRegistry();
         ConstantRegistry constantRegistry = config.constantRegistry();
         KeywordRegistry keywordRegistry = config.keywordRegistry();
-        lexer = new Lexer(functionRegistry, unitRegistry, constantRegistry, keywordRegistry, 256, true);
+        lexer = new Lexer(functionNames, unitRegistry, constantRegistry, keywordRegistry, 256, true);
     }
 
     private Node parse(String input) {

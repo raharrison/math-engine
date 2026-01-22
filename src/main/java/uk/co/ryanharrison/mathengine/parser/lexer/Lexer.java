@@ -1,11 +1,11 @@
 package uk.co.ryanharrison.mathengine.parser.lexer;
 
 import uk.co.ryanharrison.mathengine.parser.registry.ConstantRegistry;
-import uk.co.ryanharrison.mathengine.parser.registry.FunctionRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.KeywordRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Lexical analyzer (lexer/scanner) for the Math Engine.
@@ -19,7 +19,6 @@ import java.util.List;
  * <h2>Key Features:</h2>
  * <ul>
  *     <li>Handles decimal vs range disambiguation (1.5 vs 1..5)</li>
- *     <li>Extensible registries for operators, functions, units, constants, and keywords</li>
  *     <li>Position tracking for error reporting</li>
  *     <li>Support for implicit multiplication (2x, 2(x+1))</li>
  *     <li>Compound identifier splitting (pi2e → pi * 2 * e)</li>
@@ -29,7 +28,7 @@ import java.util.List;
  * <h2>Usage:</h2>
  * <pre>{@code
  * Lexer lexer = new Lexer(
- *     functionRegistry,
+ *     functionNames,
  *     unitRegistry,
  *     constantRegistry,
  *     keywordRegistry,
@@ -50,14 +49,14 @@ public final class Lexer {
     /**
      * Creates a new lexer with full configuration.
      *
-     * @param functionRegistry              registry of known functions
+     * @param functionNames                 set of known function names (lowercase)
      * @param unitRegistry                  registry of known units
      * @param constantRegistry              registry of known constants
      * @param keywordRegistry               registry of known keywords
      * @param maxIdentifierLength           maximum allowed length for identifiers
      * @param implicitMultiplicationEnabled whether to insert implicit multiplication tokens
      */
-    public Lexer(FunctionRegistry functionRegistry,
+    public Lexer(Set<String> functionNames,
                  UnitRegistry unitRegistry,
                  ConstantRegistry constantRegistry,
                  KeywordRegistry keywordRegistry,
@@ -65,7 +64,7 @@ public final class Lexer {
                  boolean implicitMultiplicationEnabled) {
         this.tokenScanner = new TokenScanner(maxIdentifierLength);
         this.tokenProcessor = new TokenProcessor(
-                functionRegistry,
+                functionNames,
                 unitRegistry,
                 constantRegistry,
                 keywordRegistry,

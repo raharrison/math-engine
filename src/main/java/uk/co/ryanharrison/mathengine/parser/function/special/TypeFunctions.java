@@ -112,6 +112,52 @@ public final class TypeFunctions {
             List.of("tobool", "boolean"), (arg, ctx) -> new NodeBoolean(ctx.toBoolean(arg)));
 
     /**
+     * Convert a vector of vectors to a matrix
+     */
+    public static final MathFunction TOMATRIX = UnaryFunction.of("tomatrix", "Convert vector of vectors to matrix", TYPE, (arg, ctx) -> {
+        NodeVector outerVector = ctx.requireVector(arg, "tomatrix");
+
+        if (outerVector.size() == 0) {
+            throw new IllegalArgumentException("tomatrix requires non-empty vector");
+        }
+
+        // Convert vector of vectors to matrix
+        Node[] rows = outerVector.getElements();
+        Node[][] matrixElements = new Node[rows.length][];
+
+        for (int i = 0; i < rows.length; i++) {
+            if (!(rows[i] instanceof NodeVector rowVector)) {
+                throw new IllegalArgumentException("tomatrix requires a vector of vectors, but element " + i + " is not a vector");
+            }
+            matrixElements[i] = rowVector.getElements();
+
+            // Validate all rows have the same length
+            if (i > 0 && matrixElements[i].length != matrixElements[0].length) {
+                throw new IllegalArgumentException("tomatrix requires all rows to have the same length, but row 0 has " +
+                        matrixElements[0].length + " elements and row " + i + " has " + matrixElements[i].length + " elements");
+            }
+        }
+
+        return new NodeMatrix(matrixElements);
+    }, false);
+
+    /**
+     * Convert a matrix to a vector of vectors
+     */
+    public static final MathFunction TOVECTOR = UnaryFunction.of("tovector", "Convert matrix to vector of vectors", TYPE, (arg, ctx) -> {
+        NodeMatrix matrix = ctx.requireMatrix(arg, "tovector");
+
+        Node[][] matrixElements = matrix.getElements();
+        Node[] vectorOfVectors = new Node[matrix.getRows()];
+
+        for (int i = 0; i < matrix.getRows(); i++) {
+            vectorOfVectors[i] = new NodeVector(matrixElements[i]);
+        }
+
+        return new NodeVector(vectorOfVectors);
+    }, false);
+
+    /**
      * Get the numerator of a rational number
      */
     public static final MathFunction NUMERATOR = UnaryFunction.of("numerator", "Get numerator of a rational", TYPE, (arg, ctx) ->
@@ -171,7 +217,7 @@ public final class TypeFunctions {
     public static List<MathFunction> all() {
         return List.of(
                 ISNAN, ISINF, ISFINITE, ISINT, ISEVEN, ISODD, ISPOSITIVE, ISNEGATIVE, ISZERO,
-                TOINT, TODOUBLE, TOBOOL, NUMERATOR, DENOMINATOR,
+                TOINT, TODOUBLE, TOBOOL, TOMATRIX, TOVECTOR, NUMERATOR, DENOMINATOR,
                 TYPEOF, ISNUMBER, ISVECTOR, ISMATRIX, ISBOOLEAN
         );
     }

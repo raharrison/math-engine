@@ -422,7 +422,7 @@ public final class MathEngineConfig {
         private boolean userDefinedFunctionsEnabled = true;
         private ConstantRegistry constantRegistry = ConstantRegistry.withDefaults();
         private KeywordRegistry keywordRegistry = KeywordRegistry.withDefaults();
-        private UnitRegistry unitRegistry = new UnitRegistry();
+        private UnitRegistry unitRegistry = UnitRegistry.withDefaults();
         private List<MathFunction> functions = StandardFunctions.all();
         private Map<TokenType, BinaryOperator> binaryOperators = StandardBinaryOperators.all();
         private Map<TokenType, UnaryOperator> unaryOperators = StandardUnaryOperators.all();

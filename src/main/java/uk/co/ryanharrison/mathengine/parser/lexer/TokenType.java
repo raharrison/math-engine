@@ -79,6 +79,7 @@ public enum TokenType {
     FUNCTION("FUNCTION", "function"),
     EOF("EOF", "end of expression"),
     NEWLINE("NEWLINE", "newline"),
+    ERROR("ERROR", "error"),
 
     // Explicit unit reference: @fahrenheit
     UNIT_REF("UNIT_REF", "unit reference"),

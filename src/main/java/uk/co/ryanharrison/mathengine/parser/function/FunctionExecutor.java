@@ -11,67 +11,63 @@ import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 import java.util.*;
 
 /**
- * Executor for built-in functions that manages registration and execution.
+ * Immutable executor for built-in functions.
  * <p>
- * This class serves as the central registry for all built-in functions and handles
- * dispatching function calls to the appropriate implementation.
+ * Once created, the executor cannot be modified, making it thread-safe.
+ * All functions must be provided at construction time.
  *
  * <h2>Usage:</h2>
  * <pre>{@code
- * FunctionExecutor executor = new FunctionExecutor();
+ * // Create with standard functions
+ * FunctionExecutor executor = FunctionExecutor.of(StandardFunctions.all());
  *
- * // Register standard functions
- * executor.registerAll(StandardFunctions.all());
+ * // Create with custom functions
+ * FunctionExecutor executor = FunctionExecutor.builder()
+ *     .add(myCustomFunction)
+ *     .addAll(StandardFunctions.basic())
+ *     .build();
  *
  * // Execute a function
  * List<NodeConstant> args = List.of(new NodeDouble(0.5));
- * NodeConstant result = executor.execute("sin", args, context);
+ * NodeConstant result = executor.execute("sin", args, context, functionCaller);
  * }</pre>
  */
 public final class FunctionExecutor {
 
     private final Map<String, MathFunction> functions;
 
-    /**
-     * Creates a new function executor with no registered functions.
-     */
-    public FunctionExecutor() {
-        this.functions = new HashMap<>();
+    private FunctionExecutor(Map<String, MathFunction> functions) {
+        this.functions = Map.copyOf(functions);
     }
 
-    // ==================== Registration ====================
+    // ==================== Factory Methods ====================
 
     /**
-     * Registers a function with its primary name and all aliases.
-     * <p>
-     * The function is registered under its primary name (from {@link MathFunction#name()})
-     * and all aliases (from {@link MathFunction#aliases()}). This allows the function
-     * to be called by any of its names.
+     * Creates an empty function executor.
      *
-     * @param function the function to register
-     * @return this executor for method chaining
+     * @return new empty executor
      */
-    public FunctionExecutor register(MathFunction function) {
-        // Register under primary name
-        functions.put(function.name().toLowerCase(), function);
-        // Register under all aliases
-        for (String alias : function.aliases()) {
-            functions.put(alias.toLowerCase(), function);
-        }
-        return this;
+    public static FunctionExecutor empty() {
+        return new FunctionExecutor(Map.of());
     }
 
     /**
-     * Registers multiple functions.
+     * Creates a function executor with the given functions.
      *
-     * @param funcs collection of functions to register
-     * @return this executor for method chaining
+     * @param functions the functions to register
+     * @return new executor with all functions registered
      */
-    public FunctionExecutor registerAll(Collection<MathFunction> funcs) {
-        for (MathFunction func : funcs) {
-            register(func);
-        }
-        return this;
+    public static FunctionExecutor of(Collection<MathFunction> functions) {
+        return builder().addAll(functions).build();
+    }
+
+    /**
+     * Creates a new builder for constructing function executors.
+     *
+     * @return new builder instance
+     */
+    public static Builder builder() {
+        return new Builder();
     }
 
     // ==================== Query ====================
@@ -89,10 +85,10 @@ public final class FunctionExecutor {
     /**
      * Gets all registered function names.
      *
-     * @return set of function names (lowercase)
+     * @return unmodifiable set of function names (lowercase)
      */
     public Set<String> getFunctionNames() {
-        return Set.copyOf(functions.keySet());
+        return functions.keySet();
     }
 
     /**
@@ -171,5 +167,58 @@ public final class FunctionExecutor {
         }
 
         return new NodeVector(results);
+    }
+
+    // ==================== Builder ====================
+
+    /**
+     * Builder for constructing {@link FunctionExecutor} instances.
+     */
+    public static final class Builder {
+        private final Map<String, MathFunction> functions = new HashMap<>();
+
+        private Builder() {
+        }
+
+        /**
+         * Adds a function with its primary name and all aliases.
+         *
+         * @param function the function to add
+         * @return this builder
+         */
+        public Builder add(MathFunction function) {
+            if (function == null) {
+                throw new IllegalArgumentException("Function cannot be null");
+            }
+            // Register under primary name
+            functions.put(function.name().toLowerCase(), function);
+            // Register under all aliases
+            for (String alias : function.aliases()) {
+                functions.put(alias.toLowerCase(), function);
+            }
+            return this;
+        }
+
+        /**
+         * Adds multiple functions.
+         *
+         * @param funcs collection of functions to add
+         * @return this builder
+         */
+        public Builder addAll(Collection<MathFunction> funcs) {
+            for (MathFunction func : funcs) {
+                add(func);
+            }
+            return this;
+        }
+
+        /**
+         * Builds the function executor.
+         *
+         * @return new function executor
+         */
+        public FunctionExecutor build() {
+            return new FunctionExecutor(functions);
+        }
     }
 }
