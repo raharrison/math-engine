@@ -23,7 +23,7 @@ public final class BitwiseFunctions {
      * Bitwise AND
      */
     public static final MathFunction BITAND = AggregateFunction.of("bitand", "Bitwise AND", BITWISE, 2, Integer.MAX_VALUE, (args, ctx) -> {
-        long result = toLong(ctx, args.get(0));
+        long result = toLong(ctx, args.getFirst());
         for (int i = 1; i < args.size(); i++) result &= toLong(ctx, args.get(i));
         return new NodeRational(result);
     });
@@ -32,7 +32,7 @@ public final class BitwiseFunctions {
      * Bitwise OR
      */
     public static final MathFunction BITOR = AggregateFunction.of("bitor", "Bitwise OR", BITWISE, 2, Integer.MAX_VALUE, (args, ctx) -> {
-        long result = toLong(ctx, args.get(0));
+        long result = toLong(ctx, args.getFirst());
         for (int i = 1; i < args.size(); i++) result |= toLong(ctx, args.get(i));
         return new NodeRational(result);
     });
@@ -41,7 +41,7 @@ public final class BitwiseFunctions {
      * Bitwise XOR
      */
     public static final MathFunction BITXOR = AggregateFunction.of("bitxor", "Bitwise XOR", BITWISE, 2, Integer.MAX_VALUE, (args, ctx) -> {
-        long result = toLong(ctx, args.get(0));
+        long result = toLong(ctx, args.getFirst());
         for (int i = 1; i < args.size(); i++) result ^= toLong(ctx, args.get(i));
         return new NodeRational(result);
     });

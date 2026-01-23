@@ -38,8 +38,7 @@ public final class NodeFunctionDef extends NodeExpression {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeFunctionDef)) return false;
-        NodeFunctionDef other = (NodeFunctionDef) obj;
+        if (!(obj instanceof NodeFunctionDef other)) return false;
         return name.equals(other.name) && parameters.equals(other.parameters) && body.equals(other.body);
     }
 

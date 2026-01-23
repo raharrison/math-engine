@@ -163,8 +163,7 @@ public final class NodeRange extends NodeConstant {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeRange)) return false;
-        NodeRange other = (NodeRange) obj;
+        if (!(obj instanceof NodeRange other)) return false;
         return start.equals(other.start) && end.equals(other.end) && step.equals(other.step);
     }
 

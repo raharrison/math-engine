@@ -62,22 +62,6 @@ public interface MathFunction {
     }
 
     /**
-     * Gets all names for this function (primary name + aliases).
-     *
-     * @return unmodifiable list of all names
-     */
-    default List<String> allNames() {
-        List<String> aliasesList = aliases();
-        if (aliasesList.isEmpty()) {
-            return List.of(name());
-        }
-        var names = new java.util.ArrayList<String>(aliasesList.size() + 1);
-        names.add(name());
-        names.addAll(aliasesList);
-        return List.copyOf(names);
-    }
-
-    /**
      * Gets a human-readable description of the function.
      * Used in documentation and error messages.
      *
@@ -101,24 +85,6 @@ public interface MathFunction {
      * @return maximum arity
      */
     int maxArity();
-
-    /**
-     * Whether this function has fixed arity (min == max).
-     *
-     * @return true if arity is fixed
-     */
-    default boolean isFixedArity() {
-        return minArity() == maxArity();
-    }
-
-    /**
-     * Whether this function is variadic (accepts variable number of arguments).
-     *
-     * @return true if variadic
-     */
-    default boolean isVariadic() {
-        return maxArity() == Integer.MAX_VALUE;
-    }
 
     /**
      * Applies this function to the given arguments.

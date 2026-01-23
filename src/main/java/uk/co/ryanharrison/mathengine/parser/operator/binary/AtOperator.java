@@ -41,11 +41,6 @@ public final class AtOperator implements BinaryOperator {
     }
 
     @Override
-    public int precedence() {
-        return 7;
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         // Matrix @ Matrix: true matrix multiplication
         if (left instanceof NodeMatrix leftMatrix && right instanceof NodeMatrix rightMatrix) {

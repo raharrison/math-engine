@@ -48,7 +48,7 @@ public final class SpecialFunctions {
      * Greatest common divisor
      */
     public static final MathFunction GCD = AggregateFunction.of("gcd", "Greatest common divisor", SPECIAL, 2, Integer.MAX_VALUE, (args, ctx) -> {
-        int result = ctx.requireInteger(args.get(0), "gcd");
+        int result = ctx.requireInteger(args.getFirst(), "gcd");
         for (int i = 1; i < args.size(); i++) {
             result = MathUtils.gcd(result, ctx.requireInteger(args.get(i), "gcd"));
         }
@@ -59,7 +59,7 @@ public final class SpecialFunctions {
      * Least common multiple
      */
     public static final MathFunction LCM = AggregateFunction.of("lcm", "Least common multiple", SPECIAL, 2, Integer.MAX_VALUE, (args, ctx) -> {
-        long result = ctx.requireLong(args.get(0), "lcm");
+        long result = ctx.requireLong(args.getFirst(), "lcm");
         for (int i = 1; i < args.size(); i++) {
             result = MathUtils.lcm(result, ctx.requireLong(args.get(i), "lcm"));
         }

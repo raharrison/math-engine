@@ -1,6 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Node representing subscript/indexing operations.
@@ -39,8 +40,7 @@ public final class NodeSubscript extends NodeExpression {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeSubscript)) return false;
-        NodeSubscript other = (NodeSubscript) obj;
+        if (!(obj instanceof NodeSubscript other)) return false;
         return target.equals(other.target) && indices.equals(other.indices);
     }
 
@@ -97,10 +97,9 @@ public final class NodeSubscript extends NodeExpression {
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
-            if (!(obj instanceof SliceArg)) return false;
-            SliceArg other = (SliceArg) obj;
-            boolean startEq = (start == null) ? (other.start == null) : start.equals(other.start);
-            boolean endEq = (end == null) ? (other.end == null) : end.equals(other.end);
+            if (!(obj instanceof SliceArg other)) return false;
+            boolean startEq = Objects.equals(start, other.start);
+            boolean endEq = Objects.equals(end, other.end);
             return startEq && endEq;
         }
 

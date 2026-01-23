@@ -46,11 +46,6 @@ public final class MinusOperator implements BinaryOperator {
     }
 
     @Override
-    public int precedence() {
-        return 8;
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) ->
                 ctx.applyAdditive(l, r, BigRational::subtract, (a, b) -> a - b, false)

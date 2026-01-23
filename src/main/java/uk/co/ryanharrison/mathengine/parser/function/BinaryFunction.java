@@ -90,9 +90,9 @@ public interface BinaryFunction {
     static MathFunction ofDouble(String name, String description, MathFunction.Category category,
                                  DoubleBinaryOperator fn) {
         return new BinaryFunctionWrapper(name, description, category, List.of(), (a, b, ctx) -> {
-            double x = ctx.toNumber(a).doubleValue();
-            double y = ctx.toNumber(b).doubleValue();
-            return new NodeDouble(fn.applyAsDouble(x, y));
+            double left = ctx.toNumber(a).doubleValue();
+            double right = ctx.toNumber(b).doubleValue();
+            return new NodeDouble(fn.applyAsDouble(left, right));
         });
     }
 
@@ -109,9 +109,9 @@ public interface BinaryFunction {
     static MathFunction ofDouble(String name, String description, MathFunction.Category category,
                                  List<String> aliases, DoubleBinaryOperator fn) {
         return new BinaryFunctionWrapper(name, description, category, aliases, (a, b, ctx) -> {
-            double x = ctx.toNumber(a).doubleValue();
-            double y = ctx.toNumber(b).doubleValue();
-            return new NodeDouble(fn.applyAsDouble(x, y));
+            double left = ctx.toNumber(a).doubleValue();
+            double right = ctx.toNumber(b).doubleValue();
+            return new NodeDouble(fn.applyAsDouble(left, right));
         });
     }
 }

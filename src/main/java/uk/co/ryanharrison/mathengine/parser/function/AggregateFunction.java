@@ -85,33 +85,4 @@ public interface AggregateFunction {
                            List<String> aliases, int minArity, int maxArity, AggregateFunction fn) {
         return new AggregateFunctionWrapper(name, description, category, aliases, minArity, maxArity, fn);
     }
-
-    /**
-     * Creates a variadic aggregate function (1 to unlimited arguments).
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param fn          the function implementation
-     * @return a MathFunction wrapping the aggregate function
-     */
-    static MathFunction variadic(String name, String description, MathFunction.Category category,
-                                 AggregateFunction fn) {
-        return new AggregateFunctionWrapper(name, description, category, List.of(), 1, Integer.MAX_VALUE, fn);
-    }
-
-    /**
-     * Creates a variadic aggregate function with aliases.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param aliases     alternate names
-     * @param fn          the function implementation
-     * @return a MathFunction wrapping the aggregate function
-     */
-    static MathFunction variadic(String name, String description, MathFunction.Category category,
-                                 List<String> aliases, AggregateFunction fn) {
-        return new AggregateFunctionWrapper(name, description, category, aliases, 1, Integer.MAX_VALUE, fn);
-    }
 }

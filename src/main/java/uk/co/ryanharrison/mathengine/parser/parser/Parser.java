@@ -119,45 +119,4 @@ public final class Parser {
         return new NodeSequence(statements);
     }
 
-    /**
-     * Parses a single expression without expecting EOF.
-     * <p>
-     * Useful for parsing sub-expressions in specific contexts.
-     *
-     * @return the parsed expression node
-     */
-    public Node parseExpression() {
-        return precedenceParser.parseExpression();
-    }
-
-    /**
-     * Gets the current position in the token stream.
-     * <p>
-     * Useful for debugging and error recovery.
-     *
-     * @return the current position
-     */
-    public int getCurrentPosition() {
-        return stream.getPosition();
-    }
-
-    /**
-     * Checks if parsing has reached the end of the token stream.
-     *
-     * @return true if at end
-     */
-    public boolean isAtEnd() {
-        return stream.isAtEnd();
-    }
-
-    /**
-     * Gets the current token without consuming it.
-     * <p>
-     * Useful for debugging and error reporting.
-     *
-     * @return the current token
-     */
-    public Token peek() {
-        return stream.peek();
-    }
 }

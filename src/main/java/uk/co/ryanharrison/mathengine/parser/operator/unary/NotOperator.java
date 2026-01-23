@@ -37,11 +37,6 @@ public final class NotOperator implements UnaryOperator {
     }
 
     @Override
-    public boolean supportsBroadcasting() {
-        return false;
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant operand, OperatorContext ctx) {
         boolean value = ctx.toBoolean(operand);
         return NodeBoolean.of(!value);

@@ -36,13 +36,4 @@ public interface Operator {
      */
     String displayName();
 
-    /**
-     * Whether this operator supports broadcasting over vectors and matrices.
-     * When true, the operator will be applied element-wise to collection types.
-     *
-     * @return true if broadcasting is supported
-     */
-    default boolean supportsBroadcasting() {
-        return true;
-    }
 }

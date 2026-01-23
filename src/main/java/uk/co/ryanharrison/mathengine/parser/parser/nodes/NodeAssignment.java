@@ -30,8 +30,7 @@ public final class NodeAssignment extends NodeExpression {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeAssignment)) return false;
-        NodeAssignment other = (NodeAssignment) obj;
+        if (!(obj instanceof NodeAssignment other)) return false;
         return identifier.equals(other.identifier) && value.equals(other.value);
     }
 

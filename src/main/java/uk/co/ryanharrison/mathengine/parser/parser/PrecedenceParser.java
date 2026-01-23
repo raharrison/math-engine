@@ -39,8 +39,6 @@ import java.util.List;
  */
 public final class PrecedenceParser {
 
-    private static final int DEFAULT_MAX_EXPRESSION_DEPTH = 1000;
-
     private final TokenStream stream;
     private final CollectionParser collectionParser;
     private final int maxExpressionDepth;

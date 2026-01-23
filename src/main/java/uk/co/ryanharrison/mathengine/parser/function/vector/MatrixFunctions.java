@@ -3,8 +3,10 @@ package uk.co.ryanharrison.mathengine.parser.function.vector;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
+import uk.co.ryanharrison.mathengine.parser.operator.MatrixOperations;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -284,13 +286,7 @@ public final class MatrixFunctions {
                 throw new IllegalArgumentException("identity: size must be positive, got " + n);
             }
 
-            Node[][] result = new Node[n][n];
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    result[i][j] = new NodeRational(i == j ? 1 : 0);
-                }
-            }
-            return new NodeMatrix(result);
+            return MatrixOperations.identityMatrix(n);
         }
     };
 
@@ -874,9 +870,7 @@ public final class MatrixFunctions {
             } else if (data instanceof NodeMatrix matrix) {
                 Node[][] elements = matrix.getElements();
                 for (int i = 0; i < matrix.getRows(); i++) {
-                    for (int j = 0; j < matrix.getCols(); j++) {
-                        values.add(elements[i][j]);
-                    }
+                    values.addAll(Arrays.asList(elements[i]).subList(0, matrix.getCols()));
                 }
             } else {
                 throw new TypeError("reshape requires a vector or matrix");

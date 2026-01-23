@@ -51,8 +51,7 @@ public final class NodeBoolean extends NodeNumber {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeBoolean)) return false;
-        NodeBoolean other = (NodeBoolean) obj;
+        if (!(obj instanceof NodeBoolean other)) return false;
         return value == other.value;
     }
 

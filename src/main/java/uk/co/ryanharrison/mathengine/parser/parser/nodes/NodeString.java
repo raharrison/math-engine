@@ -39,8 +39,7 @@ public final class NodeString extends NodeConstant {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeString)) return false;
-        NodeString other = (NodeString) obj;
+        if (!(obj instanceof NodeString other)) return false;
         return value.equals(other.value);
     }
 

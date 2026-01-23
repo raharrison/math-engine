@@ -45,16 +45,6 @@ public final class PowerOperator implements BinaryOperator {
     }
 
     @Override
-    public int precedence() {
-        return 6;
-    }
-
-    @Override
-    public boolean isRightAssociative() {
-        return true;
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         // Special case: Matrix ^ Integer = Matrix exponentiation (repeated multiplication)
         if (left instanceof NodeMatrix matrix && right instanceof NodeNumber) {

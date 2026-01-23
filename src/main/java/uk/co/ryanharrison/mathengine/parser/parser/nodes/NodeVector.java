@@ -92,8 +92,7 @@ public final class NodeVector extends NodeConstant {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeVector)) return false;
-        NodeVector other = (NodeVector) obj;
+        if (!(obj instanceof NodeVector other)) return false;
         return Arrays.equals(elements, other.elements);
     }
 

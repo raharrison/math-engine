@@ -45,11 +45,6 @@ public final class ComparisonOperators {
         }
 
         @Override
-        public int precedence() {
-            return 10;
-        }
-
-        @Override
         public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
             // Ordering operators don't work on containers
             if (left instanceof NodeVector || left instanceof NodeMatrix ||
@@ -81,11 +76,6 @@ public final class ComparisonOperators {
         @Override
         public String displayName() {
             return "greater than";
-        }
-
-        @Override
-        public int precedence() {
-            return 10;
         }
 
         @Override
@@ -123,11 +113,6 @@ public final class ComparisonOperators {
         }
 
         @Override
-        public int precedence() {
-            return 10;
-        }
-
-        @Override
         public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
             // Ordering operators don't work on containers
             if (left instanceof NodeVector || left instanceof NodeMatrix ||
@@ -159,11 +144,6 @@ public final class ComparisonOperators {
         @Override
         public String displayName() {
             return "greater than or equal";
-        }
-
-        @Override
-        public int precedence() {
-            return 10;
         }
 
         @Override
@@ -208,11 +188,6 @@ public final class ComparisonOperators {
         }
 
         @Override
-        public int precedence() {
-            return 11;
-        }
-
-        @Override
         public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
             // For containers (vectors/matrices), use structural equality
             if ((left instanceof NodeVector || left instanceof NodeMatrix) ||
@@ -249,11 +224,6 @@ public final class ComparisonOperators {
         @Override
         public String displayName() {
             return "not equal";
-        }
-
-        @Override
-        public int precedence() {
-            return 11;
         }
 
         @Override

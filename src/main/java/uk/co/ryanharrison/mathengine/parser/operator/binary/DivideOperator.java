@@ -55,11 +55,6 @@ public final class DivideOperator implements BinaryOperator {
     }
 
     @Override
-    public int precedence() {
-        return 7;
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) ->
                 ctx.applyMultiplicative(l, r, this::divideRationals, this::divideDoubles, false)

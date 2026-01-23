@@ -35,11 +35,6 @@ public final class OfOperator implements BinaryOperator {
     }
 
     @Override
-    public int precedence() {
-        return 7;
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         // Use broadcasting to support vectors/matrices
         return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) -> {

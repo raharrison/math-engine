@@ -39,8 +39,7 @@ public final class NodeDouble extends NodeNumber {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeDouble)) return false;
-        NodeDouble other = (NodeDouble) obj;
+        if (!(obj instanceof NodeDouble other)) return false;
         return Double.compare(value, other.value) == 0;
     }
 

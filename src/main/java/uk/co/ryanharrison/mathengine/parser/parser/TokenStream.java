@@ -95,10 +95,10 @@ public final class TokenStream {
     public Token peek(int offset) {
         int pos = current + offset;
         if (pos >= tokens.size()) {
-            return tokens.get(tokens.size() - 1); // Return EOF
+            return tokens.getLast(); // Return EOF
         }
         if (pos < 0) {
-            return tokens.get(0);
+            return tokens.getFirst();
         }
         return tokens.get(pos);
     }

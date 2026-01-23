@@ -139,7 +139,7 @@ public final class ComprehensionHandler {
         EvaluationContext oldIterableContext = contextPusher.apply(iterableContext);
         NodeConstant iterableValue;
         try {
-            iterableValue = evaluator.apply(iterator.getIterable());
+            iterableValue = evaluator.apply(iterator.iterable());
         } finally {
             contextPopper.accept(iterableContext, oldIterableContext);
         }
@@ -150,7 +150,7 @@ public final class ComprehensionHandler {
         for (NodeConstant item : items) {
             // Create new bindings map with current variable
             var newBindings = new HashMap<>(bindings);
-            newBindings.put(iterator.getVariable(), item);
+            newBindings.put(iterator.variable(), item);
 
             // Recurse to next iterator
             evaluateIterators(node, context, newBindings, iteratorIndex + 1, results);

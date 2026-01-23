@@ -107,27 +107,6 @@ public final class KeywordRegistry {
     }
 
     /**
-     * Checks if a word is a keyword operator.
-     *
-     * @param word the word to check (case-insensitive)
-     * @return true if the word is a keyword operator
-     */
-    public boolean isKeywordOperator(String word) {
-        return keywordOperators.containsKey(word.toLowerCase());
-    }
-
-    /**
-     * Checks if a word is any type of keyword (reserved or operator).
-     *
-     * @param word the word to check (case-insensitive)
-     * @return true if the word is any type of keyword
-     */
-    public boolean isAnyKeyword(String word) {
-        String lower = word.toLowerCase();
-        return reservedKeywords.contains(lower) || keywordOperators.containsKey(lower);
-    }
-
-    /**
      * Gets the token type for a keyword operator.
      *
      * @param word the word to check (case-insensitive)
@@ -135,35 +114,6 @@ public final class KeywordRegistry {
      */
     public Optional<TokenType> getKeywordOperatorType(String word) {
         return Optional.ofNullable(keywordOperators.get(word.toLowerCase()));
-    }
-
-    /**
-     * Gets all reserved keywords.
-     *
-     * @return unmodifiable set of reserved keywords (lowercase)
-     */
-    public Set<String> getReservedKeywords() {
-        return reservedKeywords;
-    }
-
-    /**
-     * Gets all keyword operators.
-     *
-     * @return unmodifiable map of keyword operators to token types
-     */
-    public Map<String, TokenType> getKeywordOperators() {
-        return keywordOperators;
-    }
-
-    /**
-     * Gets all keywords (reserved + operators).
-     *
-     * @return unmodifiable set of all keywords (lowercase)
-     */
-    public Set<String> getAllKeywords() {
-        var all = new HashSet<>(reservedKeywords);
-        all.addAll(keywordOperators.keySet());
-        return Set.copyOf(all);
     }
 
     // ==================== Builder ====================

@@ -117,31 +117,6 @@ public final class StandardFunctions {
     }
 
     /**
-     * Gets all functions as a map keyed by name.
-     *
-     * @return map of function name to function
-     */
-    public static Map<String, MathFunction> asMap() {
-        var map = new HashMap<String, MathFunction>();
-        for (MathFunction func : all()) {
-            map.put(func.name().toLowerCase(), func);
-        }
-        return Collections.unmodifiableMap(map);
-    }
-
-    /**
-     * Gets functions by category.
-     *
-     * @param category the category to filter
-     * @return list of functions in the category
-     */
-    public static List<MathFunction> byCategory(MathFunction.Category category) {
-        return all().stream()
-                .filter(f -> f.category() == category)
-                .toList();
-    }
-
-    /**
      * Gets basic math functions suitable for a standard calculator.
      * Includes trig, hyperbolic, exponential, rounding, utility, conditional, and type functions.
      * Excludes vector, matrix, statistical, string, bitwise, and special functions.

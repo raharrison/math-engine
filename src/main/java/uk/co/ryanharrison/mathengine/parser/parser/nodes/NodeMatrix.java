@@ -94,8 +94,7 @@ public final class NodeMatrix extends NodeConstant {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeMatrix)) return false;
-        NodeMatrix other = (NodeMatrix) obj;
+        if (!(obj instanceof NodeMatrix other)) return false;
         return Arrays.deepEquals(elements, other.elements);
     }
 

@@ -49,11 +49,6 @@ public final class MultiplyOperator implements BinaryOperator {
     }
 
     @Override
-    public int precedence() {
-        return 7;
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) ->
                 ctx.applyMultiplicative(l, r, BigRational::multiply, (a, b) -> a * b, true)

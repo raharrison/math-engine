@@ -39,8 +39,7 @@ public final class NodeCall extends NodeExpression {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeCall)) return false;
-        NodeCall other = (NodeCall) obj;
+        if (!(obj instanceof NodeCall other)) return false;
         return function.equals(other.function) && arguments.equals(other.arguments);
     }
 

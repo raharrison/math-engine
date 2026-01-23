@@ -15,35 +15,7 @@ public final class NodeComprehension extends NodeExpression {
     /**
      * Represents a single iterator in a comprehension (variable name and iterable).
      */
-    public static final class Iterator {
-        private final String variable;
-        private final Node iterable;
-
-        public Iterator(String variable, Node iterable) {
-            this.variable = variable;
-            this.iterable = iterable;
-        }
-
-        public String getVariable() {
-            return variable;
-        }
-
-        public Node getIterable() {
-            return iterable;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (!(obj instanceof Iterator)) return false;
-            Iterator other = (Iterator) obj;
-            return variable.equals(other.variable) && iterable.equals(other.iterable);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(variable, iterable);
-        }
+    public record Iterator(String variable, Node iterable) {
 
         @Override
         public String toString() {
@@ -54,12 +26,6 @@ public final class NodeComprehension extends NodeExpression {
     private final Node expression;
     private final List<Iterator> iterators;
     private final Node condition;
-
-    public NodeComprehension(Node expression, String variable, Node iterable, Node condition) {
-        this.expression = expression;
-        this.iterators = Collections.singletonList(new Iterator(variable, iterable));
-        this.condition = condition;
-    }
 
     public NodeComprehension(Node expression, List<Iterator> iterators, Node condition) {
         this.expression = expression;
@@ -72,11 +38,11 @@ public final class NodeComprehension extends NodeExpression {
     }
 
     public String getVariable() {
-        return iterators.get(0).variable;
+        return iterators.getFirst().variable;
     }
 
     public Node getIterable() {
-        return iterators.get(0).iterable;
+        return iterators.getFirst().iterable;
     }
 
     public List<Iterator> getIterators() {
@@ -108,9 +74,8 @@ public final class NodeComprehension extends NodeExpression {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeComprehension)) return false;
-        NodeComprehension other = (NodeComprehension) obj;
-        boolean condEq = (condition == null) ? (other.condition == null) : condition.equals(other.condition);
+        if (!(obj instanceof NodeComprehension other)) return false;
+        boolean condEq = Objects.equals(condition, other.condition);
         return expression.equals(other.expression) && iterators.equals(other.iterators) && condEq;
     }
 

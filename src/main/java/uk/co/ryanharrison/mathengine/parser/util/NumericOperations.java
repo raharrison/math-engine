@@ -196,7 +196,8 @@ public final class NumericOperations {
                 return NodeUnit.of(leftUnit.getValue() / scalar, leftUnit.getUnit());
             }
             // unit / unit (same type) → ratio
-            if (left instanceof NodeUnit leftUnit && right instanceof NodeUnit rightUnit) {
+            if (left instanceof NodeUnit leftUnit) {
+                NodeUnit rightUnit = (NodeUnit) right;
                 if (!leftUnit.getUnit().type().equals(rightUnit.getUnit().type())) {
                     throw new TypeError("Cannot divide units of different types: " +
                             leftUnit.getUnit().type() + " and " + rightUnit.getUnit().type());
@@ -205,7 +206,7 @@ public final class NumericOperations {
                 return new NodeDouble(leftUnit.getValue() / convertedRight.getValue());
             }
             // scalar / unit → returns scalar (loses unit)
-            if (!(left instanceof NodeUnit) && right instanceof NodeUnit rightUnit) {
+            if (right instanceof NodeUnit rightUnit) {
                 double scalar = toDoubleValue(left);
                 return new NodeDouble(scalar / rightUnit.getValue());
             }
@@ -417,7 +418,7 @@ public final class NumericOperations {
         if (node instanceof NodeUnit || node instanceof NodePercent) {
             return false;
         }
-        return node instanceof NodeNumber || node instanceof NodeBoolean;
+        return node instanceof NodeNumber;
     }
 
     /**

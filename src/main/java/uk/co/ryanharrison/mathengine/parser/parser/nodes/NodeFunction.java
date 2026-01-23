@@ -36,8 +36,7 @@ public final class NodeFunction extends NodeConstant {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeFunction)) return false;
-        NodeFunction other = (NodeFunction) obj;
+        if (!(obj instanceof NodeFunction other)) return false;
         return function.equals(other.function);
     }
 

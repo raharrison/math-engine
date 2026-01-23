@@ -1,7 +1,5 @@
 package uk.co.ryanharrison.mathengine.parser.symbolic;
 
-import uk.co.ryanharrison.mathengine.utils.Utils;
-
 /**
  * Represents an expression item in symbolic computation stacks.
  * <p>
@@ -62,18 +60,6 @@ public final class ExpressionItem {
      */
     public boolean isFunction() {
         return function != null;
-    }
-
-    /**
-     * Returns the input expression, adding parentheses if needed.
-     * Parentheses are added around expressions containing operators.
-     */
-    public String getInput() {
-        boolean needsParens = !Utils.isNumeric(input) &&
-                !input.equals("pi") &&
-                !input.equals("e") &&
-                Utils.indexOfAny(input, OPERATORS) != -1;
-        return needsParens ? '(' + input + ')' : input;
     }
 
     /**

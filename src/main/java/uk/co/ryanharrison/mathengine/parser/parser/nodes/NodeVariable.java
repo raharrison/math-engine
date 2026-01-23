@@ -24,8 +24,7 @@ public final class NodeVariable extends NodeExpression {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeVariable)) return false;
-        NodeVariable other = (NodeVariable) obj;
+        if (!(obj instanceof NodeVariable other)) return false;
         return name.equals(other.name);
     }
 

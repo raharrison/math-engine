@@ -30,8 +30,7 @@ public final class NodeUnitConversion extends NodeExpression {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeUnitConversion)) return false;
-        NodeUnitConversion other = (NodeUnitConversion) obj;
+        if (!(obj instanceof NodeUnitConversion other)) return false;
         return value.equals(other.value) && targetUnit.equals(other.targetUnit);
     }
 

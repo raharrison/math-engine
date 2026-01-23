@@ -119,7 +119,7 @@ public final class FunctionCallHandler implements FunctionCaller {
     private NodeConstant evaluateNamedCall(String name, List<Node> arguments, EvaluationContext context) {
         // Special case: 'if' function needs lazy evaluation
         if ("if".equals(name)) {
-            return evaluateIfLazy(arguments, context);
+            return evaluateIfLazy(arguments);
         }
 
         // Check for user-defined function FIRST (takes priority over built-ins)
@@ -285,7 +285,7 @@ public final class FunctionCallHandler implements FunctionCaller {
      * Evaluates the 'if' function with lazy evaluation.
      * Only the selected branch is evaluated.
      */
-    private NodeConstant evaluateIfLazy(List<Node> argumentNodes, EvaluationContext context) {
+    private NodeConstant evaluateIfLazy(List<Node> argumentNodes) {
         if (argumentNodes.size() != 3) {
             throw new ArityException("Function 'if' expects 3 arguments, got " + argumentNodes.size());
         }

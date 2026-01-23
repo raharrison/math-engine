@@ -57,8 +57,7 @@ public final class NodePercent extends NodeNumber {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodePercent)) return false;
-        NodePercent other = (NodePercent) obj;
+        if (!(obj instanceof NodePercent other)) return false;
         return Double.compare(value, other.value) == 0;
     }
 

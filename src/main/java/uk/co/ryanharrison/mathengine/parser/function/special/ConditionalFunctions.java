@@ -20,7 +20,7 @@ public final class ConditionalFunctions {
      * Conditional if-then-else function
      */
     public static final MathFunction IF = AggregateFunction.of("if", "Conditional if-then-else", CONDITIONAL, 3, 3,
-            (args, ctx) -> ctx.toBoolean(args.get(0)) ? args.get(1) : args.get(2));
+            (args, ctx) -> ctx.toBoolean(args.getFirst()) ? args.get(1) : args.get(2));
 
     /**
      * Clamp value to range

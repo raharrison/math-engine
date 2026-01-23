@@ -31,8 +31,7 @@ public final class NodeSequence extends NodeExpression {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeSequence)) return false;
-        NodeSequence other = (NodeSequence) obj;
+        if (!(obj instanceof NodeSequence other)) return false;
         return statements.equals(other.statements);
     }
 

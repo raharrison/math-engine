@@ -37,7 +37,7 @@ public final class NodeLambda extends NodeConstant {
     @Override
     public String toString() {
         if (parameters.size() == 1) {
-            return parameters.get(0) + " -> " + body;
+            return parameters.getFirst() + " -> " + body;
         }
         return "(" + String.join(", ", parameters) + ") -> " + body;
     }
@@ -45,8 +45,7 @@ public final class NodeLambda extends NodeConstant {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeLambda)) return false;
-        NodeLambda other = (NodeLambda) obj;
+        if (!(obj instanceof NodeLambda other)) return false;
         return parameters.equals(other.parameters) && body.equals(other.body);
     }
 

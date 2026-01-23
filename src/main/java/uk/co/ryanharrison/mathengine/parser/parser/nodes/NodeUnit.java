@@ -99,8 +99,7 @@ public final class NodeUnit extends NodeConstant {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeUnit)) return false;
-        NodeUnit other = (NodeUnit) obj;
+        if (!(obj instanceof NodeUnit other)) return false;
         return Double.compare(value, other.value) == 0 &&
                 unit.getName().equals(other.unit.getName());
     }

@@ -907,7 +907,7 @@ public final class VectorManipulationFunctions {
 
             if (args.size() == 1) {
                 start = 0;
-                end = ctx.toNumber(args.get(0)).doubleValue();
+                end = ctx.toNumber(args.getFirst()).doubleValue();
                 step = 1;
             } else if (args.size() == 2) {
                 start = ctx.toNumber(args.get(0)).doubleValue();

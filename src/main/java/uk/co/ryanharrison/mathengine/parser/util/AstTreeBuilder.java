@@ -84,7 +84,7 @@ public final class AstTreeBuilder implements NodeVisitor<List<Node>> {
                 yield children;
             }
             case NodeSequence sequence -> sequence.getStatements();
-            case NodeVariable var -> List.of(); // Variables are leaf nodes
+            case NodeVariable _ -> List.of(); // Variables are leaf nodes
             default -> List.of(); // Unknown expression types have no children
         };
     }

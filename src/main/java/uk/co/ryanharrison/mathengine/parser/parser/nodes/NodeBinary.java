@@ -38,8 +38,7 @@ public final class NodeBinary extends NodeExpression {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeBinary)) return false;
-        NodeBinary other = (NodeBinary) obj;
+        if (!(obj instanceof NodeBinary other)) return false;
         return operator.equals(other.operator) && left.equals(other.left) && right.equals(other.right);
     }
 

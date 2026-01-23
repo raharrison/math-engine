@@ -38,6 +38,6 @@ public class UndefinedVariableException extends EvaluationException {
             hint.append("\n  - Use ':=' to assign variables (e.g., '").append(variableName).append(" := 5')");
         }
 
-        return baseMessage + (hint.length() > 0 ? hint.toString() : "");
+        return baseMessage + (!hint.isEmpty() ? hint.toString() : "");
     }
 }

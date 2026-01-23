@@ -1,5 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
+import java.util.Objects;
+
 /**
  * Node representing a range expression before evaluation.
  * This is distinct from NodeRange which holds evaluated constant numbers.
@@ -45,12 +47,11 @@ public final class NodeRangeExpression extends NodeExpression {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NodeRangeExpression)) return false;
-        NodeRangeExpression other = (NodeRangeExpression) obj;
+        if (!(obj instanceof NodeRangeExpression other)) return false;
 
         if (!start.equals(other.start)) return false;
         if (!end.equals(other.end)) return false;
-        return step == null ? other.step == null : step.equals(other.step);
+        return Objects.equals(step, other.step);
     }
 
     @Override

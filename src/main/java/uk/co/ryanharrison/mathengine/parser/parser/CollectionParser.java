@@ -198,9 +198,9 @@ public final class CollectionParser {
             List<Node> rowElements = extractRowElements(rowNode);
 
             // Validate consistent row sizes
-            if (!rows.isEmpty() && rowElements.size() != rows.get(0).size()) {
+            if (!rows.isEmpty() && rowElements.size() != rows.getFirst().size()) {
                 throw stream.error(stream.previous(), "Matrix rows have inconsistent sizes: expected " +
-                        rows.get(0).size() + " elements, got " + rowElements.size());
+                        rows.getFirst().size() + " elements, got " + rowElements.size());
             }
 
             rows.add(rowElements);

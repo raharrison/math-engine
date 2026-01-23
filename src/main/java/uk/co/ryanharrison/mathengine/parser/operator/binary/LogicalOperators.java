@@ -42,11 +42,6 @@ public final class LogicalOperators {
         }
 
         @Override
-        public int precedence() {
-            return 12;
-        }
-
-        @Override
         public boolean requiresShortCircuit() {
             return true;
         }
@@ -91,11 +86,6 @@ public final class LogicalOperators {
         }
 
         @Override
-        public int precedence() {
-            return 14;
-        }
-
-        @Override
         public boolean requiresShortCircuit() {
             return true;
         }
@@ -137,11 +127,6 @@ public final class LogicalOperators {
         @Override
         public String displayName() {
             return "logical xor";
-        }
-
-        @Override
-        public int precedence() {
-            return 13;
         }
 
         @Override

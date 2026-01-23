@@ -1,6 +1,5 @@
 package uk.co.ryanharrison.mathengine.parser.util;
 
-import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
@@ -42,7 +41,7 @@ public final class TypeCoercion {
      * @return true if numeric (NodeNumber, NodeBoolean, or NodeUnit)
      */
     public static boolean isNumeric(NodeConstant value) {
-        return value instanceof NodeNumber || value instanceof NodeBoolean || value instanceof NodeUnit;
+        return value instanceof NodeNumber || value instanceof NodeUnit;
     }
 
     /**
@@ -145,17 +144,6 @@ public final class TypeCoercion {
     }
 
     /**
-     * Converts a constant to a long value.
-     *
-     * @param value the value to convert
-     * @return the long value
-     * @throws TypeError if the value cannot be converted
-     */
-    public static long toLong(NodeConstant value) {
-        return (long) toDouble(value);
-    }
-
-    /**
      * Converts a constant to a boolean value.
      * Numbers are truthy if non-zero.
      *
@@ -171,75 +159,6 @@ public final class TypeCoercion {
         };
     }
 
-    /**
-     * Converts a constant to a NodeRational.
-     *
-     * @param value the value to convert
-     * @return the value as NodeRational
-     */
-    public static NodeRational toRational(NodeConstant value) {
-        return switch (value) {
-            case NodeRational rat -> rat;
-            case NodeBoolean bool -> new NodeRational(bool.getValue() ? 1 : 0);
-            // Convert double to rational (may lose precision)
-            default -> new NodeRational(BigRational.of(toDouble(value)));
-        };
-    }
-
-    /**
-     * Converts a constant to a NodeDouble.
-     *
-     * @param value the value to convert
-     * @return the value as NodeDouble
-     */
-    public static NodeDouble toNodeDouble(NodeConstant value) {
-        return switch (value) {
-            case NodeDouble d -> d;
-            default -> new NodeDouble(toDouble(value));
-        };
-    }
-
-    // ==================== Type Promotion ====================
-
-    /**
-     * Promotes two numeric values to a common type and applies an operation.
-     * <p>
-     * Delegates to {@link NumericOperations#applyNumeric} for consistent
-     * type-preserving behavior. Note: This method does not preserve units
-     * or percents - use {@link NumericOperations#applyAdditive} or
-     * {@link NumericOperations#applyMultiplicative} for full type preservation.
-     *
-     * @param a          first operand
-     * @param b          second operand
-     * @param rationalOp operation for rational arguments
-     * @param doubleOp   operation for double arguments
-     * @return the result
-     */
-    public static NodeConstant promoteAndApply(NodeConstant a, NodeConstant b,
-                                               java.util.function.BinaryOperator<BigRational> rationalOp,
-                                               java.util.function.DoubleBinaryOperator doubleOp) {
-        // Delegate to NumericOperations for consistent behavior
-        return NumericOperations.applyNumeric(a, b, doubleOp, rationalOp);
-    }
-
-    /**
-     * Applies a unary operation with type preservation.
-     * <p>
-     * Delegates to {@link NumericOperations#applyUnary} for consistent
-     * type-preserving behavior across all first-class types (units, percents, rationals).
-     *
-     * @param value      the operand
-     * @param rationalOp operation for rational argument
-     * @param doubleOp   operation for double argument
-     * @return the result
-     */
-    public static NodeConstant applyUnary(NodeConstant value,
-                                          java.util.function.UnaryOperator<BigRational> rationalOp,
-                                          java.util.function.DoubleUnaryOperator doubleOp) {
-        // Delegate to NumericOperations for consistent type preservation
-        return NumericOperations.applyUnary(value, rationalOp, doubleOp);
-    }
-
     // ==================== Utility Methods ====================
 
     /**
@@ -253,51 +172,4 @@ public final class TypeCoercion {
         return value.getClass().getSimpleName().replace("Node", "").toLowerCase();
     }
 
-    /**
-     * Gets a human-readable type name for a class.
-     *
-     * @param clazz the class
-     * @return type name string
-     */
-    public static String typeName(Class<? extends NodeConstant> clazz) {
-        return clazz.getSimpleName().replace("Node", "").toLowerCase();
-    }
-
-    /**
-     * Checks if two values have compatible types for a binary operation.
-     *
-     * @param a first value
-     * @param b second value
-     * @return true if types are compatible
-     */
-    public static boolean areCompatible(NodeConstant a, NodeConstant b) {
-        // Numeric types are compatible with each other
-        if (isNumeric(a) && isNumeric(b)) {
-            return true;
-        }
-
-        // Vectors are compatible with scalars (broadcasting)
-        if (isNumeric(a) && b instanceof NodeVector) return true;
-        if (a instanceof NodeVector && isNumeric(b)) return true;
-        if (a instanceof NodeVector && b instanceof NodeVector) return true;
-
-        // Matrices are compatible with scalars (broadcasting)
-        if (isNumeric(a) && b instanceof NodeMatrix) return true;
-        if (a instanceof NodeMatrix && isNumeric(b)) return true;
-        if (a instanceof NodeMatrix && b instanceof NodeMatrix) return true;
-
-        return false;
-    }
-
-    /**
-     * Creates a type error message for incompatible operands.
-     *
-     * @param operation the operation name
-     * @param a         first operand
-     * @param b         second operand
-     * @return error message
-     */
-    public static String typeErrorMessage(String operation, NodeConstant a, NodeConstant b) {
-        return "Cannot perform " + operation + " on " + typeName(a) + " and " + typeName(b);
-    }
 }

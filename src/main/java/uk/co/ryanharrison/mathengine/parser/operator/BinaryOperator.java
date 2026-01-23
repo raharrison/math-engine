@@ -49,38 +49,6 @@ public interface BinaryOperator extends Operator {
     NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx);
 
     /**
-     * Gets the precedence of this operator.
-     * Lower values indicate higher precedence.
-     * <p>
-     * Typical precedence levels:
-     * <ul>
-     *     <li>6: Power (^)</li>
-     *     <li>7: Multiplicative (*, /, mod)</li>
-     *     <li>8: Additive (+, -)</li>
-     *     <li>10: Relational (<, >, <=, >=)</li>
-     *     <li>11: Equality (==, !=)</li>
-     *     <li>12-14: Logical (and, xor, or)</li>
-     *     <li>15: Assignment (:=)</li>
-     * </ul>
-     *
-     * @return the precedence level (lower = higher priority)
-     */
-    default int precedence() {
-        return 10; // Default to relational precedence
-    }
-
-    /**
-     * Whether this operator is right-associative.
-     * Most operators are left-associative (a + b + c = (a + b) + c).
-     * Power and assignment are right-associative (a ^ b ^ c = a ^ (b ^ c)).
-     *
-     * @return true if right-associative, false if left-associative
-     */
-    default boolean isRightAssociative() {
-        return false;
-    }
-
-    /**
      * Whether this operator requires short-circuit evaluation.
      * Logical AND and OR operators should return true to avoid evaluating
      * the right operand when unnecessary.
