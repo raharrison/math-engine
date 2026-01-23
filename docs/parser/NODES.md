@@ -30,7 +30,10 @@ Node (abstract base class)
     ├─ NodeUnary             - Unary operations (op operand)
     ├─ NodeCall              - Function calls
     ├─ NodeSubscript         - Indexing/slicing
-    ├─ NodeVariable          - Variable reference
+    ├─ NodeVariable          - Variable/identifier reference
+    ├─ NodeUnitRef           - Explicit unit reference (@unit, @"km/h")
+    ├─ NodeVarRef            - Explicit variable reference ($var)
+    ├─ NodeConstRef          - Explicit constant reference (#const)
     ├─ NodeAssignment        - Variable assignment (x := value)
     ├─ NodeFunctionDef       - Function definition (f(x) := expr)
     ├─ NodeRangeExpression   - Range before evaluation
@@ -578,7 +581,7 @@ NodeUnary negate = new NodeUnary(
 
 ### NodeVariable
 
-**Purpose:** Variable reference
+**Purpose:** Variable/identifier reference (context-aware resolution)
 
 **Fields:**
 
@@ -593,14 +596,165 @@ NodeVariable x = new NodeVariable("x");
 ```
 
 **Resolution:**
-During evaluation, looked up in `EvaluationContext`:
+During evaluation, resolved by `VariableResolver` with context-aware priority:
 
 ```java
-NodeConstant value = context.get("x");
+// General context: variable → function → unit → implicit mult
+NodeConstant value = variableResolver.resolve(
+    variable,
+    ResolutionContext.GENERAL,
+    operatorContext
+);
 ```
 
+**Resolution Contexts:**
+
+- **GENERAL**: `x + 1` - variable → function → unit
+- **CALL_TARGET**: `f(x)` - function → variable
+- **POSTFIX_UNIT**: `100m` - unit → variable
+
 **Undefined Variable:**
-If not found, throws `UndefinedVariableException`.
+If not found and no implicit multiplication possible, throws `UndefinedVariableException`.
+
+---
+
+## Reference Nodes (Explicit Disambiguation)
+
+### NodeUnitRef
+
+**Purpose:** Force unit resolution, bypassing variable shadowing
+
+**Syntax:** `@identifier` or `@"unit name"`
+
+**Fields:**
+
+```java
+private final String unitName;
+private final boolean quoted;  // true for @"km/h" syntax
+```
+
+**Example:**
+
+```java
+// Simple unit reference
+NodeUnitRef meters = new NodeUnitRef("m", false);
+
+// Quoted unit reference for multi-word units
+NodeUnitRef speed = new NodeUnitRef("km/h", true);
+```
+
+**Evaluation:**
+
+```java
+NodeConstant value = variableResolver.resolveUnitRef(unitName, context);
+// Always resolves as unit, even if variable 'm' exists
+```
+
+**Use Cases:**
+
+```java
+m := 5                  // Define variable 'm'
+m                       // Returns 5 (variable)
+@m                      // Returns 1 meter (forced unit)
+100 * @m                // 100 meters
+
+@"km/h"                 // Units with spaces/special chars
+@"miles per hour"       // Multi-word units
+```
+
+**Error:**
+If unit doesn't exist: `UndefinedVariableException("Unknown unit: @m")`
+
+### NodeVarRef
+
+**Purpose:** Force variable resolution, even in unit/function contexts
+
+**Syntax:** `$identifier`
+
+**Fields:**
+
+```java
+private final String variableName;
+```
+
+**Example:**
+
+```java
+NodeVarRef x = new NodeVarRef("x");
+```
+
+**Evaluation:**
+
+```java
+NodeConstant value = variableResolver.resolveVarRef(variableName, context);
+// Always resolves as variable, bypasses unit/function priority
+```
+
+**Use Cases:**
+
+```java
+m := 3
+100m                    // 100 meters (unit takes priority after number)
+100$m                   // 100 * 3 = 300 (forced variable)
+
+f := 10
+f(x) := x^2            // Define function
+f                       // Function object
+$f                      // 10 (forced variable)
+```
+
+**Error:**
+If variable not defined: `UndefinedVariableException("Undefined variable: $x")`
+
+### NodeConstRef
+
+**Purpose:** Force constant resolution, even when shadowed by variables
+
+**Syntax:** `#identifier`
+
+**Fields:**
+
+```java
+private final String constantName;
+```
+
+**Example:**
+
+```java
+NodeConstRef pi = new NodeConstRef("pi");
+```
+
+**Evaluation:**
+
+```java
+NodeConstant value = variableResolver.resolveConstRef(constantName, context);
+// Accesses constant registry directly, bypassing variables
+```
+
+**Use Cases:**
+
+```java
+pi := 3.0               // Shadow pi constant with variable
+pi                      // Returns 3.0 (variable)
+#pi                     // Returns π ≈ 3.14159... (constant)
+
+e := 10
+2 * #e                  // Uses Euler's number, not variable
+```
+
+**Available Constants:**
+
+- `#pi` - π (3.14159...)
+- `#e`, `#euler` - Euler's number (2.71828...)
+- `#phi`, `#goldenratio` - Golden ratio (1.61803...)
+- `#tau` - 2π (6.28318...)
+- `#inf`, `#infinity` - Positive infinity
+- `#nan` - Not-a-Number
+
+**Error:**
+If constant not in registry: `UndefinedVariableException("Undefined constant: #xyz")`
+
+---
 
 ### NodeAssignment
 

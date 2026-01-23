@@ -1,35 +1,30 @@
 # Lexer Architecture
 
-**Purpose:** Multi-pass tokenization pipeline that converts input text into classified tokens
+**Purpose:** Two-stage tokenization pipeline that converts input text into classified tokens
 
 ---
 
 ## Overview
 
-The lexer transforms raw text into a stream of classified tokens ready for parsing. It uses a four-pass pipeline where each pass
-has a single responsibility.
+The lexer transforms raw text into a stream of classified tokens ready for parsing. It uses a two-stage pipeline optimized for efficiency and correctness.
 
 ```
 Input: "sin(pi2x)"
     ↓
-Pass 1: TokenScanner
+Stage 1: TokenScanner
     → [IDENTIFIER(sin), LPAREN, IDENTIFIER(pi2x), RPAREN]
     ↓
-Pass 1.5: IdentifierSplitter
-    → [IDENTIFIER(sin), LPAREN, IDENTIFIER(pi), NUMBER(2), IDENTIFIER(x), RPAREN]
-    ↓
-Pass 2: TokenClassifier
-    → [FUNCTION(sin), LPAREN, CONSTANT(pi), NUMBER(2), IDENTIFIER(x), RPAREN]
-    ↓
-Pass 3: ImplicitMultiplicationInserter
-    → [FUNCTION(sin), LPAREN, CONSTANT(pi), MULTIPLY, NUMBER(2), MULTIPLY, IDENTIFIER(x), RPAREN]
+Stage 2: TokenProcessor (single-pass: split + classify + implicit multiplication)
+    → [FUNCTION(sin), LPAREN, IDENTIFIER(pi), MULTIPLY, INTEGER(2), MULTIPLY, IDENTIFIER(x), RPAREN]
 ```
+
+**Key Design Principle:** Conservative splitting - only split identifiers when unambiguous (constants and functions). Units are resolved at runtime where variable context is available.
 
 ---
 
 ## Pipeline Components
 
-### Pass 1: TokenScanner
+### Stage 1: TokenScanner
 
 **File:** `lexer/TokenScanner.java`
 
@@ -40,6 +35,7 @@ Pass 3: ImplicitMultiplicationInserter
 - Number scanning (integers, decimals, scientific notation, rationals)
 - String literal scanning (single and double quotes)
 - Identifier scanning
+- Reference symbol scanning (`@unit`, `@"km/h"`, `$var`, `#const`)
 - Operator scanning (single and multi-character)
 - Structural tokens (parentheses, brackets, braces, commas, semicolons)
 - Position tracking (line and column numbers)
@@ -99,99 +95,111 @@ Multi-character operators require lookahead:
     else → DOT (.)
 ```
 
-### Pass 1.5: IdentifierSplitter
+**Reference Symbol Scanning:**
 
-**File:** `lexer/IdentifierSplitter.java`
+The scanner recognizes reference symbols for explicit disambiguation:
 
-**Responsibility:** Split compound identifiers into separate tokens
+```java
+'@' → UNIT_REF or UNIT_REF_STR (unit reference)
+    '@' 'identifier' → UNIT_REF(@m)
+    '@' '"' string '"' → UNIT_REF_STR(@"km/h")  // For units with spaces
 
-**Purpose:** Enable natural writing like `pi2e` → `pi * 2 * e`
+'$' → VAR_REF (variable reference)
+    '$' 'identifier' → VAR_REF($var)
 
-**Algorithm:**
-
-1. For each IDENTIFIER token, scan left-to-right
-2. Check if any prefix matches a known constant, unit, or function
-3. If match found:
-    - Emit the matched token (with correct classification)
-    - Continue with remainder of identifier
-4. If no match, check for embedded numbers
-    - Split at number boundaries: `abc123def` → `abc`, `123`, `def`
+'#' → CONST_REF (constant reference)
+    '#' 'identifier' → CONST_REF(#pi)
+```
 
 **Examples:**
 
 ```
-"pi2e"      → [CONSTANT(pi), NUMBER(2), CONSTANT(e)]
-"sin2x"     → [FUNCTION(sin), NUMBER(2), IDENTIFIER(x)]
-"2meters"   → [NUMBER(2), UNIT(meters)]
-"abc123"    → [IDENTIFIER(abc), NUMBER(123)]
+"@m"            → UNIT_REF(m)
+"@\"km/h\""     → UNIT_REF_STR("km/h")
+"$x"            → VAR_REF(x)
+"#pi"           → CONST_REF(pi)
 ```
 
-**Registry Lookup Priority:**
+### Stage 2: TokenProcessor
 
-1. Functions (longest match first)
-2. Units (longest match first)
-3. Constants (longest match first)
-4. Numbers (greedy digit scan)
-5. Remaining characters → new identifier
+**File:** `lexer/TokenProcessor.java`
 
-**Why This Pass Exists:**
+**Responsibility:** Single-pass processing that splits identifiers, classifies tokens, and inserts implicit multiplication
 
-Without splitting, we'd need implicit multiplication between identifiers, which is ambiguous:
+**Design Philosophy:** Conservative splitting to avoid ambiguity. Only split when unambiguous:
 
-- `pi e` → Is this `pi * e` or a single identifier `pie`?
+- ✅ Split constants (pi, e) - fixed values, can't be redefined
+- ✅ Split functions (sin, cos) - unambiguous, can't be shadowed by variables
+- ❌ DON'T split units - they can be shadowed by variables (e.g., `m := 5`)
+- ❌ Runtime resolution needed for context-dependent priority
 
-With splitting, we can unambiguously handle:
+**Three Responsibilities:**
 
-- `pi e` → two separate identifiers
-- `pie` → `pi * e` (split and multiply)
+1. **Identifier Splitting** - Break compound identifiers at digit boundaries and function suffixes
+2. **Token Classification** - Classify identifiers as keywords, functions, or leave for runtime resolution
+3. **Implicit Multiplication** - Insert multiplication tokens between adjacent values
 
-### Pass 2: TokenClassifier
+#### 1. Identifier Splitting
 
-**File:** `lexer/TokenClassifier.java`
+**Algorithm:**
 
-**Responsibility:** Classify IDENTIFIER tokens into specific types
+For each IDENTIFIER token:
 
-**Classification Priority:**
+1. Check if it's a definition target (`m1 :=` or `f(...) :=`) - if so, don't split
+2. Try digit splitting: `pi2` → `pi`, `2` (only if prefix is constant/function)
+3. Try function suffix splitting: `xsin` → `x`, `sin` (only if prefix is single-char or constant)
 
-1. **Keywords** → KEYWORD token
-    - `and`, `or`, `not`, `xor`, `for`, `in`, `if`, `step`, `to`, `as`, `of`, `mod`
-2. **Units** → UNIT token
-    - Looked up in UnitRegistry
-    - `meters`, `feet`, `celsius`, `fahrenheit`, etc.
-3. **Functions** → FUNCTION token
-    - `sin`, `cos`, `log`, `max`, etc.
-4. **Constants** → CONSTANT token
-    - Looked up in ConstantRegistry
-    - `pi`, `euler`, `e`, `true`, `false`, etc.
-5. **Default** → remains IDENTIFIER
-    - User variables
+**Digit Splitting Rules:**
 
-**Why This Order?**
+```
+"pi2e"      → [IDENTIFIER(pi), INTEGER(2), IDENTIFIER(e)]  ✓ (pi is constant)
+"sin2x"     → [IDENTIFIER(sin), INTEGER(2), IDENTIFIER(x)] ✓ (sin is function)
+"m1"        → [IDENTIFIER(m1)]                              ✓ (m is unit, not split - could be variable)
+"km5"       → [IDENTIFIER(km5)]                             ✓ (km is unit, not split)
+"e3"        → [IDENTIFIER(e), INTEGER(3)]                   ✓ (e is constant)
+```
 
-Keywords must be recognized first to avoid conflicts:
+**Function Suffix Splitting Rules:**
 
-- `for` should never be treated as a variable
-- `and` should never be treated as a function name
+```
+"xsin"      → [IDENTIFIER(x), IDENTIFIER(sin)]    ✓ (single-char prefix)
+"pisin"     → [IDENTIFIER(pi), IDENTIFIER(sin)]   ✓ (constant prefix)
+"msin"      → [IDENTIFIER(msin)]                  ✓ (unit prefix, not split)
+"sincos"    → [IDENTIFIER(sincos)]                ✓ (function prefix, ambiguous)
+```
 
-Units before functions allows shadowing:
+**Why This Conservative Approach?**
 
-- If `m` is both a unit (meters) and a function, treat as unit
+- **Variable names like `m1`, `s2`, `g3`** are common - splitting would break them
+- **Unit contexts are explicit** - `100 m` uses spaces, not `100m`
+- **Runtime resolution** - VariableResolver can check if `m1` is a variable before falling back to unit
 
-Functions before constants allows custom functions:
+#### 2. Token Classification
 
-- User can define `pi()` function that shadows the constant
+**Classification Rules:**
 
-**Edge Cases:**
+For each IDENTIFIER token:
 
-1. **Empty identifiers:** Not possible (scanner requires at least one character)
-2. **Reserved words as function names:** Keywords can't be used as function names
-3. **Case sensitivity:** All matching is case-sensitive (`PI` ≠ `pi`)
+1. **Keyword operators** (`and`, `or`, `xor`, `not`, `mod`, `of`) → Corresponding operator token type
+2. **Reserved keywords** (`for`, `in`, `if`, `step`, `true`, `false`, `to`, `as`) → KEYWORD
+3. **Functions** (from function registry) → FUNCTION
+4. **Everything else** → remains IDENTIFIER (resolved at runtime as variable, unit, or constant)
 
-### Pass 3: ImplicitMultiplicationInserter
+**Runtime Resolution (Evaluator):**
 
-**File:** `lexer/ImplicitMultiplicationInserter.java`
+Identifiers left as IDENTIFIER tokens are resolved by VariableResolver with context-aware priority:
 
-**Responsibility:** Insert multiplication tokens between adjacent values
+- **General context**: variable → function → unit
+- **Call target**: function → variable
+- **Postfix unit**: unit → variable
+
+**Why Not Classify Constants/Units at Lexer?**
+
+- **Shadowing**: `pi := 3` should work, but lexer doesn't know about variable assignments yet
+- **Context matters**: `100m` should be unit, but `m` alone might be a variable
+- **Flexibility**: User can redefine constants/units as variables
+
+#### 3. Implicit Multiplication Insertion
 
 **Insertion Rules:**
 
@@ -199,15 +207,15 @@ Insert `MULTIPLY` token between:
 
 - Number and Identifier: `2x` → `2 * x`
 - Number and Function: `2sin(x)` → `2 * sin(x)`
-- Number and Constant: `2pi` → `2 * pi`
-- Number and Unit: `2meters` → `2 * meters`  [Note: should be split first]
+- Number and Reference: `2@m` → `2 * @m`
 - Number and LPAREN: `2(x+1)` → `2 * (x+1)`
 - RPAREN and LPAREN: `(a)(b)` → `(a) * (b)`
 - RPAREN and Number: `(a)2` → `(a) * 2`
 - RPAREN and Identifier: `(a)x` → `(a) * x`
-- Identifier and LPAREN: `x(y)` → NO (could be function call!)
-- Constant and LPAREN: `pi(x)` → `pi * (x)` [constant can't be called]
-- Unit and LPAREN: `meters(x)` → `meters * (x)` [unit can't be called]
+- RBRACE and Number: `{1,2}x` → `{1,2} * x`
+- RBRACKET and Number: `[1,2]x` → `[1,2] * x`
+- Identifier and Identifier: `x y` → `x * y` (same line only)
+- Postfix and Number: `5! 2` → `5! * 2`
 
 **Critical: Function Call Detection**
 
@@ -215,27 +223,30 @@ DO NOT insert multiplication before function calls:
 
 ```
 sin(x)      → sin(x)           ✓ (function call)
-x(y)        → x(y)             ✓ (function call if x is function)
+x(y)        → x(y)             ✓ (could be function call, let parser decide)
 2(x)        → 2 * (x)          ✓ (not a function call)
 (a)(b)      → (a) * (b)        ✓ (not a function call)
 ```
+
+**Same-Line Requirement:**
+
+Implicit multiplication is NOT inserted across line boundaries:
+
+```
+x          → x (line 1)
+y          → y (line 2)
+// NOT: x * y
+```
+
+This prevents accidental multiplication when user intends separate expressions.
 
 **Algorithm:**
 
 ```java
 for each pair of adjacent tokens (prev, current):
-    if shouldInsertMultiplication(prev, current):
+    if prev.line == current.line && shouldInsertMultiplication(prev, current):
         insert MULTIPLY token between them
 ```
-
-**Why Not Earlier?**
-
-Implicit multiplication requires knowing token types:
-
-- Need to distinguish functions from variables
-- Need to know if identifier is a constant
-
-Therefore, must run after classification.
 
 ---
 
@@ -254,13 +265,17 @@ Therefore, must run after classification.
 
 ### 2. Identifiers & Classifications
 
-- `IDENTIFIER` - User-defined variable
+- `IDENTIFIER` - User-defined variable or runtime-resolved identifier
 - `FUNCTION` - Known function name
-- `CONSTANT` - Known constant name
-- `UNIT` - Physical unit name
 - `KEYWORD` - Reserved keyword
 
-### 3. Operators
+### 3. Reference Symbols
+
+- `UNIT_REF` - Explicit unit reference (`@m`)
+- `VAR_REF` - Explicit variable reference (`$x`)
+- `CONST_REF` - Explicit constant reference (`#pi`)
+
+### 4. Operators
 
 **Arithmetic:**
 
@@ -284,7 +299,7 @@ Therefore, must run after classification.
 
 - `RANGE` (..), `ASSIGN` (:=), `ARROW` (->), `AT` (@)
 
-### 4. Structural
+### 5. Structural
 
 - `LPAREN` ((), `RPAREN` ())
 - `LBRACE` ({), `RBRACE` (})
@@ -292,9 +307,10 @@ Therefore, must run after classification.
 - `COMMA` (,), `SEMICOLON` (;), `COLON` (:)
 - `DOT` (.)
 
-### 5. Special
+### 6. Special
 
 - `EOF` - End of file marker
+- `SCIENTIFIC` - Scientific notation number (alternative to DECIMAL)
 
 ---
 
@@ -392,130 +408,45 @@ Error: Unterminated string literal
 ### Basic Usage
 
 ```java
-// Create registries
-UnitRegistry unitRegistry = UnitRegistry.standard();
-ConstantRegistry constantRegistry = ConstantRegistry.standard();
-KeywordRegistry keywordRegistry = KeywordRegistry.standard();
-
-// Create lexer
-Lexer lexer = new Lexer(
-    unitRegistry,
-    constantRegistry,
-    keywordRegistry
-);
+// Create lexer (automatically loads standard registries)
+Lexer lexer = Lexer.create();
 
 // Tokenize
 List<Token> tokens = lexer.tokenize("sin(pi * x) + 2");
 
 // Result:
-// [FUNCTION(sin), LPAREN, CONSTANT(pi), MULTIPLY, IDENTIFIER(x), RPAREN,
+// [FUNCTION(sin), LPAREN, IDENTIFIER(pi), MULTIPLY, IDENTIFIER(x), RPAREN,
 //  PLUS, INTEGER(2), EOF]
+// Note: 'pi' stays as IDENTIFIER - resolved at runtime as constant or variable
 ```
 
----
-
-## Testing Strategies
-
-### Unit Tests
-
-**Test TokenScanner:**
+**With Reference Symbols:**
 
 ```java
-@Test
-void scanInteger() {
-    List<Token> tokens = scanner.scan("42");
-    assertThat(tokens).hasSize(2);  // INTEGER + EOF
-    assertThat(tokens.get(0).getType()).isEqualTo(TokenType.INTEGER);
-    assertThat(tokens.get(0).getValue()).isEqualTo(42L);
-}
-```
+// Explicit disambiguation
+tokens = lexer.tokenize("m1 := 5; @m in feet");
 
-**Test IdentifierSplitter:**
-
-```java
-@Test
-void splitCompoundIdentifier() {
-    List<Token> input = List.of(
-        new Token(TokenType.IDENTIFIER, "pi2e", ...)
-    );
-    List<Token> output = splitter.split(input);
-
-    assertThat(output).hasSize(3);
-    assertThat(output.get(0).getLexeme()).isEqualTo("pi");
-    assertThat(output.get(1).getLexeme()).isEqualTo("2");
-    assertThat(output.get(2).getLexeme()).isEqualTo("e");
-}
-```
-
-**Test TokenClassifier:**
-
-```java
-@Test
-void classifyFunction() {
-    List<Token> input = List.of(
-        new Token(TokenType.IDENTIFIER, "sin", ...)
-    );
-    List<Token> output = classifier.classify(input);
-
-    assertThat(output.get(0).getType()).isEqualTo(TokenType.FUNCTION);
-}
-```
-
-**Test ImplicitMultiplicationInserter:**
-
-```java
-@Test
-void insertMultiplication() {
-    List<Token> input = List.of(
-        new Token(TokenType.INTEGER, "2", 2L, ...),
-        new Token(TokenType.IDENTIFIER, "x", ...)
-    );
-    List<Token> output = inserter.insert(input);
-
-    assertThat(output).hasSize(3);
-    assertThat(output.get(1).getType()).isEqualTo(TokenType.MULTIPLY);
-}
-```
-
-### Integration Tests
-
-Test complete lexer pipeline:
-
-```java
-@Test
-void fullPipeline() {
-    Lexer lexer = new Lexer(...);
-    List<Token> tokens = lexer.tokenize("sin(pi2x)");
-
-    assertThat(tokens).containsExactly(
-        token(FUNCTION, "sin"),
-        token(LPAREN, "("),
-        token(CONSTANT, "pi"),
-        token(MULTIPLY, "*"),
-        token(INTEGER, "2"),
-        token(MULTIPLY, "*"),
-        token(IDENTIFIER, "x"),
-        token(RPAREN, ")"),
-        token(EOF, "")
-    );
-}
+// Result:
+// [IDENTIFIER(m1), ASSIGN, INTEGER(5), SEMICOLON,
+//  UNIT_REF(m), KEYWORD(in), IDENTIFIER(feet), EOF]
+// Note: @m forces unit resolution, m1 is variable name
 ```
 
 ---
 
 ## Common Pitfalls for AI Agents
 
-### 1. Forgetting Implicit Multiplication
+### 1. Over-Eager Splitting
 
-**Problem:** Parser expects multiplication tokens, but they're missing
+**Problem:** Splitting units at digits breaks variable names like `m1`, `s2`
 
-**Solution:** Always run ImplicitMultiplicationInserter after classification
+**Solution:** TokenProcessor only splits constants and functions, not units. Units resolved at runtime.
 
-### 2. Wrong Classification Order
+### 2. Classifying Constants/Units at Lexer
 
-**Problem:** Keywords classified as variables, breaking parser
+**Problem:** Marking `pi` as CONSTANT prevents user from defining `pi := 3`
 
-**Solution:** Keywords must be checked first in TokenClassifier
+**Solution:** Leave as IDENTIFIER - VariableResolver handles runtime priority (variables shadow constants)
 
 ### 3. Decimal vs Range Confusion
 
@@ -529,34 +460,18 @@ void fullPipeline() {
 
 **Solution:** Never insert multiplication when `FUNCTION` token is followed by `LPAREN`
 
-### 5. Compound Identifier Infinite Loop
+### 5. Cross-Line Implicit Multiplication
 
-**Problem:** Splitter gets stuck on identifiers with no matches
+**Problem:** `x\ny` becoming `x * y` across lines
 
-**Solution:** Always make progress even if no registry match (scan one character at minimum)
+**Solution:** TokenProcessor checks line numbers - only insert multiplication on same line
 
----
+### 6. Reference Symbol Syntax
 
-## Extension Points
+**Problem:** Treating `@` as regular operator instead of reference prefix
 
-### Adding a New Operator
+**Solution:** TokenScanner must recognize `@`, `$`, `#` as reference prefixes and scan complete reference
 
-1. Add `TokenType` enum value
-2. Update `TokenScanner` to recognize the operator text
-3. Register operator implementation in `OperatorExecutor`
-
-### Adding a New Keyword
-
-1. Add to `KeywordRegistry`
-2. Update parser to handle the keyword syntax
-
-### Custom Lexer Behavior
-
-Use `MathEngineConfig` to customize:
-
-- Disable implicit multiplication
-- Change identifier length limit
-- Custom registry implementations
 
 ---
 

@@ -107,7 +107,20 @@ public NodeConstant evaluate(Node node) {
 
     // NodeExpression subclasses require evaluation
     if (node instanceof NodeVariable variable) {
-        return variableResolver.resolve(variable, context);
+        return variableResolver.resolve(variable, ResolutionContext.GENERAL, operatorContext);
+    }
+
+    // Reference symbols (explicit disambiguation)
+    if (node instanceof NodeUnitRef unitRef) {
+        return variableResolver.resolveUnitRef(unitRef.getUnitName(), context);
+    }
+
+    if (node instanceof NodeVarRef varRef) {
+        return variableResolver.resolveVarRef(varRef.getVariableName(), context);
+    }
+
+    if (node instanceof NodeConstRef constRef) {
+        return variableResolver.resolveConstRef(constRef.getConstantName(), context);
     }
 
     if (node instanceof NodeBinary binary) {
@@ -205,38 +218,181 @@ define("param",argValue);
 
 **File:** `evaluator/handler/VariableResolver.java`
 
-**Purpose:** Resolve variable references
+**Purpose:** Context-aware variable resolution with support for reference symbols and intelligent implicit multiplication
 
-**Behavior:**
+**Key Features:**
+
+1. **Context-Aware Resolution** - Different priority based on syntactic position
+2. **Reference Symbol Support** - Explicit disambiguation (`@unit`, `$var`, `#const`)
+3. **Smart Implicit Multiplication** - Splits compound identifiers into variables, constants, and functions
+
+#### Resolution Contexts
+
+**ResolutionContext Types:**
 
 ```java
-NodeConstant resolve(NodeVariable var, EvaluationContext ctx) {
-    String name = var.getName();
-
-    // Check if variable exists
-    if (ctx.has(name)) {
-        return ctx.get(name);
-    }
-
-    // If implicit multiplication enabled, could be function * variable
-    if (config.implicitMultiplication()) {
-        // ... check for implicit multiplication patterns
-    }
-
-    // Not found
-    throw new UndefinedVariableException("Variable '" + name + "' not defined");
+enum ResolutionContext {
+    GENERAL,          // x + 1 (variable → function → unit → implicit mult)
+    CALL_TARGET,      // f(x) (function → variable)
+    POSTFIX_UNIT,     // 100m (unit → variable → implicit mult)
+    ASSIGNMENT_TARGET // x := (not resolved, just stored)
 }
 ```
+
+#### General Context Resolution
+
+**Priority:** variable → user function → unit → implicit multiplication
+
+```java
+NodeConstant resolveAsGeneral(String name, EvaluationContext context, OperatorContext opCtx) {
+    // 1. Variables (highest priority - allows shadowing)
+    if (context.isDefined(name)) {
+        return context.resolve(name);
+    }
+
+    // 2. User-defined functions
+    FunctionDefinition func = context.resolveFunction(name);
+    if (func != null) {
+        return new NodeFunction(func);
+    }
+
+    // 3. Units
+    UnitRegistry unitRegistry = context.getUnitRegistry();
+    if (unitRegistry != null && unitRegistry.isUnit(name)) {
+        return NodeUnit.of(1.0, unitRegistry.get(name));
+    }
+
+    // 4. Implicit multiplication (split into parts)
+    if (config.implicitMultiplication() && opCtx != null) {
+        NodeConstant splitResult = trySplitIntoVariables(name, context, opCtx);
+        if (splitResult != null) {
+            return splitResult;
+        }
+    }
+
+    throw new UndefinedVariableException(name);
+}
+```
+
+#### Call Target Resolution
+
+**Priority:** user function → builtin function (checked by caller) → variable
+
+Used for: `f(x)` - the `f` is resolved in call target context
+
+```java
+NodeConstant resolveAsCallTarget(String name, EvaluationContext context) {
+    // User functions take priority
+    FunctionDefinition func = context.resolveFunction(name);
+    if (func != null) {
+        return new NodeFunction(func);
+    }
+
+    // Fall back to variable (could hold lambda)
+    if (context.isDefined(name)) {
+        return context.resolve(name);
+    }
+
+    throw new UndefinedVariableException(name);
+}
+```
+
+#### Postfix Unit Resolution
+
+**Priority:** unit → variable → implicit multiplication
+
+Used for: `100m` - the `m` is resolved in postfix unit context
+
+```java
+NodeConstant resolveAsPostfixUnit(String name, EvaluationContext context, OperatorContext opCtx) {
+    // Units have priority after numbers
+    UnitRegistry unitRegistry = context.getUnitRegistry();
+    if (unitRegistry != null && unitRegistry.isUnit(name)) {
+        return NodeUnit.of(1.0, unitRegistry.get(name));
+    }
+
+    // Fall back to variable
+    if (context.isDefined(name)) {
+        return context.resolve(name);
+    }
+
+    // Try implicit multiplication
+    if (config.implicitMultiplication() && opCtx != null) {
+        NodeConstant splitResult = trySplitIntoVariables(name, context, opCtx);
+        if (splitResult != null) {
+            return splitResult;
+        }
+    }
+
+    throw new UndefinedVariableException(name);
+}
+```
+
+#### Reference Symbol Resolution
+
+**Explicit Disambiguation:**
+
+```java
+// @unit - Force unit resolution
+NodeConstant resolveUnitRef(String unitName, EvaluationContext context) {
+    UnitRegistry unitRegistry = context.getUnitRegistry();
+    if (unitRegistry == null || !unitRegistry.isUnit(unitName)) {
+        throw new UndefinedVariableException("Unknown unit: @" + unitName);
+    }
+    return NodeUnit.of(1.0, unitRegistry.get(unitName));
+}
+
+// $var - Force variable resolution
+NodeConstant resolveVarRef(String varName, EvaluationContext context) {
+    if (!context.isDefined(varName)) {
+        throw new UndefinedVariableException("Undefined variable: $" + varName);
+    }
+    return context.resolve(varName);
+}
+
+// #const - Force constant resolution
+NodeConstant resolveConstRef(String constName, EvaluationContext context) {
+    return context.getConfig().constantRegistry()
+            .getValue(constName)
+            .orElseThrow(() -> new UndefinedVariableException("Undefined constant: #" + constName));
+}
+```
+
+#### Implicit Multiplication Enhancement
+
+**Splits compound identifiers into resolvable parts:**
+
+```java
+// "xy" where x=2, y=3 → 2 * 3 = 6
+// "xpi" where x=2 → 2 * π
+// "abc" where a=1, b=2, c=3 → 1 * 2 * 3 = 6
+NodeConstant trySplitIntoVariables(String name, EvaluationContext context, OperatorContext opCtx) {
+    if (name.length() <= 1) {
+        return null;
+    }
+    return splitAndMultiply(name, 0, context, opCtx);
+}
+```
+
+**Resolution Priority for Each Part:**
+
+1. Variables (user-defined)
+2. Constants (from constant registry)
+3. User-defined functions
 
 **Example:**
 
 ```java
-// x := 10
-context.define("x",new NodeDouble(10));
+// x := 2
+context.define("x", new NodeRational(2));
 
-// Later: x + 5
-NodeVariable xVar = new NodeVariable("x");
-NodeConstant value = variableResolver.resolve(xVar, context);  // NodeDouble(10)
+// xpi → x * pi
+NodeConstant result = variableResolver.resolve(
+    new NodeVariable("xpi"),
+    ResolutionContext.GENERAL,
+    opCtx
+);
+// Returns: 2 * π ≈ 6.28
 ```
 
 ### 2. SubscriptHandler

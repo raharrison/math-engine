@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-IMPORTANT: When applicable, prefer using jetbrains-index MCP tools for code navigation and refactoring.
+IMPORTANT: When applicable, prefer using intellij-index MCP tools for code navigation and refactoring.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -10,8 +10,81 @@ Math Engine is a comprehensive Java mathematical library featuring an advanced e
 functions, vectors, matrices, symbolic differentiation, numerical integration, equation solving, unit conversions, probability
 distributions, and more.
 
-The library is designed around the `Function` class (modeling f(x) equations) and the `Evaluator` class (an expression
-parser/calculator). Most packages can be used standalone or integrated through the parser's operator system.
+The library is designed around the `Function` class (modeling f(x) equations) and the `MathEngine` class (an expression
+parser/evaluator). Most packages can be used standalone or integrated through the engine's operator and function system.
+
+## File Structure Quick Reference
+
+```
+src/main/java/uk/co/ryanharrison/mathengine/
+├── core/                             # BigRational and Function
+├── utils/                            # Utility methods
+│
+├── parser/                           # Expression parser (CORE)
+│   ├── MathEngine.java               # Main entry point
+│   ├── MathEngineConfig.java         # Configuration builder
+│   ├── CompiledExpression.java       # Pre-compiled expressions
+│   ├── MathEngineException.java      # Base exception
+│   │
+│   ├── lexer/                        # Tokenization (2-stage pipeline)
+│   │   ├── Lexer.java                # Main coordinator
+│   │   ├── TokenScanner.java         # Character → tokens
+│   │   ├── TokenProcessor.java       # Split + classify + implicit mult
+│   │   ├── Token.java                # Token record
+│   │   └── TokenType.java            # Token types enum
+│   │
+│   ├── parser/                       # AST construction
+│   │   ├── Parser.java               # Main parser
+│   │   ├── PrecedenceParser.java     # Operator precedence
+│   │   ├── CollectionParser.java     # Vectors/matrices/comprehensions
+│   │   └── nodes/                    # AST node types
+│   │       ├── Node.java             # Base class
+│   │       ├── NodeConstant.java     # Evaluated values
+│   │       ├── NodeExpression.java   # Unevaluated AST
+│   │       ├── NodeVariable.java     # Variable reference
+│   │       └── (30+ other nodes)
+│   │
+│   ├── evaluator/                    # Evaluation engine
+│   │   ├── Evaluator.java            # Main evaluator
+│   │   ├── EvaluationContext.java    # Variable/function storage
+│   │   └── handler/                  # Specialized handlers
+│   │       ├── VariableResolver.java # Context-aware resolution
+│   │       └── FunctionCallHandler.java
+│   │
+│   ├── operator/                     # Operator system
+│   │   ├── OperatorExecutor.java     # Dispatch system
+│   │   ├── BroadcastingDispatcher.java
+│   │   ├── binary/                   # Binary operators (20+)
+│   │   └── unary/                    # Unary operators (10+)
+│   │
+│   ├── function/                     # Function system
+│   │   ├── FunctionExecutor.java     # Function dispatch
+│   │   ├── FunctionContext.java      # Evaluator context for functions
+│   │   ├── math/                     # Math functions
+│   │   ├── trig/                     # Trigonometric functions
+│   │   ├── vector/                   # Vector functions
+│   │   ├── special/                  # Type/conditional/bitwise
+│   │   └── string/                   # String functions
+│   │
+│   ├── registry/                     # Lookup registries
+│   │   ├── UnitRegistry.java         # Physical units
+│   │   ├── ConstantRegistry.java     # Mathematical constants
+│   │   └── KeywordRegistry.java      # Reserved keywords
+│   │
+│   ├── symbolic/                     # Symbolic math (differentiation)
+│   └── util/                         # Parser utilities
+│
+├── differential/                     # Differentiation
+├── integral/                         # Numerical integration
+├── solvers/                          # Root finding algorithms
+├── distributions/                    # Probability distributions
+├── linearalgebra/                    # Vector/Matrix
+├── regression/                       # Regression models
+├── unitconversion/                   # Unit conversion
+├── special/                          # Special functions
+├── plotting/                         # Graphing
+└── gui/                              # GUI applications
+```
 
 ## Build and Test Commands
 
@@ -28,10 +101,10 @@ parser/calculator). Most packages can be used standalone or integrated through t
 ./gradlew test --info
 
 # Run tests for a specific class
-./gradlew test --tests uk.co.ryanharrison.mathengine.parser.EvaluatorCustomFunctionTest
+./gradlew test --tests uk.co.ryanharrison.mathengine.parser.ParserTest
 
 # Run a single test method
-./gradlew test --tests uk.co.ryanharrison.mathengine.parser.EvaluatorCustomFunctionTest.canDefineCustomFunction
+./gradlew test --tests uk.co.ryanharrison.mathengine.parser.ParserTest.testSingleRowMatrix
 
 # Run tests matching a pattern
 ./gradlew test --tests "*Distribution*"
@@ -104,8 +177,8 @@ The `testSummary` task outputs:
 
 **Dependencies**:
 
-- JUnit Jupiter 5.11.4 (testing via BOM)
-- AssertJ 3.27.6 (test assertions)
+- JUnit Jupiter 5 (testing via BOM)
+- AssertJ (test assertions)
 
 ## GUI Applications
 
@@ -141,6 +214,21 @@ Node tree = f.getCompiledExpression(); // Cached parse tree
 Internally uses `Evaluator.newSimpleEvaluator()` with lazy initialization. The expression tree is cached for performance.
 
 ### Package Organization
+
+**parser/** - Expression parser and evaluator (CORE)
+
+- **Entry point**: `MathEngine.create()` or `MathEngine.builder()...build()`
+- **Pipeline**: Text → Lexer → Parser → Evaluator → Result
+- **Lexer**: Two-stage tokenization (TokenScanner → TokenProcessor)
+  - Conservative identifier splitting (only constants/functions, NOT units)
+- **Parser**: Recursive descent with precedence climbing
+  - Builds AST from tokens
+  - 30+ node types (NodeVariable, NodeUnitRef, NodeBinary, NodeVector, etc.)
+- **Evaluator**: Context-aware evaluation with specialized handlers
+  - `VariableResolver`: Context-dependent resolution (variable → function → unit)
+- **Operator System**: Extensible binary/unary operators with broadcasting
+- **Function System**: 100+ built-in functions organized by category
+- See `docs/parser/` for detailed architecture documentation
 
 **differential/** - Differentiation
 
@@ -204,8 +292,6 @@ Internally uses `Evaluator.newSimpleEvaluator()` with lazy initialization. The e
 Tests mirror the main source structure:
 
 - `src/test/java/uk/co/ryanharrison/mathengine/...`
-- Parser tests: `EvaluatorCustomFunctionTest`, `EvaluatorSimpleBinaryTest`, node tests
-- Operator tests: `parser/operators/binary/*Test.java`, `parser/operators/unary/*Test.java`
 - Package tests: `differential/`, `unitconversion/`, `regression/`, etc.
 
 Use AssertJ for assertions (`assertThat(...).isEqualTo(...)`) rather than JUnit assertions.
@@ -502,37 +588,4 @@ if (standardDeviation <= 0.0) {
     throw new IllegalArgumentException(
         "Standard deviation must be positive, got: " + standardDeviation);
 }
-```
-
-## File Structure Quick Reference
-
-```
-src/main/java/uk/co/ryanharrison/mathengine/
-├── core/                             # BigRational and Function
-├── util/                              # Utility methods
-│
-├── parser/                            # Expression parser (CORE)
-│   ├── Evaluator.java                 # Entry point
-│   ├── EvaluationContext.java         # State/registry
-│   ├── ExpressionParser.java          # String → tree
-│   ├── RecursiveDescentParser.java    # Tree → result
-│   ├── AngleUnit.java                 # Radians/Degrees
-│   ├── nodes/                         # Node types
-│   │   ├── Node*.java                 # NodeConstant hierarchy
-│   │   └── NodeTransformer.java       # Type conversions
-│   └── operators/                     # Operator implementations
-│       ├── OperatorProvider.java      # Factory/registry
-│       ├── binary/                    # Two-argument operators
-│       └── unary/                     # Single-argument operators
-│
-├── differential/                      # Differentiation
-├── integral/                          # Integration methods
-├── solvers/                           # Root finding
-├── distributions/                     # Probability distributions
-├── linearalgebra/                     # Vector/Matrix
-├── regression/                        # Regression models
-├── unitconversion/                    # Unit conversion
-├── special/                           # Special functions
-├── plotting/                          # Graphing
-└── gui/                               # GUI applications
 ```

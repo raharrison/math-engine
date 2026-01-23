@@ -54,20 +54,26 @@ double result = expr.evaluateDouble("x", 5.0);
 
 **Location:** `lexer/` package
 
-Multi-pass pipeline that converts text into classified tokens.
+Two-stage pipeline that converts text into classified tokens.
 
 **Pipeline:**
 
-1. **TokenScanner** - Character-level scanning (numbers, strings, operators, identifiers)
-2. **IdentifierSplitter** - Split compound identifiers (e.g., `pi2e` → `pi`, `2`, `e`)
-3. **TokenClassifier** - Classify identifiers (keywords, units, functions, constants)
-4. **ImplicitMultiplicationInserter** - Insert multiplication tokens (e.g., `2x` → `2 * x`)
+1. **TokenScanner** - Character-level scanning (numbers, strings, operators, identifiers, references)
+2. **TokenProcessor** - Single-pass processing: splits identifiers, classifies tokens, inserts implicit multiplication
 
-**Key Features:**
+**TokenScanner Features:**
 
 - Decimal vs range disambiguation (`1.5` vs `1..5`)
+- Reference symbol recognition (`@unit`, `$var`, `#const`)
 - Position tracking for error reporting
 - Multi-character operator support (`==`, `!=`, `<=`, `>=`, `&&`, `||`, `!!`, `..`, `:=`, `->`)
+
+**TokenProcessor Features:**
+
+- **Identifier splitting** - Conservative splitting for constants and functions only (e.g., `pi2` → `pi`, `2`)
+- **Token classification** - Classifies identifiers as keywords, functions, or leaves as IDENTIFIER for runtime resolution
+- **Implicit multiplication** - Inserts `*` tokens (e.g., `2x` → `2 * x`, `xsin(y)` → `x * sin(y)`)
+- **Context-aware** - Units NOT split at digits to allow variable names like `m1`, `s2`
 
 ### 3. Parser (AST Construction)
 
@@ -112,7 +118,9 @@ Evaluates AST nodes to produce results.
 
 **Specialized Handlers:**
 
-- **VariableResolver** - Variable resolution and implicit multiplication fallback
+- **VariableResolver** - Context-aware variable resolution with reference symbol support (`@unit`, `$var`, `#const`)
+  - Resolution priority: variables → functions → units (context-dependent)
+  - Implicit multiplication: splits compound identifiers into resolvable parts (variables, constants, functions)
 - **SubscriptHandler** - Vector/matrix indexing and slicing
 - **FunctionCallHandler** - Function calls (built-in, user-defined, lambda)
 - **ComprehensionHandler** - List comprehension evaluation
@@ -151,7 +159,10 @@ Node (abstract AST base)
     ├─ NodeUnary (unary operations)
     ├─ NodeCall (function calls)
     ├─ NodeSubscript (indexing/slicing)
-    ├─ NodeVariable (variable reference)
+    ├─ NodeVariable (variable/identifier reference)
+    ├─ NodeUnitRef (explicit unit reference: @unit)
+    ├─ NodeVarRef (explicit variable reference: $var)
+    ├─ NodeConstRef (explicit constant reference: #const)
     ├─ NodeAssignment (variable assignment)
     ├─ NodeFunctionDef (function definition)
     ├─ NodeRangeExpression (range before evaluation)

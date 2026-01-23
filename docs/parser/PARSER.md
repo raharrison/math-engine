@@ -753,7 +753,8 @@ private boolean isCallableOrParenthesized(Node node) {
 - Decimal literals: `3.14`
 - Rational literals: `22/7`
 - String literals: `"hello"`
-- Identifiers: `x`, function names, constants
+- Identifiers: `x`, function names (resolved at runtime)
+- Reference symbols: `@unit`, `$var`, `#const` (explicit disambiguation)
 - Parenthesized expressions: `(expr)`
 - Vectors: `{1, 2, 3}`
 - Matrices: `[1, 2; 3, 4]`
@@ -823,14 +824,35 @@ NodeRational(numerator, denominator);
 **Identifiers:**
 
 ```java
-// IDENTIFIER, KEYWORD, UNIT, or FUNCTION tokens all become variables
-if(stream.match(IDENTIFIER, KEYWORD, UNIT, FUNCTION)){
-        return new
+// IDENTIFIER, KEYWORD, or FUNCTION tokens become NodeVariable
+// Resolution happens at runtime in VariableResolver
+if (stream.match(IDENTIFIER, KEYWORD, FUNCTION)) {
+    return new NodeVariable(stream.previous().getLexeme());
+}
+```
 
-NodeVariable(stream.previous().
+**Reference Symbols (Explicit Disambiguation):**
 
-getLexeme());
-        }
+```java
+// @unit or @"unit name" - Force unit resolution
+if (stream.match(UNIT_REF)) {
+    Token token = stream.previous();
+    String unitName = token.getLexeme();
+    boolean quoted = token.getValue() != null; // quoted if value is set
+    return new NodeUnitRef(unitName, quoted);
+}
+
+// $var - Force variable resolution
+if (stream.match(VAR_REF)) {
+    String varName = stream.previous().getLexeme();
+    return new NodeVarRef(varName);
+}
+
+// #const - Force constant resolution
+if (stream.match(CONST_REF)) {
+    String constName = stream.previous().getLexeme();
+    return new NodeConstRef(constName);
+}
 ```
 
 **Parenthesized Content:**

@@ -697,60 +697,6 @@ MathEngine engine = MathEngine.create(config);
 
 ---
 
-## Testing Functions
-
-### Unit Tests
-
-```java
-@Test
-void sinFunction() {
-    SinFunction sin = new SinFunction();
-    FunctionContext ctx = new FunctionContext(AngleUnit.RADIANS);
-
-    NodeConstant result = sin.apply(
-        List.of(new NodeDouble(Math.PI / 2)),
-        ctx
-    );
-
-    assertThat(result.doubleValue()).isCloseTo(1.0, within(1e-10));
-}
-```
-
-### Integration Tests
-
-```java
-@Test
-void functionInExpression() {
-    MathEngine engine = MathEngine.create();
-    NodeConstant result = engine.evaluate("sin(pi / 2)");
-
-    assertThat(result.doubleValue()).isCloseTo(1.0, within(1e-10));
-}
-
-@Test
-void userDefinedFunction() {
-    MathEngine engine = MathEngine.create();
-    engine.evaluate("double(x) := 2 * x");
-    NodeConstant result = engine.evaluate("double(21)");
-
-    assertThat(result.doubleValue()).isEqualTo(42.0);
-}
-
-@Test
-void lambdaFunction() {
-    MathEngine engine = MathEngine.create();
-    NodeConstant result = engine.evaluate("map(x -> x^2, {1, 2, 3})");
-
-    assertThat(result).isInstanceOf(NodeVector.class);
-    NodeVector vec = (NodeVector) result;
-    assertThat(vec.getElements()[0].doubleValue()).isEqualTo(1.0);
-    assertThat(vec.getElements()[1].doubleValue()).isEqualTo(4.0);
-    assertThat(vec.getElements()[2].doubleValue()).isEqualTo(9.0);
-}
-```
-
----
-
 ## Common Pitfalls for AI Agents
 
 ### 1. Not Checking Arity
@@ -827,47 +773,6 @@ if (conditionTrue) {
     return evaluate(thenExpr);
 } else {
     return evaluate(elseExpr);
-}
-```
-
----
-
-## Performance Considerations
-
-### Function Lookup
-
-Hash-based O(1) lookup:
-
-```java
-Map<String, MathFunction> functions;
-MathFunction func = functions.get("sin");
-```
-
-### Alias Handling
-
-All aliases stored in map pointing to same function:
-
-```java
-functions.put("ln", logFunction);
-functions.put("log", logFunction);   // Alias
-functions.put("log10", logFunction); // Alias
-```
-
-### Vector Operations
-
-Avoid copying for aggregate functions:
-
-```java
-// SLOW
-List<Double> copy = new ArrayList<>();
-for (Node n : vec.getElements()) {
-    copy.add(n.doubleValue());
-}
-
-// FASTER
-double sum = 0;
-for (Node n : vec.getElements()) {
-    sum += n.doubleValue();
 }
 ```
 

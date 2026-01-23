@@ -678,54 +678,6 @@ if (current == '@' && peek() == '@') {
 
 ---
 
-## Testing Operators
-
-### Unit Tests
-
-```java
-@Test
-void plusOperatorNumbers() {
-    PlusOperator op = new PlusOperator();
-    NodeConstant result = op.execute(
-        new NodeDouble(2),
-        new NodeDouble(3),
-        context
-    );
-    assertThat(result.doubleValue()).isEqualTo(5.0);
-}
-
-@Test
-void plusOperatorVectors() {
-    PlusOperator op = new PlusOperator();
-    NodeVector left = new NodeVector(new Node[] {
-        new NodeDouble(1), new NodeDouble(2)
-    });
-    NodeVector right = new NodeVector(new Node[] {
-        new NodeDouble(3), new NodeDouble(4)
-    });
-
-    NodeConstant result = op.execute(left, right, context);
-
-    assertThat(result).isInstanceOf(NodeVector.class);
-    NodeVector vec = (NodeVector) result;
-    assertThat(vec.getElements()[0].doubleValue()).isEqualTo(4.0);
-    assertThat(vec.getElements()[1].doubleValue()).isEqualTo(6.0);
-}
-```
-
-### Integration Tests
-
-```java
-@Test
-void operatorInExpression() {
-    MathEngine engine = MathEngine.create();
-    NodeConstant result = engine.evaluate("2 + 3 * 4");
-    assertThat(result.doubleValue()).isEqualTo(14.0);
-}
-```
-
----
-
 ## Common Pitfalls for AI Agents
 
 ### 1. Forgetting Type Promotion
@@ -782,39 +734,6 @@ return new NodeDouble(result);
 ```java
 if (a.getColumnCount() != b.getRowCount()) {
     throw new TypeError("Matrix dimensions incompatible");
-}
-```
-
----
-
-## Performance Considerations
-
-### Node Pooling
-
-For common values, reuse nodes:
-
-```java
-private static final NodeDouble ZERO = new NodeDouble(0);
-private static final NodeDouble ONE = new NodeDouble(1);
-
-// Use:
-if (result == 0) return ZERO;
-if (result == 1) return ONE;
-```
-
-### Avoiding Unnecessary Copies
-
-When broadcasting, avoid copying entire vectors:
-
-```java
-// SLOW
-for (int i = 0; i < vec.size(); i++) {
-    result[i] = new NodeDouble(vec.get(i).doubleValue() + scalar);
-}
-
-// FASTER (if elements are already NodeDouble)
-for (int i = 0; i < vec.size(); i++) {
-    result[i] = fastAdd(vec.get(i), scalar);
 }
 ```
 

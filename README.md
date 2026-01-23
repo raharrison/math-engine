@@ -1,8 +1,6 @@
 # Math Engine
 
-A comprehensive Java mathematical library featuring an advanced expression parser with support for custom functions, vectors,
-matrices, symbolic differentiation, numerical integration, equation solving, unit conversions, probability distributions, and
-more.
+A comprehensive Java mathematical library featuring an advanced expression parser with support for custom functions, vectors, matrices, symbolic differentiation, numerical integration, equation solving, unit conversions, probability distributions, and more.
 
 ## Features
 
@@ -39,8 +37,7 @@ For complete grammar documentation, see [docs/GRAMMAR.md](docs/GRAMMAR.md).
 
 ## Quick Start - Expression Parser (MathEngine)
 
-The `MathEngine` class is the main entry point for parsing and evaluating mathematical expressions. It provides a modern,
-immutable API with comprehensive configuration options.
+The `MathEngine` class is the main entry point for parsing and evaluating mathematical expressions. It provides a modern, immutable API with comprehensive configuration options.
 
 ### Basic Usage
 
@@ -50,25 +47,15 @@ MathEngine engine = MathEngine.create();
 
 // Simple arithmetic
 NodeConstant result = engine.evaluate("2 + 3 * 4");
-System.out.
-
-println(result);  // 14
+System.out.println(result);  // 14
 
 // Exact rational arithmetic (fractions preserved)
-result =engine.
-
-evaluate("1/3 + 1/6");
-System.out.
-
-println(result);  // 1/2
+result = engine.evaluate("1/3 + 1/6");
+System.out.println(result);  // 1/2
 
 // Power and factorial
-result =engine.
-
-evaluate("2^10 + 5!");
-System.out.
-
-println(result);  // 1144
+result = engine.evaluate("2^10 + 5!");
+System.out.println(result);  // 1144
 ```
 
 ### Variables and Functions
@@ -77,32 +64,17 @@ println(result);  // 1144
 MathEngine engine = MathEngine.create();
 
 // Define variables
-engine.
-
-evaluate("x := 10");
-engine.
-
-evaluate("y := 20");
-
+engine.evaluate("x := 10");
+engine.evaluate("y := 20");
 NodeConstant result = engine.evaluate("x + y");  // 30
 
 // Define custom functions
-engine.
-
-evaluate("square(n) := n^2");
-
-result =engine.
-
-evaluate("square(5)");  // 25
+engine.evaluate("square(n) := n^2");
+result = engine.evaluate("square(5)");  // 25
 
 // Multi-parameter functions
-engine.
-
-evaluate("add(a, b) := a + b");
-
-result =engine.
-
-evaluate("add(3, 7)");  // 10
+engine.evaluate("add(a, b) := a + b");
+result = engine.evaluate("add(3, 7)");  // 10
 ```
 
 ### Vectors and Matrices
@@ -111,44 +83,22 @@ evaluate("add(3, 7)");  // 10
 MathEngine engine = MathEngine.create();
 
 // Vector operations
-engine.
-
-evaluate("v1 := {1, 2, 3}");
-engine.
-
-evaluate("v2 := {4, 5, 6}");
-
+engine.evaluate("v1 := {1, 2, 3}");
+engine.evaluate("v2 := {4, 5, 6}");
 NodeConstant result = engine.evaluate("v1 + v2");  // {5, 7, 9}
 
 // Matrix operations
-engine.
-
-evaluate("m1 := [[1, 2], [3, 4]]");
-engine.
-
-evaluate("m2 := [[5, 6], [7, 8]]");
-
-result =engine.
-
-evaluate("m1 + m2");  // [[6, 8], [10, 12]]
+engine.evaluate("m1 := [[1, 2], [3, 4]]");
+engine.evaluate("m2 := [[5, 6], [7, 8]]");
+result = engine.evaluate("m1 + m2");  // [[6, 8], [10, 12]]
 
 // Matrix multiplication (@ operator)
-result =engine.
-
-evaluate("m1 @ m2");  // [[19, 22], [43, 50]]
+result = engine.evaluate("m1 @ m2");  // [[19, 22], [43, 50]]
 
 // Subscript access
-result =engine.
-
-evaluate("v1[0]");    // 1
-
-result =engine.
-
-evaluate("m1[0, 1]"); // 2
-
-result =engine.
-
-evaluate("v1[1:3]");  // {2, 3} (slice)
+result = engine.evaluate("v1[0]");    // 1
+result = engine.evaluate("m1[0, 1]"); // 2
+result = engine.evaluate("v1[1:3]");  // {2, 3} (slice)
 ```
 
 ### Lambdas and Higher-Order Functions
@@ -219,62 +169,29 @@ result = engine.evaluate("sum(1..100)");
 MathEngine engine = MathEngine.create();
 
 // Recursive factorial
-engine.
-
-evaluate("fact(n) := if(n <= 1, 1, n * fact(n-1))");
-
+engine.evaluate("fact(n) := if(n <= 1, 1, n * fact(n-1))");
 NodeConstant result = engine.evaluate("fact(5)");  // 120
 
 // Recursive fibonacci
-engine.
-
-evaluate("fib(n) := if(n <= 1, n, fib(n-1) + fib(n-2))");
-
-result =engine.
-
-evaluate("fib(10)");  // 55
+engine.evaluate("fib(n) := if(n <= 1, n, fib(n-1) + fib(n-2))");
+result = engine.evaluate("fib(10)");  // 55
 
 // Mutual recursion
-engine.
-
-evaluate("even(n) := if(n == 0, true, odd(n-1))");
-engine.
-
-evaluate("odd(n) := if(n == 0, false, even(n-1))");
-
-result =engine.
-
-evaluate("even(4)");  // true (as 1.0)
+engine.evaluate("even(n) := if(n == 0, true, odd(n-1))");
+engine.evaluate("odd(n) := if(n == 0, false, even(n-1))");
+result = engine.evaluate("even(4)");  // true (as 1.0)
 
 // Higher-order functions (functions returning functions)
-engine.
-
-evaluate("makeAdder(n) := (x -> n + x)");
-engine.
-
-evaluate("add10 := makeAdder(10)");
-
-result =engine.
-
-evaluate("add10(5)");  // 15
+engine.evaluate("makeAdder(n) := (x -> n + x)");
+engine.evaluate("add10 := makeAdder(10)");
+result = engine.evaluate("add10(5)");  // 15
 
 // Function composition
-engine.
-
-evaluate("compose(f, g) := (x -> f(g(x)))");
-engine.
-
-evaluate("double(x) := x * 2");
-engine.
-
-evaluate("square(x) := x^2");
-engine.
-
-evaluate("doubleSquare := compose(double, square)");
-
-result =engine.
-
-evaluate("doubleSquare(5)");  // 50 (2 * 5^2)
+engine.evaluate("compose(f, g) := (x -> f(g(x)))");
+engine.evaluate("double(x) := x * 2");
+engine.evaluate("square(x) := x^2");
+engine.evaluate("doubleSquare := compose(double, square)");
+result = engine.evaluate("doubleSquare(5)");  // 50 (2 * 5^2)
 ```
 
 ### Built-in Functions
@@ -284,60 +201,25 @@ MathEngine engine = MathEngine.create();
 
 // Trigonometry (angle unit aware)
 NodeConstant result = engine.evaluate("sin(pi/2)");  // 1.0
-result =engine.
-
-evaluate("cos(0)");                   // 1.0
+result = engine.evaluate("cos(0)");                   // 1.0
 
 // Logarithms and exponentials
-result =engine.
-
-evaluate("ln(e)");      // 1.0
-
-result =engine.
-
-evaluate("log10(100)"); // 2.0
-
-result =engine.
-
-evaluate("exp(1)");     // e
+result = engine.evaluate("ln(e)");      // 1.0
+result = engine.evaluate("log10(100)"); // 2.0
+result = engine.evaluate("exp(1)");     // e
 
 // Rounding
-result =engine.
-
-evaluate("floor(3.7)");     // 3
-
-result =engine.
-
-evaluate("ceil(3.2)");      // 4
-
-result =engine.
-
-evaluate("round(3.5)");     // 4
-
-result =engine.
-
-evaluate("roundn(3.14159, 2)");  // 3.14
+result = engine.evaluate("floor(3.7)");     // 3
+result = engine.evaluate("ceil(3.2)");      // 4
+result = engine.evaluate("round(3.5)");     // 4
+result = engine.evaluate("roundn(3.14159, 2)");  // 3.14
 
 // Vector operations
-result =engine.
-
-evaluate("sum({1, 2, 3, 4})");     // 10
-
-result =engine.
-
-evaluate("mean({1, 2, 3, 4})");    // 2.5
-
-result =engine.
-
-evaluate("max({5, 2, 8, 1})");     // 8
-
-result =engine.
-
-evaluate("sort({3, 1, 4, 2})");    // {1, 2, 3, 4}
-
-result =engine.
-
-evaluate("reverse({1, 2, 3})");    // {3, 2, 1}
+result = engine.evaluate("sum({1, 2, 3, 4})");     // 10
+result = engine.evaluate("mean({1, 2, 3, 4})");    // 2.5
+result = engine.evaluate("max({5, 2, 8, 1})");     // 8
+result = engine.evaluate("sort({3, 1, 4, 2})");    // {1, 2, 3, 4}
+result = engine.evaluate("reverse({1, 2, 3})");    // {3, 2, 1}
 ```
 
 ### Unit Conversions
@@ -367,52 +249,31 @@ result = engine.evaluate("(50 + 50) meters in centimeters");
 ```java
 // Configure angle units
 MathEngineConfig config = MathEngineConfig.builder()
-                .angleUnit(AngleUnit.DEGREES)
-                .build();
+    .angleUnit(AngleUnit.DEGREES)
+    .build();
 MathEngine engine = MathEngine.create(config);
 
 NodeConstant result = engine.evaluate("sin(90)");  // 1.0 (degrees mode)
 
 // Configure decimal places for display
-config =MathEngineConfig.
-
-builder()
-    .
-
-decimalPlaces(4)
-    .
-
-build();
-
-engine =MathEngine.
-
-create(config);
+config = MathEngineConfig.builder()
+    .decimalPlaces(4)
+    .build();
+engine = MathEngine.create(config);
 
 // Disable specific features
-config =MathEngineConfig.
-
-builder()
-    .
-
-vectorsEnabled(false)
-    .
-
-matricesEnabled(false)
-    .
-
-build();
-
-engine =MathEngine.
-
-create(config);
+config = MathEngineConfig.builder()
+    .vectorsEnabled(false)
+    .matricesEnabled(false)
+    .build();
+engine = MathEngine.create(config);
 ```
 
 ---
 
 ## Function Class - Single Variable Equations
 
-The `Function` class provides a simple interface for working with single-variable equations. It's used by differential, integral,
-solvers, and plotting packages.
+The `Function` class provides a simple interface for working with single-variable equations. It's used by differential, integral, solvers, and plotting packages.
 
 ### Basic Usage
 
@@ -517,7 +378,6 @@ result = simpson.integrate();
 ```
 
 Other available methods:
-
 - `RectangularIntegrator` - Simple rectangle approximation
 
 ---
@@ -549,23 +409,21 @@ System.out.println(roots);  // [-6.0, -2.0]
 ```
 
 Other available solvers:
-
 - `BisectionSolver` - Simple but reliable bisection method
 - `NewtonRaphsonSolver` - Fast convergence (requires derivative)
 - `NewtonBisectionSolver` - Hybrid approach
 
 Configure convergence criteria:
-
 ```java
 import uk.co.ryanharrison.mathengine.solvers.ConvergenceCriteria;
 
 BrentSolver preciseSolver = BrentSolver.builder()
-        .targetFunction(f)
-        .lowerBound(-10)
-        .upperBound(-5)
-        .convergenceCriteria(ConvergenceCriteria.WithinTolerance)
-        .tolerance(1e-10)
-        .build();
+    .targetFunction(f)
+    .lowerBound(-10)
+    .upperBound(-5)
+    .convergenceCriteria(ConvergenceCriteria.WithinTolerance)
+    .tolerance(1e-10)
+    .build();
 ```
 
 ---
@@ -581,27 +439,22 @@ import uk.co.ryanharrison.mathengine.distributions.NormalDistribution;
 
 // Standard normal (mean=0, stddev=1)
 NormalDistribution standard = NormalDistribution.standard();
-        double density = standard.density(0.0);     // 0.3989 (peak at mean)
-        double cumulative = standard.cumulative(1.0); // 0.8413
+double density = standard.density(0.0);     // 0.3989 (peak at mean)
+double cumulative = standard.cumulative(1.0); // 0.8413
 
-        // Custom distribution using factory method
-        NormalDistribution custom = NormalDistribution.of(15, 2.6);
-        density =custom.
+// Custom distribution using factory method
+NormalDistribution custom = NormalDistribution.of(15, 2.6);
+density = custom.density(15.7);             // 0.1480
+cumulative = custom.cumulative(15.7);       // 0.6061
 
-        density(15.7);             // 0.1480
+// Using builder
+NormalDistribution dist = NormalDistribution.builder()
+    .mean(100)
+    .standardDeviation(15)
+    .build();
 
-        cumulative =custom.
-
-        cumulative(15.7);       // 0.6061
-
-        // Using builder
-        NormalDistribution dist = NormalDistribution.builder()
-                .mean(100)
-                .standardDeviation(15)
-                .build();
-
-        // Inverse CDF (quantile function)
-        double quantile = dist.inverseCumulative(0.95);  // ~124.67
+// Inverse CDF (quantile function)
+double quantile = dist.inverseCumulative(0.95);  // ~124.67
 ```
 
 ### Other Distributions
@@ -611,36 +464,31 @@ import uk.co.ryanharrison.mathengine.distributions.*;
 
 // Beta distribution
 BetaDistribution beta = BetaDistribution.of(2.0, 5.0);
-        double density = beta.density(0.3);
+double density = beta.density(0.3);
 
-        // Exponential distribution
-        ExponentialDistribution exp = ExponentialDistribution.of(1.5);
-        double cumulative = exp.cumulative(2.0);
+// Exponential distribution
+ExponentialDistribution exp = ExponentialDistribution.of(1.5);
+double cumulative = exp.cumulative(2.0);
 
-        // F distribution
-        FDistribution f = FDistribution.of(5, 10);  // degrees of freedom
-        double pValue = f.cumulative(2.5);
+// F distribution
+FDistribution f = FDistribution.of(5, 10);  // degrees of freedom
+double pValue = f.cumulative(2.5);
 
-        // Student's T distribution
-        StudentTDistribution t = StudentTDistribution.of(20);  // df
-        double criticalValue = t.inverseCumulative(0.975);
+// Student's T distribution
+StudentTDistribution t = StudentTDistribution.of(20);  // df
+double criticalValue = t.inverseCumulative(0.975);
 
-        // Binomial distribution (discrete)
-        BinomialDistribution binomial = BinomialDistribution.of(10, 0.5);
-        double probability = binomial.density(5);  // P(X = 5)
-        cumulative =binomial.
+// Binomial distribution (discrete)
+BinomialDistribution binomial = BinomialDistribution.of(10, 0.5);
+double probability = binomial.density(5);  // P(X = 5)
+cumulative = binomial.cumulative(7);       // P(X <= 7)
 
-        cumulative(7);       // P(X <= 7)
-
-        // Logistic distribution
-        LogisticDistribution logistic = LogisticDistribution.of(0.0, 1.0);
-        density =logistic.
-
-        density(0.0);
+// Logistic distribution
+LogisticDistribution logistic = LogisticDistribution.of(0.0, 1.0);
+density = logistic.density(0.0);
 ```
 
 All distributions provide:
-
 - `density(x)` - Probability density/mass function
 - `cumulative(x)` - Cumulative distribution function
 - `inverseCumulative(p)` - Quantile function (continuous only)
@@ -657,22 +505,22 @@ import uk.co.ryanharrison.mathengine.linearalgebra.Vector;
 
 // Create vectors
 Vector v1 = Vector.of(1, 2, 3, 4);
-        Vector v2 = Vector.parse("{5, 6, 7, 8}");  // Parse from string
+Vector v2 = Vector.parse("{5, 6, 7, 8}");  // Parse from string
 
-        // Basic operations
-        Vector sum = v1.add(v2);           // {6, 8, 10, 12}
-        Vector diff = v1.subtract(v2);     // {-4, -4, -4, -4}
-        Vector scaled = v1.multiply(2);    // {2, 4, 6, 8}
+// Basic operations
+Vector sum = v1.add(v2);           // {6, 8, 10, 12}
+Vector diff = v1.subtract(v2);     // {-4, -4, -4, -4}
+Vector scaled = v1.multiply(2);    // {2, 4, 6, 8}
 
-        // Vector operations
-        double dotProduct = v1.dotProduct(v2);  // 70
-        double magnitude = v1.getNorm();        // 5.477
-        Vector normalized = v1.getUnitVector();
+// Vector operations
+double dotProduct = v1.dotProduct(v2);  // 70
+double magnitude = v1.getNorm();        // 5.477
+Vector normalized = v1.getUnitVector();
 
-        // Cross product (3D vectors)
-        Vector a = Vector.of(1, 0, 0);
-        Vector b = Vector.of(0, 1, 0);
-        Vector cross = a.crossProduct(b);  // {0, 0, 1}
+// Cross product (3D vectors)
+Vector a = Vector.of(1, 0, 0);
+Vector b = Vector.of(0, 1, 0);
+Vector cross = a.crossProduct(b);  // {0, 0, 1}
 ```
 
 ### Matrices
@@ -681,26 +529,26 @@ Vector v1 = Vector.of(1, 2, 3, 4);
 import uk.co.ryanharrison.mathengine.linearalgebra.Matrix;
 
 // Create matrices
-Matrix m1=Matrix.of(new double[][]{{1,2},{3,4}});
-        Matrix m2=Matrix.ofSize(2,2);  // 2x2 zero matrix
+Matrix m1 = Matrix.of(new double[][]{{1, 2}, {3, 4}});
+Matrix m2 = Matrix.ofSize(2, 2);  // 2x2 zero matrix
 
 // Basic operations
-        Matrix sum=m1.add(m2);
-        Matrix product=m1.multiply(m2);
-        Matrix scaled=m1.multiply(2.0);
+Matrix sum = m1.add(m2);
+Matrix product = m1.multiply(m2);
+Matrix scaled = m1.multiply(2.0);
 
 // Matrix properties
-        double determinant=m1.determinant();  // -2
-        Matrix transpose=m1.transpose();
-        Matrix inverse=m1.inverse();
+double determinant = m1.determinant();  // -2
+Matrix transpose = m1.transpose();
+Matrix inverse = m1.inverse();
 
 // Verify: A * A^-1 = I
-        Matrix identity=m1.multiply(inverse);
+Matrix identity = m1.multiply(inverse);
 
 // Solve linear system: A*X = B
-        Matrix A=Matrix.of(new double[][]{{3,7},{4,12}});
-        Matrix B=Matrix.of(new double[][]{{-4,5},{8,1}});
-        Matrix X=A.solve(B);
+Matrix A = Matrix.of(new double[][]{{3, 7}, {4, 12}});
+Matrix B = Matrix.of(new double[][]{{-4, 5}, {8, 1}});
+Matrix X = A.solve(B);
 
 // Advanced decompositions
 import uk.co.ryanharrison.mathengine.linearalgebra.QRDecomposition;
@@ -748,7 +596,6 @@ result = engine.convertToFormattedString(14, "london", "new york", 1);
 ```
 
 The engine supports hundreds of units including:
-
 - Length: meters, feet, miles, kilometers, etc.
 - Mass: grams, kilograms, pounds, ounces, etc.
 - Temperature: celsius, fahrenheit, kelvin
@@ -768,20 +615,20 @@ import uk.co.ryanharrison.mathengine.special.*;
 
 // Gamma function
 double gamma = Gamma.gamma(5.0);          // 24.0 (= 4!)
-        double logGamma = Gamma.logGamma(100.0);  // Avoid overflow
+double logGamma = Gamma.logGamma(100.0);  // Avoid overflow
 
-        // Beta function
-        double beta = Beta.beta(2.0, 3.0);  // 0.0833
+// Beta function
+double beta = Beta.beta(2.0, 3.0);  // 0.0833
 
-        // Error function (used in normal distribution)
-        double erf = Erf.erf(1.0);           // 0.8427
-        double erfc = Erf.erfc(1.0);         // 0.1573 (= 1 - erf)
-        double erfInv = Erf.erfInv(0.5);     // ~0.4769
+// Error function (used in normal distribution)
+double erf = Erf.erf(1.0);           // 0.8427
+double erfc = Erf.erfc(1.0);         // 0.1573 (= 1 - erf)
+double erfInv = Erf.erfInv(0.5);     // ~0.4769
 
-        // Prime numbers
-        boolean isPrime = Primes.isPrime(97);        // true
-        long nextPrime = Primes.nextPrime(97);       // 101
-        List<Long> factors = Primes.primeFactors(84);  // [2, 2, 3, 7]
+// Prime numbers
+boolean isPrime = Primes.isPrime(97);        // true
+long nextPrime = Primes.nextPrime(97);       // 101
+List<Long> factors = Primes.primeFactors(84);  // [2, 2, 3, 7]
 ```
 
 ---
@@ -795,19 +642,19 @@ import uk.co.ryanharrison.mathengine.regression.LinearRegressionModel;
 
 // Sample data
 double[] x = {1, 2, 3, 4, 5};
-        double[] y = {2.1, 3.9, 6.2, 8.1, 9.9};
+double[] y = {2.1, 3.9, 6.2, 8.1, 9.9};
 
-        // Fit linear model: y = a + bx
-        LinearRegressionModel model = LinearRegressionModel.of(x, y);
+// Fit linear model: y = a + bx
+LinearRegressionModel model = LinearRegressionModel.of(x, y);
 
-        double intercept = model.getIntercept();  // a ≈ 0.08
-        double slope = model.getSlope();          // b ≈ 1.98
+double intercept = model.getIntercept();  // a ≈ 0.08
+double slope = model.getSlope();          // b ≈ 1.98
 
-        // Use fitted model for predictions
-        double predicted = model.evaluateAt(6.0);  // ~12.0
+// Use fitted model for predictions
+double predicted = model.evaluateAt(6.0);  // ~12.0
 
-        // Get coefficients
-        double[] coeffs = model.getCoefficients();  // {intercept, slope}
+// Get coefficients
+double[] coeffs = model.getCoefficients();  // {intercept, slope}
 ```
 
 ---
@@ -819,20 +666,17 @@ double[] x = {1, 2, 3, 4, 5};
 **MainFrame** - Interactive expression evaluator with history:
 
 Features:
-
 - Expression input with history (arrow keys)
 - Live variable/function tracking
 - Enhanced error messages with source context
 - Syntax reference panel
 
 **Converter** - Unit conversion tool:
-
 - Dropdown selection for units
 - String-based conversion (e.g., "12 mph in kph")
 - Currency and timezone support
 
 **Grapher** - Function plotter:
-
 - Interactive pan and zoom
 - Plot any `Function` object
 - Real-time rendering
@@ -850,23 +694,23 @@ import uk.co.ryanharrison.mathengine.util.MathUtils;
 
 // Hyperbolic functions
 double sinh = MathUtils.sinh(1.5);
-        double cosh = MathUtils.cosh(1.5);
-        double tanh = MathUtils.tanh(1.5);
+double cosh = MathUtils.cosh(1.5);
+double tanh = MathUtils.tanh(1.5);
 
-        // Inverse hyperbolic
-        double asinh = MathUtils.asinh(1.0);
-        double acosh = MathUtils.acosh(2.0);
-        double atanh = MathUtils.atanh(0.5);
+// Inverse hyperbolic
+double asinh = MathUtils.asinh(1.0);
+double acosh = MathUtils.acosh(2.0);
+double atanh = MathUtils.atanh(0.5);
 
-        // Combinatorics
-        long factorial = MathUtils.factorial(10);        // 3628800
-        double choose = MathUtils.combination(10, 3);    // 120
-        double permute = MathUtils.permutation(10, 3);   // 720
+// Combinatorics
+long factorial = MathUtils.factorial(10);        // 3628800
+double choose = MathUtils.combination(10, 3);    // 120
+double permute = MathUtils.permutation(10, 3);   // 720
 
-        // Number utilities
-        int gcd = MathUtils.gcd(48, 18);                 // 6
-        int lcm = MathUtils.lcm(12, 18);                 // 36
-        double round = MathUtils.round(3.14159, 2);      // 3.14
+// Number utilities
+int gcd = MathUtils.gcd(48, 18);                 // 6
+int lcm = MathUtils.lcm(12, 18);                 // 36
+double round = MathUtils.round(3.14159, 2);      // 3.14
 ```
 
 ### StatUtils

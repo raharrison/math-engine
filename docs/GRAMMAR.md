@@ -1,8 +1,8 @@
 # Math Engine Grammar Specification
 
-**Version:** 2.1
+**Version:** 2.2
 **Purpose:** Formal grammar definition and comprehensive function reference for mathematical expression language
-**Updated:** 2026-01-12
+**Updated:** 2026-01-22
 
 ---
 
@@ -76,7 +76,11 @@ call          := primary ('(' args? ')')*
 args          := expression (',' expression)*
 
 (* Atomic expressions *)
-primary       := number | string | identifier | vector | matrix | '(' expression ')'
+primary       := number | string | reference | identifier | vector | matrix | '(' expression ')'
+
+reference     := '@' (identifier | string)   (* Unit reference: @m or @"km/h" *)
+               | '$' identifier              (* Variable reference: $m1 *)
+               | '#' identifier              (* Constant reference: #pi *)
 
 number        := integer | decimal | scientific | rational_literal
 
@@ -807,6 +811,123 @@ All 150+ built-in functions are reserved identifiers (see "Built-In Functions" s
 - `nan` - Not-a-Number
 
 **Note:** All function names and constants are case-sensitive and cannot be redefined by users.
+
+---
+
+## Reference Symbols
+
+Reference symbols provide **explicit disambiguation** for identifiers that could be interpreted as variables, units, or constants. They force specific resolution types regardless of context.
+
+### Symbol Syntax
+
+| Symbol | Type | Syntax | Description | Example |
+|--------|------|--------|-------------|---------|
+| `@` | Unit | `@identifier` or `@"string"` | Force unit resolution | `@m`, `@"km/h"` |
+| `$` | Variable | `$identifier` | Force variable resolution | `$m1`, `$x` |
+| `#` | Constant | `#identifier` | Force constant resolution | `#pi`, `#e` |
+
+### Unit References (`@`)
+
+**Purpose:** Force an identifier to be resolved as a unit, bypassing variable shadowing.
+
+**Syntax:**
+- **Simple:** `@identifier` - For single-word units
+- **Quoted:** `@"unit name"` - For units with spaces or special characters
+
+**Examples:**
+
+```javascript
+// Simple unit reference
+m := 5                  // Define variable 'm'
+m                       // Returns 5 (variable has priority)
+@m                      // Returns 1 meter (forced unit resolution)
+100 * @m                // Returns 100 meters
+
+// Quoted unit reference for multi-word units
+@"km/h"                 // Force kilometers per hour unit
+@"miles per hour"       // Force miles per hour unit
+100 * @"km/h"           // 100 kilometers per hour
+
+// Unit conversion with explicit reference
+m1 := 1000              // Variable named 'm1'
+m1                      // Returns 1000 (variable)
+@m in feet              // 1 meter in feet (forced unit)
+```
+
+**Use Cases:**
+- Accessing units when variables shadow them
+- Disambiguating multi-character unit identifiers
+- Working with units containing spaces or special characters (e.g., `"km/h"`, `"degrees celsius"`)
+
+### Variable References (`$`)
+
+**Purpose:** Force an identifier to be resolved as a variable, even in contexts where units or functions would normally take priority.
+
+**Syntax:** `$identifier`
+
+**Examples:**
+
+```javascript
+// Variable shadowing
+f := 10                 // Define variable 'f'
+f                       // Returns 10 (variable)
+f(x) := x^2             // Define function 'f'
+f                       // Returns function object
+$f                      // Returns 10 (forced variable resolution)
+
+// Disambiguation in postfix position
+x := 2
+100x                    // 100 * x = 200 (implicit multiplication)
+m := 3
+100m                    // 100 meters (unit takes priority after number)
+100$m                   // 100 * m = 300 (forced variable)
+```
+
+### Constant References (`#`)
+
+**Purpose:** Access mathematical constants even when shadowed by user variables.
+
+**Syntax:** `#identifier`
+
+**Examples:**
+
+```javascript
+// Normal constant access
+pi                      // Returns π ≈ 3.14159...
+e                       // Returns e ≈ 2.71828...
+
+// Constant shadowing by variables
+pi := 3.0               // Redefine pi as variable
+pi                      // Returns 3.0 (variable shadows constant)
+#pi                     // Returns π ≈ 3.14159... (forced constant)
+
+// Using constants in calculations
+tau := 10               // Shadow tau constant
+2 * #pi                 // 2π (using constant, not variable)
+2 * pi                  // 6.0 (using variable)
+```
+
+### Resolution Priority Without Reference Symbols
+
+Understanding default resolution priority helps you know when reference symbols are needed:
+
+**General Expression Context** (e.g., `m + 1`, `x * 2`):
+1. Variable (highest)
+2. User-defined function
+3. Unit
+4. Implicit multiplication
+
+**Call Position** (e.g., `f(x)`):
+1. User-defined function (highest)
+2. Built-in function
+3. Variable holding lambda
+
+**Postfix Unit Context** (e.g., `100m`):
+1. Unit (highest)
+2. Variable
+3. Implicit multiplication
+
+**Reference symbols override these priorities**, forcing the specific resolution type regardless of context.
 
 ---
 
