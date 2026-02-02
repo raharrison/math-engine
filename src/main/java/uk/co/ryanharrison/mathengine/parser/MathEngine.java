@@ -15,7 +15,6 @@ import uk.co.ryanharrison.mathengine.parser.registry.ConstantDefinition;
 import uk.co.ryanharrison.mathengine.parser.registry.ConstantRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
-import uk.co.ryanharrison.mathengine.parser.util.ResultFormatter;
 
 import java.util.*;
 
@@ -285,30 +284,6 @@ public final class MathEngine {
      */
     public double evaluateDouble(String expression) {
         return evaluate(expression).doubleValue();
-    }
-
-    // ==================== Formatting ====================
-
-    /**
-     * Formats a result according to the engine's decimalPlaces setting.
-     * (-1 = full precision, 0 = integer, n = n decimal places)
-     *
-     * @param result the result to format
-     * @return the formatted string representation
-     */
-    public String format(NodeConstant result) {
-        return ResultFormatter.format(result, config);
-    }
-
-    /**
-     * Evaluates an expression and returns the formatted result string.
-     *
-     * @param expression the expression to evaluate
-     * @return the formatted result string
-     * @throws MathEngineException if parsing or evaluation fails
-     */
-    public String evaluateAndFormat(String expression) {
-        return format(evaluate(expression));
     }
 
     // ==================== Variable/Function Definition ====================

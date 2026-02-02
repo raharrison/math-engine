@@ -6,6 +6,8 @@ import uk.co.ryanharrison.mathengine.parser.MathEngine;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
+import uk.co.ryanharrison.mathengine.parser.format.NodeFormatter;
+import uk.co.ryanharrison.mathengine.parser.format.StringNodeFormatter;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
@@ -13,7 +15,6 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.registry.ConstantDefinition;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 import uk.co.ryanharrison.mathengine.parser.util.AstTreeBuilder;
-import uk.co.ryanharrison.mathengine.parser.util.NodeFormatter;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -63,7 +64,7 @@ public final class MainFrame extends JFrame {
     private static final Font UI_FONT = new Font("Segoe UI", Font.PLAIN, 13);
     private static final Font UI_BOLD = new Font("Segoe UI", Font.BOLD, 13);
 
-    public static void main(String[] args) {
+    public static void main() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             // Set modern font rendering
@@ -83,6 +84,7 @@ public final class MainFrame extends JFrame {
     // Components
     private MathEngine mathEngine;
     private MathEngineConfig currentConfig;
+    private NodeFormatter formatter;
 
     private final JTextPane outputPane;
     private final JTextArea inputArea;
@@ -125,6 +127,7 @@ public final class MainFrame extends JFrame {
                 .decimalPlaces(6)
                 .build();
         mathEngine = MathEngine.create(currentConfig);
+        formatter = StringNodeFormatter.withDecimalPlaces(currentConfig.decimalPlaces());
 
         // Create components
         outputPane = createStyledTextPane();
@@ -475,7 +478,7 @@ public final class MainFrame extends JFrame {
     }
 
     private String formatNode(Node node) {
-        return NodeFormatter.format(node, currentConfig);
+        return formatter.format(node);
     }
 
     private void displayTokens(String expression) {
@@ -739,7 +742,7 @@ public final class MainFrame extends JFrame {
         }
         decimalCombo.addActionListener(e -> {
             String selected = (String) decimalCombo.getSelectedItem();
-            int places = selected.equals("Full Precision") ? -1 : Integer.parseInt(selected);
+            int places = "Full Precision".equals(selected) ? -1 : Integer.parseInt(selected);
             updateConfig(config -> config.decimalPlaces(places));
         });
         decimalPanel.add(decimalCombo);
@@ -848,6 +851,7 @@ public final class MainFrame extends JFrame {
         // Build new config and update engine with session preservation
         currentConfig = builder.build();
         mathEngine = mathEngine.withConfig(currentConfig);
+        formatter = StringNodeFormatter.withDecimalPlaces(currentConfig.decimalPlaces());
 
         updateStatusBar();
         updateSessionInfo();
@@ -969,7 +973,6 @@ public final class MainFrame extends JFrame {
             Set<String> allFunctionNames = mathEngine.getAllFunctionNames();
             doc.insertString(doc.getLength(), String.format("Total: %d function names (including aliases)\n",
                     allFunctionNames.size()), commentStyle);
-            doc.insertString(doc.getLength(), "\nFor complete reference, see Help → Grammar Reference", commentStyle);
 
         } catch (BadLocationException e) {
             // Ignore
