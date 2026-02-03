@@ -1,107 +1,154 @@
-package uk.co.ryanharrison.mathengine.parser.operator;
+package uk.co.ryanharrison.mathengine.parser.util;
 
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
-import java.util.function.BiFunction;
-
 /**
- * Unified broadcasting dispatcher for binary operations.
+ * Unified broadcasting engine for unary and binary operations over scalars, vectors, and matrices.
  * <p>
  * Implements NumPy/Matlab-style broadcasting with enhanced flexibility:
  * <ul>
  *     <li>Scalar operations broadcast to all elements</li>
- *     <li>Vector operations handle size mismatches intelligently</li>
- *     <li>Matrix operations support element-wise and true multiplication</li>
+ *     <li>Vector operations handle size mismatches via zero-padding</li>
+ *     <li>Matrix operations support element-wise, row/column broadcasting, and zero-padding</li>
  *     <li>Nested structures are handled recursively</li>
- *     <li>Type preservation where possible (rational, percent, etc.)</li>
  * </ul>
  *
- * <h2>Broadcasting Rules:</h2>
+ * <h2>Unary Broadcasting Rules:</h2>
+ * <pre>
+ * Scalar  → apply directly
+ * Vector  → apply to each element (recursive)
+ * Matrix  → apply to each element
+ * </pre>
+ *
+ * <h2>Binary Broadcasting Rules:</h2>
  * <pre>
  * Scalar  op Scalar  → Scalar
  * Vector  op Scalar  → Vector (broadcast scalar to all elements)
  * Scalar  op Vector  → Vector (broadcast scalar to all elements)
- * Vector  op Vector  → Vector (element-wise, broadcasting if sizes differ)
+ * Vector  op Vector  → Vector (element-wise, zero-pad if sizes differ)
  * Matrix  op Scalar  → Matrix (broadcast scalar to all elements)
  * Scalar  op Matrix  → Matrix (broadcast scalar to all elements)
- * Matrix  op Matrix  → Matrix (element-wise)
+ * Matrix  op Matrix  → Matrix (element-wise, with row/column broadcasting)
  * Matrix  op Vector  → Matrix (broadcast vector to rows/columns)
  * Vector  op Matrix  → Matrix (broadcast vector to rows/columns)
  * </pre>
+ *
+ * @see uk.co.ryanharrison.mathengine.parser.function.FunctionContext
  */
-public final class BroadcastingDispatcher {
+public final class BroadcastingEngine {
 
-    private BroadcastingDispatcher() {
+    private BroadcastingEngine() {
     }
 
     /**
-     * Dispatches a binary operation with full broadcasting support.
+     * A unary operation on a scalar value.
+     */
+    @FunctionalInterface
+    public interface UnaryOperation {
+        NodeConstant apply(NodeConstant value);
+    }
+
+    /**
+     * A binary operation on two scalar values.
+     */
+    @FunctionalInterface
+    public interface BinaryOperation {
+        NodeConstant apply(NodeConstant left, NodeConstant right);
+    }
+
+    // ==================== Unary Broadcasting ====================
+
+    /**
+     * Applies a unary operation with broadcasting over vectors and matrices.
+     * <p>
+     * When the value is a vector, the operation is recursively applied to each element.
+     * When the value is a matrix, the operation is applied to each element.
+     * Scalars are passed directly to the operation.
      *
-     * @param left     left operand
-     * @param right    right operand
-     * @param ctx      operator context
-     * @param scalarOp the operation to apply to scalar pairs
+     * @param value the value (scalar, vector, or matrix)
+     * @param op    the operation to apply to scalar values
+     * @return the result with matching structure
+     */
+    public static NodeConstant applyUnary(NodeConstant value, UnaryOperation op) {
+        if (value instanceof NodeMatrix matrix) {
+            int rows = matrix.getRows();
+            int cols = matrix.getCols();
+            Node[][] result = new Node[rows][cols];
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    result[i][j] = applyUnary((NodeConstant) matrix.getElement(i, j), op);
+                }
+            }
+            return new NodeMatrix(result);
+        }
+
+        if (value instanceof NodeVector vector) {
+            Node[] elements = vector.getElements();
+            Node[] result = new Node[elements.length];
+            for (int i = 0; i < elements.length; i++) {
+                result[i] = applyUnary((NodeConstant) elements[i], op);
+            }
+            return new NodeVector(result);
+        }
+
+        return op.apply(value);
+    }
+
+    // ==================== Binary Broadcasting ====================
+
+    /**
+     * Applies a binary operation with full broadcasting support.
+     *
+     * @param left  left operand
+     * @param right right operand
+     * @param op    the operation to apply to scalar pairs
      * @return result with appropriate type and structure
      */
-    public static NodeConstant dispatch(
-            NodeConstant left,
-            NodeConstant right,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp) {
+    public static NodeConstant applyBinary(NodeConstant left, NodeConstant right, BinaryOperation op) {
 
         // ==================== Matrix Operations ====================
 
-        // Matrix op Matrix - element-wise
         if (left instanceof NodeMatrix leftMat && right instanceof NodeMatrix rightMat) {
-            return matrixOpMatrix(leftMat, rightMat, ctx, scalarOp);
+            return matrixOpMatrix(leftMat, rightMat, op);
         }
 
-        // Matrix op Scalar - broadcast scalar to all matrix elements
         if (left instanceof NodeMatrix leftMat && isScalar(right)) {
-            return matrixOpScalar(leftMat, right, ctx, scalarOp);
+            return matrixOpScalar(leftMat, right, op);
         }
 
-        // Scalar op Matrix - broadcast scalar to all matrix elements
         if (isScalar(left) && right instanceof NodeMatrix rightMat) {
-            return scalarOpMatrix(left, rightMat, ctx, scalarOp);
+            return scalarOpMatrix(left, rightMat, op);
         }
 
-        // Matrix op Vector - broadcast vector appropriately
         if (left instanceof NodeMatrix leftMat && right instanceof NodeVector rightVec) {
-            return matrixOpVector(leftMat, rightVec, ctx, scalarOp);
+            return matrixOpVector(leftMat, rightVec, op);
         }
 
-        // Vector op Matrix - broadcast vector appropriately
         if (left instanceof NodeVector leftVec && right instanceof NodeMatrix rightMat) {
-            return vectorOpMatrix(leftVec, rightMat, ctx, scalarOp);
+            return vectorOpMatrix(leftVec, rightMat, op);
         }
 
         // ==================== Vector Operations ====================
 
-        // Vector op Vector - element-wise with broadcasting
         if (left instanceof NodeVector leftVec && right instanceof NodeVector rightVec) {
-            return vectorOpVector(leftVec, rightVec, ctx, scalarOp);
+            return vectorOpVector(leftVec, rightVec, op);
         }
 
-        // Vector op Scalar - broadcast scalar to all vector elements
         if (left instanceof NodeVector leftVec && isScalar(right)) {
-            return vectorOpScalar(leftVec, right, ctx, scalarOp);
+            return vectorOpScalar(leftVec, right, op);
         }
 
-        // Scalar op Vector - broadcast scalar to all vector elements
         if (isScalar(left) && right instanceof NodeVector rightVec) {
-            return scalarOpVector(left, rightVec, ctx, scalarOp);
+            return scalarOpVector(left, rightVec, op);
         }
 
         // ==================== Scalar Operations ====================
 
-        // Scalar op Scalar - direct application
         if (isScalar(left) && isScalar(right)) {
-            return scalarOp.apply(left, right);
+            return op.apply(left, right);
         }
 
-        // Unsupported combination
         throw new TypeError("Unsupported operand types: " +
                 left.getClass().getSimpleName() + " and " +
                 right.getClass().getSimpleName());
@@ -109,12 +156,7 @@ public final class BroadcastingDispatcher {
 
     // ==================== Matrix Implementations ====================
 
-    private static NodeMatrix matrixOpMatrix(
-            NodeMatrix left,
-            NodeMatrix right,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp) {
-
+    private static NodeMatrix matrixOpMatrix(NodeMatrix left, NodeMatrix right, BinaryOperation op) {
         // If dimensions match, perform element-wise operation
         if (left.getRows() == right.getRows() && left.getCols() == right.getCols()) {
             int rows = left.getRows();
@@ -125,7 +167,7 @@ public final class BroadcastingDispatcher {
                 for (int j = 0; j < cols; j++) {
                     NodeConstant leftElem = (NodeConstant) left.getElement(i, j);
                     NodeConstant rightElem = (NodeConstant) right.getElement(i, j);
-                    result[i][j] = dispatch(leftElem, rightElem, ctx, scalarOp);
+                    result[i][j] = applyBinary(leftElem, rightElem, op);
                 }
             }
 
@@ -134,27 +176,22 @@ public final class BroadcastingDispatcher {
 
         // Try broadcasting: if one matrix has a single row/column, broadcast it
         if (left.getRows() == 1 && left.getCols() == right.getCols()) {
-            // Broadcast left row to all rows of right
-            return broadcastRowToMatrix(left, right, ctx, scalarOp, false);
+            return broadcastRowToMatrix(left, right, op, false);
         }
 
         if (right.getRows() == 1 && right.getCols() == left.getCols()) {
-            // Broadcast right row to all rows of left
-            return broadcastRowToMatrix(right, left, ctx, scalarOp, true);
+            return broadcastRowToMatrix(right, left, op, true);
         }
 
         if (left.getCols() == 1 && left.getRows() == right.getRows()) {
-            // Broadcast left column to all columns of right
-            return broadcastColumnToMatrix(left, right, ctx, scalarOp, false);
+            return broadcastColumnToMatrix(left, right, op, false);
         }
 
         if (right.getCols() == 1 && right.getRows() == left.getRows()) {
-            // Broadcast right column to all columns of left
-            return broadcastColumnToMatrix(right, left, ctx, scalarOp, true);
+            return broadcastColumnToMatrix(right, left, op, true);
         }
 
-        // Size mismatch: normalize by padding with zeros (for arithmetic operations)
-        // This allows [[1,2],[3,4]] + [[1,2,3]] = [[1,2,0],[3,4,0]] + [[1,2,3],[0,0,0]] = [[2,4,3],[3,4,3]]
+        // Size mismatch: normalize by padding with zeros
         int maxRows = Math.max(left.getRows(), right.getRows());
         int maxCols = Math.max(left.getCols(), right.getCols());
         NodeMatrix leftNorm = normalizeMatrix(left, maxRows, maxCols);
@@ -165,19 +202,14 @@ public final class BroadcastingDispatcher {
             for (int j = 0; j < maxCols; j++) {
                 NodeConstant leftElem = (NodeConstant) leftNorm.getElement(i, j);
                 NodeConstant rightElem = (NodeConstant) rightNorm.getElement(i, j);
-                result[i][j] = dispatch(leftElem, rightElem, ctx, scalarOp);
+                result[i][j] = applyBinary(leftElem, rightElem, op);
             }
         }
 
         return new NodeMatrix(result);
     }
 
-    private static NodeMatrix matrixOpScalar(
-            NodeMatrix matrix,
-            NodeConstant scalar,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp) {
-
+    private static NodeMatrix matrixOpScalar(NodeMatrix matrix, NodeConstant scalar, BinaryOperation op) {
         int rows = matrix.getRows();
         int cols = matrix.getCols();
         Node[][] result = new Node[rows][cols];
@@ -185,19 +217,14 @@ public final class BroadcastingDispatcher {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 NodeConstant elem = (NodeConstant) matrix.getElement(i, j);
-                result[i][j] = dispatch(elem, scalar, ctx, scalarOp);
+                result[i][j] = applyBinary(elem, scalar, op);
             }
         }
 
         return new NodeMatrix(result);
     }
 
-    private static NodeMatrix scalarOpMatrix(
-            NodeConstant scalar,
-            NodeMatrix matrix,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp) {
-
+    private static NodeMatrix scalarOpMatrix(NodeConstant scalar, NodeMatrix matrix, BinaryOperation op) {
         int rows = matrix.getRows();
         int cols = matrix.getCols();
         Node[][] result = new Node[rows][cols];
@@ -205,19 +232,14 @@ public final class BroadcastingDispatcher {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 NodeConstant elem = (NodeConstant) matrix.getElement(i, j);
-                result[i][j] = dispatch(scalar, elem, ctx, scalarOp);
+                result[i][j] = applyBinary(scalar, elem, op);
             }
         }
 
         return new NodeMatrix(result);
     }
 
-    private static NodeMatrix matrixOpVector(
-            NodeMatrix matrix,
-            NodeVector vector,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp) {
-
+    private static NodeMatrix matrixOpVector(NodeMatrix matrix, NodeVector vector, BinaryOperation op) {
         // If vector size matches number of columns, broadcast to each row
         if (vector.size() == matrix.getCols()) {
             int rows = matrix.getRows();
@@ -228,7 +250,7 @@ public final class BroadcastingDispatcher {
                 for (int j = 0; j < cols; j++) {
                     NodeConstant matElem = (NodeConstant) matrix.getElement(i, j);
                     NodeConstant vecElem = (NodeConstant) vector.getElement(j);
-                    result[i][j] = dispatch(matElem, vecElem, ctx, scalarOp);
+                    result[i][j] = applyBinary(matElem, vecElem, op);
                 }
             }
 
@@ -245,7 +267,7 @@ public final class BroadcastingDispatcher {
                 for (int j = 0; j < cols; j++) {
                     NodeConstant matElem = (NodeConstant) matrix.getElement(i, j);
                     NodeConstant vecElem = (NodeConstant) vector.getElement(i);
-                    result[i][j] = dispatch(matElem, vecElem, ctx, scalarOp);
+                    result[i][j] = applyBinary(matElem, vecElem, op);
                 }
             }
 
@@ -253,17 +275,11 @@ public final class BroadcastingDispatcher {
         }
 
         // No exact match: treat vector as row matrix and use matrix-matrix zero-padding
-        // This is consistent with NumPy/MATLAB semantics where vectors default to row vectors
         NodeMatrix vectorAsMat = vectorToRowMatrix(vector);
-        return matrixOpMatrix(matrix, vectorAsMat, ctx, scalarOp);
+        return matrixOpMatrix(matrix, vectorAsMat, op);
     }
 
-    private static NodeMatrix vectorOpMatrix(
-            NodeVector vector,
-            NodeMatrix matrix,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp) {
-
+    private static NodeMatrix vectorOpMatrix(NodeVector vector, NodeMatrix matrix, BinaryOperation op) {
         // Same logic as matrixOpVector but with operands swapped
         if (vector.size() == matrix.getCols()) {
             int rows = matrix.getRows();
@@ -274,7 +290,7 @@ public final class BroadcastingDispatcher {
                 for (int j = 0; j < cols; j++) {
                     NodeConstant vecElem = (NodeConstant) vector.getElement(j);
                     NodeConstant matElem = (NodeConstant) matrix.getElement(i, j);
-                    result[i][j] = dispatch(vecElem, matElem, ctx, scalarOp);
+                    result[i][j] = applyBinary(vecElem, matElem, op);
                 }
             }
 
@@ -290,27 +306,21 @@ public final class BroadcastingDispatcher {
                 for (int j = 0; j < cols; j++) {
                     NodeConstant vecElem = (NodeConstant) vector.getElement(i);
                     NodeConstant matElem = (NodeConstant) matrix.getElement(i, j);
-                    result[i][j] = dispatch(vecElem, matElem, ctx, scalarOp);
+                    result[i][j] = applyBinary(vecElem, matElem, op);
                 }
             }
 
             return new NodeMatrix(result);
         }
 
-        // No exact match: treat vector as row matrix and use matrix-matrix zero-padding
-        // This is consistent with NumPy/MATLAB semantics where vectors default to row vectors
+        // No exact match: treat vector as row matrix
         NodeMatrix vectorAsMat = vectorToRowMatrix(vector);
-        return matrixOpMatrix(vectorAsMat, matrix, ctx, scalarOp);
+        return matrixOpMatrix(vectorAsMat, matrix, op);
     }
 
     // ==================== Vector Implementations ====================
 
-    private static NodeVector vectorOpVector(
-            NodeVector left,
-            NodeVector right,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp) {
-
+    private static NodeVector vectorOpVector(NodeVector left, NodeVector right, BinaryOperation op) {
         // If sizes match, perform element-wise operation
         if (left.size() == right.size()) {
             int size = left.size();
@@ -319,16 +329,13 @@ public final class BroadcastingDispatcher {
             for (int i = 0; i < size; i++) {
                 NodeConstant leftElem = (NodeConstant) left.getElement(i);
                 NodeConstant rightElem = (NodeConstant) right.getElement(i);
-                result[i] = dispatch(leftElem, rightElem, ctx, scalarOp);
+                result[i] = applyBinary(leftElem, rightElem, op);
             }
 
             return new NodeVector(result);
         }
 
-        // Size mismatch: normalize by padding with zeros (for arithmetic operations)
-        // Vectors always zero-pad, regardless of size (maintains vector semantics)
-        // {1,2} + {1,2,3} = {1,2,0} + {1,2,3} = {2,4,3}
-        // {10} + {1,2,3,4} = {10,0,0,0} + {1,2,3,4} = {11,2,3,4}
+        // Size mismatch: normalize by padding with zeros
         int maxSize = Math.max(left.size(), right.size());
         NodeVector leftNorm = normalizeVector(left, maxSize);
         NodeVector rightNorm = normalizeVector(right, maxSize);
@@ -337,41 +344,31 @@ public final class BroadcastingDispatcher {
         for (int i = 0; i < maxSize; i++) {
             NodeConstant leftElem = (NodeConstant) leftNorm.getElement(i);
             NodeConstant rightElem = (NodeConstant) rightNorm.getElement(i);
-            result[i] = dispatch(leftElem, rightElem, ctx, scalarOp);
+            result[i] = applyBinary(leftElem, rightElem, op);
         }
 
         return new NodeVector(result);
     }
 
-    private static NodeVector vectorOpScalar(
-            NodeVector vector,
-            NodeConstant scalar,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp) {
-
+    private static NodeVector vectorOpScalar(NodeVector vector, NodeConstant scalar, BinaryOperation op) {
         int size = vector.size();
         Node[] result = new Node[size];
 
         for (int i = 0; i < size; i++) {
             NodeConstant elem = (NodeConstant) vector.getElement(i);
-            result[i] = dispatch(elem, scalar, ctx, scalarOp);
+            result[i] = applyBinary(elem, scalar, op);
         }
 
         return new NodeVector(result);
     }
 
-    private static NodeVector scalarOpVector(
-            NodeConstant scalar,
-            NodeVector vector,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp) {
-
+    private static NodeVector scalarOpVector(NodeConstant scalar, NodeVector vector, BinaryOperation op) {
         int size = vector.size();
         Node[] result = new Node[size];
 
         for (int i = 0; i < size; i++) {
             NodeConstant elem = (NodeConstant) vector.getElement(i);
-            result[i] = dispatch(scalar, elem, ctx, scalarOp);
+            result[i] = applyBinary(scalar, elem, op);
         }
 
         return new NodeVector(result);
@@ -387,10 +384,6 @@ public final class BroadcastingDispatcher {
                 node instanceof NodeUnit;
     }
 
-    /**
-     * Converts a vector to a 1×n row matrix.
-     * Used when vector-matrix operations need to fall back to matrix-matrix operations.
-     */
     private static NodeMatrix vectorToRowMatrix(NodeVector vector) {
         Node[][] elements = new Node[1][vector.size()];
         for (int i = 0; i < vector.size(); i++) {
@@ -399,35 +392,25 @@ public final class BroadcastingDispatcher {
         return new NodeMatrix(elements);
     }
 
-    /**
-     * Normalizes a vector to the target size by padding with zeros.
-     * Single-element vectors are NOT broadcast - they are zero-padded like any other vector.
-     */
     private static NodeVector normalizeVector(NodeVector vector, int targetSize) {
         if (vector.size() == targetSize) {
             return vector;
         }
 
-        // Pad with zeros to target size (applies to all vectors, including size-1)
         if (vector.size() < targetSize) {
             Node[] newElements = new Node[targetSize];
             for (int i = 0; i < vector.size(); i++) {
                 newElements[i] = vector.getElement(i);
             }
-            // Fill remaining with zeros
             for (int i = vector.size(); i < targetSize; i++) {
                 newElements[i] = new NodeRational(0);
             }
             return new NodeVector(newElements);
         }
 
-        // Vector is larger than target - should not happen in current logic
         return vector;
     }
 
-    /**
-     * Normalizes a matrix to the target dimensions by padding with zeros.
-     */
     private static NodeMatrix normalizeMatrix(NodeMatrix matrix, int targetRows, int targetCols) {
         if (matrix.getRows() == targetRows && matrix.getCols() == targetCols) {
             return matrix;
@@ -460,8 +443,7 @@ public final class BroadcastingDispatcher {
     private static NodeMatrix broadcastRowToMatrix(
             NodeMatrix row,
             NodeMatrix target,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp,
+            BinaryOperation op,
             boolean reversed) {
 
         int rows = target.getRows();
@@ -473,8 +455,8 @@ public final class BroadcastingDispatcher {
                 NodeConstant rowElem = (NodeConstant) row.getElement(0, j);
                 NodeConstant targetElem = (NodeConstant) target.getElement(i, j);
                 result[i][j] = reversed ?
-                        dispatch(targetElem, rowElem, ctx, scalarOp) :
-                        dispatch(rowElem, targetElem, ctx, scalarOp);
+                        applyBinary(targetElem, rowElem, op) :
+                        applyBinary(rowElem, targetElem, op);
             }
         }
 
@@ -484,8 +466,7 @@ public final class BroadcastingDispatcher {
     private static NodeMatrix broadcastColumnToMatrix(
             NodeMatrix column,
             NodeMatrix target,
-            OperatorContext ctx,
-            BiFunction<NodeConstant, NodeConstant, NodeConstant> scalarOp,
+            BinaryOperation op,
             boolean reversed) {
 
         int rows = target.getRows();
@@ -497,8 +478,8 @@ public final class BroadcastingDispatcher {
                 NodeConstant colElem = (NodeConstant) column.getElement(i, 0);
                 NodeConstant targetElem = (NodeConstant) target.getElement(i, j);
                 result[i][j] = reversed ?
-                        dispatch(targetElem, colElem, ctx, scalarOp) :
-                        dispatch(colElem, targetElem, ctx, scalarOp);
+                        applyBinary(targetElem, colElem, op) :
+                        applyBinary(colElem, targetElem, op);
             }
         }
 

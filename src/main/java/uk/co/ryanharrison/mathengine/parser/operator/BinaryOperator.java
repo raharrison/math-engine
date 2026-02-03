@@ -20,8 +20,8 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
  *
  *     @Override
  *     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
- *         // Use BroadcastingDispatcher for element-wise operations with full broadcasting
- *         return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) -> {
+ *         // Use BroadcastingEngine for element-wise operations with full broadcasting
+ *         return BroadcastingEngine.applyBinary(left, right, (l, r) -> {
  *             return ctx.applyNumericBinary(l, r, BigRational::add, Double::sum);
  *         });
  *     }
@@ -29,12 +29,12 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
  * }</pre>
  *
  * <h2>Broadcasting:</h2>
- * <p>Use {@link BroadcastingDispatcher} for automatic broadcasting over vectors and matrices.
+ * <p>Use {@link BroadcastingEngine} for automatic broadcasting over vectors and matrices.
  * For operators with special semantics (like matrix multiplication), implement custom logic.</p>
  *
  * @see UnaryOperator
  * @see OperatorContext
- * @see BroadcastingDispatcher
+ * @see uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine
  */
 public interface BinaryOperator extends Operator {
 

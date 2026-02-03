@@ -96,7 +96,7 @@ public final class Function {
                 .lambdasEnabled(false)
                 .unitsEnabled(false)
                 .userDefinedFunctionsEnabled(false)
-                .forceDoubleArithmetic(false)
+                .forceDoubleArithmetic(true)
                 .angleUnit(this.angleUnit)
                 .build();
         this.engine = MathEngine.create(config);

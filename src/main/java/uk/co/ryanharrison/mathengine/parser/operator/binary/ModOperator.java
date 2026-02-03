@@ -1,10 +1,10 @@
 package uk.co.ryanharrison.mathengine.parser.operator.binary;
 
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
-import uk.co.ryanharrison.mathengine.parser.operator.BroadcastingDispatcher;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
+import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 
 /**
  * Modulo operator (mod).
@@ -49,7 +49,7 @@ public final class ModOperator implements BinaryOperator {
 
     @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-        return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) -> {
+        return BroadcastingEngine.applyBinary(left, right, (l, r) -> {
             double lVal = ctx.toNumber(l).doubleValue();
             double rVal = ctx.toNumber(r).doubleValue();
 

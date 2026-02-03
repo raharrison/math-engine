@@ -1,12 +1,12 @@
 package uk.co.ryanharrison.mathengine.parser.operator.binary;
 
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
-import uk.co.ryanharrison.mathengine.parser.operator.BroadcastingDispatcher;
 import uk.co.ryanharrison.mathengine.parser.operator.MatrixOperations;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeMatrix;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeNumber;
+import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
 
 /**
@@ -59,7 +59,7 @@ public final class PowerOperator implements BinaryOperator {
         }
 
         // Default: Use broadcasting dispatcher for element-wise power with type preservation
-        return BroadcastingDispatcher.dispatch(left, right, ctx,
+        return BroadcastingEngine.applyBinary(left, right,
                 (l, r) -> NumericOperations.applyPower(l, r, ctx.forceDoubleArithmetic()));
     }
 }

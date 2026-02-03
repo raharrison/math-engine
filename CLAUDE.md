@@ -53,18 +53,32 @@ src/main/java/uk/co/ryanharrison/mathengine/
 │   │
 │   ├── operator/                     # Operator system
 │   │   ├── OperatorExecutor.java     # Dispatch system
-│   │   ├── BroadcastingDispatcher.java
+│   │   ├── OperatorContext.java      # Utilities for operators
+│   │   ├── MatrixOperations.java     # True matrix multiply/power
 │   │   ├── binary/                   # Binary operators (20+)
 │   │   └── unary/                    # Unary operators (10+)
 │   │
 │   ├── function/                     # Function system
 │   │   ├── FunctionExecutor.java     # Function dispatch
 │   │   ├── FunctionContext.java      # Evaluator context for functions
+│   │   ├── FunctionBuilder.java      # Fluent DSL for defining functions
+│   │   ├── ArgType.java              # Type-safe parameter extraction
+│   │   ├── ArgTypes.java             # Predefined type extractors
+│   │   ├── TypedUnaryBuilder.java    # Builder for typed unary functions
+│   │   ├── TypedBinaryBuilder.java   # Builder for typed binary functions
+│   │   ├── TypedTernaryBuilder.java  # Builder for typed ternary functions
+│   │   ├── UnaryFunction.java        # Unary function interface
+│   │   ├── BinaryFunction.java       # Binary function interface
+│   │   ├── AggregateFunction.java    # Variadic function interface
+│   │   ├── TrigFunction.java         # Trig function factory (angle units)
 │   │   ├── math/                     # Math functions
 │   │   ├── trig/                     # Trigonometric functions
 │   │   ├── vector/                   # Vector functions
 │   │   ├── special/                  # Type/conditional/bitwise
 │   │   └── string/                   # String functions
+│   │
+│   ├── format/                       # Output formatting
+│   │   └── NodeFormatter.java        # Node formatting by String or AsciiMath
 │   │
 │   ├── registry/                     # Lookup registries
 │   │   ├── UnitRegistry.java         # Physical units
@@ -73,6 +87,12 @@ src/main/java/uk/co/ryanharrison/mathengine/
 │   │
 │   ├── symbolic/                     # Symbolic math (differentiation)
 │   └── util/                         # Parser utilities
+│       ├── BroadcastingEngine.java   # Unified broadcasting for functions/operators
+│       ├── TypeCoercion.java         # Type promotion/conversion
+│       ├── NumericOperations.java    # Numeric helpers
+│       ├── AstTreeBuilder.java       # AST construction helpers
+│       ├── FunctionCaller.java       # Function invocation helper
+│       └── PersistentHashMap.java    # Immutable map
 │
 ├── differential/                     # Differentiation
 ├── integral/                         # Numerical integration

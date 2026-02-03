@@ -1,8 +1,5 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
-
-import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
 /**
@@ -46,26 +43,15 @@ public final class TrigFunction {
      * @return a MathFunction that handles angle conversion
      */
     public static MathFunction standard(String name, String description, DoubleUnaryOperator fn) {
-        return standard(name, description, List.of(), fn);
-    }
-
-    /**
-     * Creates a standard trigonometric function with aliases.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param aliases     alternate names
-     * @param fn          the math operation (receives radians)
-     * @return a MathFunction that handles angle conversion
-     */
-    public static MathFunction standard(String name, String description, List<String> aliases,
-                                        DoubleUnaryOperator fn) {
-        return UnaryFunction.of(name, description, MathFunction.Category.TRIGONOMETRIC, aliases,
-                (arg, ctx) -> {
-                    double angle = ctx.toNumber(arg).doubleValue();
-                    double radians = ctx.toRadians(angle);
-                    return new NodeDouble(fn.applyAsDouble(radians));
-                });
+        return FunctionBuilder
+                .named(name)
+                .describedAs(description)
+                .inCategory(MathFunction.Category.TRIGONOMETRIC)
+                .takingUnary()
+                .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
+                .implementedBy((arg, ctx) ->
+                        ctx.applyWithBroadcasting(arg, value ->
+                                fn.applyAsDouble(ctx.toRadians(value))));
     }
 
     /**
@@ -80,25 +66,14 @@ public final class TrigFunction {
      * @return a MathFunction that handles angle conversion
      */
     public static MathFunction inverse(String name, String description, DoubleUnaryOperator fn) {
-        return inverse(name, description, List.of(), fn);
-    }
-
-    /**
-     * Creates an inverse trigonometric function with aliases.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param aliases     alternate names
-     * @param fn          the math operation (returns radians)
-     * @return a MathFunction that handles angle conversion
-     */
-    public static MathFunction inverse(String name, String description, List<String> aliases,
-                                       DoubleUnaryOperator fn) {
-        return UnaryFunction.of(name, description, MathFunction.Category.TRIGONOMETRIC, aliases,
-                (arg, ctx) -> {
-                    double value = ctx.toNumber(arg).doubleValue();
-                    double radians = fn.applyAsDouble(value);
-                    return new NodeDouble(ctx.fromRadians(radians));
-                });
+        return FunctionBuilder
+                .named(name)
+                .describedAs(description)
+                .inCategory(MathFunction.Category.TRIGONOMETRIC)
+                .takingUnary()
+                .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
+                .implementedBy((arg, ctx) ->
+                        ctx.applyWithBroadcasting(arg, value ->
+                                ctx.fromRadians(fn.applyAsDouble(value))));
     }
 }

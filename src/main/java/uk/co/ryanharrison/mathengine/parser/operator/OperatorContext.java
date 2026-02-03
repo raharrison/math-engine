@@ -5,6 +5,7 @@ import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
@@ -29,15 +30,15 @@ import java.util.function.UnaryOperator;
  * <pre>{@code
  * public class PlusOperator implements BinaryOperator {
  *     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
- *         // Use BroadcastingDispatcher for automatic broadcasting
- *         return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) -> {
+ *         // Use BroadcastingEngine for automatic broadcasting
+ *         return BroadcastingEngine.applyBinary(left, right, (l, r) -> {
  *             return ctx.applyNumericBinary(l, r, BigRational::add, Double::sum);
  *         });
  *     }
  * }
  * }</pre>
  *
- * @see BroadcastingDispatcher
+ * @see BroadcastingEngine
  */
 public final class OperatorContext {
 
@@ -186,21 +187,6 @@ public final class OperatorContext {
         return new NodeDouble(doubleOp.applyAsDouble(l, r));
     }
 
-    /**
-     * Applies a binary operation that always produces a double result.
-     *
-     * @param left     the left operand
-     * @param right    the right operand
-     * @param doubleOp the operation
-     * @return the result as NodeDouble
-     */
-    public NodeConstant applyDoubleBinary(NodeConstant left, NodeConstant right,
-                                          DoubleBinaryOperator doubleOp) {
-        double l = toNumber(left).doubleValue();
-        double r = toNumber(right).doubleValue();
-        return new NodeDouble(doubleOp.applyAsDouble(l, r));
-    }
-
     // ==================== Multiplicative Operations (* /) ====================
 
     /**
@@ -303,18 +289,6 @@ public final class OperatorContext {
         return NumericOperations.applyUnary(operand, rationalOp, doubleOp, forceDoubleArithmetic());
     }
 
-    /**
-     * Applies a unary operation that always produces a double result.
-     *
-     * @param operand  the operand
-     * @param doubleOp the operation
-     * @return the result as NodeDouble
-     */
-    public NodeConstant applyDoubleUnary(NodeConstant operand, DoubleUnaryOperator doubleOp) {
-        double value = toNumber(operand).doubleValue();
-        return new NodeDouble(doubleOp.applyAsDouble(value));
-    }
-
     // ==================== Unary Broadcasting ====================
 
     /**
@@ -328,98 +302,7 @@ public final class OperatorContext {
     public NodeConstant dispatchUnary(NodeConstant operand,
                                       UnaryOperator<BigRational> rationalOp,
                                       DoubleUnaryOperator doubleOp) {
-        if (operand instanceof NodeVector vector) {
-            Node[] elements = vector.getElements();
-            Node[] result = new Node[elements.length];
-            for (int i = 0; i < elements.length; i++) {
-                result[i] = dispatchUnary((NodeConstant) elements[i], rationalOp, doubleOp);
-            }
-            return new NodeVector(result);
-        }
-
-        if (operand instanceof NodeMatrix matrix) {
-            Node[][] elements = matrix.getElements();
-            Node[][] result = new Node[matrix.getRows()][matrix.getCols()];
-            for (int i = 0; i < matrix.getRows(); i++) {
-                for (int j = 0; j < matrix.getCols(); j++) {
-                    result[i][j] = dispatchUnary((NodeConstant) elements[i][j], rationalOp, doubleOp);
-                }
-            }
-            return new NodeMatrix(result);
-        }
-
-        return applyNumericUnary(operand, rationalOp, doubleOp);
-    }
-
-    // ==================== Validation ====================
-
-    /**
-     * Ensures a value is positive, throwing IllegalArgumentException if not.
-     *
-     * @param value the value to check
-     * @param name  the name of the parameter for error messages
-     */
-    public void requirePositive(double value, String name) {
-        if (value <= 0) {
-            throw new IllegalArgumentException(name + " must be positive, got: " + value);
-        }
-    }
-
-    /**
-     * Ensures a value is non-negative, throwing IllegalArgumentException if not.
-     *
-     * @param value the value to check
-     * @param name  the name of the parameter for error messages
-     */
-    public void requireNonNegative(double value, String name) {
-        if (value < 0) {
-            throw new IllegalArgumentException(name + " must be non-negative, got: " + value);
-        }
-    }
-
-    /**
-     * Ensures a value is within a range, throwing IllegalArgumentException if not.
-     *
-     * @param value the value to check
-     * @param min   the minimum allowed value (inclusive)
-     * @param max   the maximum allowed value (inclusive)
-     * @param name  the name of the parameter for error messages
-     */
-    public void requireInRange(double value, double min, double max, String name) {
-        if (value < min || value > max) {
-            throw new IllegalArgumentException(name + " must be in range [" + min + ", " + max + "], got: " + value);
-        }
-    }
-
-    /**
-     * Converts a value to an integer, validating it has no fractional part.
-     *
-     * @param value        the value to convert
-     * @param functionName the name of the calling function for error messages
-     * @return the integer value
-     * @throws TypeError if the value is not an integer
-     */
-    public int requireInteger(NodeConstant value, String functionName) {
-        double d = toNumber(value).doubleValue();
-        if (d != Math.floor(d)) {
-            throw new TypeError(functionName + " requires integer arguments, got: " + d);
-        }
-        return (int) d;
-    }
-
-    /**
-     * Converts a value to a long integer, validating it has no fractional part.
-     *
-     * @param value        the value to convert
-     * @param functionName the name of the calling function for error messages
-     * @return the long integer value
-     * @throws TypeError if the value is not an integer
-     */
-    public long requireLong(NodeConstant value, String functionName) {
-        double d = toNumber(value).doubleValue();
-        if (d != Math.floor(d)) {
-            throw new TypeError(functionName + " requires integer arguments, got: " + d);
-        }
-        return (long) d;
+        return BroadcastingEngine.applyUnary(operand, v ->
+                applyNumericUnary(v, rationalOp, doubleOp));
     }
 }

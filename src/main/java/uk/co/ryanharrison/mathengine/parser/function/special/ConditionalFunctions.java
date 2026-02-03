@@ -1,6 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.function.special;
 
-import uk.co.ryanharrison.mathengine.parser.function.AggregateFunction;
+import uk.co.ryanharrison.mathengine.parser.function.ArgTypes;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 
@@ -19,30 +20,32 @@ public final class ConditionalFunctions {
     /**
      * Conditional if-then-else function
      */
-    public static final MathFunction IF = AggregateFunction.of("if", "Conditional if-then-else", CONDITIONAL, 3, 3,
-            (args, ctx) -> ctx.toBoolean(args.getFirst()) ? args.get(1) : args.get(2));
+    public static final MathFunction IF = FunctionBuilder
+            .named("if")
+            .describedAs("Conditional if-then-else")
+            .inCategory(CONDITIONAL)
+            .takingBetween(3, 3)
+            .implementedByAggregate((args, ctx) -> ctx.toBoolean(args.getFirst()) ? args.get(1) : args.get(2));
 
     /**
      * Clamp value to range
      */
-    public static final MathFunction CLAMP = AggregateFunction.of("clamp", "Clamp value to range [min, max]", CONDITIONAL, 3, 3, (args, ctx) -> {
-        double value = ctx.toNumber(args.get(0)).doubleValue();
-        double min = ctx.toNumber(args.get(1)).doubleValue();
-        double max = ctx.toNumber(args.get(2)).doubleValue();
-        if (value < min) return args.get(1);
-        if (value > max) return args.get(2);
-        return args.get(0);
-    });
+    public static final MathFunction CLAMP = FunctionBuilder
+            .named("clamp")
+            .describedAs("Clamp value to range [min, max]")
+            .inCategory(CONDITIONAL)
+            .takingTyped(ArgTypes.number(), ArgTypes.number(), ArgTypes.number())
+            .implementedBy((value, min, max, ctx) -> new NodeDouble(Math.max(min, Math.min(max, value))));
 
     /**
      * Linear interpolation
      */
-    public static final MathFunction LERP = AggregateFunction.of("lerp", "Linear interpolation between a and b", CONDITIONAL, 3, 3, (args, ctx) -> {
-        double a = ctx.toNumber(args.get(0)).doubleValue();
-        double b = ctx.toNumber(args.get(1)).doubleValue();
-        double t = ctx.toNumber(args.get(2)).doubleValue();
-        return new NodeDouble(a + t * (b - a));
-    });
+    public static final MathFunction LERP = FunctionBuilder
+            .named("lerp")
+            .describedAs("Linear interpolation between a and b")
+            .inCategory(CONDITIONAL)
+            .takingTyped(ArgTypes.number(), ArgTypes.number(), ArgTypes.number())
+            .implementedBy((a, b, t, ctx) -> new NodeDouble(a + t * (b - a)));
 
     /**
      * Gets all conditional functions.

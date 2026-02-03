@@ -1,9 +1,8 @@
 package uk.co.ryanharrison.mathengine.parser.function.trig;
 
-import uk.co.ryanharrison.mathengine.parser.function.BinaryFunction;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.function.TrigFunction;
-import uk.co.ryanharrison.mathengine.parser.function.UnaryFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.utils.TrigUtils;
 
@@ -42,28 +41,32 @@ public final class TrigonometricFunctions {
     /**
      * Arcsine function
      */
-    public static final MathFunction ASIN = UnaryFunction.of("asin", "Arcsine", MathFunction.Category.TRIGONOMETRIC,
-            (arg, ctx) -> {
-                double value = ctx.toNumber(arg).doubleValue();
-                if (value < -1.0 || value > 1.0) {
-                    throw new IllegalArgumentException("asin requires input in range [-1, 1], got: " + value);
-                }
-                double radians = Math.asin(value);
-                return new NodeDouble(ctx.fromRadians(radians));
-            });
+    public static final MathFunction ASIN = FunctionBuilder
+            .named("asin")
+            .describedAs("Arcsine")
+            .inCategory(MathFunction.Category.TRIGONOMETRIC)
+            .takingUnary()
+            .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
+            .implementedBy((arg, ctx) ->
+                    ctx.applyWithBroadcasting(arg, value -> {
+                        ctx.requireInRange(value, -1.0, 1.0);
+                        return ctx.fromRadians(Math.asin(value));
+                    }));
 
     /**
      * Arccosine function
      */
-    public static final MathFunction ACOS = UnaryFunction.of("acos", "Arccosine", MathFunction.Category.TRIGONOMETRIC,
-            (arg, ctx) -> {
-                double value = ctx.toNumber(arg).doubleValue();
-                if (value < -1.0 || value > 1.0) {
-                    throw new IllegalArgumentException("acos requires input in range [-1, 1], got: " + value);
-                }
-                double radians = Math.acos(value);
-                return new NodeDouble(ctx.fromRadians(radians));
-            });
+    public static final MathFunction ACOS = FunctionBuilder
+            .named("acos")
+            .describedAs("Arccosine")
+            .inCategory(MathFunction.Category.TRIGONOMETRIC)
+            .takingUnary()
+            .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
+            .implementedBy((arg, ctx) ->
+                    ctx.applyWithBroadcasting(arg, value -> {
+                        ctx.requireInRange(value, -1.0, 1.0);
+                        return ctx.fromRadians(Math.acos(value));
+                    }));
 
     /**
      * Arctangent function
@@ -73,15 +76,17 @@ public final class TrigonometricFunctions {
     /**
      * Two-argument arctangent function
      */
-    public static final MathFunction ATAN2 = BinaryFunction.of(
-            "atan2", "Two-argument arctangent", MathFunction.Category.TRIGONOMETRIC,
-            (y, x, ctx) -> {
+    public static final MathFunction ATAN2 = FunctionBuilder
+            .named("atan2")
+            .describedAs("Two-argument arctangent")
+            .inCategory(MathFunction.Category.TRIGONOMETRIC)
+            .takingBinary()
+            .implementedBy((y, x, ctx) -> {
                 double yVal = ctx.toNumber(y).doubleValue();
                 double xVal = ctx.toNumber(x).doubleValue();
                 double radians = Math.atan2(yVal, xVal);
                 return new NodeDouble(ctx.fromRadians(radians));
-            }
-    );
+            });
 
     // ==================== Reciprocal Trig Functions ====================
 

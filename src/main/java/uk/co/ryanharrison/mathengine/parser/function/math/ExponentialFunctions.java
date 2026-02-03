@@ -1,8 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.function.math;
 
-import uk.co.ryanharrison.mathengine.parser.function.BinaryFunction;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.function.UnaryFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
 
@@ -24,140 +23,193 @@ public final class ExponentialFunctions {
     /**
      * Natural exponential function (e^x)
      */
-    public static final MathFunction EXP = UnaryFunction.ofDouble("exp", "Natural exponential (e^x)", EXPONENTIAL, Math::exp);
+    public static final MathFunction EXP = FunctionBuilder
+            .named("exp")
+            .describedAs("Natural exponential (e^x)")
+            .inCategory(EXPONENTIAL)
+            .takingUnary()
+            .implementedByDouble(Math::exp);
 
     /**
      * Power of 2 function (2^x)
      */
-    public static final MathFunction EXP2 = UnaryFunction.ofDouble("exp2", "Power of 2 (2^x)", EXPONENTIAL, x -> Math.pow(2, x));
+    public static final MathFunction EXP2 = FunctionBuilder
+            .named("exp2")
+            .describedAs("Power of 2 (2^x)")
+            .inCategory(EXPONENTIAL)
+            .takingUnary()
+            .implementedByDouble(x -> Math.pow(2, x));
 
     /**
      * Power of 10 function (10^x)
      */
-    public static final MathFunction EXP10 = UnaryFunction.ofDouble("exp10", "Power of 10 (10^x)", EXPONENTIAL, x -> Math.pow(10, x));
+    public static final MathFunction EXP10 = FunctionBuilder
+            .named("exp10")
+            .describedAs("Power of 10 (10^x)")
+            .inCategory(EXPONENTIAL)
+            .takingUnary()
+            .implementedByDouble(x -> Math.pow(10, x));
 
     /**
      * exp(x) - 1, accurate for small x
      */
-    public static final MathFunction EXPM1 = UnaryFunction.ofDouble("expm1", "exp(x) - 1", EXPONENTIAL, Math::expm1);
+    public static final MathFunction EXPM1 = FunctionBuilder
+            .named("expm1")
+            .describedAs("exp(x) - 1")
+            .inCategory(EXPONENTIAL)
+            .takingUnary()
+            .implementedByDouble(Math::expm1);
 
     // ==================== Logarithmic Functions ====================
 
     /**
      * Natural logarithm (ln, base e)
      */
-    public static final MathFunction LN = UnaryFunction.of("ln", "Natural logarithm (base e)", LOGARITHMIC, (arg, ctx) -> {
-        double x = ctx.toNumber(arg).doubleValue();
-        if (x <= 0) {
-            throw new IllegalArgumentException("ln is not defined for values <= 0, got: " + x);
-        }
-        return new NodeDouble(Math.log(x));
-    });
+    public static final MathFunction LN = FunctionBuilder
+            .named("ln")
+            .describedAs("Natural logarithm (base e)")
+            .inCategory(LOGARITHMIC)
+            .takingUnary()
+            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> {
+                ctx.requirePositive(value);
+                return Math.log(value);
+            }));
 
     /**
      * Common logarithm (log10, base 10)
      */
-    public static final MathFunction LOG = UnaryFunction.of("log", "Common logarithm (base 10)", LOGARITHMIC, List.of("log10"), (arg, ctx) -> {
-        double x = ctx.toNumber(arg).doubleValue();
-        if (x <= 0) {
-            throw new IllegalArgumentException("log is not defined for values <= 0, got: " + x);
-        }
-        return new NodeDouble(Math.log10(x));
-    });
+    public static final MathFunction LOG = FunctionBuilder
+            .named("log")
+            .alias("log10")
+            .describedAs("Common logarithm (base 10)")
+            .inCategory(LOGARITHMIC)
+            .takingUnary()
+            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> {
+                ctx.requirePositive(value);
+                return Math.log10(value);
+            }));
 
     private static final double LOG_2 = Math.log(2);
 
     /**
      * Binary logarithm (log2, base 2)
      */
-    public static final MathFunction LOG2 = UnaryFunction.of("log2", "Binary logarithm (base 2)", LOGARITHMIC, (arg, ctx) -> {
-        double x = ctx.toNumber(arg).doubleValue();
-        if (x <= 0) {
-            throw new IllegalArgumentException("log2 is not defined for values <= 0, got: " + x);
-        }
-        return new NodeDouble(Math.log(x) / LOG_2);
-    });
+    public static final MathFunction LOG2 = FunctionBuilder
+            .named("log2")
+            .describedAs("Binary logarithm (base 2)")
+            .inCategory(LOGARITHMIC)
+            .takingUnary()
+            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> {
+                ctx.requirePositive(value);
+                return Math.log(value) / LOG_2;
+            }));
 
     /**
      * Logarithm with arbitrary base
      */
-    public static final MathFunction LOGN = BinaryFunction.of("logn", "Logarithm with arbitrary base", LOGARITHMIC, (x, base, ctx) -> {
-        double xVal = ctx.toNumber(x).doubleValue();
-        double baseVal = ctx.toNumber(base).doubleValue();
-        if (xVal <= 0) {
-            throw new IllegalArgumentException("logn is not defined for values <= 0, got: " + xVal);
-        }
-        if (baseVal <= 0 || baseVal == 1) {
-            throw new IllegalArgumentException("logn base must be positive and not 1, got: " + baseVal);
-        }
-        return new NodeDouble(Math.log(xVal) / Math.log(baseVal));
-    });
+    public static final MathFunction LOGN = FunctionBuilder
+            .named("logn")
+            .describedAs("Logarithm with arbitrary base")
+            .inCategory(LOGARITHMIC)
+            .takingBinary()
+            .withBroadcasting()
+            .implementedBy((first, second, ctx) -> {
+                double x = ctx.toNumber(first).doubleValue();
+                double base = ctx.toNumber(second).doubleValue();
+                ctx.requirePositive(x);
+                if (base <= 0) {
+                    throw ctx.error("requires positive base, got: " + base);
+                }
+                if (base == 1) {
+                    throw ctx.error("base cannot be 1");
+                }
+                return new NodeDouble(Math.log(x) / Math.log(base));
+            });
 
     /**
      * ln(1 + x), accurate for small x
      */
-    public static final MathFunction LOG1P = UnaryFunction.of("log1p", "ln(1 + x)", LOGARITHMIC, (arg, ctx) -> {
-        double x = ctx.toNumber(arg).doubleValue();
-        if (x <= -1) {
-            throw new IllegalArgumentException("log1p is not defined for values <= -1, got: " + x);
-        }
-        return new NodeDouble(Math.log1p(x));
-    });
+    public static final MathFunction LOG1P = FunctionBuilder
+            .named("log1p")
+            .describedAs("ln(1 + x)")
+            .inCategory(LOGARITHMIC)
+            .takingUnary()
+            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> {
+                ctx.requireInRange(value, -0.999999999, Double.MAX_VALUE);
+                return Math.log1p(value);
+            }));
 
     // ==================== Power and Root Functions ====================
 
     /**
      * Square root
      */
-    public static final MathFunction SQRT = UnaryFunction.of("sqrt", "Square root", EXPONENTIAL, (arg, ctx) -> {
-        double x = ctx.toNumber(arg).doubleValue();
-        if (x < 0) {
-            throw new IllegalArgumentException("sqrt is not defined for negative values, got: " + x);
-        }
-        return new NodeDouble(Math.sqrt(x));
-    });
+    public static final MathFunction SQRT = FunctionBuilder
+            .named("sqrt")
+            .describedAs("Square root")
+            .inCategory(EXPONENTIAL)
+            .takingUnary()
+            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> {
+                ctx.requireNonNegative(value);
+                return Math.sqrt(value);
+            }));
 
     /**
      * Cube root
      */
-    public static final MathFunction CBRT = UnaryFunction.ofDouble("cbrt", "Cube root", EXPONENTIAL, Math::cbrt);
+    public static final MathFunction CBRT = FunctionBuilder
+            .named("cbrt")
+            .describedAs("Cube root")
+            .inCategory(EXPONENTIAL)
+            .takingUnary()
+            .implementedByDouble(Math::cbrt);
 
     /**
      * nth root
      */
-    public static final MathFunction NROOT = BinaryFunction.of("nroot", "nth root", EXPONENTIAL, (x, n, ctx) -> {
-        double xVal = ctx.toNumber(x).doubleValue();
-        double nVal = ctx.toNumber(n).doubleValue();
-
-        if (nVal == 0) {
-            throw new IllegalArgumentException("nroot: n cannot be 0");
-        }
-
-        // Check for even root of negative number
-        if (xVal < 0 && nVal == Math.floor(nVal) && ((long) nVal) % 2 == 0) {
-            throw new IllegalArgumentException("nroot: cannot take even root of negative number (x=" + xVal + ", n=" + nVal + ")");
-        }
-
-        return new NodeDouble(Math.pow(xVal, 1.0 / nVal));
-    });
+    public static final MathFunction NROOT = FunctionBuilder
+            .named("nroot")
+            .describedAs("nth root")
+            .inCategory(EXPONENTIAL)
+            .takingBinary()
+            .withBroadcasting()
+            .implementedBy((first, second, ctx) -> {
+                double x = ctx.toNumber(first).doubleValue();
+                double n = ctx.toNumber(second).doubleValue();
+                // Prevent even roots of negative numbers
+                if (x < 0 && n == Math.floor(n) && !Double.isInfinite(n)) {
+                    long nInt = (long) n;
+                    if (nInt % 2 == 0) {
+                        throw ctx.error("cannot take even root of negative number (x=" + x + ", n=" + n + ")");
+                    }
+                }
+                ctx.requireNonZero(n);
+                return new NodeDouble(Math.pow(x, 1.0 / n));
+            });
 
     /**
      * Power function
      */
-    public static final MathFunction POW = BinaryFunction.of("pow", "Power function", EXPONENTIAL, (base, exp, ctx) -> {
-        double baseVal = ctx.toNumber(base).doubleValue();
-        double expVal = ctx.toNumber(exp).doubleValue();
+    public static final MathFunction POW = FunctionBuilder
+            .named("pow")
+            .describedAs("Power function")
+            .inCategory(EXPONENTIAL)
+            .takingBinary()
+            .withBroadcasting()
+            .implementedBy((base, exp, ctx) -> {
+                double baseVal = ctx.toNumber(base).doubleValue();
+                double expVal = ctx.toNumber(exp).doubleValue();
 
-        // Preserve rational precision for integer exponents
-        if (base instanceof NodeRational baseRat) {
-            if (expVal == Math.floor(expVal) && !Double.isInfinite(expVal)) {
-                int intExp = (int) expVal;
-                return new NodeRational(baseRat.getValue().pow(intExp));
-            }
-        }
+                // Preserve rational precision for integer exponents
+                if (base instanceof NodeRational baseRat) {
+                    if (expVal == Math.floor(expVal) && !Double.isInfinite(expVal)) {
+                        int intExp = (int) expVal;
+                        return new NodeRational(baseRat.getValue().pow(intExp));
+                    }
+                }
 
-        return new NodeDouble(Math.pow(baseVal, expVal));
-    });
+                return new NodeDouble(Math.pow(baseVal, expVal));
+            });
 
     // ==================== All Functions ====================
 

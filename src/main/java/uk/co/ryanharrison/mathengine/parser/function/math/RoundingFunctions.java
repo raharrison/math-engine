@@ -1,8 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.function.math;
 
-import uk.co.ryanharrison.mathengine.parser.function.BinaryFunction;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.function.UnaryFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
 
@@ -24,73 +23,140 @@ public final class RoundingFunctions {
     /**
      * Floor function (round down)
      */
-    public static final MathFunction FLOOR = UnaryFunction.ofDouble("floor", "Floor (round down)", ROUNDING, Math::floor);
+    public static final MathFunction FLOOR = FunctionBuilder
+            .named("floor")
+            .describedAs("Floor (round down)")
+            .inCategory(ROUNDING)
+            .takingUnary()
+            .implementedByDouble(Math::floor);
 
     /**
      * Ceiling function (round up)
      */
-    public static final MathFunction CEIL = UnaryFunction.ofDouble("ceil", "Ceiling (round up)", ROUNDING, Math::ceil);
+    public static final MathFunction CEIL = FunctionBuilder
+            .named("ceil")
+            .describedAs("Ceiling (round up)")
+            .inCategory(ROUNDING)
+            .takingUnary()
+            .implementedByDouble(Math::ceil);
 
     /**
      * Round to nearest integer
      */
-    public static final MathFunction ROUND = UnaryFunction.ofDouble("round", "Round to nearest integer", ROUNDING, x -> (double) Math.round(x));
+    public static final MathFunction ROUND = FunctionBuilder
+            .named("round")
+            .describedAs("Round to nearest integer")
+            .inCategory(ROUNDING)
+            .takingUnary()
+            .implementedByDouble(x -> (double) Math.round(x));
 
     /**
      * Truncate toward zero
      */
-    public static final MathFunction TRUNC = UnaryFunction.ofDouble("trunc", "Truncate toward zero", ROUNDING, x -> x < 0 ? Math.ceil(x) : Math.floor(x));
+    public static final MathFunction TRUNC = FunctionBuilder
+            .named("trunc")
+            .describedAs("Truncate toward zero")
+            .inCategory(ROUNDING)
+            .takingUnary()
+            .implementedByDouble(x -> x < 0 ? Math.ceil(x) : Math.floor(x));
 
     /**
      * Round to specified decimal places
      */
-    public static final MathFunction ROUNDN = BinaryFunction.of("roundn", "Round to n decimal places", ROUNDING, (x, n, ctx) -> {
-        double xVal = ctx.toNumber(x).doubleValue();
-        int places = (int) ctx.toNumber(n).doubleValue();
-        double factor = Math.pow(10, places);
-        return new NodeDouble(Math.round(xVal * factor) / factor);
-    });
+    public static final MathFunction ROUNDN = FunctionBuilder
+            .named("roundn")
+            .describedAs("Round to n decimal places")
+            .inCategory(ROUNDING)
+            .takingBinary()
+            .implementedBy((x, n, ctx) -> {
+                double xVal = ctx.toNumber(x).doubleValue();
+                int places = (int) ctx.toNumber(n).doubleValue();
+                double factor = Math.pow(10, places);
+                return new NodeDouble(Math.round(xVal * factor) / factor);
+            });
 
     // ==================== Sign and Absolute Value ====================
 
     /**
      * Absolute value
      */
-    public static final MathFunction ABS = UnaryFunction.of("abs", "Absolute value", UTILITY, (arg, ctx) ->
-            ctx.applyWithTypePreservation(arg, r -> r.abs(), Math::abs));
+    public static final MathFunction ABS = FunctionBuilder
+            .named("abs")
+            .describedAs("Absolute value")
+            .inCategory(UTILITY)
+            .takingUnary()
+            .noBroadcasting() // broadcasts internally via ctx.applyWithTypePreservation()
+            .implementedBy((arg, ctx) -> ctx.applyWithTypePreservation(arg, r -> r.abs(), Math::abs));
 
     /**
      * Sign function (-1, 0, or 1)
      */
-    public static final MathFunction SIGN = UnaryFunction.of("sign", "Sign function", UTILITY, (arg, ctx) -> {
-        double x = ctx.toNumber(arg).doubleValue();
-        int sign = x < 0 ? -1 : x > 0 ? 1 : 0;
-        return new NodeRational(sign);
-    });
+    public static final MathFunction SIGN = FunctionBuilder
+            .named("sign")
+            .describedAs("Sign function")
+            .inCategory(UTILITY)
+            .takingUnary()
+            .implementedBy((arg, ctx) -> {
+                double x = ctx.toNumber(arg).doubleValue();
+                int sign = x < 0 ? -1 : x > 0 ? 1 : 0;
+                return new NodeRational(sign);
+            });
 
     /**
      * Copy sign from y to x
      */
-    public static final MathFunction COPYSIGN = BinaryFunction.ofDouble("copysign", "Copy sign from y to x", UTILITY, Math::copySign);
+    public static final MathFunction COPYSIGN = FunctionBuilder
+            .named("copysign")
+            .describedAs("Copy sign from y to x")
+            .inCategory(UTILITY)
+            .takingBinary()
+            .implementedByDouble(Math::copySign);
 
     // ==================== Modulo Functions ====================
 
     /**
      * Floating-point modulo
      */
-    public static final MathFunction FMOD = BinaryFunction.ofDouble("fmod", "Floating-point modulo", UTILITY, (x, y) -> x % y);
+    public static final MathFunction FMOD = FunctionBuilder
+            .named("fmod")
+            .describedAs("Floating-point modulo")
+            .inCategory(UTILITY)
+            .takingBinary()
+            .implementedBy((x, y, ctx) -> {
+                double xVal = ctx.toNumber(x).doubleValue();
+                double yVal = ctx.toNumber(y).doubleValue();
+                return new NodeDouble(xVal % yVal);
+            });
 
     /**
      * IEEE remainder
      */
-    public static final MathFunction REMAINDER = BinaryFunction.ofDouble("remainder", "IEEE remainder", UTILITY, Math::IEEEremainder);
+    public static final MathFunction REMAINDER = FunctionBuilder
+            .named("remainder")
+            .describedAs("IEEE remainder")
+            .inCategory(UTILITY)
+            .takingBinary()
+            .implementedBy((x, y, ctx) -> {
+                double xVal = ctx.toNumber(x).doubleValue();
+                double yVal = ctx.toNumber(y).doubleValue();
+                return new NodeDouble(Math.IEEEremainder(xVal, yVal));
+            });
 
     // ==================== Hypotenuse ====================
 
     /**
      * Hypotenuse (sqrt(x^2 + y^2))
      */
-    public static final MathFunction HYPOT = BinaryFunction.ofDouble("hypot", "Hypotenuse", UTILITY, Math::hypot);
+    public static final MathFunction HYPOT = FunctionBuilder
+            .named("hypot")
+            .describedAs("Hypotenuse")
+            .inCategory(UTILITY)
+            .takingBinary()
+            .implementedBy((x, y, ctx) -> {
+                double xVal = ctx.toNumber(x).doubleValue();
+                double yVal = ctx.toNumber(y).doubleValue();
+                return new NodeDouble(Math.hypot(xVal, yVal));
+            });
 
     // ==================== All Functions ====================
 

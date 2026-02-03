@@ -2,24 +2,32 @@ package uk.co.ryanharrison.mathengine.parser.function;
 
 import uk.co.ryanharrison.mathengine.core.AngleUnit;
 import uk.co.ryanharrison.mathengine.core.BigRational;
-import uk.co.ryanharrison.mathengine.parser.evaluator.ArityException;
+import uk.co.ryanharrison.mathengine.linearalgebra.Matrix;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 /**
  * Provides context and utility methods for function implementations.
  * <p>
+ * Every {@code FunctionContext} knows the name of the function it is serving,
+ * so validation helpers and error methods automatically include it in messages.
+ * <p>
  * This class handles:
  * <ul>
+ *     <li>Central error reporting via {@link #error(String)}</li>
  *     <li>Argument validation and arity checking</li>
+ *     <li>Domain validation (positive, non-negative, range, etc.)</li>
  *     <li>Type coercion and conversion</li>
  *     <li>Angle unit conversions for trigonometric functions</li>
  *     <li>Vector broadcasting for single-argument functions</li>
@@ -27,34 +35,38 @@ import java.util.function.UnaryOperator;
  *
  * <h2>Usage in Functions:</h2>
  * <pre>{@code
+ * // ctx already knows the function name
  * public NodeConstant apply(List<NodeConstant> args, FunctionContext ctx) {
- *     ctx.requireArity(args, 1, "sin");
- *     double angle = ctx.toRadians(args.get(0).doubleValue());
- *     return new NodeDouble(Math.sin(angle));
+ *     double value = ctx.toNumber(args.get(0)).doubleValue();
+ *     ctx.requirePositive(value);
+ *     return new NodeDouble(Math.log(value));
  * }
  * }</pre>
  */
 public final class FunctionContext {
 
+    private final String functionName;
     private final EvaluationContext evaluationContext;
     private final FunctionCaller functionCaller;
 
     /**
      * Creates a function context with function calling capability.
      *
+     * @param functionName      the name of the function being executed
      * @param evaluationContext the evaluation context
      * @param functionCaller    callback for calling user functions/lambdas
      */
-    public FunctionContext(EvaluationContext evaluationContext, FunctionCaller functionCaller) {
+    public FunctionContext(String functionName, EvaluationContext evaluationContext, FunctionCaller functionCaller) {
+        this.functionName = functionName;
         this.evaluationContext = evaluationContext;
         this.functionCaller = functionCaller;
     }
 
     /**
-     * Gets the underlying evaluation context.
+     * Gets the name of the function this context is serving.
      */
-    public EvaluationContext getEvaluationContext() {
-        return evaluationContext;
+    public String functionName() {
+        return functionName;
     }
 
     /**
@@ -79,51 +91,77 @@ public final class FunctionContext {
         return evaluationContext.getAngleUnit();
     }
 
-    // ==================== Arity Validation ====================
+    // ==================== Error Reporting ====================
 
     /**
-     * Requires exactly the specified number of arguments.
+     * Creates an {@link IllegalArgumentException} with the function name prepended.
+     * <p>
+     * This is the central error-reporting method. All function errors should go through here
+     * to ensure consistent formatting.
      *
-     * @param args         the arguments list
-     * @param expected     the expected count
-     * @param functionName the function name for error messages
-     * @throws ArityException if count doesn't match
+     * <h3>Usage:</h3>
+     * <pre>{@code
+     * if (value <= 0) {
+     *     throw ctx.error("requires positive value, got: " + value);
+     * }
+     * }</pre>
+     *
+     * @param message the error message (function name is prepended automatically)
+     * @return the exception (caller must throw it)
      */
-    public void requireArity(List<NodeConstant> args, int expected, String functionName) {
-        if (args.size() != expected) {
-            throw new ArityException("Function '" + functionName + "' expects " +
-                    expected + " argument(s), got " + args.size());
+    public IllegalArgumentException error(String message) {
+        return new IllegalArgumentException(functionName + ": " + message);
+    }
+
+    // ==================== Domain Validation ====================
+
+    /**
+     * Requires the value to be strictly positive ({@code > 0}).
+     *
+     * @param value the value to check
+     * @throws IllegalArgumentException if the value is not positive
+     */
+    public void requirePositive(double value) {
+        if (value <= 0) {
+            throw error("requires positive value, got: " + value);
         }
     }
 
     /**
-     * Requires at least the specified number of arguments.
+     * Requires the value to be non-negative ({@code >= 0}).
      *
-     * @param args         the arguments list
-     * @param minimum      the minimum count
-     * @param functionName the function name for error messages
-     * @throws ArityException if count is less than minimum
+     * @param value the value to check
+     * @throws IllegalArgumentException if the value is negative
      */
-    public void requireMinArity(List<NodeConstant> args, int minimum, String functionName) {
-        if (args.size() < minimum) {
-            throw new ArityException("Function '" + functionName + "' requires at least " +
-                    minimum + " argument(s), got " + args.size());
+    public void requireNonNegative(double value) {
+        if (value < 0) {
+            throw error("requires non-negative value, got: " + value);
         }
     }
 
     /**
-     * Requires arguments within a range.
+     * Requires the value to be non-zero.
      *
-     * @param args         the arguments list
-     * @param min          the minimum count
-     * @param max          the maximum count
-     * @param functionName the function name for error messages
-     * @throws ArityException if count is outside range
+     * @param value the value to check
+     * @throws IllegalArgumentException if the value is zero
      */
-    public void requireArityRange(List<NodeConstant> args, int min, int max, String functionName) {
-        if (args.size() < min || args.size() > max) {
-            throw new ArityException("Function '" + functionName + "' expects " +
-                    min + " to " + max + " argument(s), got " + args.size());
+    public void requireNonZero(double value) {
+        if (value == 0) {
+            throw error("requires non-zero value");
+        }
+    }
+
+    /**
+     * Requires the value to be within a specified range (inclusive).
+     *
+     * @param value the value to check
+     * @param min   the minimum allowed value (inclusive)
+     * @param max   the maximum allowed value (inclusive)
+     * @throws IllegalArgumentException if the value is outside the range
+     */
+    public void requireInRange(double value, double min, double max) {
+        if (value < min || value > max) {
+            throw error("requires value in range [" + min + ", " + max + "], got: " + value);
         }
     }
 
@@ -160,12 +198,11 @@ public final class FunctionContext {
     /**
      * Requires the argument to be a vector.
      *
-     * @param value        the value to check
-     * @param functionName the function name for error messages
+     * @param value the value to check
      * @return the value as a NodeVector
      * @throws TypeError if the value is not a vector
      */
-    public NodeVector requireVector(NodeConstant value, String functionName) {
+    public NodeVector requireVector(NodeConstant value) {
         if (value instanceof NodeVector vector) {
             return vector;
         }
@@ -176,12 +213,11 @@ public final class FunctionContext {
     /**
      * Requires the argument to be a matrix.
      *
-     * @param value        the value to check
-     * @param functionName the function name for error messages
+     * @param value the value to check
      * @return the value as a NodeMatrix
      * @throws TypeError if the value is not a matrix
      */
-    public NodeMatrix requireMatrix(NodeConstant value, String functionName) {
+    public NodeMatrix requireMatrix(NodeConstant value) {
         if (value instanceof NodeMatrix matrix) {
             return matrix;
         }
@@ -192,13 +228,12 @@ public final class FunctionContext {
     /**
      * Requires the matrix to be square.
      *
-     * @param matrix       the matrix to check
-     * @param functionName the function name for error messages
-     * @throws TypeError if the matrix is not square
+     * @param matrix the matrix to check
+     * @throws IllegalArgumentException if the matrix is not square
      */
-    public void requireSquareMatrix(NodeMatrix matrix, String functionName) {
+    public void requireSquareMatrix(NodeMatrix matrix) {
         if (matrix.getRows() != matrix.getCols()) {
-            throw new IllegalArgumentException("Function '" + functionName + "' requires a square matrix, got " +
+            throw error("requires a square matrix, got " +
                     matrix.getRows() + "x" + matrix.getCols());
         }
     }
@@ -232,25 +267,37 @@ public final class FunctionContext {
     // ==================== Vector Broadcasting ====================
 
     /**
-     * Applies a unary function to a value, broadcasting over vectors.
+     * Applies a unary function to a value, automatically broadcasting over vectors.
+     * <p>
+     * This is the primary broadcasting mechanism for unary functions. When the value
+     * is a vector, the function is recursively applied to each element.
+     *
+     * <h3>Examples:</h3>
+     * <pre>{@code
+     * // Scalar input
+     * applyWithBroadcasting(NodeDouble(4.0), Math::sqrt)
+     *   -> NodeDouble(2.0)
+     *
+     * // Vector input (broadcasts)
+     * applyWithBroadcasting(NodeVector([1,4,9]), Math::sqrt)
+     *   -> NodeVector([1.0, 2.0, 3.0])
+     *
+     * // With inline validation
+     * applyWithBroadcasting(arg, value -> {
+     *     ctx.requirePositive(value);
+     *     return Math.log(value);
+     * })
+     * }</pre>
      *
      * @param value    the value (scalar or vector)
      * @param doubleOp the operation for double values
-     * @return the result
+     * @return the result (scalar or vector, matching input structure)
      */
     public NodeConstant applyWithBroadcasting(NodeConstant value, DoubleUnaryOperator doubleOp) {
-        if (value instanceof NodeVector vector) {
-            Node[] elements = vector.getElements();
-            Node[] result = new Node[elements.length];
-            for (int i = 0; i < elements.length; i++) {
-                NodeConstant elem = (NodeConstant) elements[i];
-                result[i] = applyWithBroadcasting(elem, doubleOp);
-            }
-            return new NodeVector(result);
-        }
-
-        double val = toNumber(value).doubleValue();
-        return new NodeDouble(doubleOp.applyAsDouble(val));
+        return BroadcastingEngine.applyUnary(value, v -> {
+            double val = toNumber(v).doubleValue();
+            return new NodeDouble(doubleOp.applyAsDouble(val));
+        });
     }
 
     /**
@@ -267,58 +314,34 @@ public final class FunctionContext {
     public NodeConstant applyWithTypePreservation(NodeConstant value,
                                                   UnaryOperator<BigRational> rationalOp,
                                                   DoubleUnaryOperator doubleOp) {
-        if (value instanceof NodeVector vector) {
-            Node[] elements = vector.getElements();
-            Node[] result = new Node[elements.length];
-            for (int i = 0; i < elements.length; i++) {
-                NodeConstant elem = (NodeConstant) elements[i];
-                result[i] = applyWithTypePreservation(elem, rationalOp, doubleOp);
-            }
-            return new NodeVector(result);
-        }
-
-        // Delegate to NumericOperations for consistent type preservation
-        return NumericOperations.applyUnary(value, rationalOp, doubleOp);
+        return BroadcastingEngine.applyUnary(value, v ->
+                NumericOperations.applyUnary(v, rationalOp, doubleOp));
     }
 
-    // ==================== Domain Validation ====================
+    // ==================== Array Validation ====================
 
     /**
-     * Ensures a value is positive, throwing IllegalArgumentException if not.
+     * Ensures an array is non-empty.
      *
-     * @param value        the value to check
-     * @param functionName the function name for error messages
+     * @param values the array to check
+     * @throws TypeError if the array is empty
      */
-    public void requirePositive(double value, String functionName) {
-        if (value <= 0) {
-            throw new IllegalArgumentException(functionName + " requires positive value, got: " + value);
+    public void requireNonEmpty(double[] values) {
+        if (values.length == 0) {
+            throw new TypeError(functionName + " requires at least one element");
         }
     }
 
     /**
-     * Ensures a value is non-negative, throwing IllegalArgumentException if not.
+     * Ensures an array has at least the minimum size.
      *
-     * @param value        the value to check
-     * @param functionName the function name for error messages
+     * @param values the array to check
+     * @param min    the minimum size
+     * @throws TypeError if the array is smaller than minimum
      */
-    public void requireNonNegative(double value, String functionName) {
-        if (value < 0) {
-            throw new IllegalArgumentException(functionName + " requires non-negative value, got: " + value);
-        }
-    }
-
-    /**
-     * Ensures a value is within a range, throwing IllegalArgumentException if not.
-     *
-     * @param value        the value to check
-     * @param min          the minimum allowed value (inclusive)
-     * @param max          the maximum allowed value (inclusive)
-     * @param functionName the function name for error messages
-     */
-    public void requireInRange(double value, double min, double max, String functionName) {
-        if (value < min || value > max) {
-            throw new IllegalArgumentException(functionName + " requires value in range [" +
-                    min + ", " + max + "], got: " + value);
+    public void requireMinSize(double[] values, int min) {
+        if (values.length < min) {
+            throw new TypeError(functionName + " requires at least " + min + " element(s), got " + values.length);
         }
     }
 
@@ -386,12 +409,11 @@ public final class FunctionContext {
     /**
      * Requires the argument to be a string.
      *
-     * @param value        the value to check
-     * @param functionName the function name for error messages
+     * @param value the value to check
      * @return the value as a NodeString
      * @throws TypeError if the value is not a string
      */
-    public NodeString requireString(NodeConstant value, String functionName) {
+    public NodeString requireString(NodeConstant value) {
         if (value instanceof NodeString str) {
             return str;
         }
@@ -428,28 +450,6 @@ public final class FunctionContext {
     }
 
     /**
-     * Creates a NodePercent from a decimal value.
-     *
-     * @param decimal the decimal value (0.5 for 50%)
-     * @return a NodePercent
-     */
-    public NodePercent asPercent(double decimal) {
-        return NodePercent.fromDecimal(decimal);
-    }
-
-    // ==================== Integer Operations ====================
-
-    /**
-     * Converts a value to a long integer.
-     *
-     * @param value the value to convert
-     * @return the long value (truncated)
-     */
-    public long toLong(NodeConstant value) {
-        return (long) toNumber(value).doubleValue();
-    }
-
-    /**
      * Converts a value to an int.
      *
      * @param value the value to convert
@@ -462,12 +462,11 @@ public final class FunctionContext {
     /**
      * Converts a value to an integer, validating it has no fractional part.
      *
-     * @param value        the value to convert
-     * @param functionName the name of the calling function for error messages
+     * @param value the value to convert
      * @return the integer value
      * @throws TypeError if the value is not an integer
      */
-    public int requireInteger(NodeConstant value, String functionName) {
+    public int requireInteger(NodeConstant value) {
         double d = toNumber(value).doubleValue();
         if (d != Math.floor(d)) {
             throw new TypeError(functionName + " requires integer arguments, got: " + d);
@@ -478,12 +477,11 @@ public final class FunctionContext {
     /**
      * Converts a value to a long integer, validating it has no fractional part.
      *
-     * @param value        the value to convert
-     * @param functionName the name of the calling function for error messages
+     * @param value the value to convert
      * @return the long integer value
      * @throws TypeError if the value is not an integer
      */
-    public long requireLong(NodeConstant value, String functionName) {
+    public long requireLong(NodeConstant value) {
         double d = toNumber(value).doubleValue();
         if (d != Math.floor(d)) {
             throw new TypeError(functionName + " requires integer arguments, got: " + d);
@@ -492,6 +490,32 @@ public final class FunctionContext {
     }
 
     // ==================== Collection Operations ====================
+
+    /**
+     * Flattens arguments to a list of elements, handling both scalars and vectors.
+     * <p>
+     * This is useful for aggregate functions that accept either form:
+     * </p>
+     * <ul>
+     *     <li>{@code sum(1, 2, 3)} -> {@code [1, 2, 3]}</li>
+     *     <li>{@code sum([1, 2, 3])} -> {@code [1, 2, 3]}</li>
+     *     <li>{@code sum(1, [2, 3], 4)} -> {@code [1, 2, 3, 4]}</li>
+     * </ul>
+     *
+     * @param args the arguments list (may contain scalars and/or vectors)
+     * @return flattened list of all scalar elements
+     */
+    public List<NodeConstant> flattenArguments(List<NodeConstant> args) {
+        return args.stream()
+                .flatMap(arg -> {
+                    if (arg instanceof NodeVector vector) {
+                        return Arrays.stream(vector.getElements())
+                                .map(n -> (NodeConstant) n);
+                    }
+                    return Stream.of(arg);
+                })
+                .toList();
+    }
 
     /**
      * Converts a vector to a double array.
@@ -534,7 +558,7 @@ public final class FunctionContext {
      * @param matrix the node matrix
      * @return the linearalgebra Matrix
      */
-    public uk.co.ryanharrison.mathengine.linearalgebra.Matrix toMatrix(NodeMatrix matrix) {
+    public Matrix toMatrix(NodeMatrix matrix) {
         double[][] data = new double[matrix.getRows()][matrix.getCols()];
         Node[][] elements = matrix.getElements();
         for (int i = 0; i < matrix.getRows(); i++) {
@@ -542,7 +566,7 @@ public final class FunctionContext {
                 data[i][j] = ((NodeConstant) elements[i][j]).doubleValue();
             }
         }
-        return uk.co.ryanharrison.mathengine.linearalgebra.Matrix.of(data);
+        return Matrix.of(data);
     }
 
     /**
@@ -551,7 +575,7 @@ public final class FunctionContext {
      * @param matrix the linearalgebra Matrix
      * @return the NodeMatrix
      */
-    public NodeMatrix fromMatrix(uk.co.ryanharrison.mathengine.linearalgebra.Matrix matrix) {
+    public NodeMatrix fromMatrix(Matrix matrix) {
         int rows = matrix.getRowCount();
         int cols = matrix.getColumnCount();
         Node[][] result = new Node[rows][cols];
@@ -561,28 +585,5 @@ public final class FunctionContext {
             }
         }
         return new NodeMatrix(result);
-    }
-
-    // ==================== Type Checking ====================
-
-    /**
-     * Checks if a value is a string.
-     */
-    public boolean isString(NodeConstant value) {
-        return value instanceof NodeString;
-    }
-
-    /**
-     * Checks if a value is numeric (number or boolean).
-     */
-    public boolean isNumeric(NodeConstant value) {
-        return value instanceof NodeNumber;
-    }
-
-    /**
-     * Checks if a value is a collection (vector or matrix).
-     */
-    public boolean isCollection(NodeConstant value) {
-        return value instanceof NodeVector || value instanceof NodeMatrix;
     }
 }

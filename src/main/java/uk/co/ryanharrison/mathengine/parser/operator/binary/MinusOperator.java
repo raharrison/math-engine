@@ -2,9 +2,9 @@ package uk.co.ryanharrison.mathengine.parser.operator.binary;
 
 import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
-import uk.co.ryanharrison.mathengine.parser.operator.BroadcastingDispatcher;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 
 /**
  * Subtraction operator (-).
@@ -47,7 +47,7 @@ public final class MinusOperator implements BinaryOperator {
 
     @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-        return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) ->
+        return BroadcastingEngine.applyBinary(left, right, (l, r) ->
                 ctx.applyAdditive(l, r, BigRational::subtract, (a, b) -> a - b, false)
         );
     }

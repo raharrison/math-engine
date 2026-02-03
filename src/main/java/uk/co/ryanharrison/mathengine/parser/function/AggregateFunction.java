@@ -51,38 +51,14 @@ public interface AggregateFunction {
      */
     NodeConstant apply(List<NodeConstant> args, FunctionContext ctx);
 
-    // ==================== Factory Methods ====================
-
-    /**
-     * Creates an aggregate function with specified arity.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param minArity    minimum number of arguments
-     * @param maxArity    maximum number of arguments (use Integer.MAX_VALUE for variadic)
-     * @param fn          the function implementation
-     * @return a MathFunction wrapping the aggregate function
-     */
-    static MathFunction of(String name, String description, MathFunction.Category category,
-                           int minArity, int maxArity, AggregateFunction fn) {
-        return new AggregateFunctionWrapper(name, description, category, List.of(), minArity, maxArity, fn);
-    }
-
-    /**
-     * Creates an aggregate function with aliases.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param aliases     alternate names
-     * @param minArity    minimum number of arguments
-     * @param maxArity    maximum number of arguments
-     * @param fn          the function implementation
-     * @return a MathFunction wrapping the aggregate function
-     */
-    static MathFunction of(String name, String description, MathFunction.Category category,
-                           List<String> aliases, int minArity, int maxArity, AggregateFunction fn) {
-        return new AggregateFunctionWrapper(name, description, category, aliases, minArity, maxArity, fn);
-    }
+    // Note: Factory methods have been removed. Use FunctionBuilder instead:
+    //
+    // Old:  AggregateFunction.of("sum", "Sum values", VECTOR, 1, Integer.MAX_VALUE, (args, ctx) -> ...)
+    // New:  FunctionBuilder.named("sum")
+    //                      .describedAs("Sum values")
+    //                      .inCategory(VECTOR)
+    //                      .takingVariadic(1)
+    //                      .implementedByAggregate((args, ctx) -> ...)
+    //
+    // See FunctionBuilder for the fluent API with support for aliases, validation, and broadcasting.
 }

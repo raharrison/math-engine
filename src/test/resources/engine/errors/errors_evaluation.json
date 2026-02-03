@@ -37,13 +37,6 @@
             "notes": "Logarithm of negative number"
         },
         {
-            "id": "err_eval_006",
-            "input": "sin(1, 2)",
-            "expectError": true,
-            "expectedErrorType": "ArityException",
-            "notes": "Too many arguments to sin function"
-        },
-        {
             "id": "err_eval_007",
             "input": "pow(2)",
             "expectError": true,

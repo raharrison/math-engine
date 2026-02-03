@@ -2,12 +2,13 @@
 
 ## Overview
 
-All binary operators now use a unified, professional broadcasting system via `BroadcastingDispatcher`. This provides maximum
-flexibility with minimal code duplication.
+All binary operators and functions use a unified broadcasting system via `BroadcastingEngine` (in `util/BroadcastingEngine.java`).
+This provides maximum flexibility with minimal code duplication, serving as a shared infrastructure layer for both operators
+(via `OperatorContext`) and functions (via `FunctionBuilder`/`FunctionContext`).
 
 ## Key Components
 
-### 1. BroadcastingDispatcher (operator/BroadcastingDispatcher.java)
+### 1. BroadcastingEngine (util/BroadcastingEngine.java)
 
 **Central broadcasting engine** - handles ALL type combinations:
 
@@ -25,12 +26,14 @@ Vector  op Matrix  → Matrix (intelligent row/column broadcasting)
 
 **Key Features:**
 
+- **Two entry points**: `applyUnary(value, op)` for element-wise unary operations, `applyBinary(left, right, op)` for binary
 - **Recursive dispatch**: Handles nested structures automatically
 - **Zero-padding**: Vectors and matrices are expanded with zeros when sizes don't match
     - `{1,2} + {1,2,3}` → `{1,2,0} + {1,2,3}` → `{2,4,3}`
     - `{10} + {1,2,3,4}` → `{10,0,0,0} + {1,2,3,4}` → `{11,2,3,4}` (single-element vectors also zero-pad)
     - `[[1,2]] + [[1],[2],[3]]` → `[[1,2],[0,0],[0,0]] + [[1,0],[2,0],[3,0]]` → `[[2,2],[2,0],[3,0]]`
 - **Single-element broadcasting**: ONLY 1x1 matrices broadcast to any size (not vectors)
+- **Shared by operators and functions**: Both `OperatorContext` and `FunctionBuilder`/`FunctionContext` delegate to this engine
 - **Type preservation**: Maintains rational precision where possible
 
 ### 2. OperatorContext (operator/OperatorContext.java)
@@ -39,8 +42,8 @@ Provides utility methods for operators:
 
 - `toNumber()`, `toBoolean()` - type coercion
 - `applyNumericBinary()` - handles rational vs double promotion
+- `applyAdditive()` - addition/subtraction with percent arithmetic support
 - `applyDoubleBinary()` - forces double result
-- `dispatchUnary()` - unary operation broadcasting (separate system)
 
 ### 3. MatrixOperations (operator/MatrixOperations.java)
 
@@ -55,7 +58,7 @@ Specialized matrix operations that DON'T use element-wise broadcasting:
 
 ### Arithmetic Operators (+, -, *, /, mod, ^)
 
-**Use BroadcastingDispatcher** for element-wise operations with full broadcasting support.
+**Use BroadcastingEngine** for element-wise operations with full broadcasting support.
 
 **Special cases:**
 
@@ -70,7 +73,7 @@ Specialized matrix operations that DON'T use element-wise broadcasting:
 
 ```java
 public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-    return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) -> {
+    return BroadcastingEngine.applyBinary(left, right, (l, r) -> {
         // Special cases (e.g., percent arithmetic)
         if (l instanceof NodePercent && r instanceof NodePercent) {
             // handle percent-specific logic
@@ -108,7 +111,7 @@ public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext
 
 ### Matrix Multiply (@)
 
-**Special semantics** - does NOT use BroadcastingDispatcher:
+**Special semantics** - does NOT use BroadcastingEngine:
 
 - `Matrix @ Matrix` → True matrix multiplication
 - `Vector @ Vector` → Dot product (scalar)
@@ -116,16 +119,31 @@ public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext
 
 ## Implementation Pattern
 
-All operators use `BroadcastingDispatcher.dispatch()`:
+All operators use `BroadcastingEngine.applyBinary()`:
 
 ```java
 @Override
 public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-    return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) -> {
-        // Define scalar operation
-        return ctx.applyNumericBinary(l, r, BigRational::add, Double::sum);
-    });
+    return BroadcastingEngine.applyBinary(left, right, (l, r) ->
+        ctx.applyNumericBinary(l, r, BigRational::add, Double::sum)
+    );
 }
+```
+
+Functions using `FunctionBuilder` get broadcasting automatically:
+
+```java
+// Level 0: auto-broadcasts via FunctionBuilder
+MathFunction exp = FunctionBuilder.named("exp")
+                .takingUnary()
+                .implementedByDouble(Math::exp);
+
+// Level 2: manual broadcasting via FunctionContext
+MathFunction sin = FunctionBuilder.named("sin")
+        .takingUnary()
+        .noBroadcasting()
+        .implementedBy((arg, ctx) ->
+                ctx.applyWithBroadcasting(arg, value -> Math.sin(ctx.toRadians(value))));
 ```
 
 Broadcasting is handled automatically. Just define the scalar operation.
@@ -157,16 +175,18 @@ Broadcasting is handled automatically. Just define the scalar operation.
 
 ## Design Principles
 
-1. **Single Source of Truth**: BroadcastingDispatcher handles ALL broadcasting
+1. **Single Source of Truth**: `BroadcastingEngine` handles ALL broadcasting for both operators and functions
 2. **Flexibility**: Zero-padding allows operations on mismatched sizes
 3. **Type Safety**: Containers in logical/ordering operators rejected early
 4. **Clarity**: Equality on containers returns scalar (structural comparison)
 5. **Performance**: Recursive dispatch is elegant but efficient
 6. **Extensibility**: New operators just define scalar operation, broadcasting is automatic
+7. **Shared Infrastructure**: Operators use `BroadcastingEngine` directly; functions use it via `FunctionBuilder` (auto) or
+   `FunctionContext.applyWithBroadcasting()` (manual)
 
 ## Summary
 
-- **All arithmetic operators**: Use BroadcastingDispatcher with zero-padding
+- **All arithmetic operators**: Use BroadcastingEngine with zero-padding
 - **Equality operators**: Structural comparison for containers (scalar result)
 - **Ordering operators**: Scalars only
 - **Logical operators**: Scalars only

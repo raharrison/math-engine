@@ -1,11 +1,11 @@
 package uk.co.ryanharrison.mathengine.parser.operator.binary;
 
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
-import uk.co.ryanharrison.mathengine.parser.operator.BroadcastingDispatcher;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeNumber;
+import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 
 /**
  * Percentage "of" operator.
@@ -37,7 +37,7 @@ public final class OfOperator implements BinaryOperator {
     @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         // Use broadcasting to support vectors/matrices
-        return BroadcastingDispatcher.dispatch(left, right, ctx, (l, r) -> {
+        return BroadcastingEngine.applyBinary(left, right, (l, r) -> {
             NodeNumber leftNum = ctx.toNumber(l);
             NodeNumber rightNum = ctx.toNumber(r);
 

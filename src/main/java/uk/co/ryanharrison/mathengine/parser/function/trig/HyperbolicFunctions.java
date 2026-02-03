@@ -1,7 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.function.trig;
 
+import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.function.UnaryFunction;
 import uk.co.ryanharrison.mathengine.utils.TrigUtils;
 
 import java.util.List;
@@ -24,57 +24,96 @@ public final class HyperbolicFunctions {
     /**
      * Hyperbolic sine function
      */
-    public static final MathFunction SINH = UnaryFunction.ofDouble("sinh", "Hyperbolic sine", HYPERBOLIC, Math::sinh);
+    public static final MathFunction SINH = FunctionBuilder
+            .named("sinh")
+            .describedAs("Hyperbolic sine")
+            .inCategory(HYPERBOLIC)
+            .takingUnary()
+            .implementedByDouble(Math::sinh);
 
     /**
      * Hyperbolic cosine function
      */
-    public static final MathFunction COSH = UnaryFunction.ofDouble("cosh", "Hyperbolic cosine", HYPERBOLIC, Math::cosh);
+    public static final MathFunction COSH = FunctionBuilder
+            .named("cosh")
+            .describedAs("Hyperbolic cosine")
+            .inCategory(HYPERBOLIC)
+            .takingUnary()
+            .implementedByDouble(Math::cosh);
 
     /**
      * Hyperbolic tangent function
      */
-    public static final MathFunction TANH = UnaryFunction.ofDouble("tanh", "Hyperbolic tangent", HYPERBOLIC, Math::tanh);
+    public static final MathFunction TANH = FunctionBuilder
+            .named("tanh")
+            .describedAs("Hyperbolic tangent")
+            .inCategory(HYPERBOLIC)
+            .takingUnary()
+            .implementedByDouble(Math::tanh);
 
     // ==================== Inverse Hyperbolic Functions ====================
 
     /**
      * Inverse hyperbolic sine (area hyperbolic sine)
      */
-    public static final MathFunction ASINH = UnaryFunction.ofDouble("asinh", "Inverse hyperbolic sine", HYPERBOLIC,
-            TrigUtils::asinh);
+    public static final MathFunction ASINH = FunctionBuilder
+            .named("asinh")
+            .describedAs("Inverse hyperbolic sine")
+            .inCategory(HYPERBOLIC)
+            .takingUnary()
+            .implementedByDouble(TrigUtils::asinh);
 
     /**
      * Inverse hyperbolic cosine (area hyperbolic cosine)
      */
-    public static final MathFunction ACOSH = UnaryFunction.ofDouble("acosh", "Inverse hyperbolic cosine", HYPERBOLIC,
-            TrigUtils::acosh);
+    public static final MathFunction ACOSH = FunctionBuilder
+            .named("acosh")
+            .describedAs("Inverse hyperbolic cosine")
+            .inCategory(HYPERBOLIC)
+            .takingUnary()
+            .implementedByDouble(TrigUtils::acosh);
 
     /**
      * Inverse hyperbolic tangent (area hyperbolic tangent)
      */
-    public static final MathFunction ATANH = UnaryFunction.ofDouble("atanh", "Inverse hyperbolic tangent", HYPERBOLIC,
-            TrigUtils::atanh);
+    public static final MathFunction ATANH = FunctionBuilder
+            .named("atanh")
+            .describedAs("Inverse hyperbolic tangent")
+            .inCategory(HYPERBOLIC)
+            .takingUnary()
+            .implementedByDouble(TrigUtils::atanh);
 
     // ==================== Reciprocal Hyperbolic Functions ====================
 
     /**
      * Hyperbolic secant (1/cosh)
      */
-    public static final MathFunction SECH = UnaryFunction.ofDouble("sech", "Hyperbolic secant", HYPERBOLIC,
-            TrigUtils::sech);
+    public static final MathFunction SECH = FunctionBuilder
+            .named("sech")
+            .describedAs("Hyperbolic secant")
+            .inCategory(HYPERBOLIC)
+            .takingUnary()
+            .implementedByDouble(TrigUtils::sech);
 
     /**
      * Hyperbolic cosecant (1/sinh)
      */
-    public static final MathFunction CSCH = UnaryFunction.ofDouble("csch", "Hyperbolic cosecant", HYPERBOLIC,
-            TrigUtils::cosech);
+    public static final MathFunction CSCH = FunctionBuilder
+            .named("csch")
+            .describedAs("Hyperbolic cosecant")
+            .inCategory(HYPERBOLIC)
+            .takingUnary()
+            .implementedByDouble(TrigUtils::cosech);
 
     /**
      * Hyperbolic cotangent (1/tanh)
      */
-    public static final MathFunction COTH = UnaryFunction.ofDouble("coth", "Hyperbolic cotangent", HYPERBOLIC,
-            TrigUtils::coth);
+    public static final MathFunction COTH = FunctionBuilder
+            .named("coth")
+            .describedAs("Hyperbolic cotangent")
+            .inCategory(HYPERBOLIC)
+            .takingUnary()
+            .implementedByDouble(TrigUtils::coth);
 
     // ==================== All Functions ====================
 

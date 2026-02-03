@@ -259,13 +259,6 @@ public final class NumericOperations {
     // ==================== Power Operation (^) ====================
 
     /**
-     * Applies power/exponentiation with full type preservation.
-     */
-    public static NodeConstant applyPower(NodeConstant base, NodeConstant exponent) {
-        return applyPower(base, exponent, false);
-    }
-
-    /**
      * Applies power/exponentiation with type preservation.
      * <p>
      * Type preservation rules:
@@ -370,16 +363,6 @@ public final class NumericOperations {
     // ==================== Pure Numeric Operations ====================
 
     /**
-     * Applies a pure numeric operation with rational preservation.
-     * Does not handle units or percents - use specific methods for those.
-     */
-    public static NodeConstant applyNumeric(NodeConstant left, NodeConstant right,
-                                            DoubleBinaryOperator doubleOp,
-                                            BinaryOperator<BigRational> rationalOp) {
-        return applyNumeric(left, right, doubleOp, rationalOp, false);
-    }
-
-    /**
      * Applies a pure numeric operation with optional rational preservation.
      * Does not handle units or percents - use specific methods for those.
      *
@@ -410,16 +393,6 @@ public final class NumericOperations {
     }
 
     // ==================== Type Checking Utilities ====================
-
-    /**
-     * Checks if a node is a plain scalar (not a unit or percent).
-     */
-    public static boolean isPlainScalar(NodeConstant node) {
-        if (node instanceof NodeUnit || node instanceof NodePercent) {
-            return false;
-        }
-        return node instanceof NodeNumber;
-    }
 
     /**
      * Converts a node to a double value, extracting from any wrapper type.

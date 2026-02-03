@@ -832,7 +832,6 @@ try {
 ## Documentation
 
 - **[Grammar Reference](docs/GRAMMAR.md)** - Complete parser grammar and built-in function reference (150+ functions)
-- **[Documentation Guide](docs/DOCUMENTATION_GUIDE.md)** - Javadoc standards and code quality guidelines
 - **Source Code Javadoc** - Comprehensive inline documentation
 
 ## License

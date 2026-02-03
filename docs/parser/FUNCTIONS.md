@@ -10,18 +10,18 @@ The function system provides both built-in mathematical functions and support fo
 
 ```
 Function Call: sin(pi)
-        ↓
+        |
 FunctionCallHandler determines type
-        ↓
+        |
 Built-in: FunctionExecutor.execute()
 User-defined: Evaluate function body with parameters
-        ↓
+        |
 Result (NodeConstant)
 ```
 
 **Function Types:**
 
-1. **Built-in functions** - Registered via `MathFunction` interface
+1. **Built-in functions** - Defined via `FunctionBuilder` DSL, registered in `FunctionExecutor`
 2. **User-defined functions** - Defined in expressions (`f(x) := x^2`)
 3. **Lambda functions** - Anonymous functions (`x -> x^2`)
 
@@ -31,292 +31,307 @@ Result (NodeConstant)
 
 ### Core Components
 
-**1. MathFunction Interface**
+**1. FunctionBuilder** (`function/FunctionBuilder.java`)
 
-- Base interface for all built-in functions
-- Defines name, arity, execution
+- Fluent DSL for defining functions with minimal boilerplate
+- Handles broadcasting, metadata, arity, and type conversion automatically
+- Entry point: `FunctionBuilder.named("functionName")`
 
-**2. FunctionExecutor**
+**2. MathFunction** (`function/MathFunction.java`)
+
+- Interface for all built-in functions
+- Defines name, aliases, arity, category, and execution
+
+**3. FunctionExecutor** (`function/FunctionExecutor.java`)
 
 - Central registry for built-in functions
 - Dispatches function calls by name
 
-**3. FunctionDefinition**
+**4. FunctionContext** (`function/FunctionContext.java`)
 
-- Represents user-defined functions
-- Stores name, parameters, body (AST)
+- Provides validation helpers, type coercion, angle conversion, and broadcasting
+- Every context knows the function name it serves (for error messages)
 
-**4. FunctionCallHandler**
+**5. FunctionCallHandler** (`evaluator/handler/FunctionCallHandler.java`)
 
 - Evaluates all function calls
 - Handles built-in, user-defined, and lambda calls
 
 ---
 
-## MathFunction Interface
+## Function Definition Hierarchy
 
-**File:** `function/MathFunction.java`
+All built-in functions are defined using `FunctionBuilder`. The builder supports four levels of abstraction,
+from simplest (pure math) to most flexible (full control):
 
-```java
-public interface MathFunction {
-    /**
-     * The function name (primary).
-     */
-    String name();
+```
+Level 0: Pure Math (No Type Inspection)
++-- implementedByDouble(DoubleUnaryOperator)     <- auto-broadcasts, auto-converts to double
++-- implementedByDouble(DoubleBinaryOperator)    <- auto-broadcasts via BroadcastingEngine
++-- Use: sqrt, exp, log, sinh, cosh, basic arithmetic
 
-    /**
-     * Alternative names for this function.
-     */
-    default List<String> aliases() {
-        return List.of();
-    }
+Level 1: Type-Safe Extraction (via ArgType)
++-- takingTyped(ArgType<A>).implementedBy(...)               <- no broadcasting (by design)
++-- takingTyped(ArgType<A>, ArgType<B>).implementedBy(...)   <- no broadcasting (by design)
++-- takingTyped(ArgType<A>, ArgType<B>, ArgType<C>).implementedBy(...)
++-- Use: take, drop, get, row, col, det, transpose, minor, map, filter, reduce
 
-    /**
-     * Minimum number of arguments.
-     */
-    int minArity();
+Level 2: Type-Aware (Full Control)
++-- implementedBy(UnaryFunction)                 <- auto-broadcasts (or manual via noBroadcasting())
++-- implementedBy(BinaryFunction)                <- auto-broadcasts via BroadcastingEngine
++-- Use: sin/cos/tan (manual broadcast for angle conversion), diag, norm, pow
 
-    /**
-     * Maximum number of arguments (-1 for unlimited).
-     */
-    default int maxArity() {
-        return minArity();
-    }
-
-    /**
-     * Executes the function with given arguments.
-     *
-     * @param args evaluated arguments
-     * @param context execution context
-     * @return the result
-     */
-    NodeConstant apply(List<NodeConstant> args, FunctionContext context);
-}
+Level 3: Aggregate (Variadic)
++-- implementedByAggregate(AggregateFunction)    <- no broadcasting
++-- Use: sum, min, max, concat, zip, slice, any, all, none
 ```
 
-**FunctionContext:**
+### Level 0: Pure Math (`implementedByDouble`)
+
+For functions that simply map `double -> double` or `(double, double) -> double`. The builder
+automatically handles type conversion (via `FunctionContext.toNumber()`) and broadcasting over
+vectors/matrices.
 
 ```java
-interface FunctionContext {
-    AngleUnit getAngleUnit();
-    // Future: additional context as needed
-}
+// Unary: auto-broadcasts over vectors and matrices
+MathFunction exp = FunctionBuilder
+    .named("exp")
+    .describedAs("Natural exponential (e^x)")
+    .inCategory(EXPONENTIAL)
+    .takingUnary()
+    .implementedByDouble(Math::exp);
+
+// Binary: auto-broadcasts via BroadcastingEngine
+MathFunction hypot = FunctionBuilder
+    .named("hypot")
+    .describedAs("Hypotenuse")
+    .inCategory(UTILITY)
+    .takingBinary()
+    .implementedByDouble(Math::hypot);
 ```
+
+### Level 1: Type-Safe Extraction (`takingTyped` + `ArgType`)
+
+For functions that need specific argument types (vectors, matrices, integers, etc.).
+Uses `ArgType<T>` extractors for type-safe parameter access without instanceof checks.
+Broadcasting is disabled by design since these functions operate on specific types.
+
+**ArgType extractors** (defined in `ArgTypes`):
+
+| Extractor                   | Extracts       | Throws on            |
+|-----------------------------|----------------|----------------------|
+| `ArgTypes.number()`         | `Double`       | Non-numeric          |
+| `ArgTypes.integer()`        | `Integer`      | Non-integer          |
+| `ArgTypes.longInt()`        | `Long`         | Non-integer          |
+| `ArgTypes.bool()`           | `Boolean`      | Non-convertible      |
+| `ArgTypes.string()`         | `String`       | Non-string           |
+| `ArgTypes.vector()`         | `NodeVector`   | Non-vector           |
+| `ArgTypes.matrix()`         | `NodeMatrix`   | Non-matrix           |
+| `ArgTypes.doubleArray()`    | `double[]`     | Non-vector           |
+| `ArgTypes.function()`       | `NodeFunction` | Non-function         |
+| `ArgTypes.any()`            | `NodeConstant` | Never                |
+| `ArgTypes.vectorOrScalar()` | `NodeVector`   | Never (wraps scalar) |
+
+```java
+// Unary typed
+MathFunction det = FunctionBuilder
+    .named("det")
+    .describedAs("Matrix determinant")
+    .inCategory(MATRIX)
+    .takingTyped(ArgTypes.matrix())
+    .implementedBy((matrix, ctx) -> {
+        ctx.requireSquareMatrix(matrix);
+        return new NodeDouble(ctx.toMatrix(matrix).determinant());
+    });
+
+// Binary typed
+MathFunction take = FunctionBuilder
+    .named("take")
+    .describedAs("Take first n elements")
+    .inCategory(VECTOR)
+    .takingTyped(ArgTypes.vector(), ArgTypes.integer())
+    .implementedBy((vector, n, ctx) -> {
+        n = Math.min(Math.max(n, 0), vector.size());
+        Node[] result = new Node[n];
+        for (int i = 0; i < n; i++) {
+            result[i] = vector.getElement(i);
+        }
+        return new NodeVector(result);
+    });
+
+// Ternary typed (e.g., reduce(fn, vector, initial))
+MathFunction reduce = FunctionBuilder
+    .named("reduce")
+    .describedAs("Reduce vector with binary function")
+    .inCategory(VECTOR)
+    .takingTyped(ArgTypes.function(), ArgTypes.vector(), ArgTypes.any())
+    .implementedBy((fn, vector, initial, ctx) -> {
+        NodeConstant acc = initial;
+        for (int i = 0; i < vector.size(); i++) {
+            acc = ctx.callFunction(fn, List.of(acc, (NodeConstant) vector.getElement(i)));
+        }
+        return acc;
+    });
+```
+
+### Level 2: Type-Aware (`implementedBy` with UnaryFunction/BinaryFunction)
+
+For functions that need full control over the input `NodeConstant` but still want optional
+broadcasting. Use `noBroadcasting()` when the function broadcasts internally (e.g., trig
+functions that need angle conversion before broadcasting).
+
+```java
+// With automatic broadcasting (default)
+MathFunction abs = FunctionBuilder
+    .named("abs")
+    .describedAs("Absolute value")
+    .inCategory(UTILITY)
+    .takingUnary()
+    .implementedBy((arg, ctx) -> {
+        // Preserve rational precision
+        if (arg instanceof NodeRational rat) {
+            return new NodeRational(rat.getValue().abs());
+        }
+        return new NodeDouble(Math.abs(ctx.toNumber(arg).doubleValue()));
+    });
+
+// With manual broadcasting (for angle conversion)
+MathFunction sin = FunctionBuilder
+    .named("sin")
+    .describedAs("Sine")
+    .inCategory(TRIGONOMETRIC)
+    .takingUnary()
+    .noBroadcasting()  // broadcasts internally
+    .implementedBy((arg, ctx) ->
+        ctx.applyWithBroadcasting(arg, value ->
+            Math.sin(ctx.toRadians(value))));
+
+// Binary with broadcasting
+MathFunction pow = FunctionBuilder
+    .named("pow")
+    .describedAs("Power function")
+    .inCategory(EXPONENTIAL)
+    .takingBinary()
+    .implementedBy((base, exp, ctx) -> {
+        double baseVal = ctx.toNumber(base).doubleValue();
+        double expVal = ctx.toNumber(exp).doubleValue();
+        if (base instanceof NodeRational baseRat) {
+            if (expVal == Math.floor(expVal) && !Double.isInfinite(expVal)) {
+                return new NodeRational(baseRat.getValue().pow((int) expVal));
+            }
+        }
+        return new NodeDouble(Math.pow(baseVal, expVal));
+    });
+```
+
+### Level 3: Aggregate (`implementedByAggregate`)
+
+For variadic functions that receive all arguments at once. No broadcasting is applied.
+
+```java
+MathFunction sum = FunctionBuilder
+    .named("sum")
+    .describedAs("Sum of all values")
+    .inCategory(VECTOR)
+    .takingVariadic(1)
+    .implementedByAggregate((args, ctx) -> {
+        double[] values = ctx.flattenToDoubles(args);
+        double total = 0;
+        for (double v : values) total += v;
+        return new NodeDouble(total);
+    });
+```
+
+### TrigFunction Helper
+
+The `TrigFunction` factory simplifies creating trigonometric functions with automatic angle
+unit conversion:
+
+```java
+// Standard trig: input is an angle (converted from context unit to radians)
+MathFunction sin = TrigFunction.standard("sin", "Sine", Math::sin);
+MathFunction cos = TrigFunction.standard("cos", "Cosine", Math::cos);
+
+// Inverse trig: output is an angle (converted from radians to context unit)
+MathFunction asin = TrigFunction.inverse("asin", "Arcsine", Math::asin);
+MathFunction atan = TrigFunction.inverse("atan", "Arctangent", Math::atan);
+```
+
+Internally these use `FunctionBuilder` with `noBroadcasting()` and broadcast manually via
+`FunctionContext.applyWithBroadcasting()`.
 
 ---
 
-## Function Types
+## FunctionContext
 
-### 1. UnaryFunction
+**File:** `function/FunctionContext.java`
 
-**Purpose:** Single numeric argument
+Provides utilities to function implementations. Every context knows its function name.
 
-**Base Class:** `function/UnaryFunction.java`
-
-**Interface:**
+### Error Reporting
 
 ```java
-interface UnaryFunction extends MathFunction {
-    double apply(double x);
-
-    // Default implementation for MathFunction
-    default NodeConstant apply(List<NodeConstant> args, FunctionContext ctx) {
-        double arg = args.get(0).doubleValue();
-        double result = apply(arg);
-        return new NodeDouble(result);
-    }
-}
+// Creates IllegalArgumentException with function name prepended
+throw ctx.error("requires positive value, got: " + value);
+// -> "sqrt: requires positive value, got: -1.0"
 ```
 
-**Wrapper:** `function/UnaryFunctionWrapper.java`
-
-Wraps a `DoubleUnaryOperator`:
+### Domain Validation
 
 ```java
-MathFunction abs = new UnaryFunctionWrapper(
-    "abs",
-    Math::abs
-);
+ctx.requirePositive(value);          // > 0
+ctx.requireNonNegative(value);       // >= 0
+ctx.requireNonZero(value);           // != 0
+ctx.requireInRange(value, min, max); // min <= value <= max
 ```
 
-**Examples:**
+### Type Coercion
 
 ```java
-abs(x)     → Math.abs(x)
-sqrt(x)    → Math.sqrt(x)
-exp(x)     → Math.exp(x)
-ln(x)      → Math.log(x)
-log(x)     → Math.log10(x)
+NodeNumber num = ctx.toNumber(node);     // any numeric -> NodeNumber
+boolean b = ctx.toBoolean(node);         // numeric -> truthy/falsy
+int i = ctx.requireInteger(node);        // validates no fractional part
+long l = ctx.requireLong(node);          // validates no fractional part
+NodeVector v = ctx.requireVector(node);  // must be vector
+NodeMatrix m = ctx.requireMatrix(node);  // must be matrix
+NodeString s = ctx.requireString(node);  // must be string
 ```
 
-### 2. BinaryFunction
-
-**Purpose:** Two numeric arguments
-
-**Base Class:** `function/BinaryFunction.java`
-
-**Interface:**
+### Angle Conversion
 
 ```java
-interface BinaryFunction extends MathFunction {
-    double apply(double x, double y);
-}
+double rad = ctx.toRadians(angle);    // context unit -> radians
+double angle = ctx.fromRadians(rad);  // radians -> context unit
 ```
 
-**Wrapper:** `function/BinaryFunctionWrapper.java`
+### Broadcasting
 
 ```java
-MathFunction max = new BinaryFunctionWrapper(
-    "max",
-    Math::max
-);
+// Apply double operation with broadcasting over vectors/matrices
+ctx.applyWithBroadcasting(arg, Math::sqrt);
 
-MathFunction pow = new BinaryFunctionWrapper(
-    "pow",
-    Math::pow
-);
+// Apply with type preservation (rationals stay rational)
+ctx.applyWithTypePreservation(arg, BigRational::negate, x -> -x);
 ```
 
-**Examples:**
+### Collection Operations
 
 ```java
-max(a, b)      → Math.max(a, b)
-min(a, b)      → Math.min(a, b)
-pow(base, exp) → Math.pow(base, exp)
-gcd(a, b)      → Greatest common divisor
-lcm(a, b)      → Least common multiple
+// Flatten mixed args: sum(1, {2,3}, 4) -> [1, 2, 3, 4]
+List<NodeConstant> flat = ctx.flattenArguments(args);
+double[] values = ctx.flattenToDoubles(args);
+double[] arr = ctx.toDoubleArray(vector);
+
+// Matrix conversions
+Matrix m = ctx.toMatrix(nodeMatrix);
+NodeMatrix nm = ctx.fromMatrix(matrix);
 ```
 
-### 3. AggregateFunction
-
-**Purpose:** Variable number of arguments (or vector)
-
-**Base Class:** `function/AggregateFunction.java`
-
-**Interface:**
+### Function Calling
 
 ```java
-interface AggregateFunction extends MathFunction {
-    double apply(double[] values);
-
-    default int minArity() { return 1; }
-    default int maxArity() { return -1; }  // Unlimited
-}
-```
-
-**Wrapper:** `function/AggregateFunctionWrapper.java`
-
-**Examples:**
-
-```java
-sum(1, 2, 3)           → 6
-sum({1, 2, 3})         → 6
-mean(1, 2, 3, 4, 5)    → 3.0
-max(5, 2, 8, 1)        → 8
-```
-
-**Implementation Pattern:**
-
-```java
-class SumFunction implements AggregateFunction {
-    @Override
-    public String name() { return "sum"; }
-
-    @Override
-    public double apply(double[] values) {
-        return Arrays.stream(values).sum();
-    }
-}
-```
-
-### 4. TrigFunction
-
-**Purpose:** Trigonometric functions with angle unit awareness
-
-**Base Class:** `function/TrigFunction.java`
-
-**Special Behavior:**
-
-- Respects `AngleUnit` setting (radians vs degrees)
-- Converts input before computation
-
-**Examples:**
-
-```java
-// In radians mode
-sin(pi/2)    → 1.0
-
-// In degrees mode
-sin(90)      → 1.0
-```
-
-**Implementation:**
-
-```java
-class SinFunction extends TrigFunction {
-    @Override
-    public String name() { return "sin"; }
-
-    @Override
-    protected double applyInRadians(double radians) {
-        return Math.sin(radians);
-    }
-}
-```
-
-**Functions:**
-
-```java
-sin(x), cos(x), tan(x)
-asin(x), acos(x), atan(x), atan2(y, x)
-sinh(x), cosh(x), tanh(x)
-asinh(x), acosh(x), atanh(x)
-```
-
-### 5. Higher-Order Functions
-
-**Purpose:** Functions that take other functions as arguments
-
-**File:** `function/vector/HigherOrderFunctions.java`
-
-**Examples:**
-
-**map:**
-
-```java
-map(x -> x^2, {1, 2, 3})  →  {1, 4, 9}
-```
-
-**filter:**
-
-```java
-filter(x -> x > 5, {3, 6, 2, 8})  →  {6, 8}
-```
-
-**reduce/fold:**
-
-```java
-reduce((acc, x) ->acc +x,{1,2,3,4},0)  →  10
-```
-
-**Implementation Pattern:**
-
-```java
-class MapFunction implements MathFunction {
-    @Override
-    public NodeConstant apply(List<NodeConstant> args, FunctionContext ctx) {
-        NodeFunction func = (NodeFunction) args.get(0);
-        NodeVector vec = (NodeVector) args.get(1);
-
-        Node[] results = new Node[vec.size()];
-        for (int i = 0; i < vec.size(); i++) {
-            // Call function on each element
-            results[i] = callFunction(func, vec.getElements()[i]);
-        }
-
-        return new NodeVector(results);
-    }
-}
+// Call a user-defined function or lambda (for higher-order functions)
+NodeConstant result = ctx.callFunction(func, List.of(arg1, arg2));
 ```
 
 ---
@@ -333,7 +348,7 @@ class MapFunction implements MathFunction {
 FunctionExecutor executor = new FunctionExecutor();
 
 // Register individual function
-executor.register(new SinFunction());
+executor.register(sinFunction);
 
 // Register multiple functions
 executor.registerAll(StandardFunctions.all());
@@ -378,113 +393,161 @@ List<MathFunction> functions = StandardFunctions.all();
 
 ### Math Functions
 
-**Exponential & Logarithmic:**
+**Exponential & Logarithmic** (`math/ExponentialFunctions.java`):
 
-```java
+```
 exp(x)       // e^x
+exp2(x)      // 2^x
+exp10(x)     // 10^x
+expm1(x)     // e^x - 1 (accurate for small x)
 ln(x)        // Natural log
-log(x)       // Base-10 log
+log(x)       // Base-10 log (alias: log10)
 log2(x)      // Base-2 log
+logn(x, b)   // Arbitrary base log
+log1p(x)     // ln(1+x) (accurate for small x)
+sqrt(x)      // Square root
+cbrt(x)      // Cube root
+nroot(x, n)  // nth root
+pow(x, n)    // Power function
 ```
 
-**Rounding:**
+**Rounding** (`math/RoundingFunctions.java`):
 
-```java
+```
 floor(x)     // Round down
 ceil(x)      // Round up
 round(x)     // Round to nearest
 trunc(x)     // Truncate to integer
 ```
 
-**Utility:**
+**Utility** (`math/UtilityFunctions.java`):
 
-```java
+```
 abs(x)       // Absolute value
 sign(x)      // Sign (-1, 0, 1)
-sqrt(x)      // Square root
-cbrt(x)      // Cube root
+frac(x)      // Fractional part
+hypot(x, y)  // Hypotenuse
+clamp(x,a,b) // Clamp to range
+lerp(a,b,t)  // Linear interpolation
 ```
 
 ### Trigonometric Functions
 
-**Basic:**
+**Basic** (`trig/TrigonometricFunctions.java`):
 
-```java
+```
 sin(x), cos(x), tan(x)
 asin(x), acos(x), atan(x)
 atan2(y, x)  // Two-argument arctangent
 ```
 
-**Hyperbolic:**
+**Hyperbolic** (`trig/HyperbolicFunctions.java`):
 
-```java
+```
 sinh(x), cosh(x), tanh(x)
 asinh(x), acosh(x), atanh(x)
 ```
 
 ### Vector Functions
 
-**Aggregates:**
+**Statistical** (`vector/StatisticalFunctions.java`):
 
-```java
-sum(vec)         // Sum of elements
-product(vec)     // Product of elements
+```
 mean(vec)        // Average
 median(vec)      // Median
 mode(vec)        // Most common value
-```
-
-**Statistical:**
-
-```java
 variance(vec)    // Variance
 stddev(vec)      // Standard deviation
-min(vec)         // Minimum element
-max(vec)         // Maximum element
+percentile(vec, p)
 ```
 
-**Manipulation:**
+**Manipulation** (`vector/VectorManipulationFunctions.java`):
 
-```java
+```
 sort(vec)        // Sort ascending
 reverse(vec)     // Reverse order
 unique(vec)      // Remove duplicates
 length(vec)      // Number of elements
+take(vec, n)     // First n elements
+drop(vec, n)     // Remove first n elements
+```
+
+**Aggregates** (`vector/VectorFunctions.java`):
+
+```
+sum(vec)         // Sum of elements
+product(vec)     // Product of elements
+min(vec)         // Minimum element
+max(vec)         // Maximum element
+concat(v1, v2)   // Concatenate vectors
+```
+
+**Matrix** (`vector/MatrixFunctions.java`):
+
+```
+det(m)           // Determinant
+trace(m)         // Trace
+transpose(m)     // Transpose
+inverse(m)       // Inverse
+row(m, i)        // Extract row
+col(m, j)        // Extract column
+diag(v)          // Diagonal matrix from vector
+```
+
+**Higher-Order** (`vector/HigherOrderFunctions.java`):
+
+```
+map(fn, vec)            // Apply fn to each element
+filter(fn, vec)         // Keep elements where fn is truthy
+reduce(fn, vec, init)   // Fold vector with binary function
 ```
 
 ### Special Functions
 
-**Conditional:**
+**Conditional** (`special/ConditionalFunctions.java`):
 
-```java
-if(condition, thenValue, elseValue)  // Lazy evaluation
+```
+if(cond, then, else)    // Lazy evaluation
 ```
 
-**Number Theory:**
+**Number Theory** (`special/NumberTheoryFunctions.java`):
 
-```java
+```
 gcd(a, b)        // Greatest common divisor
 lcm(a, b)        // Least common multiple
 isprime(n)       // Check if prime
 factorial(n)     // n!
 ```
 
-**Bitwise:**
+**Bitwise** (`special/BitwiseFunctions.java`):
 
-```java
-band(a, b)       // Bitwise AND
-bor(a, b)        // Bitwise OR
-bxor(a, b)       // Bitwise XOR
-bnot(n)          // Bitwise NOT
+```
+bitand(a, b)     // Bitwise AND
+bitor(a, b)      // Bitwise OR
+bitxor(a, b)     // Bitwise XOR
+bitnot(n)        // Bitwise NOT
+lshift(n, s)     // Left shift
+rshift(n, s)     // Right shift
 ```
 
-**Type Functions:**
+**Type** (`special/TypeFunctions.java`):
 
-```java
+```
 isnumber(x)      // Check if numeric
 isstring(x)      // Check if string
 isvector(x)      // Check if vector
 ismatrix(x)      // Check if matrix
+typeof(x)        // Get type name
+```
+
+**String** (`string/StringFunctions.java`):
+
+```
+upper(s)         // Uppercase
+lower(s)         // Lowercase
+trim(s)          // Strip whitespace
+strlen(s)        // String length
+substring(s,i,j) // Substring
 ```
 
 ---
@@ -510,18 +573,6 @@ class FunctionDefinition {
 }
 ```
 
-**In Context:**
-
-```java
-FunctionDefinition def = new FunctionDefinition(
-    "square",
-    List.of("x"),
-    new NodeBinary(...)  // x^2
-);
-NodeFunction func = new NodeFunction(def);
-context.define("square", func);
-```
-
 ### Evaluation
 
 **Process:**
@@ -532,29 +583,11 @@ context.define("square", func);
 4. Evaluate body in new context
 5. Return result
 
-**Code:**
-
-```java
-NodeFunction func = (NodeFunction) context.get("square");
-FunctionDefinition def = func.getFunction();
-
-// Create function context
-EvaluationContext funcContext = new EvaluationContext(context);
-
-// Bind parameters
-for (int i = 0; i < def.getParameters().size(); i++) {
-    funcContext.define(def.getParameters().get(i), args.get(i));
-}
-
-// Evaluate body
-NodeConstant result = evaluator.evaluate(def.getBody());
-```
-
 ### Recursion
 
 **Supported with depth tracking:**
 
-```java
+```
 factorial(n) := if(n <= 1, 1, n * factorial(n-1))
 ```
 
@@ -579,202 +612,56 @@ x -> x^2
 (a, b) -> a + b
 ```
 
-**Storage:**
-
-```java
-class NodeLambda extends NodeConstant {
-    List<String> parameters;
-    Node body;
-}
-```
-
 ### Usage
 
 **As argument to higher-order function:**
 
-```java
+```
 map(x -> x^2, {1, 2, 3})
 filter(x -> x > 5, 1..10)
+reduce((acc, x) -> acc + x, {1,2,3,4}, 0)
 ```
 
 **Assigned to variable:**
 
-```java
+```
 f := x -> x^2
 f(5)  // 25
 ```
 
-### Evaluation
-
-**Converted to NodeFunction:**
-
-```java
-FunctionDefinition def = new FunctionDefinition(
-    "<lambda>",  // Anonymous name
-    lambda.getParameters(),
-    lambda.getBody()
-);
-return new NodeFunction(def);
-```
-
 ---
 
-## Implementing Custom Functions
+## Broadcasting in Functions
 
-### Step 1: Implement MathFunction
+Broadcasting is the automatic element-wise application of a function over vectors and matrices.
 
-```java
-public class CustomFunction implements MathFunction {
-    @Override
-    public String name() {
-        return "myFunc";
-    }
+### Automatic Broadcasting (Level 0 and Level 2 default)
 
-    @Override
-    public List<String> aliases() {
-        return List.of("mf", "my_func");
-    }
+When `FunctionBuilder` creates a function with `implementedByDouble()` or `implementedBy()` (without
+`noBroadcasting()`), broadcasting is handled automatically via `BroadcastingEngine`:
 
-    @Override
-    public int minArity() {
-        return 2;
-    }
-
-    @Override
-    public int maxArity() {
-        return 2;
-    }
-
-    @Override
-    public NodeConstant apply(List<NodeConstant> args, FunctionContext context) {
-        // Type checking
-        if (!(args.get(0) instanceof NodeNumber) ||
-            !(args.get(1) instanceof NodeNumber)) {
-            throw new TypeError("myFunc requires numeric arguments");
-        }
-
-        // Get values
-        double x = args.get(0).doubleValue();
-        double y = args.get(1).doubleValue();
-
-        // Compute
-        double result = customComputation(x, y);
-
-        return new NodeDouble(result);
-    }
-
-    private double customComputation(double x, double y) {
-        // Your logic here
-        return x * Math.log(y) + y * Math.exp(x);
-    }
-}
+```
+sqrt(4)           -> 2.0         (scalar)
+sqrt({4, 9, 16})  -> {2, 3, 4}  (vector - auto-broadcast)
+sqrt([[4,9]])     -> [[2,3]]    (matrix - auto-broadcast)
 ```
 
-### Step 2: Register Function
+### Manual Broadcasting (Level 2 with `noBroadcasting()`)
 
-**Via MathEngine:**
-
-```java
-MathEngine engine = MathEngine.create();
-engine.registerFunction(new CustomFunction());
-
-// Use immediately
-NodeConstant result = engine.evaluate("myFunc(2, 3)");
-```
-
-**Via Config:**
+Functions that need pre-processing before broadcasting (e.g., angle conversion) disable
+automatic broadcasting and use `FunctionContext.applyWithBroadcasting()`:
 
 ```java
-List<MathFunction> functions = new ArrayList<>(StandardFunctions.all());
-functions.add(new CustomFunction());
-
-MathEngineConfig config = MathEngineConfig.builder()
-    .functions(functions)
-    .build();
-
-MathEngine engine = MathEngine.create(config);
+.noBroadcasting()
+.implementedBy((arg, ctx) ->
+    ctx.applyWithBroadcasting(arg, value ->
+        Math.sin(ctx.toRadians(value))));
 ```
 
----
+### No Broadcasting (Level 1 and Level 3)
 
-## Common Pitfalls for AI Agents
-
-### 1. Not Checking Arity
-
-**Problem:**
-
-```java
-// Calling function with wrong number of args
-sin.apply(List.of(arg1, arg2), ctx);  // sin expects 1 arg!
-```
-
-**Solution:**
-FunctionExecutor automatically checks arity before calling apply().
-
-### 2. Not Handling Vector Arguments
-
-**Problem:**
-
-```java
-// User calls: sum({1, 2, 3})
-// But function only handles varargs
-```
-
-**Solution:**
-Aggregate functions should handle both:
-
-```java
-if (args.size() == 1 && args.get(0) instanceof NodeVector) {
-    // Extract vector elements
-    NodeVector vec = (NodeVector) args.get(0);
-    double[] values = extractValues(vec);
-    return apply(values);
-}
-```
-
-### 3. Ignoring Angle Units
-
-**Problem:**
-
-```java
-// Always computing in radians
-return Math.sin(x);
-```
-
-**Solution:**
-Use TrigFunction base class:
-
-```java
-class SinFunction extends TrigFunction {
-    @Override
-    protected double applyInRadians(double radians) {
-        return Math.sin(radians);  // Already converted
-    }
-}
-```
-
-### 4. Forgetting Lazy Evaluation
-
-**Problem:**
-
-```java
-// if function evaluates all arguments
-NodeConstant cond = args.get(0);
-NodeConstant thenVal = args.get(1);  // Always evaluated!
-NodeConstant elseVal = args.get(2);  // Always evaluated!
-```
-
-**Solution:**
-Special handling in evaluator (don't evaluate arguments before passing to if):
-
-```java
-// In evaluator, NOT in function
-if (conditionTrue) {
-    return evaluate(thenExpr);
-} else {
-    return evaluate(elseExpr);
-}
-```
+Typed functions (`takingTyped`) and aggregate functions have no broadcasting because they
+operate on specific types (vectors, matrices) or handle their own argument processing.
 
 ---
 

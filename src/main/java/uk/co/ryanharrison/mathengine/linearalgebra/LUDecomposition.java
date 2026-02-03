@@ -375,8 +375,7 @@ public final class LUDecomposition {
      *
      * @param b the right-hand side matrix with the same number of rows as A and any number of columns
      * @return the solution matrix X such that A*X = B
-     * @throws IllegalArgumentException if B has a different number of rows than A
-     * @throws RuntimeException if the matrix is singular (not invertible)
+     * @throws IllegalArgumentException if B has a different number of rows than A or if the matrix is singular (not invertible)
      */
     public Matrix solve(Matrix b) {
         if (b.getRowCount() != rowCount) {
@@ -385,7 +384,7 @@ public final class LUDecomposition {
             );
         }
         if (!isNonsingular()) {
-            throw new RuntimeException(
+            throw new IllegalArgumentException(
                     "Cannot solve system: matrix is singular (determinant = 0)"
             );
         }

@@ -107,7 +107,25 @@ public final class FunctionExecutor {
     // ==================== Execution ====================
 
     /**
-     * Executes a function by name.
+     * Executes a function by name with automatic arity validation and input normalization.
+     *
+     * <h3>Execution Flow:</h3>
+     * <ol>
+     *   <li>Look up function by name (case-insensitive)</li>
+     *   <li>Normalize inputs if needed (variadic → vector for broadcasting functions)</li>
+     *   <li>Validate argument count against function's arity constraints</li>
+     *   <li>Create FunctionContext with evaluation context and function caller</li>
+     *   <li>Call {@link MathFunction#apply(List, FunctionContext)}</li>
+     *   <li>Return result</li>
+     * </ol>
+     *
+     * <h3>Input Normalization:</h3>
+     * <p>
+     * For functions that support broadcasting with arity [1,1], multiple arguments
+     * are automatically normalized to a vector:
+     * <pre>{@code
+     * sqrt(4, 9, 16) → sqrt([4, 9, 16]) → [2, 3, 4]
+     * }</pre>
      *
      * @param name           the function name (case-insensitive)
      * @param args           the evaluated arguments
@@ -124,18 +142,40 @@ public final class FunctionExecutor {
             throw new EvaluationException("Unknown function: " + name);
         }
 
-        // Validate arity
-        validateArity(function, args.size());
+        // Normalize inputs: if function expects 1 arg but got multiple, and supports broadcasting,
+        // wrap multiple args as a vector for automatic broadcasting
+        List<NodeConstant> normalizedArgs = normalizeInputs(function, args);
 
-        // Check for vector broadcasting
-        if (function.supportsVectorBroadcasting() && args.size() == 1 &&
-                args.getFirst() instanceof NodeVector vector) {
-            return applyToVector(function, vector, context, functionCaller);
+        // Validate arity
+        validateArity(function, normalizedArgs.size());
+
+        // Execute the function (broadcasting handled by function implementation)
+        var ctx = new FunctionContext(function.name(), context, functionCaller);
+        return function.apply(normalizedArgs, ctx);
+    }
+
+    /**
+     * Normalizes inputs for functions that support broadcasting.
+     * <p>
+     * If a function expects exactly 1 argument (unary) but receives multiple arguments,
+     * and it supports broadcasting, the arguments are wrapped into a vector.
+     * This allows natural syntax like {@code sqrt(4, 9, 16)} instead of {@code sqrt([4, 9, 16])}.
+     *
+     * @param function the function to execute
+     * @param args     the original arguments
+     * @return normalized arguments (either original or wrapped in vector)
+     */
+    private List<NodeConstant> normalizeInputs(MathFunction function, List<NodeConstant> args) {
+        // If function expects exactly 1 arg, got multiple, and supports broadcasting:
+        // wrap args in a vector
+        if (function.minArity() == 1 && function.maxArity() == 1 &&
+                args.size() > 1 && function.supportsVectorBroadcasting()) {
+
+            Node[] elements = args.toArray(new Node[0]);
+            return List.of(new NodeVector(elements));
         }
 
-        // Execute the function
-        var ctx = new FunctionContext(context, functionCaller);
-        return function.apply(args, ctx);
+        return args;
     }
 
     /**
@@ -150,23 +190,6 @@ public final class FunctionExecutor {
             throw new ArityException("Function '" + function.name() + "' accepts at most " +
                     function.maxArity() + " argument(s), got " + argCount);
         }
-    }
-
-    /**
-     * Applies a single-argument function to each element of a vector.
-     */
-    private NodeConstant applyToVector(MathFunction function, NodeVector vector,
-                                       EvaluationContext context, FunctionCaller functionCaller) {
-        var ctx = new FunctionContext(context, functionCaller);
-        Node[] elements = vector.getElements();
-        Node[] results = new Node[elements.length];
-
-        for (int i = 0; i < elements.length; i++) {
-            NodeConstant elem = (NodeConstant) elements[i];
-            results[i] = function.apply(List.of(elem), ctx);
-        }
-
-        return new NodeVector(results);
     }
 
     // ==================== Builder ====================

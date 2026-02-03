@@ -468,34 +468,6 @@ All exceptions include:
 
 ---
 
-## Quick Reference
-
-### File Counts by Package
-
-```
-parser/                         (5 files)    # Core entry points
-├── lexer/                       (10 files)   # Tokenization
-├── parser/                      (5 files)    # Parsing
-│   └── nodes/                   (23 files)   # AST nodes
-├── evaluator/                   (8 files)    # Evaluation
-│   └── handler/                 (4 files)    # Evaluation handlers
-├── operator/                    (8 files)    # Operator system
-│   ├── binary/                  (10 files)   # Binary operators
-│   └── unary/                   (7 files)    # Unary operators
-├── function/                    (11 files)   # Function system
-│   ├── math/                    (3 files)    # Math functions
-│   ├── trig/                    (2 files)    # Trig functions
-│   ├── vector/                  (5 files)    # Vector functions
-│   ├── special/                 (5 files)    # Special functions
-│   └── string/                  (1 file)     # String functions
-├── registry/                    (6 files)    # Registry system
-└── util/                        (1 file)     # Utilities
-```
-
-**Total:** ~100 Java files
-
----
-
 ## Related Documentation
 
 - **[LEXER.md](./LEXER.md)** - Detailed lexer architecture and pipeline

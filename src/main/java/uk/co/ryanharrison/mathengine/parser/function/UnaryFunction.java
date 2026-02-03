@@ -2,9 +2,6 @@ package uk.co.ryanharrison.mathengine.parser.function;
 
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
-import java.util.List;
-import java.util.function.DoubleUnaryOperator;
-
 /**
  * Functional interface for unary (single-argument) math functions.
  * <p>
@@ -56,97 +53,14 @@ public interface UnaryFunction {
      */
     NodeConstant apply(NodeConstant arg, FunctionContext ctx);
 
-    // ==================== Factory Methods ====================
-
-    /**
-     * Creates a unary function from a lambda.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param fn          the function implementation
-     * @return a MathFunction wrapping the unary function
-     */
-    static MathFunction of(String name, String description, MathFunction.Category category,
-                           UnaryFunction fn) {
-        return new UnaryFunctionWrapper(name, description, category, List.of(), fn, true);
-    }
-
-    /**
-     * Creates a unary function with aliases.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param aliases     alternate names
-     * @param fn          the function implementation
-     * @return a MathFunction wrapping the unary function
-     */
-    static MathFunction of(String name, String description, MathFunction.Category category,
-                           List<String> aliases, UnaryFunction fn) {
-        return new UnaryFunctionWrapper(name, description, category, aliases, fn, true);
-    }
-
-    /**
-     * Creates a unary function from a lambda with broadcasting control.
-     *
-     * @param name                 function name
-     * @param description          function description
-     * @param category             function category
-     * @param fn                   the function implementation
-     * @param supportsBroadcasting whether to broadcast over vectors/matrices
-     * @return a MathFunction wrapping the unary function
-     */
-    static MathFunction of(String name, String description, MathFunction.Category category,
-                           UnaryFunction fn, boolean supportsBroadcasting) {
-        return new UnaryFunctionWrapper(name, description, category, List.of(), fn, supportsBroadcasting);
-    }
-
-    /**
-     * Creates a unary function with aliases and broadcasting control.
-     *
-     * @param name                 function name
-     * @param description          function description
-     * @param category             function category
-     * @param aliases              alternate names
-     * @param fn                   the function implementation
-     * @param supportsBroadcasting whether to broadcast over vectors/matrices
-     * @return a MathFunction wrapping the unary function
-     */
-    static MathFunction of(String name, String description, MathFunction.Category category,
-                           List<String> aliases, UnaryFunction fn, boolean supportsBroadcasting) {
-        return new UnaryFunctionWrapper(name, description, category, aliases, fn, supportsBroadcasting);
-    }
-
-    /**
-     * Creates a unary function from a simple double operation.
-     * <p>
-     * This is the most common case: a function that takes a double and returns a double.
-     * The wrapper handles converting any numeric node to double.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param fn          the double operation
-     * @return a MathFunction wrapping the operation
-     */
-    static MathFunction ofDouble(String name, String description, MathFunction.Category category,
-                                 DoubleUnaryOperator fn) {
-        return new DoubleUnaryFunctionWrapper(name, description, category, List.of(), fn);
-    }
-
-    /**
-     * Creates a unary function from a double operation with aliases.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param aliases     alternate names
-     * @param fn          the double operation
-     * @return a MathFunction wrapping the operation
-     */
-    static MathFunction ofDouble(String name, String description, MathFunction.Category category,
-                                 List<String> aliases, DoubleUnaryOperator fn) {
-        return new DoubleUnaryFunctionWrapper(name, description, category, aliases, fn);
-    }
+    // Note: Factory methods have been removed. Use FunctionBuilder instead:
+    //
+    // Old:  UnaryFunction.ofDouble("abs", "Absolute value", UTILITY, Math::abs)
+    // New:  FunctionBuilder.named("abs")
+    //                      .describedAs("Absolute value")
+    //                      .inCategory(UTILITY)
+    //                      .takingUnary()
+    //                      .implementedByDouble(Math::abs)
+    //
+    // See FunctionBuilder for the fluent API with support for aliases, validation, and broadcasting.
 }

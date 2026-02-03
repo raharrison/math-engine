@@ -872,45 +872,6 @@ TokenType-based dispatch is O(1):
 Map<TokenType, BinaryOperator> operators;
 BinaryOperator op = operators.get(TokenType.PLUS);  // Constant time
 ```
-
----
-
-## Extension Points
-
-### Custom Evaluator Behavior
-
-Extend `Evaluator` or provide custom handlers:
-
-```java
-class CustomEvaluator extends Evaluator {
-    @Override
-    public NodeConstant evaluate(Node node) {
-        // Custom pre-processing
-        if (node instanceof CustomNode custom) {
-            return handleCustomNode(custom);
-        }
-
-        // Delegate to standard evaluation
-        return super.evaluate(node);
-    }
-}
-```
-
-### Custom Context
-
-```java
-class CustomContext extends EvaluationContext {
-    @Override
-    public NodeConstant get(String name) {
-        // Custom variable resolution logic
-        if (name.startsWith("$")) {
-            return resolveSpecialVariable(name);
-        }
-        return super.get(name);
-    }
-}
-```
-
 ---
 
 ## Common Pitfalls for AI Agents

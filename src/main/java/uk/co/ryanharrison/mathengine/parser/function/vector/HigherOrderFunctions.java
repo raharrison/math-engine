@@ -3,9 +3,14 @@ package uk.co.ryanharrison.mathengine.parser.function.vector;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
+import uk.co.ryanharrison.mathengine.parser.function.ArgTypes;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRange;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 import java.util.ArrayList;
@@ -40,58 +45,22 @@ public final class HigherOrderFunctions {
      *     <li>{@code map(x -> x^2, 1..5)} → {@code {1, 4, 9, 16, 25}}</li>
      * </ul>
      */
-    public static final MathFunction MAP = new MathFunction() {
-        @Override
-        public String name() {
-            return "map";
-        }
+    public static final MathFunction MAP = FunctionBuilder
+            .named("map")
+            .describedAs("Apply function to each element of a collection")
+            .inCategory(MathFunction.Category.VECTOR)
+            .takingTyped(ArgTypes.function(), ArgTypes.any())
+            .implementedBy((func, collection, ctx) -> {
+                List<NodeConstant> elements = toList(collection, ctx);
+                List<Node> results = new ArrayList<>();
 
-        @Override
-        public String description() {
-            return "Apply function to each element of a collection";
-        }
+                for (NodeConstant element : elements) {
+                    NodeConstant result = ctx.callFunction(func, List.of(element));
+                    results.add(result);
+                }
 
-        @Override
-        public int minArity() {
-            return 2;
-        }
-
-        @Override
-        public int maxArity() {
-            return 2;
-        }
-
-        @Override
-        public Category category() {
-            return Category.VECTOR;
-        }
-
-        @Override
-        public boolean supportsVectorBroadcasting() {
-            return false;
-        }
-
-        @Override
-        public NodeConstant apply(List<NodeConstant> args, FunctionContext ctx) {
-            NodeConstant function = args.get(0);
-            NodeConstant collection = args.get(1);
-
-            if (!(function instanceof NodeFunction func)) {
-                throw new TypeError("map: first argument must be a function, got " +
-                        TypeCoercion.typeName(function));
-            }
-
-            List<NodeConstant> elements = toList(collection, ctx);
-            List<Node> results = new ArrayList<>();
-
-            for (NodeConstant element : elements) {
-                NodeConstant result = ctx.callFunction(func, List.of(element));
-                results.add(result);
-            }
-
-            return new NodeVector(results.toArray(new Node[0]));
-        }
-    };
+                return new NodeVector(results.toArray(new Node[0]));
+            });
 
     // ==================== Filter Function ====================
 
@@ -106,60 +75,24 @@ public final class HigherOrderFunctions {
      *     <li>{@code filter(x -> x mod 2 == 0, 1..10)} → {@code {2, 4, 6, 8, 10}}</li>
      * </ul>
      */
-    public static final MathFunction FILTER = new MathFunction() {
-        @Override
-        public String name() {
-            return "filter";
-        }
+    public static final MathFunction FILTER = FunctionBuilder
+            .named("filter")
+            .describedAs("Filter elements based on predicate")
+            .inCategory(MathFunction.Category.VECTOR)
+            .takingTyped(ArgTypes.function(), ArgTypes.any())
+            .implementedBy((func, collection, ctx) -> {
+                List<NodeConstant> elements = toList(collection, ctx);
+                List<Node> results = new ArrayList<>();
 
-        @Override
-        public String description() {
-            return "Filter elements based on predicate";
-        }
-
-        @Override
-        public int minArity() {
-            return 2;
-        }
-
-        @Override
-        public int maxArity() {
-            return 2;
-        }
-
-        @Override
-        public Category category() {
-            return Category.VECTOR;
-        }
-
-        @Override
-        public boolean supportsVectorBroadcasting() {
-            return false;
-        }
-
-        @Override
-        public NodeConstant apply(List<NodeConstant> args, FunctionContext ctx) {
-            NodeConstant function = args.get(0);
-            NodeConstant collection = args.get(1);
-
-            if (!(function instanceof NodeFunction func)) {
-                throw new TypeError("filter: first argument must be a function, got " +
-                        TypeCoercion.typeName(function));
-            }
-
-            List<NodeConstant> elements = toList(collection, ctx);
-            List<Node> results = new ArrayList<>();
-
-            for (NodeConstant element : elements) {
-                NodeConstant result = ctx.callFunction(func, List.of(element));
-                if (TypeCoercion.toBoolean(result)) {
-                    results.add(element);
+                for (NodeConstant element : elements) {
+                    NodeConstant result = ctx.callFunction(func, List.of(element));
+                    if (TypeCoercion.toBoolean(result)) {
+                        results.add(element);
+                    }
                 }
-            }
 
-            return new NodeVector(results.toArray(new Node[0]));
-        }
-    };
+                return new NodeVector(results.toArray(new Node[0]));
+            });
 
     // ==================== Reduce Function ====================
 
@@ -174,64 +107,27 @@ public final class HigherOrderFunctions {
      *     <li>{@code reduce((acc, x) -> acc * x, {1, 2, 3, 4, 5}, 1)} → {@code 120}</li>
      * </ul>
      */
-    public static final MathFunction REDUCE = new MathFunction() {
-        @Override
-        public String name() {
-            return "reduce";
-        }
+    public static final MathFunction REDUCE = FunctionBuilder
+            .named("reduce")
+            .describedAs("Reduce collection to single value using binary function")
+            .inCategory(MathFunction.Category.VECTOR)
+            .takingTyped(ArgTypes.function(), ArgTypes.any(), ArgTypes.any())
+            .implementedBy((func, collection, initial, ctx) -> {
+                FunctionDefinition funcDef = func.getFunction();
+                if (funcDef.getArity() != 2) {
+                    throw new TypeError("reduce: function must accept exactly 2 parameters (accumulator, element), got " +
+                            funcDef.getArity());
+                }
 
-        @Override
-        public String description() {
-            return "Reduce collection to single value using binary function";
-        }
+                List<NodeConstant> elements = toList(collection, ctx);
+                NodeConstant accumulator = initial;
 
-        @Override
-        public int minArity() {
-            return 3;
-        }
+                for (NodeConstant element : elements) {
+                    accumulator = ctx.callFunction(func, List.of(accumulator, element));
+                }
 
-        @Override
-        public int maxArity() {
-            return 3;
-        }
-
-        @Override
-        public Category category() {
-            return Category.VECTOR;
-        }
-
-        @Override
-        public boolean supportsVectorBroadcasting() {
-            return false;
-        }
-
-        @Override
-        public NodeConstant apply(List<NodeConstant> args, FunctionContext ctx) {
-            NodeConstant function = args.get(0);
-            NodeConstant collection = args.get(1);
-            NodeConstant initial = args.get(2);
-
-            if (!(function instanceof NodeFunction func)) {
-                throw new TypeError("reduce: first argument must be a function, got " +
-                        TypeCoercion.typeName(function));
-            }
-
-            FunctionDefinition funcDef = func.getFunction();
-            if (funcDef.getArity() != 2) {
-                throw new TypeError("reduce: function must accept exactly 2 parameters (accumulator, element), got " +
-                        funcDef.getArity());
-            }
-
-            List<NodeConstant> elements = toList(collection, ctx);
-            NodeConstant accumulator = initial;
-
-            for (NodeConstant element : elements) {
-                accumulator = ctx.callFunction(func, List.of(accumulator, element));
-            }
-
-            return accumulator;
-        }
-    };
+                return accumulator;
+            });
 
     // ==================== Helper Methods ====================
 

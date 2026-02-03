@@ -1,10 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
-
-import java.util.List;
-import java.util.function.DoubleBinaryOperator;
 
 /**
  * Functional interface for binary (two-argument) math functions.
@@ -47,71 +43,14 @@ public interface BinaryFunction {
      */
     NodeConstant apply(NodeConstant first, NodeConstant second, FunctionContext ctx);
 
-    // ==================== Factory Methods ====================
-
-    /**
-     * Creates a binary function from a lambda.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param fn          the function implementation
-     * @return a MathFunction wrapping the binary function
-     */
-    static MathFunction of(String name, String description, MathFunction.Category category,
-                           BinaryFunction fn) {
-        return new BinaryFunctionWrapper(name, description, category, List.of(), fn);
-    }
-
-    /**
-     * Creates a binary function with aliases.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param aliases     alternate names
-     * @param fn          the function implementation
-     * @return a MathFunction wrapping the binary function
-     */
-    static MathFunction of(String name, String description, MathFunction.Category category,
-                           List<String> aliases, BinaryFunction fn) {
-        return new BinaryFunctionWrapper(name, description, category, aliases, fn);
-    }
-
-    /**
-     * Creates a binary function from a simple double operation.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param fn          the double operation
-     * @return a MathFunction wrapping the operation
-     */
-    static MathFunction ofDouble(String name, String description, MathFunction.Category category,
-                                 DoubleBinaryOperator fn) {
-        return new BinaryFunctionWrapper(name, description, category, List.of(), (a, b, ctx) -> {
-            double left = ctx.toNumber(a).doubleValue();
-            double right = ctx.toNumber(b).doubleValue();
-            return new NodeDouble(fn.applyAsDouble(left, right));
-        });
-    }
-
-    /**
-     * Creates a binary function from a double operation with aliases.
-     *
-     * @param name        function name
-     * @param description function description
-     * @param category    function category
-     * @param aliases     alternate names
-     * @param fn          the double operation
-     * @return a MathFunction wrapping the operation
-     */
-    static MathFunction ofDouble(String name, String description, MathFunction.Category category,
-                                 List<String> aliases, DoubleBinaryOperator fn) {
-        return new BinaryFunctionWrapper(name, description, category, aliases, (a, b, ctx) -> {
-            double left = ctx.toNumber(a).doubleValue();
-            double right = ctx.toNumber(b).doubleValue();
-            return new NodeDouble(fn.applyAsDouble(left, right));
-        });
-    }
+    // Note: Factory methods have been removed. Use FunctionBuilder instead:
+    //
+    // Old:  BinaryFunction.of("pow", "Power function", EXPONENTIAL, (base, exp, ctx) -> ...)
+    // New:  FunctionBuilder.named("pow")
+    //                      .describedAs("Power function")
+    //                      .inCategory(EXPONENTIAL)
+    //                      .takingBinary()
+    //                      .implementedBy((base, exp, ctx) -> ...)
+    //
+    // See FunctionBuilder for the fluent API with support for aliases, validation, and broadcasting.
 }
