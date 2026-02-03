@@ -15,23 +15,10 @@ package uk.co.ryanharrison.mathengine.parser.symbolic;
  * Processing logic is handled by Differentiator and Integrator classes.
  * </p>
  */
-public final class ExpressionItem {
-    private static final char[] OPERATORS = {'+', '-', '/', '*', '^'};
-
-    public final String input;
-    public final char operator;
-    public final String function;
-    public final int sign;
+public record ExpressionItem(String input, char operator, String function, int sign) {
 
     public ExpressionItem(String input) {
         this(input, (char) 0, null, 1);
-    }
-
-    public ExpressionItem(String input, char operator, String function, int sign) {
-        this.input = input;
-        this.operator = operator;
-        this.function = function;
-        this.sign = sign;
     }
 
     /**

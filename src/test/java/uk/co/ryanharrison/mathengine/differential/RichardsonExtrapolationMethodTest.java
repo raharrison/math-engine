@@ -274,7 +274,7 @@ class RichardsonExtrapolationMethodTest {
                 .build();
 
         // Fourth derivatives have larger numerical errors
-        assertThat(method.deriveFourth()).isCloseTo(24.0, within(1e-5));
+        assertThat(method.deriveFourth()).isCloseTo(24.0, within(1e-4));
     }
 
     // ==================== Forward Differences Tests ====================

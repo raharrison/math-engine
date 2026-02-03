@@ -59,12 +59,12 @@ public class Differentiator {
             return differentiateBinaryOperator(item, stack);
         } else if (item.isFunction()) {
             // Function: apply chain rule
-            String u = ExpressionItem.extractFunctionArgument(item.input);
-            String result = DifferentiationRules.differentiate(item.function, u, this::differentiateExpression);
-            return (item.sign == -1 ? "-" : "") + result;
+            String u = ExpressionItem.extractFunctionArgument(item.input());
+            String result = DifferentiationRules.differentiate(item.function(), u, this::differentiateExpression);
+            return (item.sign() == -1 ? "-" : "") + result;
         } else {
             // Variable or constant
-            return differentiateVariable(item.input);
+            return differentiateVariable(item.input());
         }
     }
 
@@ -77,23 +77,23 @@ public class Differentiator {
      */
     private String differentiateBinaryOperator(ExpressionItem item, Deque<ExpressionItem> stack) {
         // Get left operand and its derivative
-        String u = stack.getFirst().input;
+        String u = stack.getFirst().input();
         String du = differentiateStack(stack);
 
         // Get right operand and its derivative
-        String v = stack.getFirst().input;
+        String v = stack.getFirst().input();
         String dv = differentiateStack(stack);
 
         // Apply differentiation rule based on operator
         if (du.equals("0")) {
             // Left operand is constant
-            return applyConstantLeftRule(item.operator, u, v, dv);
+            return applyConstantLeftRule(item.operator(), u, v, dv);
         } else if (dv.equals("0")) {
             // Right operand is constant
-            return applyConstantRightRule(item.operator, u, v, du);
+            return applyConstantRightRule(item.operator(), u, v, du);
         } else {
             // Both operands are variable
-            return applyGeneralRule(item.operator, u, v, du, dv);
+            return applyGeneralRule(item.operator(), u, v, du, dv);
         }
     }
 

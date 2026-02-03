@@ -589,7 +589,7 @@ class RectangularIntegratorTest {
         // Function evaluates to -infinity at x=0 (left endpoint with ln(0))
         assertThatThrownBy(() -> integrator.integrate())
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("ln is not defined");
+                .hasMessageContaining("ln: requires positive value");
     }
 
     // ==================== Immutability ====================

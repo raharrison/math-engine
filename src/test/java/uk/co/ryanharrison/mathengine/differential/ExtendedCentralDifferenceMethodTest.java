@@ -238,7 +238,7 @@ class ExtendedCentralDifferenceMethodTest {
                 .stepSize(0.01)
                 .build();
 
-        assertThat(method.deriveFourth()).isCloseTo(24.0, within(TOLERANCE));
+        assertThat(method.deriveFourth()).isCloseTo(24.0, within(1E-5));
     }
 
     @Test

@@ -8,16 +8,10 @@ import uk.co.ryanharrison.mathengine.core.BigRational;
  */
 public final class NodeRational extends NodeNumber {
 
-    private static final int maxIterations = 150;
-    private static final double epsilon = 1E-15;
     private final BigRational value;
 
     public NodeRational(BigRational value) {
         this.value = value;
-    }
-
-    public NodeRational(double value) {
-        this.value = BigRational.of(value, epsilon, maxIterations);
     }
 
     public NodeRational(long numerator, long denominator) {

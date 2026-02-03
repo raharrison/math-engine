@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.util;
 
+import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
@@ -28,6 +29,8 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
  * </ul>
  */
 public final class TypeCoercion {
+
+    private static final int MAX_DENOMINATOR = 10_000;
 
     private TypeCoercion() {
     }
@@ -64,44 +67,29 @@ public final class TypeCoercion {
         return isNumeric(value) || isCollection(value);
     }
 
-    /**
-     * Checks if two values require double arithmetic when combined.
-     *
-     * @param a first value
-     * @param b second value
-     * @return true if result should be double
-     */
-    public static boolean requiresDouble(NodeConstant a, NodeConstant b) {
-        return a instanceof NodeDouble || b instanceof NodeDouble ||
-                a instanceof NodePercent || b instanceof NodePercent;
-    }
-
     // ==================== Type Conversion ====================
 
     public static NodeNumber toNumber(double value) {
-        double absValue = Math.abs(value);
-
-        // 1. If the value is too large to fit in a rational representation, return NodeDouble.
-        if (absValue > Integer.MAX_VALUE) {
+        if (!Double.isFinite(value)) {
             return new NodeDouble(value);
         }
 
-        // 2. If the value is too small (close to zero), return NodeDouble.
-        if (absValue < 1.0 / Integer.MAX_VALUE && absValue != 0) {
-            return new NodeDouble(value);
+        // Integers are always rational
+        if (value == Math.floor(value) && Math.abs(value) <= Long.MAX_VALUE) {
+            return new NodeRational((long) value, 1L);
         }
 
-        // 3. If the number has too many decimal places (arbitrary threshold of 5 decimals), return NodeDouble.
-        if (Double.toString(absValue).split("\\.")[1].length() > 5) {
-            return new NodeDouble(value);
-        }
-
-        // 4. Try to convert to NodeRational.
+        // Find best rational approximation with a small denominator.
+        // Accept it only if it round-trips exactly to the same double.
         try {
-            return new NodeRational(value);  // Try to get fraction approximation
-        } catch (IllegalArgumentException e) {
-            return new NodeDouble(value);  // If it fails, fallback to NodeDouble.
+            BigRational approx = BigRational.of(value, MAX_DENOMINATOR);
+            if (approx.doubleValue() == value) {
+                return new NodeRational(approx);
+            }
+        } catch (ArithmeticException ignored) {
         }
+
+        return new NodeDouble(value);
     }
 
     /**

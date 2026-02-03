@@ -424,7 +424,7 @@ class TrapeziumIntegratorTest {
 
         assertThatThrownBy(() -> integrator.integrate())
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("log is not defined");
+                .hasMessageContaining("log: requires positive");
     }
 
     @Test
@@ -434,7 +434,7 @@ class TrapeziumIntegratorTest {
 
         assertThatThrownBy(() -> integrator.integrate())
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("log is not defined");
+                .hasMessageContaining("log: requires positive");
     }
 
     // ==================== Equality and hashCode ====================

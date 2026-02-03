@@ -142,13 +142,13 @@ public final class Integrator {
 
         // Function case
         if (item.isFunction()) {
-            String u = ExpressionItem.extractFunctionArgument(item.input);
-            String result = IntegrationRules.integrate(item.function, u);
-            return (item.sign == -1 ? "-" : "") + result;
+            String u = ExpressionItem.extractFunctionArgument(item.input());
+            String result = IntegrationRules.integrate(item.function(), u);
+            return (item.sign() == -1 ? "-" : "") + result;
         }
 
         // Variable or constant case
-        return integrateVariable(item.input);
+        return integrateVariable(item.input());
     }
 
     /**
@@ -183,15 +183,15 @@ public final class Integrator {
     private String integrateBinaryOperator(ExpressionItem item, Deque<ExpressionItem> stack) {
         // Get operands - use getFirst to peek at the string, then integrateStack to process
         // This matches what the differentiator does
-        String u = stack.getFirst().input;
+        String u = stack.getFirst().input();
         String intU = integrateStack(stack);  // This recursively processes and removes left operand
         boolean uIsConstant = isConstant(u);
 
-        String v = stack.getFirst().input;
+        String v = stack.getFirst().input();
         String intV = integrateStack(stack);  // This recursively processes and removes right operand
         boolean vIsConstant = isConstant(v);
 
-        char operator = item.operator;
+        char operator = item.operator();
 
         // Apply integration rules based on which operands are constant
         if (uIsConstant && vIsConstant) {

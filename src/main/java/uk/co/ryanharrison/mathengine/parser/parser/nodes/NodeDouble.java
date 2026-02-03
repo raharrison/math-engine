@@ -33,7 +33,9 @@ public final class NodeDouble extends NodeNumber {
 
     @Override
     public String toString() {
-        return String.valueOf(value);
+        return (value == Math.floor(value))
+                ? String.valueOf((long) value)
+                : String.valueOf(value);
     }
 
     @Override
