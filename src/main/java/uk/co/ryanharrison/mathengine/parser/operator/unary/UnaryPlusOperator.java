@@ -21,16 +21,6 @@ public final class UnaryPlusOperator implements UnaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "+";
-    }
-
-    @Override
-    public String displayName() {
-        return "unary plus";
-    }
-
-    @Override
     public Position position() {
         return Position.PREFIX;
     }

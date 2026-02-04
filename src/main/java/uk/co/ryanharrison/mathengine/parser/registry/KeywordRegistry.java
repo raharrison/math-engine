@@ -59,30 +59,27 @@ public final class KeywordRegistry {
      * Includes:
      * <ul>
      *     <li>Reserved keywords: for, in, if, step, to, as, true, false</li>
-     *     <li>Keyword operators: and, or, xor, not, mod, of</li>
+     *     <li>Keyword operators: automatically populated from SymbolRegistry</li>
      * </ul>
      *
      * @return registry with standard keywords
      */
     public static KeywordRegistry withDefaults() {
-        return builder()
-                // Reserved keywords
-                .keyword("for")
-                .keyword("in")
-                .keyword("if")
-                .keyword("step")
-                .keyword("to")
-                .keyword("as")
-                .keyword("true")
-                .keyword("false")
-                // Keyword operators
-                .keywordOperator("and", TokenType.AND)
-                .keywordOperator("or", TokenType.OR)
-                .keywordOperator("xor", TokenType.XOR)
-                .keywordOperator("not", TokenType.NOT)
-                .keywordOperator("mod", TokenType.MOD)
-                .keywordOperator("of", TokenType.OF)
-                .build();
+        Builder builder = builder();
+
+        SymbolRegistry symbolRegistry = SymbolRegistry.getDefault();
+        for (TokenType type : TokenType.values()) {
+            symbolRegistry.getMetadata(type).ifPresent(meta -> {
+                if (meta.isKeyword()) {
+                    builder.keywordOperator(meta.getInputSymbol(), type);
+                }
+            });
+        }
+
+        // Reserved keywords (non-operators)
+        builder.keywords("for", "in", "if", "step", "to", "as", "true", "false");
+
+        return builder.build();
     }
 
     /**

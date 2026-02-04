@@ -35,16 +35,6 @@ public final class PowerOperator implements BinaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "^";
-    }
-
-    @Override
-    public String displayName() {
-        return "exponentiation";
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         // Special case: Matrix ^ Integer = Matrix exponentiation (repeated multiplication)
         if (left instanceof NodeMatrix matrix && right instanceof NodeNumber) {

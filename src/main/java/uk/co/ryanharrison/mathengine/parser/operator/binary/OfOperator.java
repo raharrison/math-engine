@@ -25,16 +25,6 @@ public final class OfOperator implements BinaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "of";
-    }
-
-    @Override
-    public String displayName() {
-        return "percent of";
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         // Use broadcasting to support vectors/matrices
         return BroadcastingEngine.applyBinary(left, right, (l, r) -> {

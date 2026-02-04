@@ -6,109 +6,87 @@ package uk.co.ryanharrison.mathengine.parser.lexer;
 public enum TokenType {
 
     // Structural tokens
-    LPAREN("LPAREN", "'('"),
-    RPAREN("RPAREN", "')'"),
-    LBRACE("LBRACE", "'{'"),
-    RBRACE("RBRACE", "'}'"),
-    LBRACKET("LBRACKET", "'['"),
-    RBRACKET("RBRACKET", "']'"),
-    COMMA("COMMA", "','"),
-    SEMICOLON("SEMICOLON", "';'"),
-    COLON("COLON", "':'"),
+    LPAREN,
+    RPAREN,
+    LBRACE,
+    RBRACE,
+    LBRACKET,
+    RBRACKET,
+    COMMA,
+    SEMICOLON,
+    COLON,
 
     // Literals
-    INTEGER("INTEGER", "number"),
-    DECIMAL("DECIMAL", "number"),
-    SCIENTIFIC("SCIENTIFIC", "number"),
-    RATIONAL("RATIONAL", "number"),
-    STRING("STRING", "string"),
+    INTEGER,
+    DECIMAL,
+    SCIENTIFIC,
+    RATIONAL,
+    STRING,
 
     // Operators - with precedence (lower number = higher precedence)
     // Level 6: Power
-    POWER("POWER", "'^'"),
+    POWER,
 
     // Level 7: Multiplicative
-    MULTIPLY("MULTIPLY", "'*'"),
-    DIVIDE("DIVIDE", "'/'"),
-    AT("AT", "'@'"),
-    MOD("MOD", "'%'"),
-    OF("OF", "of"),
+    MULTIPLY,
+    DIVIDE,
+    AT,
+    MOD,
+    OF,
 
     // Level 8: Additive
-    PLUS("PLUS", "'+'"),
-    MINUS("MINUS", "'-'"),
+    PLUS,
+    MINUS,
 
     // Level 9: Range
-    RANGE("RANGE", "'..'"),
+    RANGE,
 
     // Level 10: Relational
-    LT("LT", "'<'"),
-    GT("GT", "'>'"),
-    LTE("LTE", "'<='"),
-    GTE("GTE", "'>='"),
+    LT,
+    GT,
+    LTE,
+    GTE,
 
     // Level 11: Equality
-    EQ("EQ", "'=='"),
-    NEQ("NEQ", "'!='"),
+    EQ,
+    NEQ,
 
     // Level 12: Logical AND
-    AND("AND", "and"),
+    AND,
 
     // Level 13: Logical XOR
-    XOR("XOR", "xor"),
+    XOR,
 
     // Level 14: Logical OR
-    OR("OR", "or"),
+    OR,
 
     // Level 15: Assignment
-    ASSIGN("ASSIGN", "':='"),
+    ASSIGN,
 
     // Level 16: Lambda
-    LAMBDA("LAMBDA", "'->'"),
+    LAMBDA,
 
     // Unary operators (no precedence - handled differently)
-    NOT("NOT", "not"),
-    FACTORIAL("FACTORIAL", "'!'"),
-    DOUBLE_FACTORIAL("DOUBLE_FACTORIAL", "'!!'"),
-    PERCENT("PERCENT", "'%'"),
+    NOT,
+    FACTORIAL,
+    DOUBLE_FACTORIAL,
+    PERCENT,
 
     // Special
-    IDENTIFIER("IDENTIFIER", "identifier"),
-    KEYWORD("KEYWORD", "keyword"),
-    UNIT("UNIT", "unit"),
-    FUNCTION("FUNCTION", "function"),
-    EOF("EOF", "end of expression"),
-    NEWLINE("NEWLINE", "newline"),
-    ERROR("ERROR", "error"),
+    IDENTIFIER,
+    KEYWORD,
+    UNIT,
+    FUNCTION,
+    EOF,
+    NEWLINE,
+    ERROR,
 
     // Explicit unit reference: @fahrenheit
-    UNIT_REF("UNIT_REF", "unit reference"),
+    UNIT_REF,
 
     // Explicit variable reference: $x
-    VAR_REF("VAR_REF", "variable reference"),
+    VAR_REF,
 
     // Explicit constant reference: #pi
-    CONST_REF("CONST_REF", "constant reference");
-
-    private final String name;
-    private final String display;
-
-    TokenType(String name, String display) {
-        this.name = name;
-        this.display = display;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDisplay() {
-        return display;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
+    CONST_REF
 }
-

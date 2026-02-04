@@ -1,7 +1,10 @@
 package uk.co.ryanharrison.mathengine.parser.lexer;
 
+import uk.co.ryanharrison.mathengine.parser.registry.SymbolRegistry;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Pass 1 of lexical analysis: Scans characters and produces raw tokens.
@@ -28,6 +31,7 @@ import java.util.List;
 public final class TokenScanner {
 
     private final int maxIdentifierLength;
+    private final SymbolRegistry registry = SymbolRegistry.getDefault();
     private CharacterScanner scanner;
     private int start;
     private int tokenStartLine;
@@ -86,7 +90,7 @@ public final class TokenScanner {
 
             case '\n' -> scanner.newLine();
 
-            // Single-character tokens
+            // Structural tokens (not operators)
             case '(' -> addToken(TokenType.LPAREN, "(");
             case ')' -> addToken(TokenType.RPAREN, ")");
             case '{' -> addToken(TokenType.LBRACE, "{");
@@ -96,7 +100,7 @@ public final class TokenScanner {
             case ',' -> addToken(TokenType.COMMA, ",");
             case ';' -> addToken(TokenType.SEMICOLON, ";");
 
-            // Potentially multi-character tokens
+            // Multi-character tokens (need lookahead)
             case ':' -> scanColon();
             case '!' -> scanBang();
             case '=' -> scanEquals();
@@ -105,20 +109,22 @@ public final class TokenScanner {
             case '&' -> scanAmpersand();
             case '|' -> scanPipe();
             case '-' -> scanMinus();
-            case '+' -> addToken(TokenType.PLUS, "+");
-            case '*' -> addToken(TokenType.MULTIPLY, "*");
-            case '/' -> addToken(TokenType.DIVIDE, "/");
-            case '^' -> addToken(TokenType.POWER, "^");
             case '@' -> scanAtSign();
             case '$' -> scanDollarSign();
             case '#' -> scanHashSign();
-            case '%' -> addToken(TokenType.PERCENT, "%");
-
             case '.' -> scanDot();
             case '"' -> scanString('"');
             case '\'' -> scanString('\'');
 
             default -> {
+                // Try registry lookup for simple single-char operators
+                Optional<TokenType> type = registry.findByInputSymbol(String.valueOf(c));
+                if (type.isPresent()) {
+                    addToken(type.get(), String.valueOf(c));
+                    return;
+                }
+
+                // Check for numbers and identifiers
                 if (CharacterScanner.isDigit(c)) {
                     scanNumber();
                 } else if (CharacterScanner.isAlpha(c)) {

@@ -45,16 +45,6 @@ public final class DivideOperator implements BinaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "/";
-    }
-
-    @Override
-    public String displayName() {
-        return "division";
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         return BroadcastingEngine.applyBinary(left, right, (l, r) ->
                 ctx.applyMultiplicative(l, r, this::divideRationals, this::divideDoubles, false)

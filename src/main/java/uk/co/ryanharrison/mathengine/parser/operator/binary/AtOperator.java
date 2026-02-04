@@ -31,16 +31,6 @@ public final class AtOperator implements BinaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "@";
-    }
-
-    @Override
-    public String displayName() {
-        return "at";
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         // Matrix @ Matrix: true matrix multiplication
         if (left instanceof NodeMatrix leftMatrix && right instanceof NodeMatrix rightMatrix) {

@@ -39,16 +39,6 @@ public final class MultiplyOperator implements BinaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "*";
-    }
-
-    @Override
-    public String displayName() {
-        return "multiplication";
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         return BroadcastingEngine.applyBinary(left, right, (l, r) ->
                 ctx.applyMultiplicative(l, r, BigRational::multiply, (a, b) -> a * b, true)

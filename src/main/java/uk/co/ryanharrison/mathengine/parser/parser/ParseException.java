@@ -3,6 +3,7 @@ package uk.co.ryanharrison.mathengine.parser.parser;
 import uk.co.ryanharrison.mathengine.parser.MathEngineException;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
+import uk.co.ryanharrison.mathengine.parser.registry.SymbolRegistry;
 
 /**
  * Exception thrown during parsing.
@@ -135,7 +136,17 @@ public class ParseException extends MathEngineException {
      * Formats a token type for human-readable output.
      */
     private String formatTokenType(TokenType type) {
-        return type == null ? "unknown" : type.getDisplay();
+        if (type == null) {
+            return "unknown";
+        }
+
+        return SymbolRegistry.getDefault()
+                .getMetadata(type)
+                .map(meta -> {
+                    String symbol = meta.getInputSymbol();
+                    return meta.isKeyword() ? symbol : "'" + symbol + "'";
+                })
+                .orElse(type.name().toLowerCase());
     }
 
     /**

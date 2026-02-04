@@ -2,6 +2,7 @@ package uk.co.ryanharrison.mathengine.parser.format;
 
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.registry.SymbolRegistry;
 
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,7 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
     );
 
     private final int decimalPlaces;
+    private final SymbolRegistry registry = SymbolRegistry.getDefault();
 
     private AsciiMathNodeFormatter(int decimalPlaces) {
         this.decimalPlaces = decimalPlaces;
@@ -371,45 +373,11 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
         };
     }
 
-    private static String asciiMathBinaryOp(TokenType type) {
-        return switch (type) {
-            case PLUS -> "+";
-            case MINUS -> "-";
-            case MULTIPLY -> "*";
-            case DIVIDE -> "/";
-            case POWER -> "^";
-            case MOD -> "mod";
-            case EQ -> "=";
-            case NEQ -> "!=";
-            case LT -> "<";
-            case GT -> ">";
-            case LTE -> "<=";
-            case GTE -> ">=";
-            case AND -> "and";
-            case OR -> "or";
-            case XOR -> "\"xor\"";
-            case OF -> "\"of\"";
-            case AT -> "@";
-            case ASSIGN -> "=";
-            case LAMBDA -> "->";
-            case RANGE -> "..";
-            default -> type.name().toLowerCase();
-        };
+    private String asciiMathBinaryOp(TokenType type) {
+        return registry.getAsciiMathFormat(type);
     }
 
-    private static int precedence(TokenType type) {
-        return switch (type) {
-            case ASSIGN, LAMBDA -> 1;
-            case OR -> 2;
-            case XOR -> 3;
-            case AND -> 4;
-            case EQ, NEQ -> 5;
-            case LT, GT, LTE, GTE -> 6;
-            case RANGE -> 7;
-            case PLUS, MINUS -> 8;
-            case MULTIPLY, DIVIDE, MOD, OF, AT -> 9;
-            case POWER -> 10;
-            default -> 0;
-        };
+    private int precedence(TokenType type) {
+        return registry.getPrecedence(type);
     }
 }

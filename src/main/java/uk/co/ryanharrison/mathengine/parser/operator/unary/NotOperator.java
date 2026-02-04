@@ -22,16 +22,6 @@ public final class NotOperator implements UnaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "not";
-    }
-
-    @Override
-    public String displayName() {
-        return "logical not";
-    }
-
-    @Override
     public Position position() {
         return Position.PREFIX;
     }

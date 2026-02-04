@@ -54,7 +54,7 @@ public final class TreeToStack {
                     convert(unary.getOperand(), stack);
                 } else {
                     throw new UnsupportedOperationException(
-                            "Unsupported unary operator: " + opType.getName());
+                            "Unsupported unary operator: " + opType.name());
                 }
             }
 
@@ -85,7 +85,7 @@ public final class TreeToStack {
             case TokenType.DIVIDE -> '/';
             case TokenType.POWER -> '^';
             default -> throw new UnsupportedOperationException(
-                    "Unsupported binary operator: " + type.getName()
+                    "Unsupported binary operator: " + type.name()
             );
         };
     }

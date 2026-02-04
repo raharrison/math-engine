@@ -1,6 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.operator;
 
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 
 /**
  * Interface for binary operators that take two operands.
@@ -11,12 +12,6 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
  * <h2>Implementation Example:</h2>
  * <pre>{@code
  * public class PlusOperator implements BinaryOperator {
- *
- *     @Override
- *     public String symbol() { return "+"; }
- *
- *     @Override
- *     public String displayName() { return "addition"; }
  *
  *     @Override
  *     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {

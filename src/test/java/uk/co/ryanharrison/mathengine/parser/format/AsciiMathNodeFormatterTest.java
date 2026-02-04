@@ -7,6 +7,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.registry.SymbolRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 
 import java.util.List;
@@ -597,7 +598,11 @@ class AsciiMathNodeFormatterTest {
     }
 
     private static NodeBinary binary(TokenType type, Node left, Node right) {
-        return new NodeBinary(token(type, type.getDisplay()), left, right);
+        String lexeme = SymbolRegistry.getDefault()
+                .getMetadata(type)
+                .map(SymbolRegistry.SymbolMetadata::getInputSymbol)
+                .orElse(type.name());
+        return new NodeBinary(token(type, lexeme), left, right);
     }
 
     private static NodeUnary prefixUnary(TokenType type, String lexeme, Node operand) {

@@ -21,16 +21,6 @@ public final class NegateOperator implements UnaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "-";
-    }
-
-    @Override
-    public String displayName() {
-        return "negation";
-    }
-
-    @Override
     public Position position() {
         return Position.PREFIX;
     }

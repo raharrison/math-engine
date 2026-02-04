@@ -16,12 +16,6 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
  * public class NegateOperator implements UnaryOperator {
  *
  *     @Override
- *     public String symbol() { return "-"; }
- *
- *     @Override
- *     public String displayName() { return "negation"; }
- *
- *     @Override
  *     public Position position() { return Position.PREFIX; }
  *
  *     @Override

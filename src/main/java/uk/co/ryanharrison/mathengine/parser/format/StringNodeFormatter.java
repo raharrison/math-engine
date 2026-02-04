@@ -2,6 +2,7 @@ package uk.co.ryanharrison.mathengine.parser.format;
 
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.registry.SymbolRegistry;
 
 /**
  * Formats AST nodes into human-readable plain-text strings.
@@ -28,6 +29,7 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 public final class StringNodeFormatter implements NodeFormatter {
 
     private final int decimalPlaces;
+    private final SymbolRegistry registry = SymbolRegistry.getDefault();
 
     private StringNodeFormatter(int decimalPlaces) {
         this.decimalPlaces = decimalPlaces;
@@ -215,47 +217,15 @@ public final class StringNodeFormatter implements NodeFormatter {
 
     // ==================== Operator Symbol Helpers ====================
 
-    private static String binaryOperatorSymbol(TokenType type) {
-        return switch (type) {
-            case PLUS -> "+";
-            case MINUS -> "-";
-            case MULTIPLY -> "*";
-            case DIVIDE -> "/";
-            case POWER -> "^";
-            case MOD -> "%";
-            case EQ -> "==";
-            case NEQ -> "!=";
-            case LT -> "<";
-            case GT -> ">";
-            case LTE -> "<=";
-            case GTE -> ">=";
-            case AND -> "and";
-            case OR -> "or";
-            case XOR -> "xor";
-            case OF -> "of";
-            case AT -> "@";
-            case ASSIGN -> ":=";
-            case LAMBDA -> "->";
-            case RANGE -> "..";
-            default -> type.name().toLowerCase();
-        };
+    private String binaryOperatorSymbol(TokenType type) {
+        return registry.getStringFormat(type);
     }
 
-    private static String prefixOperatorSymbol(TokenType type) {
-        return switch (type) {
-            case MINUS -> "-";
-            case PLUS -> "+";
-            case NOT -> "not ";
-            default -> type.name().toLowerCase() + " ";
-        };
+    private String prefixOperatorSymbol(TokenType type) {
+        return registry.getStringFormat(type);
     }
 
-    private static String postfixOperatorSymbol(TokenType type) {
-        return switch (type) {
-            case FACTORIAL -> "!";
-            case DOUBLE_FACTORIAL -> "!!";
-            case PERCENT -> "%";
-            default -> type.name().toLowerCase();
-        };
+    private String postfixOperatorSymbol(TokenType type) {
+        return registry.getStringFormat(type);
     }
 }

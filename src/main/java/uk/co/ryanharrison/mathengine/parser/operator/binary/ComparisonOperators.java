@@ -2,9 +2,7 @@ package uk.co.ryanharrison.mathengine.parser.operator.binary;
 
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
-import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeMatrix;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
 import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
@@ -33,32 +31,19 @@ public final class ComparisonOperators {
      * Supports unit conversion for same-type units (e.g., 500 cm < 6 m).
      * </p>
      */
-    public static final BinaryOperator LESS_THAN = new BinaryOperator() {
-        @Override
-        public String symbol() {
-            return "<";
+    public static final BinaryOperator LESS_THAN = (left, right, ctx) -> {
+        // Ordering operators don't work on containers
+        if (left instanceof NodeVector || left instanceof NodeMatrix ||
+                right instanceof NodeVector || right instanceof NodeMatrix) {
+            throw new TypeError("Cannot use '<' on containers. Use '==' or '!=' for equality checks.");
         }
 
-        @Override
-        public String displayName() {
-            return "less than";
+        if (!left.isNumeric() || !right.isNumeric()) {
+            throw new TypeError("Cannot compare non-numeric types with '<': " +
+                    left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
         }
 
-        @Override
-        public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-            // Ordering operators don't work on containers
-            if (left instanceof NodeVector || left instanceof NodeMatrix ||
-                    right instanceof NodeVector || right instanceof NodeMatrix) {
-                throw new TypeError("Cannot use '<' on containers. Use '==' or '!=' for equality checks.");
-            }
-
-            if (!left.isNumeric() || !right.isNumeric()) {
-                throw new TypeError("Cannot compare non-numeric types with '<': " +
-                        left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
-            }
-
-            return NodeBoolean.of(NumericOperations.isLessThan(left, right));
-        }
+        return NodeBoolean.of(NumericOperations.isLessThan(left, right));
     };
 
     /**
@@ -67,32 +52,19 @@ public final class ComparisonOperators {
      * Supports unit conversion for same-type units (e.g., 6 m > 500 cm).
      * </p>
      */
-    public static final BinaryOperator GREATER_THAN = new BinaryOperator() {
-        @Override
-        public String symbol() {
-            return ">";
+    public static final BinaryOperator GREATER_THAN = (left, right, ctx) -> {
+        // Ordering operators don't work on containers
+        if (left instanceof NodeVector || left instanceof NodeMatrix ||
+                right instanceof NodeVector || right instanceof NodeMatrix) {
+            throw new TypeError("Cannot use '>' on containers. Use '==' or '!=' for equality checks.");
         }
 
-        @Override
-        public String displayName() {
-            return "greater than";
+        if (!left.isNumeric() || !right.isNumeric()) {
+            throw new TypeError("Cannot compare non-numeric types with '>': " +
+                    left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
         }
 
-        @Override
-        public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-            // Ordering operators don't work on containers
-            if (left instanceof NodeVector || left instanceof NodeMatrix ||
-                    right instanceof NodeVector || right instanceof NodeMatrix) {
-                throw new TypeError("Cannot use '>' on containers. Use '==' or '!=' for equality checks.");
-            }
-
-            if (!left.isNumeric() || !right.isNumeric()) {
-                throw new TypeError("Cannot compare non-numeric types with '>': " +
-                        left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
-            }
-
-            return NodeBoolean.of(NumericOperations.isGreaterThan(left, right));
-        }
+        return NodeBoolean.of(NumericOperations.isGreaterThan(left, right));
     };
 
     /**
@@ -101,32 +73,19 @@ public final class ComparisonOperators {
      * Supports unit conversion for same-type units.
      * </p>
      */
-    public static final BinaryOperator LESS_THAN_OR_EQUAL = new BinaryOperator() {
-        @Override
-        public String symbol() {
-            return "<=";
+    public static final BinaryOperator LESS_THAN_OR_EQUAL = (left, right, ctx) -> {
+        // Ordering operators don't work on containers
+        if (left instanceof NodeVector || left instanceof NodeMatrix ||
+                right instanceof NodeVector || right instanceof NodeMatrix) {
+            throw new TypeError("Cannot use '<=' on containers. Use '==' or '!=' for equality checks.");
         }
 
-        @Override
-        public String displayName() {
-            return "less than or equal";
+        if (!left.isNumeric() || !right.isNumeric()) {
+            throw new TypeError("Cannot compare non-numeric types with '<=': " +
+                    left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
         }
 
-        @Override
-        public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-            // Ordering operators don't work on containers
-            if (left instanceof NodeVector || left instanceof NodeMatrix ||
-                    right instanceof NodeVector || right instanceof NodeMatrix) {
-                throw new TypeError("Cannot use '<=' on containers. Use '==' or '!=' for equality checks.");
-            }
-
-            if (!left.isNumeric() || !right.isNumeric()) {
-                throw new TypeError("Cannot compare non-numeric types with '<=': " +
-                        left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
-            }
-
-            return NodeBoolean.of(NumericOperations.isLessThanOrEqual(left, right));
-        }
+        return NodeBoolean.of(NumericOperations.isLessThanOrEqual(left, right));
     };
 
     /**
@@ -135,32 +94,19 @@ public final class ComparisonOperators {
      * Supports unit conversion for same-type units.
      * </p>
      */
-    public static final BinaryOperator GREATER_THAN_OR_EQUAL = new BinaryOperator() {
-        @Override
-        public String symbol() {
-            return ">=";
+    public static final BinaryOperator GREATER_THAN_OR_EQUAL = (left, right, ctx) -> {
+        // Ordering operators don't work on containers
+        if (left instanceof NodeVector || left instanceof NodeMatrix ||
+                right instanceof NodeVector || right instanceof NodeMatrix) {
+            throw new TypeError("Cannot use '>=' on containers. Use '==' or '!=' for equality checks.");
         }
 
-        @Override
-        public String displayName() {
-            return "greater than or equal";
+        if (!left.isNumeric() || !right.isNumeric()) {
+            throw new TypeError("Cannot compare non-numeric types with '>=': " +
+                    left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
         }
 
-        @Override
-        public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-            // Ordering operators don't work on containers
-            if (left instanceof NodeVector || left instanceof NodeMatrix ||
-                    right instanceof NodeVector || right instanceof NodeMatrix) {
-                throw new TypeError("Cannot use '>=' on containers. Use '==' or '!=' for equality checks.");
-            }
-
-            if (!left.isNumeric() || !right.isNumeric()) {
-                throw new TypeError("Cannot compare non-numeric types with '>=': " +
-                        left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
-            }
-
-            return NodeBoolean.of(NumericOperations.isGreaterThanOrEqual(left, right));
-        }
+        return NodeBoolean.of(NumericOperations.isGreaterThanOrEqual(left, right));
     };
 
     /**
@@ -176,36 +122,23 @@ public final class ComparisonOperators {
      *     <li>Containers: structural equality via equals()</li>
      * </ul>
      */
-    public static final BinaryOperator EQUAL = new BinaryOperator() {
-        @Override
-        public String symbol() {
-            return "==";
-        }
-
-        @Override
-        public String displayName() {
-            return "equal";
-        }
-
-        @Override
-        public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-            // For containers (vectors/matrices), use structural equality
-            if ((left instanceof NodeVector || left instanceof NodeMatrix) ||
-                    (right instanceof NodeVector || right instanceof NodeMatrix)) {
-                return NodeBoolean.of(left.equals(right));
-            }
-
-            // Identity check
-            if (left == right) return NodeBoolean.TRUE;
-
-            // Numeric comparison with proper type handling
-            if (left.isNumeric() && right.isNumeric()) {
-                return NodeBoolean.of(NumericOperations.areEqual(left, right));
-            }
-
-            // Non-numeric: structural equality
+    public static final BinaryOperator EQUAL = (left, right, ctx) -> {
+        // For containers (vectors/matrices), use structural equality
+        if ((left instanceof NodeVector || left instanceof NodeMatrix) ||
+                (right instanceof NodeVector || right instanceof NodeMatrix)) {
             return NodeBoolean.of(left.equals(right));
         }
+
+        // Identity check
+        if (left == right) return NodeBoolean.TRUE;
+
+        // Numeric comparison with proper type handling
+        if (left.isNumeric() && right.isNumeric()) {
+            return NodeBoolean.of(NumericOperations.areEqual(left, right));
+        }
+
+        // Non-numeric: structural equality
+        return NodeBoolean.of(left.equals(right));
     };
 
     /**
@@ -215,35 +148,22 @@ public final class ComparisonOperators {
      * Uses the same type-aware comparison rules as ==.
      * </p>
      */
-    public static final BinaryOperator NOT_EQUAL = new BinaryOperator() {
-        @Override
-        public String symbol() {
-            return "!=";
-        }
-
-        @Override
-        public String displayName() {
-            return "not equal";
-        }
-
-        @Override
-        public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-            // For containers (vectors/matrices), use structural inequality
-            if ((left instanceof NodeVector || left instanceof NodeMatrix) ||
-                    (right instanceof NodeVector || right instanceof NodeMatrix)) {
-                return NodeBoolean.of(!left.equals(right));
-            }
-
-            // Identity check
-            if (left == right) return NodeBoolean.FALSE;
-
-            // Numeric comparison with proper type handling
-            if (left.isNumeric() && right.isNumeric()) {
-                return NodeBoolean.of(!NumericOperations.areEqual(left, right));
-            }
-
-            // Non-numeric: structural inequality
+    public static final BinaryOperator NOT_EQUAL = (left, right, ctx) -> {
+        // For containers (vectors/matrices), use structural inequality
+        if ((left instanceof NodeVector || left instanceof NodeMatrix) ||
+                (right instanceof NodeVector || right instanceof NodeMatrix)) {
             return NodeBoolean.of(!left.equals(right));
         }
+
+        // Identity check
+        if (left == right) return NodeBoolean.FALSE;
+
+        // Numeric comparison with proper type handling
+        if (left.isNumeric() && right.isNumeric()) {
+            return NodeBoolean.of(!NumericOperations.areEqual(left, right));
+        }
+
+        // Non-numeric: structural inequality
+        return NodeBoolean.of(!left.equals(right));
     };
 }

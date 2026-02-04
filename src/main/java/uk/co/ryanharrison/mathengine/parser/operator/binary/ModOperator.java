@@ -38,16 +38,6 @@ public final class ModOperator implements BinaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "mod";
-    }
-
-    @Override
-    public String displayName() {
-        return "modulo";
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         return BroadcastingEngine.applyBinary(left, right, (l, r) -> {
             double lVal = ctx.toNumber(l).doubleValue();

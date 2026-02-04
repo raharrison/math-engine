@@ -36,16 +36,6 @@ public final class PlusOperator implements BinaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "+";
-    }
-
-    @Override
-    public String displayName() {
-        return "addition";
-    }
-
-    @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
         return BroadcastingEngine.applyBinary(left, right, (l, r) ->
                 ctx.applyAdditive(l, r, BigRational::add, Double::sum, true)

@@ -32,16 +32,6 @@ public final class LogicalOperators {
      */
     public static final BinaryOperator AND = new BinaryOperator() {
         @Override
-        public String symbol() {
-            return "&&";
-        }
-
-        @Override
-        public String displayName() {
-            return "logical and";
-        }
-
-        @Override
         public boolean requiresShortCircuit() {
             return true;
         }
@@ -76,16 +66,6 @@ public final class LogicalOperators {
      */
     public static final BinaryOperator OR = new BinaryOperator() {
         @Override
-        public String symbol() {
-            return "||";
-        }
-
-        @Override
-        public String displayName() {
-            return "logical or";
-        }
-
-        @Override
         public boolean requiresShortCircuit() {
             return true;
         }
@@ -118,29 +98,16 @@ public final class LogicalOperators {
      * Logical XOR operator (xor).
      * Supports broadcasting but not short-circuit evaluation.
      */
-    public static final BinaryOperator XOR = new BinaryOperator() {
-        @Override
-        public String symbol() {
-            return "xor";
+    public static final BinaryOperator XOR = (left, right, ctx) -> {
+        // Logical operators only work on scalars
+        if (left instanceof NodeVector || left instanceof NodeMatrix ||
+                right instanceof NodeVector || right instanceof NodeMatrix) {
+            throw new uk.co.ryanharrison.mathengine.parser.evaluator.TypeError(
+                    "Logical XOR (xor) does not work on containers");
         }
 
-        @Override
-        public String displayName() {
-            return "logical xor";
-        }
-
-        @Override
-        public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-            // Logical operators only work on scalars
-            if (left instanceof NodeVector || left instanceof NodeMatrix ||
-                    right instanceof NodeVector || right instanceof NodeMatrix) {
-                throw new uk.co.ryanharrison.mathengine.parser.evaluator.TypeError(
-                        "Logical XOR (xor) does not work on containers");
-            }
-
-            boolean lVal = ctx.toBoolean(left);
-            boolean rVal = ctx.toBoolean(right);
-            return NodeBoolean.of(lVal ^ rVal);
-        }
+        boolean lVal = ctx.toBoolean(left);
+        boolean rVal = ctx.toBoolean(right);
+        return NodeBoolean.of(lVal ^ rVal);
     };
 }

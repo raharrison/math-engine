@@ -26,16 +26,6 @@ public final class DoubleFactorialOperator implements UnaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "!!";
-    }
-
-    @Override
-    public String displayName() {
-        return "double factorial";
-    }
-
-    @Override
     public Position position() {
         return Position.POSTFIX;
     }

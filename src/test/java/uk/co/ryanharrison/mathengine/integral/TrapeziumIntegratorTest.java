@@ -423,8 +423,8 @@ class TrapeziumIntegratorTest {
         TrapeziumIntegrator integrator = TrapeziumIntegrator.of(f, -1.0, 1.0, 100);
 
         assertThatThrownBy(() -> integrator.integrate())
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("log: requires positive");
+                .isInstanceOf(ArithmeticException.class)
+                .hasMessageContaining("Function evaluation produced non-finite value at x = -0.98: NaN");
     }
 
     @Test
@@ -433,8 +433,8 @@ class TrapeziumIntegratorTest {
         TrapeziumIntegrator integrator = TrapeziumIntegrator.of(f, 0.0, 1.0, 10);
 
         assertThatThrownBy(() -> integrator.integrate())
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("log: requires positive");
+                .isInstanceOf(ArithmeticException.class)
+                .hasMessageContaining("Function evaluation at lower bound produced non-finite value: NaN");
     }
 
     // ==================== Equality and hashCode ====================

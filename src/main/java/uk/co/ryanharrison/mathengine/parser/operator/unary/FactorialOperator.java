@@ -25,16 +25,6 @@ public final class FactorialOperator implements UnaryOperator {
     }
 
     @Override
-    public String symbol() {
-        return "!";
-    }
-
-    @Override
-    public String displayName() {
-        return "factorial";
-    }
-
-    @Override
     public Position position() {
         return Position.POSTFIX;
     }
