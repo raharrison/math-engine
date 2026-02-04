@@ -5,6 +5,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationException;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
 import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 
@@ -151,7 +152,15 @@ public final class FunctionExecutor {
 
         // Execute the function (broadcasting handled by function implementation)
         var ctx = new FunctionContext(function.name(), context, functionCaller);
-        return function.apply(normalizedArgs, ctx);
+        try {
+            return function.apply(normalizedArgs, ctx);
+        } catch (IllegalArgumentException | ArithmeticException e) {
+            // In silent validation mode, return NaN instead of throwing domain errors
+            if (context.getConfig().silentValidation()) {
+                return new NodeDouble(Double.NaN);
+            }
+            throw e;
+        }
     }
 
     /**

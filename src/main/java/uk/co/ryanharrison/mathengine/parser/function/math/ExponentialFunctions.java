@@ -70,10 +70,7 @@ public final class ExponentialFunctions {
             .describedAs("Natural logarithm (base e)")
             .inCategory(LOGARITHMIC)
             .takingUnary()
-            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> {
-                ctx.requirePositive(value);
-                return Math.log(value);
-            }));
+            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> Math.log(ctx.requirePositive(value))));
 
     /**
      * Common logarithm (log10, base 10)
@@ -84,10 +81,8 @@ public final class ExponentialFunctions {
             .describedAs("Common logarithm (base 10)")
             .inCategory(LOGARITHMIC)
             .takingUnary()
-            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> {
-                ctx.requirePositive(value);
-                return Math.log10(value);
-            }));
+            .implementedBy((arg, ctx) ->
+                    ctx.applyWithBroadcasting(arg, value -> Math.log10(ctx.requirePositive(value))));
 
     private static final double LOG_2 = Math.log(2);
 
@@ -99,10 +94,8 @@ public final class ExponentialFunctions {
             .describedAs("Binary logarithm (base 2)")
             .inCategory(LOGARITHMIC)
             .takingUnary()
-            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> {
-                ctx.requirePositive(value);
-                return Math.log(value) / LOG_2;
-            }));
+            .implementedBy((arg, ctx) ->
+                    ctx.applyWithBroadcasting(arg, value -> Math.log(ctx.requirePositive(value)) / LOG_2));
 
     /**
      * Logarithm with arbitrary base
@@ -116,14 +109,18 @@ public final class ExponentialFunctions {
             .implementedBy((first, second, ctx) -> {
                 double x = ctx.toNumber(first).doubleValue();
                 double base = ctx.toNumber(second).doubleValue();
-                ctx.requirePositive(x);
-                if (base <= 0) {
-                    throw ctx.error("requires positive base, got: " + base);
-                }
-                if (base == 1) {
+                double validX = ctx.requirePositive(x);
+                double validBase = ctx.requirePositive(base);
+
+                // Check base != 1 (needs special handling for silent mode)
+                if (validBase == 1.0) {
+                    if (ctx.isSilentValidation()) {
+                        return new NodeDouble(Double.NaN);
+                    }
                     throw ctx.error("base cannot be 1");
                 }
-                return new NodeDouble(Math.log(x) / Math.log(base));
+
+                return new NodeDouble(Math.log(validX) / Math.log(validBase));
             });
 
     /**
@@ -134,10 +131,8 @@ public final class ExponentialFunctions {
             .describedAs("ln(1 + x)")
             .inCategory(LOGARITHMIC)
             .takingUnary()
-            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> {
-                ctx.requireInRange(value, -0.999999999, Double.MAX_VALUE);
-                return Math.log1p(value);
-            }));
+            .implementedBy((arg, ctx) ->
+                    ctx.applyWithBroadcasting(arg, value -> Math.log1p(ctx.requireInRange(value, -0.999999999, Double.MAX_VALUE))));
 
     // ==================== Power and Root Functions ====================
 
@@ -149,10 +144,8 @@ public final class ExponentialFunctions {
             .describedAs("Square root")
             .inCategory(EXPONENTIAL)
             .takingUnary()
-            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> {
-                ctx.requireNonNegative(value);
-                return Math.sqrt(value);
-            }));
+            .implementedBy((arg, ctx) ->
+                    ctx.applyWithBroadcasting(arg, value -> Math.sqrt(ctx.requireNonNegative(value))));
 
     /**
      * Cube root
@@ -180,11 +173,14 @@ public final class ExponentialFunctions {
                 if (x < 0 && n == Math.floor(n) && !Double.isInfinite(n)) {
                     long nInt = (long) n;
                     if (nInt % 2 == 0) {
+                        if (ctx.isSilentValidation()) {
+                            return new NodeDouble(Double.NaN);
+                        }
                         throw ctx.error("cannot take even root of negative number (x=" + x + ", n=" + n + ")");
                     }
                 }
-                ctx.requireNonZero(n);
-                return new NodeDouble(Math.pow(x, 1.0 / n));
+                double validN = ctx.requireNonZero(n);
+                return new NodeDouble(Math.pow(x, 1.0 / validN));
             });
 
     /**

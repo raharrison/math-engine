@@ -1,0 +1,207 @@
+{
+    "category": "Configuration - Silent Validation",
+    "description": "Tests silent validation mode where domain errors return NaN instead of throwing exceptions",
+    "tests": [
+        {
+            "id": "ln_negative_silent",
+            "input": "ln(-1)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "ln(-1) returns NaN in silent mode instead of throwing"
+        },
+        {
+            "id": "ln_negative_standard",
+            "input": "ln(-1)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "config": {
+                "silentValidation": false
+            },
+            "notes": "ln(-1) throws exception in standard mode"
+        },
+        {
+            "id": "log_negative_silent",
+            "input": "log(-5)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "log(-5) returns NaN in silent mode"
+        },
+        {
+            "id": "log2_negative_silent",
+            "input": "log2(-10)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "log2(-10) returns NaN in silent mode"
+        },
+        {
+            "id": "sqrt_negative_silent",
+            "input": "sqrt(-4)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "sqrt(-4) returns NaN in silent mode"
+        },
+        {
+            "id": "sqrt_negative_standard",
+            "input": "sqrt(-4)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "config": {
+                "silentValidation": false
+            },
+            "notes": "sqrt(-4) throws exception in standard mode"
+        },
+        {
+            "id": "asin_out_of_range_silent",
+            "input": "asin(2)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "asin(2) returns NaN in silent mode (domain is [-1, 1])"
+        },
+        {
+            "id": "acos_out_of_range_silent",
+            "input": "acos(-2)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "acos(-2) returns NaN in silent mode (domain is [-1, 1])"
+        },
+        {
+            "id": "logn_negative_base_silent",
+            "input": "logn(10, -2)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "logn with negative base returns NaN in silent mode"
+        },
+        {
+            "id": "logn_negative_arg_silent",
+            "input": "logn(-5, 2)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "logn with negative argument returns NaN in silent mode"
+        },
+        {
+            "id": "logn_base_one_silent",
+            "input": "logn(10, 1)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "logn with base=1 returns NaN in silent mode"
+        },
+        {
+            "id": "nroot_zero_n_silent",
+            "input": "nroot(8, 0)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "nroot with n=0 returns NaN in silent mode"
+        },
+        {
+            "id": "nroot_even_negative_silent",
+            "input": "nroot(-8, 2)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "Even root of negative number returns NaN in silent mode"
+        },
+        {
+            "id": "vector_ln_mixed_silent",
+            "input": "ln({1, -1, 1.7})",
+            "expected": "{0, NaN, 0.5306282510621704}",
+            "expectedType": "NodeVector",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "Vector ln propagates NaN for invalid elements in silent mode"
+        },
+        {
+            "id": "nan_input_propagates",
+            "input": "ln(0/0)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "NaN input propagates through validation (NaN <= 0 is false)"
+        },
+        {
+            "id": "ln_zero_silent",
+            "input": "ln(0)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "ln(0) returns NaN in silent mode"
+        },
+        {
+            "id": "ln_positive_silent",
+            "input": "ln(2.718281828)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-9,
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "Valid inputs work normally in silent mode"
+        },
+        {
+            "id": "sqrt_positive_silent",
+            "input": "sqrt(4)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "Valid sqrt works normally in silent mode"
+        },
+        {
+            "id": "log1p_out_of_range_silent",
+            "input": "log1p(-2)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "log1p with out of range value returns NaN in silent mode"
+        },
+        {
+            "id": "expression_with_nan_silent",
+            "input": "2 * ln(-1) + 5",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "config": {
+                "silentValidation": true
+            },
+            "notes": "NaN propagates through arithmetic expressions"
+        }
+    ]
+}

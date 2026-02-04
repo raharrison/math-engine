@@ -91,6 +91,18 @@ public final class FunctionContext {
         return evaluationContext.getAngleUnit();
     }
 
+    /**
+     * Gets the silent validation mode setting.
+     * <p>
+     * When silent validation is enabled, validation failures return NaN
+     * instead of throwing exceptions.
+     *
+     * @return true if silent validation is enabled
+     */
+    public boolean isSilentValidation() {
+        return evaluationContext.getConfig().silentValidation();
+    }
+
     // ==================== Error Reporting ====================
 
     /**
@@ -117,52 +129,80 @@ public final class FunctionContext {
 
     /**
      * Requires the value to be strictly positive ({@code > 0}).
+     * <p>
+     * In silent validation mode, returns NaN for invalid values instead of throwing.
      *
      * @param value the value to check
-     * @throws IllegalArgumentException if the value is not positive
+     * @return the value if valid, NaN if invalid and silent mode enabled
+     * @throws IllegalArgumentException if the value is not positive and silent mode disabled
      */
-    public void requirePositive(double value) {
+    public double requirePositive(double value) {
         if (value <= 0) {
+            if (isSilentValidation()) {
+                return Double.NaN;
+            }
             throw error("requires positive value, got: " + value);
         }
+        return value;
     }
 
     /**
      * Requires the value to be non-negative ({@code >= 0}).
+     * <p>
+     * In silent validation mode, returns NaN for invalid values instead of throwing.
      *
      * @param value the value to check
-     * @throws IllegalArgumentException if the value is negative
+     * @return the value if valid, NaN if invalid and silent mode enabled
+     * @throws IllegalArgumentException if the value is negative and silent mode disabled
      */
-    public void requireNonNegative(double value) {
+    public double requireNonNegative(double value) {
         if (value < 0) {
+            if (isSilentValidation()) {
+                return Double.NaN;
+            }
             throw error("requires non-negative value, got: " + value);
         }
+        return value;
     }
 
     /**
      * Requires the value to be non-zero.
+     * <p>
+     * In silent validation mode, returns NaN for invalid values instead of throwing.
      *
      * @param value the value to check
-     * @throws IllegalArgumentException if the value is zero
+     * @return the value if valid, NaN if invalid and silent mode enabled
+     * @throws IllegalArgumentException if the value is zero and silent mode disabled
      */
-    public void requireNonZero(double value) {
+    public double requireNonZero(double value) {
         if (value == 0) {
+            if (isSilentValidation()) {
+                return Double.NaN;
+            }
             throw error("requires non-zero value");
         }
+        return value;
     }
 
     /**
      * Requires the value to be within a specified range (inclusive).
+     * <p>
+     * In silent validation mode, returns NaN for invalid values instead of throwing.
      *
      * @param value the value to check
      * @param min   the minimum allowed value (inclusive)
      * @param max   the maximum allowed value (inclusive)
-     * @throws IllegalArgumentException if the value is outside the range
+     * @return the value if valid, NaN if invalid and silent mode enabled
+     * @throws IllegalArgumentException if the value is outside the range and silent mode disabled
      */
-    public void requireInRange(double value, double min, double max) {
+    public double requireInRange(double value, double min, double max) {
         if (value < min || value > max) {
+            if (isSilentValidation()) {
+                return Double.NaN;
+            }
             throw error("requires value in range [" + min + ", " + max + "], got: " + value);
         }
+        return value;
     }
 
     // ==================== Type Coercion ====================

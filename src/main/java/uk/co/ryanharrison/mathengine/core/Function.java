@@ -98,6 +98,7 @@ public final class Function {
                 .userDefinedFunctionsEnabled(false)
                 .forceDoubleArithmetic(true)
                 .angleUnit(this.angleUnit)
+                .silentValidation(true)
                 .build();
         this.engine = MathEngine.create(config);
         this.compiledExpression = engine.compile(equation);

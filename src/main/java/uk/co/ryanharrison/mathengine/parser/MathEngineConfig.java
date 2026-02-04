@@ -57,6 +57,7 @@ public final class MathEngineConfig {
     private final AngleUnit angleUnit;
     private final int decimalPlaces;
     private final boolean forceDoubleArithmetic;
+    private final boolean silentValidation;
 
     // Limits
     private final int maxRecursionDepth;
@@ -89,6 +90,7 @@ public final class MathEngineConfig {
         this.angleUnit = builder.angleUnit;
         this.decimalPlaces = builder.decimalPlaces;
         this.forceDoubleArithmetic = builder.forceDoubleArithmetic;
+        this.silentValidation = builder.silentValidation;
 
         // Limits
         this.maxRecursionDepth = builder.maxRecursionDepth;
@@ -187,6 +189,7 @@ public final class MathEngineConfig {
                 .angleUnit(angleUnit)
                 .decimalPlaces(decimalPlaces)
                 .forceDoubleArithmetic(forceDoubleArithmetic)
+                .silentValidation(silentValidation)
                 .maxRecursionDepth(maxRecursionDepth)
                 .maxExpressionDepth(maxExpressionDepth)
                 .maxVectorSize(maxVectorSize)
@@ -229,6 +232,20 @@ public final class MathEngineConfig {
      */
     public boolean forceDoubleArithmetic() {
         return forceDoubleArithmetic;
+    }
+
+    /**
+     * Whether validation failures return NaN instead of throwing exceptions.
+     * <p>
+     * When enabled, invalid domain values (negative for log, etc.) silently
+     * produce NaN rather than halting evaluation with an exception.
+     * This dramatically improves performance in hot loops (e.g., plotting)
+     * by avoiding exception overhead.
+     *
+     * @return true if validation should return NaN instead of throwing
+     */
+    public boolean silentValidation() {
+        return silentValidation;
     }
 
     // ==================== Limits ====================
@@ -408,6 +425,7 @@ public final class MathEngineConfig {
         private AngleUnit angleUnit = AngleUnit.RADIANS;
         private int decimalPlaces = -1;
         private boolean forceDoubleArithmetic = false;
+        private boolean silentValidation = false;
         private int maxRecursionDepth = 1000;
         private int maxExpressionDepth = 1000;
         private int maxVectorSize = 1_000_000;
@@ -455,6 +473,17 @@ public final class MathEngineConfig {
          */
         public Builder forceDoubleArithmetic(boolean force) {
             this.forceDoubleArithmetic = force;
+            return this;
+        }
+
+        /**
+         * Enables silent validation mode where validation failures return NaN instead of throwing exceptions.
+         * <p>
+         * This is particularly useful for plotting functions where invalid domain values
+         * should be skipped rather than causing exceptions that disrupt the rendering loop.
+         */
+        public Builder silentValidation(boolean enabled) {
+            this.silentValidation = enabled;
             return this;
         }
 

@@ -29,7 +29,8 @@ public record TestConfig(
         Boolean unitsEnabled,
         Integer maxRecursionDepth,
         Boolean forceDoubleArithmetic,
-        Integer decimalPlaces
+        Integer decimalPlaces,
+        Boolean silentValidation
 ) {
 
     /**
@@ -72,6 +73,9 @@ public record TestConfig(
         }
         if (decimalPlaces != null) {
             builder.decimalPlaces(decimalPlaces);
+        }
+        if (silentValidation != null) {
+            builder.silentValidation(silentValidation);
         }
 
         return builder.build();

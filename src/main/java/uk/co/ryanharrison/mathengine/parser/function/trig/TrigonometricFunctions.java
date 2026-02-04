@@ -49,8 +49,7 @@ public final class TrigonometricFunctions {
             .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
             .implementedBy((arg, ctx) ->
                     ctx.applyWithBroadcasting(arg, value -> {
-                        ctx.requireInRange(value, -1.0, 1.0);
-                        return ctx.fromRadians(Math.asin(value));
+                        return ctx.fromRadians(Math.asin(ctx.requireInRange(value, -1.0, 1.0)));
                     }));
 
     /**
@@ -64,8 +63,7 @@ public final class TrigonometricFunctions {
             .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
             .implementedBy((arg, ctx) ->
                     ctx.applyWithBroadcasting(arg, value -> {
-                        ctx.requireInRange(value, -1.0, 1.0);
-                        return ctx.fromRadians(Math.acos(value));
+                        return ctx.fromRadians(Math.acos(ctx.requireInRange(value, -1.0, 1.0)));
                     }));
 
     /**
