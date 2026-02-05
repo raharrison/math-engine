@@ -969,11 +969,6 @@ public final class MainFrame extends JFrame {
                 doc.insertString(doc.getLength(), "\n", normalStyle);
             }
 
-            // Total count
-            Set<String> allFunctionNames = mathEngine.getAllFunctionNames();
-            doc.insertString(doc.getLength(), String.format("Total: %d function names (including aliases)\n",
-                    allFunctionNames.size()), commentStyle);
-
         } catch (BadLocationException e) {
             // Ignore
         }

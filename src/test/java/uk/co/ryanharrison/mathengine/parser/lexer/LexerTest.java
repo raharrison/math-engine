@@ -109,6 +109,97 @@ class LexerTest {
         assertThat((Double) tokens.getFirst().literal()).isCloseTo(expected, within(0.000001));
     }
 
+    // ==================== Double Literals (forced with 'd' suffix) ====================
+
+    @ParameterizedTest
+    @CsvSource({
+            "23d, 23.0",
+            "42D, 42.0",
+            "0d, 0.0"
+    })
+    void tokenizeIntegerWithDoubleSuffix(String input, double expected) {
+        List<Token> tokens = lexer.tokenize(input);
+
+        assertThat(tokens).hasSize(2); // DOUBLE + EOF
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.DOUBLE);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
+        assertThat((Double) tokens.getFirst().literal()).isCloseTo(expected, within(0.000001));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "3.14d, 3.14",
+            "0.5D, 0.5",
+            "123.456d, 123.456"
+    })
+    void tokenizeDecimalWithDoubleSuffix(String input, double expected) {
+        List<Token> tokens = lexer.tokenize(input);
+
+        assertThat(tokens).hasSize(2); // DOUBLE + EOF
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.DOUBLE);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
+        assertThat((Double) tokens.getFirst().literal()).isCloseTo(expected, within(0.000001));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1/2d, 0.5",
+            "3/4D, 0.75",
+            "22/7d, 3.142857142857143"
+    })
+    void tokenizeRationalWithDoubleSuffix(String input, double expected) {
+        List<Token> tokens = lexer.tokenize(input);
+
+        assertThat(tokens).hasSize(2); // DOUBLE + EOF
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.DOUBLE);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
+        assertThat((Double) tokens.getFirst().literal()).isCloseTo(expected, within(0.000001));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1e3d, 1000.0",
+            "2.5E-2D, 0.025"
+    })
+    void tokenizeScientificWithDoubleSuffix(String input, double expected) {
+        List<Token> tokens = lexer.tokenize(input);
+
+        assertThat(tokens).hasSize(2); // DOUBLE + EOF
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.DOUBLE);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
+        assertThat((Double) tokens.getFirst().literal()).isCloseTo(expected, within(0.000001));
+    }
+
+    @Test
+    void tokenizeDoubleSuffixInExpression() {
+        // 1d/2 should tokenize as: DOUBLE(1.0), DIVIDE, INTEGER(2)
+        List<Token> tokens = lexer.tokenize("1d/2");
+
+        assertThat(tokens).hasSize(4); // DOUBLE + DIVIDE + INTEGER + EOF
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.DOUBLE);
+        assertThat(tokens.get(0).literal()).isEqualTo(1.0);
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.DIVIDE);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.get(2).literal()).isEqualTo(2L);
+    }
+
+    // ==================== Rational + Scientific Notation ====================
+
+    @ParameterizedTest
+    @CsvSource({
+            "1/2E5, 50000.0",
+            "3/4e2, 75.0",
+            "1/10E-1, 0.01"
+    })
+    void tokenizeRationalWithScientificNotation(String input, double expected) {
+        List<Token> tokens = lexer.tokenize(input);
+
+        assertThat(tokens).hasSize(2); // SCIENTIFIC + EOF
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.SCIENTIFIC);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
+        assertThat((Double) tokens.getFirst().literal()).isCloseTo(expected, within(0.000001));
+    }
+
     // ==================== Rational Literals ====================
 
     @ParameterizedTest
@@ -571,13 +662,6 @@ class LexerTest {
         assertThatThrownBy(() -> lexer.tokenize("x | y"))
                 .isInstanceOf(LexerException.class)
                 .hasMessageContaining("Unexpected character '|'");
-    }
-
-    @Test
-    void invalidScientificNotationThrowsException() {
-        assertThatThrownBy(() -> lexer.tokenize("1e"))
-                .isInstanceOf(LexerException.class)
-                .hasMessageContaining("Expected digit in scientific notation");
     }
 
     // ==================== Position Tracking ====================

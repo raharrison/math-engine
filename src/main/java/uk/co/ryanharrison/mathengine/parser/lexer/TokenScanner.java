@@ -209,8 +209,29 @@ public final class TokenScanner {
         if (scanner.match('.')) {
             addToken(TokenType.RANGE, "..");
         } else if (CharacterScanner.isDigit(scanner.peek())) {
-            // Decimal starting with .
-            scanDecimalPart();
+            // Decimal starting with . (e.g., ".5")
+            scanner.consumeWhile(CharacterScanner::isDigit);
+
+            // Check for invalid format: .5.3
+            if (scanner.peek() == '.' && CharacterScanner.isDigit(scanner.peek(1))) {
+                throw scanner.error("Invalid number format: too many decimal points");
+            }
+
+            // Check for scientific notation
+            boolean hasExponent = isExponentStart();
+            if (hasExponent) {
+                scanExponent();
+            }
+
+            // Check for 'd' suffix
+            if (isDoubleSuffix()) {
+                scanner.advance();
+                emitDouble();
+            } else if (hasExponent) {
+                emitScientific();
+            } else {
+                emitDecimal();
+            }
         } else {
             throw scanner.error("Unexpected character '.'");
         }
@@ -274,13 +295,15 @@ public final class TokenScanner {
 
     /**
      * Scans a number literal.
-     * Handles decimal vs range disambiguation (1.5 vs 1..5).
+     * <p>
+     * Handles integers, decimals, rationals, scientific notation, and 'd' suffix for forced doubles.
+     * </p>
      */
     private void scanNumber() {
-        // Consume digits
+        // Consume integer part
         scanner.consumeWhile(CharacterScanner::isDigit);
 
-        // Check for decimal, range, or rational
+        // Check what comes next
         if (scanner.peek() == '.' && scanner.peek(1) == '.') {
             // Range: "1..5"
             emitInteger();
@@ -288,17 +311,65 @@ public final class TokenScanner {
         } else if (scanner.peek() == '.' && CharacterScanner.isDigit(scanner.peek(1))) {
             // Decimal: "1.5"
             scanner.advance(); // consume '.'
-            scanDecimalPart();
+            scanner.consumeWhile(CharacterScanner::isDigit);
+
+            // Check for invalid format: 1.2.3
+            if (scanner.peek() == '.' && CharacterScanner.isDigit(scanner.peek(1))) {
+                throw scanner.error("Invalid number format: too many decimal points");
+            }
+
+            // Check for scientific notation
+            boolean hasExponent = isExponentStart();
+            if (hasExponent) {
+                scanExponent();
+            }
+
+            // Check for 'd' suffix
+            if (isDoubleSuffix()) {
+                scanner.advance();
+                emitDouble();
+            } else if (hasExponent) {
+                emitScientific();
+            } else {
+                emitDecimal();
+            }
             return;
         } else if (scanner.peek() == '/' && CharacterScanner.isDigit(scanner.peek(1))) {
-            // Rational: "1/2" - only if followed by a digit
-            scanRational();
+            // Rational: "1/2"
+            scanner.advance(); // consume '/'
+            scanner.consumeWhile(CharacterScanner::isDigit);
+            // Check for scientific notation after rational
+            if (isExponentStart()) {
+                scanExponent();
+                emitRationalScientific();
+                return;
+            }
+            // Check for 'd' suffix
+            if (isDoubleSuffix()) {
+                scanner.advance();
+                emitRationalAsDouble();
+                return;
+            }
+            emitRational();
             return;
         }
 
         // Check for scientific notation
         if (isExponentStart()) {
-            scanScientific();
+            scanExponent();
+            if (isDoubleSuffix()) {
+                scanner.advance();
+                emitDouble();
+            } else {
+                emitScientific();
+            }
+            return;
+        }
+
+        // Check for 'd' suffix on plain integer
+        if (isDoubleSuffix()) {
+            scanner.advance();
+            emitDouble();
             return;
         }
 
@@ -307,49 +378,9 @@ public final class TokenScanner {
     }
 
     /**
-     * Scans the decimal part of a number (after the decimal point).
+     * Scans the exponent part of scientific notation (e.g., "e10", "E-3").
      */
-    private void scanDecimalPart() {
-        // Consume fractional digits
-        scanner.consumeWhile(CharacterScanner::isDigit);
-
-        // Check for invalid number format: 1.2.3 (decimal followed by another decimal point)
-        if (scanner.peek() == '.' && CharacterScanner.isDigit(scanner.peek(1))) {
-            throw scanner.error("Invalid number format: too many decimal points");
-        }
-
-        // Check for scientific notation
-        if (isExponentStart()) {
-            scanScientific();
-            return;
-        }
-
-        // Emit decimal token
-        String text = scanner.substring(start, scanner.getPosition());
-        double value = Double.parseDouble(text);
-        addToken(TokenType.DECIMAL, text, value);
-    }
-
-    /**
-     * Scans a rational literal (e.g., "1/2").
-     */
-    private void scanRational() {
-        scanner.advance(); // consume '/'
-
-        if (!CharacterScanner.isDigit(scanner.peek())) {
-            throw scanner.error("Expected digit after '/' in rational literal");
-        }
-
-        scanner.consumeWhile(CharacterScanner::isDigit);
-
-        String text = scanner.substring(start, scanner.getPosition());
-        addToken(TokenType.RATIONAL, text);
-    }
-
-    /**
-     * Scans scientific notation (e.g., "1e10", "2.5E-3").
-     */
-    private void scanScientific() {
+    private void scanExponent() {
         scanner.advance(); // consume 'e' or 'E'
 
         // Optional sign
@@ -363,14 +394,10 @@ public final class TokenScanner {
         }
 
         scanner.consumeWhile(CharacterScanner::isDigit);
-
-        String text = scanner.substring(start, scanner.getPosition());
-        double value = Double.parseDouble(text);
-        addToken(TokenType.SCIENTIFIC, text, value);
     }
 
     /**
-     * Emits an integer token for the scanned digits.
+     * Emits an integer token.
      */
     private void emitInteger() {
         String text = scanner.substring(start, scanner.getPosition());
@@ -379,10 +406,113 @@ public final class TokenScanner {
     }
 
     /**
+     * Emits a decimal token.
+     */
+    private void emitDecimal() {
+        String text = scanner.substring(start, scanner.getPosition());
+        double value = Double.parseDouble(text);
+        addToken(TokenType.DECIMAL, text, value);
+    }
+
+    /**
+     * Emits a double token (with 'd' suffix).
+     */
+    private void emitDouble() {
+        String text = scanner.substring(start, scanner.getPosition());
+        // Remove 'd' or 'D' suffix for parsing
+        String numericPart = text.substring(0, text.length() - 1);
+        double value = Double.parseDouble(numericPart);
+        addToken(TokenType.DOUBLE, text, value);
+    }
+
+    /**
+     * Emits a rational token.
+     */
+    private void emitRational() {
+        String text = scanner.substring(start, scanner.getPosition());
+        addToken(TokenType.RATIONAL, text);
+    }
+
+    /**
+     * Emits a rational as a double (with 'd' suffix).
+     */
+    private void emitRationalAsDouble() {
+        String text = scanner.substring(start, scanner.getPosition());
+        // Remove 'd' suffix and evaluate rational
+        String rationalPart = text.substring(0, text.length() - 1);
+        int slashIndex = rationalPart.indexOf('/');
+        long numerator = Long.parseLong(rationalPart.substring(0, slashIndex));
+        long denominator = Long.parseLong(rationalPart.substring(slashIndex + 1));
+
+        if (denominator == 0) {
+            throw scanner.error("Division by zero in rational literal");
+        }
+
+        double value = (double) numerator / denominator;
+        addToken(TokenType.DOUBLE, text, value);
+    }
+
+    /**
+     * Emits a scientific notation token.
+     */
+    private void emitScientific() {
+        String text = scanner.substring(start, scanner.getPosition());
+        double value = Double.parseDouble(text);
+        addToken(TokenType.SCIENTIFIC, text, value);
+    }
+
+    /**
+     * Emits a rational + scientific notation as SCIENTIFIC token.
+     * E.g., "1/2E5" = 0.5 * 10^5 = 50000.0
+     */
+    private void emitRationalScientific() {
+        String text = scanner.substring(start, scanner.getPosition());
+
+        // Find the slash and E/e to split rational and exponent parts
+        int slashIndex = text.indexOf('/');
+        int eIndex = text.toLowerCase().indexOf('e', slashIndex);
+
+        // Parse rational part
+        long numerator = Long.parseLong(text.substring(0, slashIndex));
+        long denominator = Long.parseLong(text.substring(slashIndex + 1, eIndex));
+
+        if (denominator == 0) {
+            throw scanner.error("Division by zero in rational literal");
+        }
+
+        double rationalValue = (double) numerator / denominator;
+
+        // Parse exponent
+        int exponent = Integer.parseInt(text.substring(eIndex + 1));
+        double value = rationalValue * Math.pow(10, exponent);
+
+        addToken(TokenType.SCIENTIFIC, text, value);
+    }
+
+    /**
      * Checks if the current position starts an exponent (e/E).
      */
     private boolean isExponentStart() {
-        return scanner.peek() == 'e' || scanner.peek() == 'E';
+        char c = scanner.peek();
+        if (c != 'e' && c != 'E') {
+            return false;
+        }
+        // Make sure next char is digit or +/-
+        char next = scanner.peek(1);
+        return CharacterScanner.isDigit(next) || next == '+' || next == '-';
+    }
+
+    /**
+     * Checks if the current position has a 'd' or 'D' suffix (forces double type).
+     */
+    private boolean isDoubleSuffix() {
+        char c = scanner.peek();
+        if (c != 'd' && c != 'D') {
+            return false;
+        }
+        // Make sure it's not followed by a letter (e.g., "data" should not match)
+        char next = scanner.peek(1);
+        return !CharacterScanner.isAlpha(next);
     }
 
     // ==================== String Scanning ====================

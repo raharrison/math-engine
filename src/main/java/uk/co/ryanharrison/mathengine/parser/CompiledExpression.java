@@ -94,7 +94,7 @@ public final class CompiledExpression {
         }
 
         try {
-            return engine.getEvaluator().evaluate(ast);
+            return engine.evaluate(ast);
         } finally {
             // Restore original values
             for (var entry : savedValues.entrySet()) {
@@ -149,7 +149,7 @@ public final class CompiledExpression {
      * @return the result of evaluation
      */
     public NodeConstant evaluate() {
-        return engine.getEvaluator().evaluate(ast);
+        return engine.evaluate(ast);
     }
 
     /**

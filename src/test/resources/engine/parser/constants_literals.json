@@ -201,6 +201,48 @@
             ],
             "expectedType": "NodeMatrix",
             "notes": "1x1 matrix"
+        },
+        {
+            "id": "const_027",
+            "input": "23d",
+            "expected": 23.0,
+            "expectedType": "NodeDouble",
+            "notes": "Integer with 'd' suffix forces double type"
+        },
+        {
+            "id": "const_028",
+            "input": "3.14d",
+            "expected": 3.14,
+            "expectedType": "NodeDouble",
+            "notes": "Decimal with 'd' suffix forces double type"
+        },
+        {
+            "id": "const_029",
+            "input": "1/2d",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Rational with 'd' suffix evaluates to double"
+        },
+        {
+            "id": "const_030",
+            "input": "1e3d",
+            "expected": 1000.0,
+            "expectedType": "NodeDouble",
+            "notes": "Scientific notation with 'd' suffix forces double"
+        },
+        {
+            "id": "const_031",
+            "input": "1d/2",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "1d is double, division by integer stays double"
+        },
+        {
+            "id": "const_032",
+            "input": "1/2E5",
+            "expected": 50000.0,
+            "expectedType": "NodeDouble",
+            "notes": "Rational with scientific notation: (1/2) * 10^5"
         }
     ]
 }

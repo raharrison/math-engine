@@ -16,7 +16,10 @@ import uk.co.ryanharrison.mathengine.parser.registry.ConstantRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Main entry point for the Math Engine parser and evaluator.
@@ -197,47 +200,6 @@ public final class MathEngine {
         return newEngine;
     }
 
-    /**
-     * Creates a new engine with an additional custom built-in function.
-     * <p>
-     * This method returns a new MathEngine instance with the function added.
-     * The original engine remains unchanged. Session state (variables, user functions)
-     * is preserved in the new engine.
-     *
-     * <h2>Usage:</h2>
-     * <pre>{@code
-     * MathEngine engine = MathEngine.create();
-     * engine = engine.withFunction(myCustomFunction);
-     * engine.evaluate("myFunction(21)");
-     * }</pre>
-     *
-     * <p>For defining functions at configuration time, prefer using
-     * {@link MathEngineConfig.Builder#functions(List)}.
-     *
-     * @param function the function implementation
-     * @return new engine with the function added
-     */
-    public MathEngine withFunction(MathFunction function) {
-        if (function == null) {
-            throw new IllegalArgumentException("Function cannot be null");
-        }
-        if (function.name() == null || function.name().isBlank()) {
-            throw new IllegalArgumentException("Function name cannot be null or empty");
-        }
-
-        // Create new config with additional function
-        var newFunctions = new ArrayList<>(config.functions());
-        newFunctions.add(function);
-        MathEngineConfig newConfig = config.toBuilder().functions(newFunctions).build();
-
-        // Create new engine and transfer session state
-        MathEngine newEngine = MathEngine.create(newConfig);
-        context.getLocalVariables().forEach(newEngine.context::define);
-        context.getLocalFunctions().forEach(newEngine.context::defineFunction);
-
-        return newEngine;
-    }
-
     // ==================== Compilation & Evaluation ====================
 
     /**
@@ -286,6 +248,17 @@ public final class MathEngine {
         return evaluate(expression).doubleValue();
     }
 
+    /**
+     * Evaluates a mathematical expression and returns the result.
+     *
+     * @param node the parsed expression
+     * @return the result as a NodeConstant
+     * @throws MathEngineException if parsing or evaluation fails
+     */
+    public NodeConstant evaluate(Node node) {
+        return evaluator.evaluate(node);
+    }
+
     // ==================== Variable/Function Definition ====================
 
     /**
@@ -325,21 +298,7 @@ public final class MathEngine {
         return context;
     }
 
-    /**
-     * Returns the evaluator (for advanced use cases).
-     */
-    public Evaluator getEvaluator() {
-        return evaluator;
-    }
-
     // ==================== Query Methods ====================
-
-    /**
-     * Returns all registered function names (lowercase, including aliases).
-     */
-    public Set<String> getAllFunctionNames() {
-        return functionExecutor.getFunctionNames();
-    }
 
     /**
      * Returns all registered functions grouped by category.

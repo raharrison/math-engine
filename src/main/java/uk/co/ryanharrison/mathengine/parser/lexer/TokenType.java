@@ -19,6 +19,7 @@ public enum TokenType {
     // Literals
     INTEGER,
     DECIMAL,
+    DOUBLE,
     SCIENTIFIC,
     RATIONAL,
     STRING,

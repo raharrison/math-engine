@@ -563,12 +563,13 @@ public final class PrecedenceParser {
             throw stream.error(token, "Invalid integer literal");
         }
 
-        // Decimal/scientific literal
-        if (stream.match(TokenType.DECIMAL, TokenType.SCIENTIFIC)) {
+        // Decimal/scientific/double literal
+        if (stream.match(TokenType.DECIMAL, TokenType.SCIENTIFIC, TokenType.DOUBLE)) {
             Token token = stream.previous();
             Object literal = token.literal();
             if (literal instanceof Double doubleVal) {
-                if (forceDoubleArithmetic) {
+                // DOUBLE token always returns NodeDouble (never converts to rational)
+                if (forceDoubleArithmetic || token.type() == TokenType.DOUBLE) {
                     return new NodeDouble(doubleVal);
                 } else {
                     return TypeCoercion.toNumber(doubleVal);

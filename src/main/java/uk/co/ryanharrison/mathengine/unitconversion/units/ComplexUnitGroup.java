@@ -2,7 +2,6 @@ package uk.co.ryanharrison.mathengine.unitconversion.units;
 
 import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.MathEngine;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.unitconversion.ConversionResult;
 
 import java.util.List;
@@ -59,7 +58,7 @@ public class ComplexUnitGroup extends AbstractUnitGroup<ComplexUnit> {
         if (equation.isPresent()) {
             // Define the variable and evaluate the equation
             String varName = fromUnit.getVariable();
-            engine.getContext().define(varName, new NodeDouble(amount.doubleValue()));
+            engine.defineVariable(varName, amount.doubleValue());
             double resultValue = engine.evaluateDouble(equation.get());
             BigRational result = BigRational.of(resultValue);
             return ConversionResult.success(fromUnit, toUnit, amount, result, getName());
