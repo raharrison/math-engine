@@ -156,7 +156,7 @@ public final class FunctionExecutor {
             return function.apply(normalizedArgs, ctx);
         } catch (IllegalArgumentException | ArithmeticException e) {
             // In silent validation mode, return NaN instead of throwing domain errors
-            if (context.getConfig().silentValidation()) {
+            if (context.isSilentValidation()) {
                 return new NodeDouble(Double.NaN);
             }
             throw e;

@@ -3,11 +3,12 @@ package uk.co.ryanharrison.mathengine.parser.evaluator;
 import uk.co.ryanharrison.mathengine.core.AngleUnit;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
+import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 import uk.co.ryanharrison.mathengine.parser.util.PersistentHashMap;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Runtime evaluation context storing variables, user-defined functions, and scope chain.
@@ -131,26 +132,19 @@ public final class EvaluationContext {
     }
 
     /**
-     * Resolve a variable by name, searching up the scope chain.
+     * Resolve a variable by name, searching up the scope chain and constant registry.
+     *
+     * @param name the variable name to resolve
+     * @return the variable value, or empty if not found anywhere
      */
-    public NodeConstant resolve(String name) {
+    public Optional<NodeConstant> resolve(String name) {
         if (variables.containsKey(name)) {
-            return variables.get(name);
+            return Optional.of(variables.get(name));
         }
         if (parent != null) {
             return parent.resolve(name);
         }
-        throw new UndefinedVariableException(name);
-    }
-
-    /**
-     * Check if a variable is defined in this context or any parent.
-     */
-    public boolean isDefined(String name) {
-        if (variables.containsKey(name)) {
-            return true;
-        }
-        return parent != null && parent.isDefined(name);
+        return config.constantRegistry().getValue(name);
     }
 
     // ==================== Function Management ====================
@@ -164,25 +158,18 @@ public final class EvaluationContext {
 
     /**
      * Resolve a user function by name, searching up the scope chain.
+     *
+     * @param name the function name to resolve
+     * @return the function definition, or empty if not found
      */
-    public FunctionDefinition resolveFunction(String name) {
+    public Optional<FunctionDefinition> resolveFunction(String name) {
         if (functions.containsKey(name)) {
-            return functions.get(name);
+            return Optional.of(functions.get(name));
         }
         if (parent != null) {
             return parent.resolveFunction(name);
         }
-        return null;
-    }
-
-    /**
-     * Check if a user function is defined in this context or any parent.
-     */
-    public boolean isFunctionDefined(String name) {
-        if (functions.containsKey(name)) {
-            return true;
-        }
-        return parent != null && parent.isFunctionDefined(name);
+        return Optional.empty();
     }
 
     // ==================== Recursion Tracking ====================
@@ -195,7 +182,15 @@ public final class EvaluationContext {
         recursionTracker.exitFunction();
     }
 
-    // ==================== Config Accessors (delegated to config) ====================
+    // ==================== Config Accessors ====================
+
+    public Optional<NodeConstant> resolveConstant(String name) {
+        return config.constantRegistry().getValue(name);
+    }
+
+    public Optional<UnitDefinition> resolveUnit(String name) {
+        return config.unitRegistry().getUnit(name);
+    }
 
     public AngleUnit getAngleUnit() {
         return config.angleUnit();
@@ -205,12 +200,8 @@ public final class EvaluationContext {
         return config.forceDoubleArithmetic();
     }
 
-    public UnitRegistry getUnitRegistry() {
-        return config.unitRegistry();
-    }
-
-    public MathEngineConfig getConfig() {
-        return config;
+    public boolean isSilentValidation() {
+        return config.silentValidation();
     }
 
     // ==================== Local State Accessors ====================

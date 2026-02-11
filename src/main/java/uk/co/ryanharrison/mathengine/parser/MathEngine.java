@@ -2,6 +2,7 @@ package uk.co.ryanharrison.mathengine.parser;
 
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.Evaluator;
+import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
 import uk.co.ryanharrison.mathengine.parser.evaluator.RecursionTracker;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
@@ -97,7 +98,6 @@ public final class MathEngine {
 
         // Evaluation context (mutable for user-defined variables/functions)
         this.context = new EvaluationContext(config, new RecursionTracker(config.maxRecursionDepth()));
-        initializePredefinedConstants();
 
         // Core components
         this.evaluator = new Evaluator(config, context, operatorExecutor, functionExecutor);
@@ -109,15 +109,6 @@ public final class MathEngine {
                 config.maxIdentifierLength(),
                 config.implicitMultiplication()
         );
-    }
-
-    private void initializePredefinedConstants() {
-        for (ConstantDefinition def : constantRegistry.getDefinitions()) {
-            context.define(def.name(), def.value());
-            for (String alias : def.aliases()) {
-                context.define(alias, def.value());
-            }
-        }
     }
 
     // ==================== Factory Methods ====================
@@ -294,7 +285,7 @@ public final class MathEngine {
     /**
      * Returns the evaluation context (for advanced use cases).
      */
-    public EvaluationContext getContext() {
+    EvaluationContext getContext() {
         return context;
     }
 
@@ -317,7 +308,7 @@ public final class MathEngine {
     /**
      * Returns all constant definitions.
      */
-    public List<ConstantDefinition> getAllConstants() {
+    public Collection<ConstantDefinition> getAllConstants() {
         return constantRegistry.getDefinitions();
     }
 
@@ -326,6 +317,20 @@ public final class MathEngine {
      */
     public Collection<UnitDefinition> getAllUnits() {
         return unitRegistry.getAllUnits();
+    }
+
+    /**
+     * Returns all local variables (user-defined) in the current context.
+     */
+    public Map<String, NodeConstant> getLocalVariables() {
+        return context.getLocalVariables();
+    }
+
+    /**
+     * Returns all user-defined functions in the current context.
+     */
+    public Map<String, FunctionDefinition> getLocalFunctions() {
+        return context.getLocalFunctions();
     }
 
     /**

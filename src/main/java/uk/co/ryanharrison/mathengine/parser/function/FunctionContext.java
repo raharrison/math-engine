@@ -100,7 +100,7 @@ public final class FunctionContext {
      * @return true if silent validation is enabled
      */
     public boolean isSilentValidation() {
-        return evaluationContext.getConfig().silentValidation();
+        return evaluationContext.isSilentValidation();
     }
 
     // ==================== Error Reporting ====================

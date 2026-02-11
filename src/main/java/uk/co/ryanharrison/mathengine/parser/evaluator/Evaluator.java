@@ -367,11 +367,8 @@ public final class Evaluator {
         String targetUnitName = node.getTargetUnit();
 
         // Get the target unit from the registry
-        var unitRegistry = context.getUnitRegistry();
-        if (!unitRegistry.isUnit(targetUnitName)) {
-            throw new TypeError("Unknown target unit: " + targetUnitName);
-        }
-        var targetUnit = unitRegistry.get(targetUnitName);
+        var targetUnit = context.resolveUnit(targetUnitName)
+                .orElseThrow(() -> new TypeError("Unknown target unit: " + targetUnitName));
 
         // If value is already a NodeUnit, perform conversion
         if (value instanceof NodeUnit unitValue) {

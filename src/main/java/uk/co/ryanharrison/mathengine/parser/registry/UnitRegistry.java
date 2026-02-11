@@ -112,10 +112,10 @@ public final class UnitRegistry {
      * Get a unit definition by name.
      *
      * @param name the unit name (case-insensitive)
-     * @return the unit definition, or null if not found
+     * @return the unit definition, or empty if not found
      */
-    public UnitDefinition get(String name) {
-        return units.get(name.toLowerCase());
+    public Optional<UnitDefinition> getUnit(String name) {
+        return Optional.ofNullable(units.get(name.toLowerCase()));
     }
 
     /**

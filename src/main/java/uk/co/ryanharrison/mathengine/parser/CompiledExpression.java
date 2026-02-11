@@ -87,9 +87,7 @@ public final class CompiledExpression {
 
         for (var entry : bindings.entrySet()) {
             String name = entry.getKey();
-            if (context.isDefined(name)) {
-                savedValues.put(name, context.resolve(name));
-            }
+            context.resolve(name).ifPresent(value -> savedValues.put(name, value));
             context.define(name, toNodeConstant(entry.getValue()));
         }
 

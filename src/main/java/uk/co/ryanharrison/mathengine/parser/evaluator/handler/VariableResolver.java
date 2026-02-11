@@ -2,7 +2,6 @@ package uk.co.ryanharrison.mathengine.parser.evaluator.handler;
 
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
-import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
 import uk.co.ryanharrison.mathengine.parser.evaluator.ResolutionContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.UndefinedVariableException;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
@@ -11,7 +10,6 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeUnit;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVariable;
-import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
 /**
  * Handles variable resolution with context-aware priority and explicit disambiguation support.
@@ -123,19 +121,16 @@ public final class VariableResolver {
      */
     private NodeConstant resolveAsCallTarget(String name, EvaluationContext context) {
         // User functions take priority
-        FunctionDefinition func = context.resolveFunction(name);
-        if (func != null) {
-            return new NodeFunction(func);
+        var funcOpt = context.resolveFunction(name);
+        if (funcOpt.isPresent()) {
+            return new NodeFunction(funcOpt.get());
         }
 
         // Builtin functions are checked by FunctionCallHandler, not here
         // So we just fall back to variable (which might hold a lambda)
 
-        if (context.isDefined(name)) {
-            return context.resolve(name);
-        }
-
-        throw new UndefinedVariableException(name);
+        return context.resolve(name)
+                .orElseThrow(() -> new UndefinedVariableException(name));
     }
 
     /**
@@ -153,14 +148,15 @@ public final class VariableResolver {
      */
     private NodeConstant resolveAsPostfixUnit(String name, EvaluationContext context, OperatorContext opCtx) {
         // Units have priority after numbers
-        UnitRegistry unitRegistry = context.getUnitRegistry();
-        if (unitRegistry != null && unitRegistry.isUnit(name)) {
-            return NodeUnit.of(1.0, unitRegistry.get(name));
+        var unitOpt = context.resolveUnit(name);
+        if (unitOpt.isPresent()) {
+            return NodeUnit.of(1.0, unitOpt.get());
         }
 
         // Fall back to variable
-        if (context.isDefined(name)) {
-            return context.resolve(name);
+        var varOpt = context.resolve(name);
+        if (varOpt.isPresent()) {
+            return varOpt.get();
         }
 
         // Try implicit multiplication
@@ -190,20 +186,21 @@ public final class VariableResolver {
      */
     private NodeConstant resolveAsGeneral(String name, EvaluationContext context, OperatorContext opCtx) {
         // Variables have highest priority (allows shadowing units/functions)
-        if (context.isDefined(name)) {
-            return context.resolve(name);
+        var varOpt = context.resolve(name);
+        if (varOpt.isPresent()) {
+            return varOpt.get();
         }
 
         // User-defined functions (for first-class function support)
-        FunctionDefinition func = context.resolveFunction(name);
-        if (func != null) {
-            return new NodeFunction(func);
+        var funcOpt = context.resolveFunction(name);
+        if (funcOpt.isPresent()) {
+            return new NodeFunction(funcOpt.get());
         }
 
         // Units
-        UnitRegistry unitRegistry = context.getUnitRegistry();
-        if (unitRegistry != null && unitRegistry.isUnit(name)) {
-            return NodeUnit.of(1.0, unitRegistry.get(name));
+        var unitOpt = context.resolveUnit(name);
+        if (unitOpt.isPresent()) {
+            return NodeUnit.of(1.0, unitOpt.get());
         }
 
         // Implicit multiplication as last resort
@@ -230,11 +227,9 @@ public final class VariableResolver {
      * @throws UndefinedVariableException if unit doesn't exist
      */
     public NodeConstant resolveUnitRef(String unitName, EvaluationContext context) {
-        UnitRegistry unitRegistry = context.getUnitRegistry();
-        if (unitRegistry == null || !unitRegistry.isUnit(unitName)) {
-            throw new UndefinedVariableException("Unknown unit: @" + unitName);
-        }
-        return NodeUnit.of(1.0, unitRegistry.get(unitName));
+        return context.resolveUnit(unitName)
+                .map(unit -> NodeUnit.of(1.0, unit))
+                .orElseThrow(() -> new UndefinedVariableException("Unknown unit: @" + unitName));
     }
 
     /**
@@ -248,10 +243,8 @@ public final class VariableResolver {
      * @throws UndefinedVariableException if variable not defined
      */
     public NodeConstant resolveVarRef(String varName, EvaluationContext context) {
-        if (!context.isDefined(varName)) {
-            throw new UndefinedVariableException("Undefined variable: $" + varName);
-        }
-        return context.resolve(varName);
+        return context.resolve(varName)
+                .orElseThrow(() -> new UndefinedVariableException("Undefined variable: $" + varName));
     }
 
     /**
@@ -267,10 +260,7 @@ public final class VariableResolver {
      * @throws UndefinedVariableException if constant not defined in registry
      */
     public NodeConstant resolveConstRef(String constName, EvaluationContext context) {
-        // Access the constant registry from config (immutable, never modified by user code)
-        // This bypasses any user variable shadowing
-        return context.getConfig().constantRegistry()
-                .getValue(constName)
+        return context.resolveConstant(constName)
                 .orElseThrow(() -> new UndefinedVariableException("Undefined constant: #" + constName));
     }
 
@@ -360,23 +350,14 @@ public final class VariableResolver {
      * @return the resolved value, or null if not resolvable
      */
     private NodeConstant tryResolvePart(String part, EvaluationContext context) {
-        // Variables have highest priority (allows shadowing)
-        if (context.isDefined(part)) {
-            return context.resolve(part);
-        }
-
-        // Constants from registry
-        var constantValue = context.getConfig().constantRegistry().getValue(part);
-        if (constantValue.isPresent()) {
-            return constantValue.get();
+        // resolve() checks variables first, then constants
+        var resolvedOpt = context.resolve(part);
+        if (resolvedOpt.isPresent()) {
+            return resolvedOpt.get();
         }
 
         // User-defined functions (for first-class function support)
-        FunctionDefinition func = context.resolveFunction(part);
-        if (func != null) {
-            return new NodeFunction(func);
-        }
-
-        return null;
+        var funcOpt = context.resolveFunction(part);
+        return funcOpt.map(NodeFunction::new).orElse(null);
     }
 }

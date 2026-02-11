@@ -123,12 +123,12 @@ public final class FunctionCallHandler implements FunctionCaller {
         }
 
         // Check for user-defined function FIRST (takes priority over built-ins)
-        FunctionDefinition userFunc = context.resolveFunction(name);
-        if (userFunc != null) {
+        var userFuncOpt = context.resolveFunction(name);
+        if (userFuncOpt.isPresent()) {
             if (!config.userDefinedFunctionsEnabled()) {
                 throw new EvaluationException("User-defined functions are disabled in current configuration");
             }
-            return callUserFunction(userFunc, arguments, context);
+            return callUserFunction(userFuncOpt.get(), arguments, context);
         }
 
         // Check for built-in function
@@ -137,8 +137,9 @@ public final class FunctionCallHandler implements FunctionCaller {
         }
 
         // Check if there's a value stored as a variable that might be a function
-        if (context.isDefined(name)) {
-            NodeConstant varValue = context.resolve(name);
+        var varOpt = context.resolve(name);
+        if (varOpt.isPresent()) {
+            NodeConstant varValue = varOpt.get();
             if (varValue instanceof NodeFunction func) {
                 return callUserFunction(func.getFunction(), arguments, context);
             }
@@ -173,8 +174,9 @@ public final class FunctionCallHandler implements FunctionCaller {
             String funcPart = name.substring(i);
 
             // Check if varPart is a defined variable and funcPart is a known function
-            if (context.isDefined(varPart) && functionExecutor.hasFunction(funcPart)) {
-                NodeConstant varValue = context.resolve(varPart);
+            var varPartOpt = context.resolve(varPart);
+            if (varPartOpt.isPresent() && functionExecutor.hasFunction(funcPart)) {
+                NodeConstant varValue = varPartOpt.get();
                 NodeConstant funcResult = callBuiltinFunction(funcPart, arguments, context);
 
                 if (TypeCoercion.isNumericOrCollection(varValue) && TypeCoercion.isNumericOrCollection(funcResult)) {

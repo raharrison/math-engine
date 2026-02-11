@@ -4,7 +4,6 @@ import uk.co.ryanharrison.mathengine.core.AngleUnit;
 import uk.co.ryanharrison.mathengine.parser.CompiledExpression;
 import uk.co.ryanharrison.mathengine.parser.MathEngine;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
-import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
 import uk.co.ryanharrison.mathengine.parser.format.NodeFormatter;
 import uk.co.ryanharrison.mathengine.parser.format.StringNodeFormatter;
@@ -863,8 +862,7 @@ public final class MainFrame extends JFrame {
         try {
             doc.remove(0, doc.getLength());
 
-            EvaluationContext context = mathEngine.getContext();
-            Map<String, NodeConstant> variables = context.getLocalVariables();
+            Map<String, NodeConstant> variables = mathEngine.getLocalVariables();
 
             doc.insertString(doc.getLength(), "Session Variables (" + variables.size() + "):\n\n", keywordStyle);
 
@@ -904,9 +902,7 @@ public final class MainFrame extends JFrame {
             doc.remove(0, doc.getLength());
 
             // Show user-defined functions first
-            EvaluationContext context = mathEngine.getContext();
-            Map<String, FunctionDefinition> userFunctions =
-                    context.getLocalFunctions();
+            Map<String, FunctionDefinition> userFunctions = mathEngine.getLocalFunctions();
 
             if (!userFunctions.isEmpty()) {
                 doc.insertString(doc.getLength(), "User-Defined Functions (" + userFunctions.size() + "):\n\n", keywordStyle);
@@ -994,7 +990,7 @@ public final class MainFrame extends JFrame {
             doc.remove(0, doc.getLength());
 
             // Get constants from the actual engine
-            List<ConstantDefinition> constants =
+            Collection<ConstantDefinition> constants =
                     mathEngine.getAllConstants();
 
             doc.insertString(doc.getLength(), "Mathematical Constants:\n\n", keywordStyle);
