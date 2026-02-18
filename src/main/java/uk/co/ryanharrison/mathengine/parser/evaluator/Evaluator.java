@@ -147,12 +147,7 @@ public final class Evaluator {
             case NodeVector vector -> evaluateVectorElements(vector);
 
             // NodeMatrix needs its elements evaluated
-            case NodeMatrix matrix -> {
-                if (!config.matricesEnabled()) {
-                    throw new EvaluationException("Matrices are disabled in current configuration");
-                }
-                yield evaluateMatrixElements(matrix);
-            }
+            case NodeMatrix matrix -> evaluateMatrixElements(matrix);
 
             // Other NodeConstant subclasses can be returned directly
             case NodeConstant constant -> constant;
@@ -235,6 +230,9 @@ public final class Evaluator {
      * Evaluates a matrix by evaluating all its elements.
      */
     private NodeConstant evaluateMatrixElements(NodeMatrix matrix) {
+        if (!config.matricesEnabled()) {
+            throw new EvaluationException("Matrices are disabled in current configuration");
+        }
         Node[][] elements = matrix.getElements();
 
         // Validate matrix dimensions against configuration limits
@@ -305,6 +303,9 @@ public final class Evaluator {
      * Evaluates an assignment.
      */
     private NodeConstant evaluateAssignment(NodeAssignment node) {
+        if (!config.userDefinedVariablesEnabled()) {
+            throw new EvaluationException("User-defined variables are disabled in current configuration");
+        }
         NodeConstant value = evaluate(node.getValue());
         context.assign(node.getIdentifier(), value);
         return value;

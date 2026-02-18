@@ -25,6 +25,7 @@ public record TestConfig(
         Boolean matricesEnabled,
         Boolean comprehensionsEnabled,
         Boolean lambdasEnabled,
+        Boolean userDefinedVariablesEnabled,
         Boolean userDefinedFunctionsEnabled,
         Boolean unitsEnabled,
         Integer maxRecursionDepth,
@@ -58,6 +59,9 @@ public record TestConfig(
         }
         if (lambdasEnabled != null) {
             builder.lambdasEnabled(lambdasEnabled);
+        }
+        if (userDefinedVariablesEnabled != null) {
+            builder.userDefinedVariablesEnabled(userDefinedVariablesEnabled);
         }
         if (userDefinedFunctionsEnabled != null) {
             builder.userDefinedFunctionsEnabled(userDefinedFunctionsEnabled);

@@ -73,6 +73,7 @@ public final class MathEngineConfig {
     private final boolean unitsEnabled;
     private final boolean comprehensionsEnabled;
     private final boolean lambdasEnabled;
+    private final boolean userDefinedVariablesEnabled;
     private final boolean userDefinedFunctionsEnabled;
 
     // Registries
@@ -106,6 +107,7 @@ public final class MathEngineConfig {
         this.unitsEnabled = builder.unitsEnabled;
         this.comprehensionsEnabled = builder.comprehensionsEnabled;
         this.lambdasEnabled = builder.lambdasEnabled;
+        this.userDefinedVariablesEnabled = builder.userDefinedVariablesEnabled;
         this.userDefinedFunctionsEnabled = builder.userDefinedFunctionsEnabled;
 
         // Registries
@@ -164,6 +166,7 @@ public final class MathEngineConfig {
                 .matricesEnabled(false)
                 .comprehensionsEnabled(false)
                 .lambdasEnabled(false)
+                .userDefinedVariablesEnabled(false)
                 .userDefinedFunctionsEnabled(false)
                 .functions(StandardFunctions.basic())
                 .build();
@@ -201,6 +204,7 @@ public final class MathEngineConfig {
                 .unitsEnabled(unitsEnabled)
                 .comprehensionsEnabled(comprehensionsEnabled)
                 .lambdasEnabled(lambdasEnabled)
+                .userDefinedVariablesEnabled(userDefinedVariablesEnabled)
                 .userDefinedFunctionsEnabled(userDefinedFunctionsEnabled)
                 .constantRegistry(constantRegistry)
                 .keywordRegistry(keywordRegistry)
@@ -336,6 +340,14 @@ public final class MathEngineConfig {
     }
 
     /**
+     * Whether user-defined variables are enabled.
+     * When disabled, expressions like "x := 5" will cause an error.
+     */
+    public boolean userDefinedVariablesEnabled() {
+        return userDefinedVariablesEnabled;
+    }
+
+    /**
      * Whether user-defined functions are enabled.
      * When disabled, expressions like "f(x) := x^2" will cause an error.
      */
@@ -437,6 +449,7 @@ public final class MathEngineConfig {
         private boolean unitsEnabled = true;
         private boolean comprehensionsEnabled = true;
         private boolean lambdasEnabled = true;
+        private boolean userDefinedVariablesEnabled = true;
         private boolean userDefinedFunctionsEnabled = true;
         private ConstantRegistry constantRegistry = ConstantRegistry.withDefaults();
         private KeywordRegistry keywordRegistry = KeywordRegistry.withDefaults();
@@ -585,6 +598,14 @@ public final class MathEngineConfig {
          */
         public Builder lambdasEnabled(boolean enabled) {
             this.lambdasEnabled = enabled;
+            return this;
+        }
+
+        /**
+         * Enables/disables user-defined variables.
+         */
+        public Builder userDefinedVariablesEnabled(boolean enabled) {
+            this.userDefinedVariablesEnabled = enabled;
             return this;
         }
 

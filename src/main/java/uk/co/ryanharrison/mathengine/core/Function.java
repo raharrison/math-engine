@@ -95,6 +95,7 @@ public final class Function {
                 .comprehensionsEnabled(false)
                 .lambdasEnabled(false)
                 .unitsEnabled(false)
+                .userDefinedVariablesEnabled(false)
                 .userDefinedFunctionsEnabled(false)
                 .forceDoubleArithmetic(true)
                 .angleUnit(this.angleUnit)

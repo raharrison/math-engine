@@ -192,6 +192,35 @@
             "notes": "Multi-parameter user functions work when enabled"
         },
         {
+            "id": "user_variables_enabled_001",
+            "input": "x := 5; x",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "userDefinedVariablesEnabled": true
+            },
+            "notes": "User-defined variables work when enabled"
+        },
+        {
+            "id": "user_variables_disabled_001",
+            "input": "x := 5; x",
+            "expectError": true,
+            "config": {
+                "userDefinedVariablesEnabled": false
+            },
+            "notes": "User-defined variables produce error when disabled"
+        },
+        {
+            "id": "user_variables_enabled_expr_001",
+            "input": "y := 3 + 4; y * 2",
+            "expected": 14.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "userDefinedVariablesEnabled": true
+            },
+            "notes": "User-defined variables with expressions work when enabled"
+        },
+        {
             "id": "units_enabled_001",
             "input": "100 meters in feet",
             "expected": 328.084,

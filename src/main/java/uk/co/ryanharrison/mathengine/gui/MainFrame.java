@@ -739,8 +739,9 @@ public final class MainFrame extends JFrame {
         } else {
             decimalCombo.setSelectedItem(String.valueOf(currentDecimalPlaces));
         }
-        decimalCombo.addActionListener(e -> {
+        decimalCombo.addActionListener(_ -> {
             String selected = (String) decimalCombo.getSelectedItem();
+            if (selected == null) return;
             int places = "Full Precision".equals(selected) ? -1 : Integer.parseInt(selected);
             updateConfig(config -> config.decimalPlaces(places));
         });
@@ -820,6 +821,15 @@ public final class MainFrame extends JFrame {
                 updateConfig(config -> config.lambdasEnabled(lambdasCB.isSelected()))
         );
         panel.add(lambdasCB);
+
+        JCheckBox userVariablesCB = new JCheckBox("User-Defined Variables (x := 5)");
+        userVariablesCB.setBackground(BG_PANEL);
+        userVariablesCB.setAlignmentX(Component.LEFT_ALIGNMENT);
+        userVariablesCB.setSelected(currentConfig.userDefinedVariablesEnabled());
+        userVariablesCB.addActionListener(e ->
+                updateConfig(config -> config.userDefinedVariablesEnabled(userVariablesCB.isSelected()))
+        );
+        panel.add(userVariablesCB);
 
         JCheckBox userFunctionsCB = new JCheckBox("User-Defined Functions (f(x) := x^2)");
         userFunctionsCB.setBackground(BG_PANEL);
