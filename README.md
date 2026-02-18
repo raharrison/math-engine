@@ -840,4 +840,4 @@ See LICENSE file for details.
 
 ## Contributing
 
-Contributions welcome. Please follow the code quality standards documented in `docs/DOCUMENTATION_GUIDE.md`.
+Contributions welcome. Please follow the code quality standards documented in `docs/`.

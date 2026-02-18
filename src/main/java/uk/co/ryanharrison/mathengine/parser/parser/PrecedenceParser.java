@@ -6,6 +6,7 @@ import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -574,12 +575,23 @@ public final class PrecedenceParser {
         if (stream.match(TokenType.DECIMAL, TokenType.SCIENTIFIC, TokenType.DOUBLE)) {
             Token token = stream.previous();
             Object literal = token.literal();
+            // Double literal: either an explicit 'd'-suffix DOUBLE token, or a computed
+            // rational+scientific value (e.g. "1/2E5" → 50000.0 from emitRationalScientific).
+            // DOUBLE tokens always go to NodeDouble; others honour the arithmetic mode.
             if (literal instanceof Double doubleVal) {
-                // DOUBLE token always returns NodeDouble (never converts to rational)
                 if (forceDoubleArithmetic || token.type() == TokenType.DOUBLE) {
                     return new NodeDouble(doubleVal);
-                } else {
-                    return TypeCoercion.toNumber(doubleVal);
+                }
+                return TypeCoercion.toNumber(doubleVal);
+            }
+            if (literal instanceof String strVal) {
+                if (forceDoubleArithmetic) {
+                    return new NodeDouble(Double.parseDouble(strVal));
+                }
+                try {
+                    return new NodeRational(BigRational.of(new BigDecimal(strVal)));
+                } catch (NumberFormatException e) {
+                    throw stream.error(token, "Invalid decimal literal");
                 }
             }
             throw stream.error(token, "Invalid decimal literal");

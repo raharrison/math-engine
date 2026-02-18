@@ -416,8 +416,7 @@ public final class TokenScanner {
      */
     private void emitDecimal() {
         String text = scanner.substring(start, scanner.getPosition());
-        double value = Double.parseDouble(text);
-        addToken(TokenType.DECIMAL, text, value);
+        addToken(TokenType.DECIMAL, text, text);
     }
 
     /**
@@ -463,8 +462,7 @@ public final class TokenScanner {
      */
     private void emitScientific() {
         String text = scanner.substring(start, scanner.getPosition());
-        double value = Double.parseDouble(text);
-        addToken(TokenType.SCIENTIFIC, text, value);
+        addToken(TokenType.SCIENTIFIC, text, text);
     }
 
     /**

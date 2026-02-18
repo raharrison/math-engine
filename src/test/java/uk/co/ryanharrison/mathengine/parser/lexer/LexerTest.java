@@ -65,20 +65,20 @@ class LexerTest {
 
     @ParameterizedTest
     @CsvSource({
-            "3.14, 3.14",
-            "0.5, 0.5",
-            "0.0, 0.0",
-            "1.0, 1.0",
-            "0.001, 0.001",
-            "123.456, 123.456"
+            "3.14",
+            "0.5",
+            "0.0",
+            "1.0",
+            "0.001",
+            "123.456"
     })
-    void tokenizeDecimalNumbers(String input, double expected) {
+    void tokenizeDecimalNumbers(String input) {
         List<Token> tokens = lexer.tokenize(input);
 
         assertThat(tokens).hasSize(2); // DECIMAL + EOF
         assertThat(tokens.getFirst().type()).isEqualTo(TokenType.DECIMAL);
         assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
-        assertThat((Double) tokens.getFirst().literal()).isCloseTo(expected, within(0.000001));
+        assertThat(tokens.getFirst().literal()).isEqualTo(input);
     }
 
     @Test
@@ -88,25 +88,25 @@ class LexerTest {
         assertThat(tokens).hasSize(2); // DECIMAL + EOF
         assertThat(tokens.getFirst().type()).isEqualTo(TokenType.DECIMAL);
         assertThat(tokens.getFirst().lexeme()).isEqualTo(".5");
-        assertThat((Double) tokens.getFirst().literal()).isCloseTo(0.5, within(0.000001));
+        assertThat(tokens.getFirst().literal()).isEqualTo(".5");
     }
 
     // ==================== Scientific Notation ====================
 
     @ParameterizedTest
     @CsvSource({
-            "1e3, 1000.0",
-            "2.5E-2, 0.025",
-            "1.5e+3, 1500.0",
-            "3.2E2, 320.0"
+            "1e3",
+            "2.5E-2",
+            "1.5e+3",
+            "3.2E2"
     })
-    void tokenizeScientificNotation(String input, double expected) {
+    void tokenizeScientificNotation(String input) {
         List<Token> tokens = lexer.tokenize(input);
 
         assertThat(tokens).hasSize(2); // SCIENTIFIC + EOF
         assertThat(tokens.getFirst().type()).isEqualTo(TokenType.SCIENTIFIC);
         assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
-        assertThat((Double) tokens.getFirst().literal()).isCloseTo(expected, within(0.000001));
+        assertThat(tokens.getFirst().literal()).isEqualTo(input);
     }
 
     // ==================== Double Literals (forced with 'd' suffix) ====================

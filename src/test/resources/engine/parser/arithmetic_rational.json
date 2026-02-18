@@ -147,6 +147,45 @@
             "expected": 0,
             "expectedType": "NodeDouble",
             "notes": "Modulo with no remainder"
+        },
+        {
+            "id": "decimal_exact_001",
+            "input": "0.1 + 0.2",
+            "expected": 0.3,
+            "expectedType": "NodeRational",
+            "notes": "Exact decimal addition: 1/10 + 1/5 = 3/10"
+        },
+        {
+            "id": "decimal_exact_002",
+            "input": "0.1 + 0.2 - 0.3",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Classic floating-point pitfall: exact result is 0"
+        },
+        {
+            "id": "decimal_precision_001",
+            "input": "0.1 * 3",
+            "expected": 0.3,
+            "expectedType": "NodeRational",
+            "notes": "0.1 * 3 = 3/10 exactly"
+        },
+        {
+            "id": "decimal_scientific_exact_001",
+            "input": "1.5e3",
+            "expected": 1500,
+            "expectedType": "NodeRational",
+            "notes": "Scientific notation parses to exact rational integer"
+        },
+        {
+            "id": "decimal_double_mode_001",
+            "input": "0.1 + 0.2",
+            "expected": 0.30000000000000004,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-15,
+            "config": {
+                "forceDoubleArithmetic": true
+            },
+            "notes": "Double mode retains IEEE 754 imprecision"
         }
     ]
 }

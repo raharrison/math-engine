@@ -1,6 +1,7 @@
 package uk.co.ryanharrison.mathengine.core;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
@@ -295,6 +296,29 @@ public final class BigRational extends Number implements Comparable<BigRational>
     public static BigRational of(String value) {
         Objects.requireNonNull(value, "Value cannot be null");
         return of(Double.parseDouble(value));
+    }
+
+    /**
+     * Creates a rational number from the exact decimal value of a BigDecimal.
+     * <p>
+     * Converts without any floating-point intermediary:
+     * {@code 0.1} → {@code 1/10}, {@code 1.5e3} → {@code 1500/1}.
+     * The result is automatically reduced to lowest terms.
+     * </p>
+     *
+     * @param value the BigDecimal value
+     * @return an exact rational representation
+     * @throws NullPointerException if value is null
+     */
+    public static BigRational of(BigDecimal value) {
+        Objects.requireNonNull(value, "Value cannot be null");
+        BigInteger unscaled = value.unscaledValue();
+        int scale = value.scale();
+        if (scale >= 0) {
+            return new BigRational(unscaled, BigInteger.TEN.pow(scale));
+        } else {
+            return new BigRational(unscaled.multiply(BigInteger.TEN.pow(-scale)), BigInteger.ONE);
+        }
     }
 
     /**
