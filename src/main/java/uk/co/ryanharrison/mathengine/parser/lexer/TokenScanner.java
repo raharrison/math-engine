@@ -2,6 +2,7 @@ package uk.co.ryanharrison.mathengine.parser.lexer;
 
 import uk.co.ryanharrison.mathengine.parser.registry.SymbolRegistry;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -401,8 +402,13 @@ public final class TokenScanner {
      */
     private void emitInteger() {
         String text = scanner.substring(start, scanner.getPosition());
-        long value = Long.parseLong(text);
-        addToken(TokenType.INTEGER, text, value);
+        try {
+            long value = Long.parseLong(text);
+            addToken(TokenType.INTEGER, text, value);
+        } catch (NumberFormatException e) {
+            // Number too large for long — store as BigInteger, parser handles it
+            addToken(TokenType.INTEGER, text, new BigInteger(text));
+        }
     }
 
     /**
@@ -441,14 +447,14 @@ public final class TokenScanner {
         // Remove 'd' suffix and evaluate rational
         String rationalPart = text.substring(0, text.length() - 1);
         int slashIndex = rationalPart.indexOf('/');
-        long numerator = Long.parseLong(rationalPart.substring(0, slashIndex));
-        long denominator = Long.parseLong(rationalPart.substring(slashIndex + 1));
+        BigInteger numerator = new BigInteger(rationalPart.substring(0, slashIndex));
+        BigInteger denominator = new BigInteger(rationalPart.substring(slashIndex + 1));
 
-        if (denominator == 0) {
+        if (denominator.signum() == 0) {
             throw scanner.error("Division by zero in rational literal");
         }
 
-        double value = (double) numerator / denominator;
+        double value = numerator.doubleValue() / denominator.doubleValue();
         addToken(TokenType.DOUBLE, text, value);
     }
 
@@ -473,14 +479,14 @@ public final class TokenScanner {
         int eIndex = text.toLowerCase().indexOf('e', slashIndex);
 
         // Parse rational part
-        long numerator = Long.parseLong(text.substring(0, slashIndex));
-        long denominator = Long.parseLong(text.substring(slashIndex + 1, eIndex));
+        BigInteger numerator = new BigInteger(text.substring(0, slashIndex));
+        BigInteger denominator = new BigInteger(text.substring(slashIndex + 1, eIndex));
 
-        if (denominator == 0) {
+        if (denominator.signum() == 0) {
             throw scanner.error("Division by zero in rational literal");
         }
 
-        double rationalValue = (double) numerator / denominator;
+        double rationalValue = numerator.doubleValue() / denominator.doubleValue();
 
         // Parse exponent
         int exponent = Integer.parseInt(text.substring(eIndex + 1));

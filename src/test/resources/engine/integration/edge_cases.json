@@ -223,6 +223,44 @@
             "expected": -1.0,
             "expectedType": "NodeDouble",
             "notes": "Odd power of -1 is -1"
+        },
+        {
+            "id": "big_integer_parse_001",
+            "input": "10000000000000000000",
+            "expected": 1.0E19,
+            "expectedType": "NodeRational",
+            "notes": "Large integer literal exceeding Long.MAX_VALUE parses without error"
+        },
+        {
+            "id": "big_integer_exact_diff_001",
+            "input": "10000000000000000001 - 10000000000000000000",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Exact big integer arithmetic - difference of adjacent large integers is 1"
+        },
+        {
+            "id": "big_integer_multiply_001",
+            "input": "10000000000000000000 * 2",
+            "expected": 2.0E19,
+            "expectedType": "NodeRational",
+            "notes": "Big integer multiplication"
+        },
+        {
+            "id": "big_integer_rational_div_001",
+            "input": "10000000000000000000 / 2",
+            "expected": 5.0E18,
+            "expectedType": "NodeRational",
+            "notes": "Big integer divided by small integer stays exact rational"
+        },
+        {
+            "id": "big_integer_double_mode_001",
+            "input": "10000000000000000000",
+            "expected": 1.0E19,
+            "expectedType": "NodeDouble",
+            "config": {
+                "forceDoubleArithmetic": true
+            },
+            "notes": "Large integer literal in double mode returns approximate double"
         }
     ]
 }

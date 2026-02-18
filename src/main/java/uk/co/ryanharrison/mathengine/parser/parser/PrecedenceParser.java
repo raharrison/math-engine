@@ -1,10 +1,12 @@
 package uk.co.ryanharrison.mathengine.parser.parser;
 
+import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -559,6 +561,11 @@ public final class PrecedenceParser {
                     return new NodeDouble(intVal.doubleValue());
                 }
                 return new NodeRational(intVal.longValue(), 1L);
+            } else if (literal instanceof BigInteger bigInt) {
+                if (forceDoubleArithmetic) {
+                    return new NodeDouble(bigInt.doubleValue());
+                }
+                return new NodeRational(BigRational.of(bigInt));
             }
             throw stream.error(token, "Invalid integer literal");
         }
@@ -658,13 +665,13 @@ public final class PrecedenceParser {
 
         if (parts.length == 2) {
             try {
-                long numerator = Long.parseLong(parts[0]);
-                long denominator = Long.parseLong(parts[1]);
+                BigInteger numerator = new BigInteger(parts[0]);
+                BigInteger denominator = new BigInteger(parts[1]);
 
-                if (denominator == 0) {
+                if (denominator.signum() == 0) {
                     // Lazy evaluation for division by zero
                     var left = forceDoubleArithmetic ?
-                            new NodeDouble(numerator) : new NodeRational(numerator);
+                            new NodeDouble(numerator.doubleValue()) : new NodeRational(BigRational.of(numerator));
                     var right = forceDoubleArithmetic ?
                             new NodeDouble(0) : new NodeRational(0);
                     var divideToken = new Token(TokenType.DIVIDE, "/", null, token.line(), token.column());
@@ -672,9 +679,9 @@ public final class PrecedenceParser {
                 }
 
                 if (forceDoubleArithmetic) {
-                    return new NodeDouble((double) numerator / denominator);
+                    return new NodeDouble(numerator.doubleValue() / denominator.doubleValue());
                 }
-                return new NodeRational(numerator, denominator);
+                return new NodeRational(BigRational.of(numerator, denominator));
             } catch (NumberFormatException e) {
                 throw stream.error(token, "Invalid rational literal");
             }

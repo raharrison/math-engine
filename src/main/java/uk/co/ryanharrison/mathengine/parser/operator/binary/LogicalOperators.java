@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.operator.binary;
 
+import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
@@ -50,7 +51,7 @@ public final class LogicalOperators {
             // Logical operators only work on scalars
             if (left instanceof NodeVector || left instanceof NodeMatrix ||
                     right instanceof NodeVector || right instanceof NodeMatrix) {
-                throw new uk.co.ryanharrison.mathengine.parser.evaluator.TypeError(
+                throw new TypeError(
                         "Logical AND (&&) does not work on containers");
             }
 
@@ -84,7 +85,7 @@ public final class LogicalOperators {
             // Logical operators only work on scalars
             if (left instanceof NodeVector || left instanceof NodeMatrix ||
                     right instanceof NodeVector || right instanceof NodeMatrix) {
-                throw new uk.co.ryanharrison.mathengine.parser.evaluator.TypeError(
+                throw new TypeError(
                         "Logical OR (||) does not work on containers");
             }
 
@@ -102,7 +103,7 @@ public final class LogicalOperators {
         // Logical operators only work on scalars
         if (left instanceof NodeVector || left instanceof NodeMatrix ||
                 right instanceof NodeVector || right instanceof NodeMatrix) {
-            throw new uk.co.ryanharrison.mathengine.parser.evaluator.TypeError(
+            throw new TypeError(
                     "Logical XOR (xor) does not work on containers");
         }
 
