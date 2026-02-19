@@ -4,9 +4,6 @@ plugins {
     jacoco
 }
 
-group = project.group
-version = project.version
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
@@ -125,5 +122,18 @@ tasks.jacocoTestCoverageVerification {
                 minimum = "0.0".toBigDecimal() // Set to 0 initially, increase as tests are added
             }
         }
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            groupId = project.findProperty("group")?.toString() ?: project.group.toString()
+            version = project.findProperty("version")?.toString() ?: project.version.toString()
+        }
+    }
+    repositories {
+        mavenLocal()
     }
 }
