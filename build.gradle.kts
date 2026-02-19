@@ -4,6 +4,9 @@ plugins {
     jacoco
 }
 
+group = project.group
+version = project.version
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
