@@ -1,7 +1,10 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
+import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
+import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
+import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 /**
  * Immutable node representing a numeric value with an associated unit.
@@ -94,6 +97,58 @@ public final class NodeUnit extends NodeConstant {
     @Override
     public String typeName() {
         return "unit value";
+    }
+
+    // ==================== Universal Arithmetic ====================
+
+    @Override
+    public NodeConstant add(NodeConstant other) {
+        if (other instanceof NodeString) {
+            return new NodeString(TypeCoercion.toDisplayString(this) + ((NodeString) other).getValue());
+        }
+        return NumericOperations.applyAdditive(this, other, Double::sum, BigRational::add);
+    }
+
+    @Override
+    public NodeConstant subtract(NodeConstant other) {
+        if (other instanceof NodeString) {
+            throw new TypeError("Cannot subtract string from unit value");
+        }
+        return NumericOperations.applyAdditive(this, other, (a, b) -> a - b, BigRational::subtract);
+    }
+
+    @Override
+    public NodeConstant multiply(NodeConstant other) {
+        if (other instanceof NodeString) {
+            throw new TypeError("Cannot multiply unit value by string");
+        }
+        return NumericOperations.applyMultiplicative(this, other, (a, b) -> a * b, BigRational::multiply, true);
+    }
+
+    @Override
+    public NodeConstant divide(NodeConstant other) {
+        if (other instanceof NodeString) {
+            throw new TypeError("Cannot divide unit value by string");
+        }
+        return NumericOperations.applyMultiplicative(this, other, (a, b) -> a / b, BigRational::divide, false);
+    }
+
+    @Override
+    public NodeConstant power(NodeConstant other) {
+        return NumericOperations.applyPower(this, other, false);
+    }
+
+    @Override
+    public NodeConstant negate() {
+        return NodeUnit.of(-value, unit);
+    }
+
+    @Override
+    public int compareTo(NodeConstant other) {
+        if (other instanceof NodeString) {
+            throw new TypeError("Cannot compare unit value with string");
+        }
+        return NumericOperations.compareNumeric(this, other);
     }
 
     @Override

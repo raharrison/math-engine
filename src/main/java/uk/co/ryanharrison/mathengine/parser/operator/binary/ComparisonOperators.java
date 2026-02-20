@@ -4,6 +4,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeMatrix;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeString;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
 import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
 
@@ -38,6 +39,11 @@ public final class ComparisonOperators {
             throw new TypeError("Cannot use '<' on containers. Use '==' or '!=' for equality checks.");
         }
 
+        // String comparison: lexicographic
+        if (left instanceof NodeString leftStr && right instanceof NodeString rightStr) {
+            return NodeBoolean.of(leftStr.getValue().compareTo(rightStr.getValue()) < 0);
+        }
+
         if (!left.isNumeric() || !right.isNumeric()) {
             throw new TypeError("Cannot compare non-numeric types with '<': " +
                     left.typeName() + " and " + right.typeName());
@@ -57,6 +63,11 @@ public final class ComparisonOperators {
         if (left instanceof NodeVector || left instanceof NodeMatrix ||
                 right instanceof NodeVector || right instanceof NodeMatrix) {
             throw new TypeError("Cannot use '>' on containers. Use '==' or '!=' for equality checks.");
+        }
+
+        // String comparison: lexicographic
+        if (left instanceof NodeString leftStr && right instanceof NodeString rightStr) {
+            return NodeBoolean.of(leftStr.getValue().compareTo(rightStr.getValue()) > 0);
         }
 
         if (!left.isNumeric() || !right.isNumeric()) {
@@ -80,6 +91,11 @@ public final class ComparisonOperators {
             throw new TypeError("Cannot use '<=' on containers. Use '==' or '!=' for equality checks.");
         }
 
+        // String comparison: lexicographic
+        if (left instanceof NodeString leftStr && right instanceof NodeString rightStr) {
+            return NodeBoolean.of(leftStr.getValue().compareTo(rightStr.getValue()) <= 0);
+        }
+
         if (!left.isNumeric() || !right.isNumeric()) {
             throw new TypeError("Cannot compare non-numeric types with '<=': " +
                     left.typeName() + " and " + right.typeName());
@@ -99,6 +115,11 @@ public final class ComparisonOperators {
         if (left instanceof NodeVector || left instanceof NodeMatrix ||
                 right instanceof NodeVector || right instanceof NodeMatrix) {
             throw new TypeError("Cannot use '>=' on containers. Use '==' or '!=' for equality checks.");
+        }
+
+        // String comparison: lexicographic
+        if (left instanceof NodeString leftStr && right instanceof NodeString rightStr) {
+            return NodeBoolean.of(leftStr.getValue().compareTo(rightStr.getValue()) >= 0);
         }
 
         if (!left.isNumeric() || !right.isNumeric()) {

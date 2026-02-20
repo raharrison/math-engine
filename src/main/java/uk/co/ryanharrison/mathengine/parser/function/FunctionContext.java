@@ -424,26 +424,13 @@ public final class FunctionContext {
 
     /**
      * Converts a constant to a string value.
+     * Delegates to {@link TypeCoercion#toDisplayString(NodeConstant)}.
      *
      * @param value the value to convert
      * @return the string representation
      */
     public String toStringValue(NodeConstant value) {
-        if (value instanceof NodeString str) {
-            return str.getValue();
-        }
-        if (value instanceof NodeBoolean bool) {
-            return bool.getValue() ? "true" : "false";
-        }
-        if (value instanceof NodeNumber num) {
-            double d = num.doubleValue();
-            if (d == Math.floor(d) && Double.isFinite(d)) {
-                return String.valueOf((long) d);
-            }
-            return String.valueOf(d);
-        }
-        // For vectors/matrices, use toString representation
-        return value.toString();
+        return TypeCoercion.toDisplayString(value);
     }
 
     /**

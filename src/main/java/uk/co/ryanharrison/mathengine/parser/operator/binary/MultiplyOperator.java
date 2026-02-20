@@ -4,6 +4,7 @@ import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeString;
 import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 
 /**
@@ -40,8 +41,11 @@ public final class MultiplyOperator implements BinaryOperator {
 
     @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-        return BroadcastingEngine.applyBinary(left, right, (l, r) ->
-                ctx.applyMultiplicative(l, r, BigRational::multiply, (a, b) -> a * b, true)
-        );
+        return BroadcastingEngine.applyBinary(left, right, (l, r) -> {
+            if (l instanceof NodeString || r instanceof NodeString) {
+                return l.multiply(r);
+            }
+            return ctx.applyMultiplicative(l, r, BigRational::multiply, (a, b) -> a * b, true);
+        });
     }
 }

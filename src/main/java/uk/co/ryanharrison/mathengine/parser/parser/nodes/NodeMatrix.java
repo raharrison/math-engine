@@ -1,5 +1,8 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
+import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
+import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,6 +76,43 @@ public final class NodeMatrix extends NodeConstant {
     @Override
     public double doubleValue() {
         throw new UnsupportedOperationException("Cannot convert matrix to double");
+    }
+
+    // ==================== Universal Arithmetic ====================
+
+    @Override
+    public NodeConstant add(NodeConstant other) {
+        return BroadcastingEngine.applyBinary(this, other, NodeConstant::add);
+    }
+
+    @Override
+    public NodeConstant subtract(NodeConstant other) {
+        return BroadcastingEngine.applyBinary(this, other, NodeConstant::subtract);
+    }
+
+    @Override
+    public NodeConstant multiply(NodeConstant other) {
+        return BroadcastingEngine.applyBinary(this, other, NodeConstant::multiply);
+    }
+
+    @Override
+    public NodeConstant divide(NodeConstant other) {
+        return BroadcastingEngine.applyBinary(this, other, NodeConstant::divide);
+    }
+
+    @Override
+    public NodeConstant power(NodeConstant other) {
+        return BroadcastingEngine.applyBinary(this, other, NodeConstant::power);
+    }
+
+    @Override
+    public NodeConstant negate() {
+        return BroadcastingEngine.applyUnary(this, NodeConstant::negate);
+    }
+
+    @Override
+    public int compareTo(NodeConstant other) {
+        throw new TypeError("Cannot compare matrices with ordering operators");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
 import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
+import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 
 /**
  * Node representing a user-defined function as a first-class value.
@@ -31,6 +32,43 @@ public final class NodeFunction extends NodeConstant {
     @Override
     public String typeName() {
         return "function";
+    }
+
+    // ==================== Universal Arithmetic ====================
+
+    @Override
+    public NodeConstant add(NodeConstant other) {
+        throw new TypeError("Cannot perform arithmetic on function");
+    }
+
+    @Override
+    public NodeConstant subtract(NodeConstant other) {
+        throw new TypeError("Cannot perform arithmetic on function");
+    }
+
+    @Override
+    public NodeConstant multiply(NodeConstant other) {
+        throw new TypeError("Cannot perform arithmetic on function");
+    }
+
+    @Override
+    public NodeConstant divide(NodeConstant other) {
+        throw new TypeError("Cannot perform arithmetic on function");
+    }
+
+    @Override
+    public NodeConstant power(NodeConstant other) {
+        throw new TypeError("Cannot perform arithmetic on function");
+    }
+
+    @Override
+    public NodeConstant negate() {
+        throw new TypeError("Cannot perform arithmetic on function");
+    }
+
+    @Override
+    public int compareTo(NodeConstant other) {
+        throw new TypeError("Cannot compare functions");
     }
 
     @Override

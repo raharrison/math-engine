@@ -35,6 +35,32 @@ public final class TypeCoercion {
     private TypeCoercion() {
     }
 
+    // ==================== String Conversion ====================
+
+    /**
+     * Converts a constant to its display string representation.
+     * <p>
+     * Used for string concatenation and string coercion. Rules:
+     * <ul>
+     *     <li>NodeString: raw value (no quotes)</li>
+     *     <li>NodeBoolean: "true" or "false"</li>
+     *     <li>NodeNumber: integer format if whole number, otherwise double format</li>
+     *     <li>Others: toString()</li>
+     * </ul>
+     *
+     * @param node the constant to convert
+     * @return the display string
+     */
+    public static String toDisplayString(NodeConstant node) {
+        if (node instanceof NodeString str) {
+            return str.getValue();
+        }
+        if (node instanceof NodeBoolean bool) {
+            return bool.getValue() ? "true" : "false";
+        }
+        return node.toString();
+    }
+
     // ==================== Type Checking ====================
 
     /**
