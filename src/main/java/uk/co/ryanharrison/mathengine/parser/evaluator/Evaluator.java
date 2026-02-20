@@ -322,13 +322,13 @@ public final class Evaluator {
         NodeConstant stepVal = node.hasStep() ? evaluate(node.getStep()) : null;
 
         if (!TypeCoercion.isNumeric(startVal)) {
-            throw new TypeError("Range start must be a number, got " + TypeCoercion.typeName(startVal));
+            throw new TypeError("Range start must be a number, got: " + startVal.typeName());
         }
         if (!TypeCoercion.isNumeric(endVal)) {
-            throw new TypeError("Range end must be a number, got " + TypeCoercion.typeName(endVal));
+            throw new TypeError("Range end must be a number, got: " + endVal.typeName());
         }
         if (stepVal != null && !TypeCoercion.isNumeric(stepVal)) {
-            throw new TypeError("Range step must be a number, got " + TypeCoercion.typeName(stepVal));
+            throw new TypeError("Range step must be a number, got: " + stepVal.typeName());
         }
 
         NodeRange range = new NodeRange(
@@ -406,7 +406,7 @@ public final class Evaluator {
             return new NodeMatrix(converted);
         }
 
-        throw new TypeError("Cannot apply unit conversion to " + TypeCoercion.typeName(value));
+        throw new TypeError("Cannot apply unit conversion to: " + value.typeName());
     }
 
     // ==================== Sequence Evaluation ====================

@@ -58,6 +58,11 @@ public final class NodeComprehension extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "comprehension";
+    }
+
+    @Override
     public String toString() {
         var sb = new StringBuilder();
         sb.append("{").append(expression);

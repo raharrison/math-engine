@@ -35,6 +35,11 @@ public final class NodeLambda extends NodeConstant {
     }
 
     @Override
+    public String typeName() {
+        return "function";
+    }
+
+    @Override
     public String toString() {
         if (parameters.size() == 1) {
             return parameters.getFirst() + " -> " + body;

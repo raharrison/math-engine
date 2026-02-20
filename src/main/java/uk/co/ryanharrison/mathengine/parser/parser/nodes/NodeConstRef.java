@@ -73,6 +73,11 @@ public final class NodeConstRef extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "constant reference";
+    }
+
+    @Override
     public String toString() {
         return "#" + constName;
     }

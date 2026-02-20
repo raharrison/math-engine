@@ -62,7 +62,7 @@ public final class SubscriptHandler {
                 }
                 yield evaluateMatrixSubscript(matrix, subscript.getIndices());
             }
-            default -> throw new TypeError("Cannot subscript " + TypeCoercion.typeName(target));
+            default -> throw new TypeError("Cannot subscript a " + target.typeName());
         };
     }
 

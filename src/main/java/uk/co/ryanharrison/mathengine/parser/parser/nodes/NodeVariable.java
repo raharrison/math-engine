@@ -17,6 +17,11 @@ public final class NodeVariable extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "identifier";
+    }
+
+    @Override
     public String toString() {
         return name;
     }

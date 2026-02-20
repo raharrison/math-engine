@@ -153,6 +153,11 @@ public final class NodeRange extends NodeConstant {
     }
 
     @Override
+    public String typeName() {
+        return "range";
+    }
+
+    @Override
     public String toString() {
         if (step.doubleValue() == 1.0) {
             return String.format("%s..%s", start, end);

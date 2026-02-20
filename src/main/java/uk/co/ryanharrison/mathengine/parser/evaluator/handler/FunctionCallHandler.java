@@ -322,7 +322,7 @@ public final class FunctionCallHandler implements FunctionCaller {
             }
         }
 
-        String calleeDesc = (calleeName != null) ? "'" + calleeName + "'" : TypeCoercion.typeName(calleeValue);
+        String calleeDesc = (calleeName != null) ? "'" + calleeName + "'" : calleeValue.typeName();
         throw new TypeError("Cannot call " + calleeDesc + " (value is not a function)");
     }
 }

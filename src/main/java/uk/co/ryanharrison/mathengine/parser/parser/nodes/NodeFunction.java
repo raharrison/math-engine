@@ -29,6 +29,11 @@ public final class NodeFunction extends NodeConstant {
     }
 
     @Override
+    public String typeName() {
+        return "function";
+    }
+
+    @Override
     public String toString() {
         return "<function:" + function.name() + ">";
     }

@@ -32,6 +32,11 @@ public final class NodeString extends NodeConstant {
     }
 
     @Override
+    public String typeName() {
+        return "string";
+    }
+
+    @Override
     public String toString() {
         return "\"" + value + "\"";
     }

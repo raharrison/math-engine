@@ -150,8 +150,8 @@ public final class BroadcastingEngine {
         }
 
         throw new TypeError("Unsupported operand types: " +
-                left.getClass().getSimpleName() + " and " +
-                right.getClass().getSimpleName());
+                left.typeName() + " and " +
+                right.typeName());
     }
 
     // ==================== Matrix Implementations ====================

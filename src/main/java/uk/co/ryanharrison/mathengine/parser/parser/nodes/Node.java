@@ -11,6 +11,12 @@ package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 public abstract sealed class Node permits NodeConstant, NodeExpression {
 
     /**
+     * Returns a human-readable type name for use in error messages and diagnostics.
+     * Examples: {@code "number"}, {@code "string"}, {@code "vector"}, {@code "identifier"}
+     */
+    public abstract String typeName();
+
+    /**
      * Accept a visitor for the visitor pattern (optional, for future use).
      */
     public abstract <T> T accept(NodeVisitor<T> visitor);

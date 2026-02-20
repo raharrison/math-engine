@@ -35,6 +35,11 @@ public final class NodeUnary extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "unary expression";
+    }
+
+    @Override
     public String toString() {
         if (isPrefix) {
             return String.format("(%s%s)", operator.lexeme(), operand);

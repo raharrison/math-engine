@@ -23,6 +23,11 @@ public final class NodeUnitConversion extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "unit conversion";
+    }
+
+    @Override
     public String toString() {
         return value + " in " + targetUnit;
     }

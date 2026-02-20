@@ -83,6 +83,11 @@ public final class NodeVector extends NodeConstant {
     }
 
     @Override
+    public String typeName() {
+        return "vector";
+    }
+
+    @Override
     public String toString() {
         return "{" + String.join(", ", Arrays.stream(elements)
                 .map(Object::toString)

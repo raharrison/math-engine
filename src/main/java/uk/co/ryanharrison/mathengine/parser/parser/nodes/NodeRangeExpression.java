@@ -37,6 +37,11 @@ public final class NodeRangeExpression extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "range expression";
+    }
+
+    @Override
     public String toString() {
         if (step != null) {
             return String.format("%s..%s step %s", start, end, step);

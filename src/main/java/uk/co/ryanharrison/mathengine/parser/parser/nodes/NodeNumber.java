@@ -13,6 +13,11 @@ public abstract sealed class NodeNumber extends NodeConstant permits
         NodeBoolean {
 
     @Override
+    public String typeName() {
+        return "number";
+    }
+
+    @Override
     public boolean isNumeric() {
         return true;
     }

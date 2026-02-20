@@ -178,6 +178,6 @@ public final class ComprehensionHandler {
             return range::iterator;
         }
 
-        throw new TypeError("Cannot iterate over " + TypeCoercion.typeName(value));
+        throw new TypeError("Cannot iterate over: " + value.typeName());
     }
 }

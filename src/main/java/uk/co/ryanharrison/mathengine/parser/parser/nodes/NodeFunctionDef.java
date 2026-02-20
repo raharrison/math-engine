@@ -31,6 +31,11 @@ public final class NodeFunctionDef extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "function definition";
+    }
+
+    @Override
     public String toString() {
         return name + "(" + String.join(", ", parameters) + ") := " + body;
     }

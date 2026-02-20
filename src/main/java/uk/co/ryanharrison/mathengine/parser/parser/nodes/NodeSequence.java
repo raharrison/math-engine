@@ -19,6 +19,11 @@ public final class NodeSequence extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "statement sequence";
+    }
+
+    @Override
     public String toString() {
         var sb = new StringBuilder();
         for (int i = 0; i < statements.size(); i++) {

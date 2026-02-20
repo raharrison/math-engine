@@ -23,6 +23,11 @@ public final class NodeAssignment extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "assignment";
+    }
+
+    @Override
     public String toString() {
         return identifier + " := " + value;
     }

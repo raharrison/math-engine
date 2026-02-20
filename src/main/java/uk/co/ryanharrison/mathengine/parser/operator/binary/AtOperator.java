@@ -47,8 +47,8 @@ public final class AtOperator implements BinaryOperator {
             return vectorMap(vector, func, ctx);
         }
 
-        throw new TypeError("@ operator requires (Matrix @ Matrix), (Vector @ Vector), or (Vector @ Function), got " +
-                left.getClass().getSimpleName() + " @ " + right.getClass().getSimpleName());
+        throw new TypeError("@ operator requires (Matrix @ Matrix), (Vector @ Vector), or (Vector @ Function), got: " +
+                left.typeName() + " @ " + right.typeName());
     }
 
     /**

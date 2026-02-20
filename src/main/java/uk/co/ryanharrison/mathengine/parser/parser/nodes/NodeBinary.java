@@ -31,6 +31,11 @@ public final class NodeBinary extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "binary expression";
+    }
+
+    @Override
     public String toString() {
         return String.format("(%s %s %s)", left, operator.lexeme(), right);
     }

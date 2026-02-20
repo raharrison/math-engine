@@ -45,8 +45,8 @@ public class TypeError extends EvaluationException {
             return String.format("Type error at line %d, column %d: Cannot apply %s to %s and %s",
                     operator.line(), operator.column(),
                     operator.lexeme(),
-                    leftOperand.getClass().getSimpleName(),
-                    rightOperand.getClass().getSimpleName());
+                    leftOperand.typeName(),
+                    rightOperand.typeName());
         }
         return String.format("Type error: %s", getMessage());
     }

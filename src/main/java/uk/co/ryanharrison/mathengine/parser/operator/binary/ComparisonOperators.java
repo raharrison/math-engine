@@ -40,7 +40,7 @@ public final class ComparisonOperators {
 
         if (!left.isNumeric() || !right.isNumeric()) {
             throw new TypeError("Cannot compare non-numeric types with '<': " +
-                    left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
+                    left.typeName() + " and " + right.typeName());
         }
 
         return NodeBoolean.of(NumericOperations.isLessThan(left, right));
@@ -61,7 +61,7 @@ public final class ComparisonOperators {
 
         if (!left.isNumeric() || !right.isNumeric()) {
             throw new TypeError("Cannot compare non-numeric types with '>': " +
-                    left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
+                    left.typeName() + " and " + right.typeName());
         }
 
         return NodeBoolean.of(NumericOperations.isGreaterThan(left, right));
@@ -82,7 +82,7 @@ public final class ComparisonOperators {
 
         if (!left.isNumeric() || !right.isNumeric()) {
             throw new TypeError("Cannot compare non-numeric types with '<=': " +
-                    left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
+                    left.typeName() + " and " + right.typeName());
         }
 
         return NodeBoolean.of(NumericOperations.isLessThanOrEqual(left, right));
@@ -103,7 +103,7 @@ public final class ComparisonOperators {
 
         if (!left.isNumeric() || !right.isNumeric()) {
             throw new TypeError("Cannot compare non-numeric types with '>=': " +
-                    left.getClass().getSimpleName() + " and " + right.getClass().getSimpleName());
+                    left.typeName() + " and " + right.typeName());
         }
 
         return NodeBoolean.of(NumericOperations.isGreaterThanOrEqual(left, right));

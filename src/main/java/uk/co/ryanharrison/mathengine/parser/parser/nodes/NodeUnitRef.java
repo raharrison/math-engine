@@ -59,6 +59,11 @@ public final class NodeUnitRef extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "unit reference";
+    }
+
+    @Override
     public String toString() {
         return "@" + unitName;
     }

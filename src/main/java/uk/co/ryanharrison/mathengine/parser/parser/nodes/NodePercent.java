@@ -50,6 +50,11 @@ public final class NodePercent extends NodeNumber {
     }
 
     @Override
+    public String typeName() {
+        return "percentage";
+    }
+
+    @Override
     public String toString() {
         return String.format("%.2f%%", value * 100);
     }

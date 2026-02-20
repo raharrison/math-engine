@@ -92,6 +92,11 @@ public final class NodeUnit extends NodeConstant {
     }
 
     @Override
+    public String typeName() {
+        return "unit value";
+    }
+
+    @Override
     public String toString() {
         return value + " " + unit.getDisplayName(value);
     }

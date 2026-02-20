@@ -63,6 +63,11 @@ public final class NodeVarRef extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "variable reference";
+    }
+
+    @Override
     public String toString() {
         return "$" + varName;
     }

@@ -26,6 +26,11 @@ public final class NodeSubscript extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "subscript";
+    }
+
+    @Override
     public String toString() {
         var sb = new StringBuilder();
         sb.append(target).append("[");

@@ -44,6 +44,11 @@ public final class NodeBoolean extends NodeNumber {
     }
 
     @Override
+    public String typeName() {
+        return "boolean";
+    }
+
+    @Override
     public String toString() {
         return String.valueOf(value);
     }

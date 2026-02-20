@@ -76,6 +76,11 @@ public final class NodeMatrix extends NodeConstant {
     }
 
     @Override
+    public String typeName() {
+        return "matrix";
+    }
+
+    @Override
     public String toString() {
         var sb = new StringBuilder("[");
         for (int i = 0; i < elements.length; i++) {

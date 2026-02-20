@@ -73,7 +73,7 @@ public final class TreeToStack {
             }
 
             default -> throw new UnsupportedOperationException(
-                    "Unsupported node: " + tree.getClass().getCanonicalName());
+                    "Unsupported node: " + tree.typeName());
         }
     }
 

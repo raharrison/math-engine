@@ -105,7 +105,7 @@ public final class TypeCoercion {
             case NodeBoolean bool -> new NodeRational(bool.getValue() ? 1 : 0);
             case NodeUnit unit -> new NodeDouble(unit.getValue());
             case NodeNumber num -> num;
-            default -> throw new TypeError("Cannot convert " + typeName(value) + " to number");
+            default -> throw new TypeError("Cannot convert " + value.typeName() + " to number");
         };
     }
 
@@ -143,21 +143,8 @@ public final class TypeCoercion {
         return switch (value) {
             case NodeBoolean bool -> bool.getValue();
             case NodeNumber num -> num.doubleValue() != 0.0;
-            default -> throw new TypeError("Cannot convert " + typeName(value) + " to boolean");
+            default -> throw new TypeError("Cannot convert " + value.typeName() + " to boolean");
         };
-    }
-
-    // ==================== Utility Methods ====================
-
-    /**
-     * Gets a human-readable type name for a node.
-     *
-     * @param value the value
-     * @return type name string
-     */
-    public static String typeName(NodeConstant value) {
-        if (value == null) return "null";
-        return value.getClass().getSimpleName().replace("Node", "").toLowerCase();
     }
 
 }

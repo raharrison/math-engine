@@ -403,7 +403,7 @@ public final class NumericOperations {
             case NodePercent pct -> pct.getValue();
             case NodeBoolean bool -> bool.getValue() ? 1.0 : 0.0;
             case NodeNumber num -> num.doubleValue();
-            default -> throw new TypeError("Cannot convert to number: " + node.getClass().getSimpleName());
+            default -> throw new TypeError("Cannot convert to number: " + node.typeName());
         };
     }
 

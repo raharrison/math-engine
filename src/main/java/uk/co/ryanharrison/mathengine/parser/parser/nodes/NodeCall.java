@@ -25,6 +25,11 @@ public final class NodeCall extends NodeExpression {
     }
 
     @Override
+    public String typeName() {
+        return "function call";
+    }
+
+    @Override
     public String toString() {
         var sb = new StringBuilder();
         sb.append(function).append("(");
