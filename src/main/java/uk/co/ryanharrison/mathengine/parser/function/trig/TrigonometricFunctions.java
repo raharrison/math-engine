@@ -24,17 +24,17 @@ public final class TrigonometricFunctions {
     /**
      * Sine function
      */
-    public static final MathFunction SIN = TrigFunction.standard("sin", "Sine", Math::sin);
+    public static final MathFunction SIN = TrigFunction.standard("sin", "Returns the sine of x", Math::sin);
 
     /**
      * Cosine function
      */
-    public static final MathFunction COS = TrigFunction.standard("cos", "Cosine", Math::cos);
+    public static final MathFunction COS = TrigFunction.standard("cos", "Returns the cosine of x", Math::cos);
 
     /**
      * Tangent function
      */
-    public static final MathFunction TAN = TrigFunction.standard("tan", "Tangent", Math::tan);
+    public static final MathFunction TAN = TrigFunction.standard("tan", "Returns the tangent of x", Math::tan);
 
     // ==================== Inverse Trig Functions ====================
 
@@ -43,7 +43,8 @@ public final class TrigonometricFunctions {
      */
     public static final MathFunction ASIN = FunctionBuilder
             .named("asin")
-            .describedAs("Arcsine")
+            .describedAs("Returns the arcsine of x (inverse sine)")
+            .withParams("x")
             .inCategory(MathFunction.Category.TRIGONOMETRIC)
             .takingUnary()
             .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
@@ -57,7 +58,8 @@ public final class TrigonometricFunctions {
      */
     public static final MathFunction ACOS = FunctionBuilder
             .named("acos")
-            .describedAs("Arccosine")
+            .describedAs("Returns the arccosine of x (inverse cosine)")
+            .withParams("x")
             .inCategory(MathFunction.Category.TRIGONOMETRIC)
             .takingUnary()
             .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
@@ -69,14 +71,15 @@ public final class TrigonometricFunctions {
     /**
      * Arctangent function
      */
-    public static final MathFunction ATAN = TrigFunction.inverse("atan", "Arctangent", Math::atan);
+    public static final MathFunction ATAN = TrigFunction.inverse("atan", "Returns the arctangent of x (inverse tangent)", Math::atan);
 
     /**
      * Two-argument arctangent function
      */
     public static final MathFunction ATAN2 = FunctionBuilder
             .named("atan2")
-            .describedAs("Two-argument arctangent")
+            .describedAs("Returns the angle to point (x, y) in current angle units; takes y first, then x (atan2 convention)")
+            .withParams("y", "x")
             .inCategory(MathFunction.Category.TRIGONOMETRIC)
             .takingBinary()
             .implementedBy((y, x, ctx) -> {
@@ -91,17 +94,17 @@ public final class TrigonometricFunctions {
     /**
      * Secant function (1/cos)
      */
-    public static final MathFunction SEC = TrigFunction.standard("sec", "Secant", TrigUtils::sec);
+    public static final MathFunction SEC = TrigFunction.standard("sec", "Returns the secant of x (1/cos(x))", TrigUtils::sec);
 
     /**
      * Cosecant function (1/sin)
      */
-    public static final MathFunction CSC = TrigFunction.standard("csc", "Cosecant", TrigUtils::cosec);
+    public static final MathFunction CSC = TrigFunction.standard("csc", "Returns the cosecant of x (1/sin(x))", TrigUtils::cosec);
 
     /**
      * Cotangent function (1/tan)
      */
-    public static final MathFunction COT = TrigFunction.standard("cot", "Cotangent", TrigUtils::cot);
+    public static final MathFunction COT = TrigFunction.standard("cot", "Returns the cotangent of x (1/tan(x))", TrigUtils::cot);
 
     // ==================== All Functions ====================
 

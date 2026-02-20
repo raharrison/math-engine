@@ -29,7 +29,8 @@ public final class PercentageFunctions {
     public static final MathFunction PERCENT = FunctionBuilder
             .named("percent")
             .alias("pct")
-            .describedAs("Convert number to percentage (50 -> 50%)")
+            .describedAs("Wraps x as a percentage value (50 → 50%)")
+            .withParams("x")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingUnary()
             .noBroadcasting()
@@ -43,7 +44,8 @@ public final class PercentageFunctions {
      */
     public static final MathFunction TOPERCENT = FunctionBuilder
             .named("topercent")
-            .describedAs("Get decimal value of percentage")
+            .describedAs("Returns the decimal value of a percentage (50% → 0.5)")
+            .withParams("x")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingUnary()
             .noBroadcasting()
@@ -58,7 +60,8 @@ public final class PercentageFunctions {
     public static final MathFunction PERCENTVALUE = FunctionBuilder
             .named("percentvalue")
             .alias("pctvalue")
-            .describedAs("Get percentage value (50% -> 50)")
+            .describedAs("Returns the numeric value of a percentage (50% → 50)")
+            .withParams("x")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingUnary()
             .noBroadcasting()
@@ -77,7 +80,8 @@ public final class PercentageFunctions {
     public static final MathFunction PERCENTOF = FunctionBuilder
             .named("percentof")
             .alias("pctof")
-            .describedAs("Calculate percentage of value")
+            .describedAs("Returns what percent of total equals (e.g. percentof(20%, 50) → 10)")
+            .withParams("percent", "total")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
@@ -93,7 +97,8 @@ public final class PercentageFunctions {
     public static final MathFunction WHATPERCENT = FunctionBuilder
             .named("whatpercent")
             .alias("whatpct")
-            .describedAs("Calculate what percent X is of Y")
+            .describedAs("Returns what percentage value is of total (e.g. whatpercent(10, 50) → 20%)")
+            .withParams("value", "total")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
@@ -112,7 +117,8 @@ public final class PercentageFunctions {
     public static final MathFunction PERCENTCHANGE = FunctionBuilder
             .named("percentchange")
             .alias("pctchange", "pctdiff")
-            .describedAs("Percentage change from old to new")
+            .describedAs("Returns the percentage change from 'from' to 'to'")
+            .withParams("from", "to")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
@@ -132,7 +138,8 @@ public final class PercentageFunctions {
     public static final MathFunction ADDPERCENT = FunctionBuilder
             .named("addpercent")
             .alias("addpct", "markup")
-            .describedAs("Add percentage to value")
+            .describedAs("Returns value increased by percent (e.g. addpercent(100, 20%) → 120)")
+            .withParams("value", "percent")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
@@ -148,7 +155,8 @@ public final class PercentageFunctions {
     public static final MathFunction SUBTRACTPERCENT = FunctionBuilder
             .named("subtractpercent")
             .alias("subpct", "discount")
-            .describedAs("Subtract percentage from value")
+            .describedAs("Returns value decreased by percent (e.g. subtractpercent(100, 20%) → 80)")
+            .withParams("value", "percent")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
@@ -166,7 +174,8 @@ public final class PercentageFunctions {
     public static final MathFunction REVERSEPERCENT = FunctionBuilder
             .named("reversepercent")
             .alias("reversepct", "unmarkup")
-            .describedAs("Find original value before percentage increase")
+            .describedAs("Returns the original value before a percentage was applied")
+            .withParams("result", "percent")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
@@ -185,7 +194,8 @@ public final class PercentageFunctions {
     public static final MathFunction RATIOTOPERCENT = FunctionBuilder
             .named("ratiotopercent")
             .alias("ratiopct")
-            .describedAs("Convert ratio to percentage change")
+            .describedAs("Converts a ratio to a percentage change (1.2 → 20%)")
+            .withParams("ratio")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingUnary()
             .noBroadcasting()
@@ -200,7 +210,8 @@ public final class PercentageFunctions {
     public static final MathFunction PERCENTTORATIO = FunctionBuilder
             .named("percenttoratio")
             .alias("pctratio")
-            .describedAs("Convert percentage change to ratio")
+            .describedAs("Converts a percentage change to a ratio (20% → 1.2)")
+            .withParams("percent")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingUnary()
             .noBroadcasting()
@@ -217,7 +228,8 @@ public final class PercentageFunctions {
     public static final MathFunction PERCENTPOINTS = FunctionBuilder
             .named("percentpoints")
             .alias("pp")
-            .describedAs("Difference in percentage points")
+            .describedAs("Returns the difference in percentage points between a and b")
+            .withParams("a", "b")
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
@@ -238,7 +250,12 @@ public final class PercentageFunctions {
 
         @Override
         public String description() {
-            return "Check if value is a percentage";
+            return "Returns true if x is a percentage value";
+        }
+
+        @Override
+        public List<List<String>> parameterSets() {
+            return List.of(List.of("x"));
         }
 
         @Override

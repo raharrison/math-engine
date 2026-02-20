@@ -49,6 +49,7 @@ public final class FunctionBuilder {
     private String description;
     private MathFunction.Category category = MathFunction.Category.OTHER;
     private final List<String> aliases = new ArrayList<>();
+    private final List<List<String>> parameterSets = new ArrayList<>();
     private int minArity;
     private int maxArity;
     private boolean supportsBroadcasting = true;
@@ -88,6 +89,11 @@ public final class FunctionBuilder {
 
     public FunctionBuilder alias(String... aliases) {
         this.aliases.addAll(Arrays.asList(aliases));
+        return this;
+    }
+
+    public FunctionBuilder withParams(String... params) {
+        this.parameterSets.add(List.copyOf(Arrays.asList(params)));
         return this;
     }
 
@@ -303,6 +309,7 @@ public final class FunctionBuilder {
         final String finalDescription = this.description != null ? this.description : this.name + " function";
         final MathFunction.Category finalCategory = this.category;
         final List<String> finalAliases = List.copyOf(this.aliases);
+        final List<List<String>> finalParamSets = List.copyOf(this.parameterSets);
         final int finalMinArity = this.minArity;
         final int finalMaxArity = this.maxArity;
         final boolean finalSupportsBroadcasting = this.supportsBroadcasting;
@@ -322,6 +329,11 @@ public final class FunctionBuilder {
             @Override
             public String description() {
                 return finalDescription;
+            }
+
+            @Override
+            public List<List<String>> parameterSets() {
+                return finalParamSets;
             }
 
             @Override

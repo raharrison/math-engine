@@ -25,7 +25,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction EXP = FunctionBuilder
             .named("exp")
-            .describedAs("Natural exponential (e^x)")
+            .describedAs("Returns e raised to the power x")
+            .withParams("x")
             .inCategory(EXPONENTIAL)
             .takingUnary()
             .implementedByDouble(Math::exp);
@@ -35,7 +36,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction EXP2 = FunctionBuilder
             .named("exp2")
-            .describedAs("Power of 2 (2^x)")
+            .describedAs("Returns 2 raised to the power x")
+            .withParams("x")
             .inCategory(EXPONENTIAL)
             .takingUnary()
             .implementedByDouble(x -> Math.pow(2, x));
@@ -45,7 +47,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction EXP10 = FunctionBuilder
             .named("exp10")
-            .describedAs("Power of 10 (10^x)")
+            .describedAs("Returns 10 raised to the power x")
+            .withParams("x")
             .inCategory(EXPONENTIAL)
             .takingUnary()
             .implementedByDouble(x -> Math.pow(10, x));
@@ -55,7 +58,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction EXPM1 = FunctionBuilder
             .named("expm1")
-            .describedAs("exp(x) - 1")
+            .describedAs("Returns e^x - 1, numerically stable for small x (avoids cancellation error)")
+            .withParams("x")
             .inCategory(EXPONENTIAL)
             .takingUnary()
             .implementedByDouble(Math::expm1);
@@ -67,7 +71,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction LN = FunctionBuilder
             .named("ln")
-            .describedAs("Natural logarithm (base e)")
+            .describedAs("Returns the natural logarithm (base e) of x")
+            .withParams("x")
             .inCategory(LOGARITHMIC)
             .takingUnary()
             .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> Math.log(ctx.requirePositive(value))));
@@ -78,7 +83,8 @@ public final class ExponentialFunctions {
     public static final MathFunction LOG = FunctionBuilder
             .named("log")
             .alias("log10")
-            .describedAs("Common logarithm (base 10)")
+            .describedAs("Returns the base-10 logarithm of x")
+            .withParams("x")
             .inCategory(LOGARITHMIC)
             .takingUnary()
             .implementedBy((arg, ctx) ->
@@ -91,7 +97,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction LOG2 = FunctionBuilder
             .named("log2")
-            .describedAs("Binary logarithm (base 2)")
+            .describedAs("Returns the base-2 logarithm of x")
+            .withParams("x")
             .inCategory(LOGARITHMIC)
             .takingUnary()
             .implementedBy((arg, ctx) ->
@@ -102,7 +109,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction LOGN = FunctionBuilder
             .named("logn")
-            .describedAs("Logarithm with arbitrary base")
+            .describedAs("Returns the logarithm of x to the given base (log_base(x))")
+            .withParams("x", "base")
             .inCategory(LOGARITHMIC)
             .takingBinary()
             .withBroadcasting()
@@ -128,7 +136,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction LOG1P = FunctionBuilder
             .named("log1p")
-            .describedAs("ln(1 + x)")
+            .describedAs("Returns ln(1 + x), numerically stable for small x (avoids cancellation error)")
+            .withParams("x")
             .inCategory(LOGARITHMIC)
             .takingUnary()
             .implementedBy((arg, ctx) ->
@@ -141,7 +150,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction SQRT = FunctionBuilder
             .named("sqrt")
-            .describedAs("Square root")
+            .describedAs("Returns the square root of x")
+            .withParams("x")
             .inCategory(EXPONENTIAL)
             .takingUnary()
             .implementedBy((arg, ctx) ->
@@ -152,7 +162,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction CBRT = FunctionBuilder
             .named("cbrt")
-            .describedAs("Cube root")
+            .describedAs("Returns the cube root of x")
+            .withParams("x")
             .inCategory(EXPONENTIAL)
             .takingUnary()
             .implementedByDouble(Math::cbrt);
@@ -162,7 +173,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction NROOT = FunctionBuilder
             .named("nroot")
-            .describedAs("nth root")
+            .describedAs("Returns the nth root of x, equivalent to x^(1/n)")
+            .withParams("x", "n")
             .inCategory(EXPONENTIAL)
             .takingBinary()
             .withBroadcasting()
@@ -188,7 +200,8 @@ public final class ExponentialFunctions {
      */
     public static final MathFunction POW = FunctionBuilder
             .named("pow")
-            .describedAs("Power function")
+            .describedAs("Returns base raised to the power exp")
+            .withParams("base", "exp")
             .inCategory(EXPONENTIAL)
             .takingBinary()
             .withBroadcasting()

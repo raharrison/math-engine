@@ -28,7 +28,8 @@ public final class MatrixFunctions {
      */
     public static final MathFunction DET = FunctionBuilder
             .named("det")
-            .describedAs("Matrix determinant")
+            .describedAs("Returns the determinant of a square matrix")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix())
             .implementedBy((matrix, ctx) -> {
@@ -42,7 +43,8 @@ public final class MatrixFunctions {
      */
     public static final MathFunction TRACE = FunctionBuilder
             .named("trace")
-            .describedAs("Matrix trace")
+            .describedAs("Returns the trace of a matrix (sum of diagonal elements)")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix())
             .implementedBy((matrix, ctx) -> {
@@ -61,7 +63,8 @@ public final class MatrixFunctions {
      */
     public static final MathFunction ROWS = FunctionBuilder
             .named("rows")
-            .describedAs("Number of matrix rows")
+            .describedAs("Returns the number of rows in the matrix")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix())
             .implementedBy((matrix, ctx) -> new NodeRational(matrix.getRows()));
@@ -71,7 +74,8 @@ public final class MatrixFunctions {
      */
     public static final MathFunction COLS = FunctionBuilder
             .named("cols")
-            .describedAs("Number of matrix columns")
+            .describedAs("Returns the number of columns in the matrix")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix())
             .implementedBy((matrix, ctx) -> new NodeRational(matrix.getCols()));
@@ -83,7 +87,8 @@ public final class MatrixFunctions {
      */
     public static final MathFunction TRANSPOSE = FunctionBuilder
             .named("transpose")
-            .describedAs("Matrix transpose")
+            .describedAs("Returns the transpose of the matrix (rows and columns swapped)")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix())
             .implementedBy((matrix, ctx) -> {
@@ -104,12 +109,13 @@ public final class MatrixFunctions {
      */
     public static final MathFunction IDENTITY = FunctionBuilder
             .named("identity")
-            .describedAs("Identity matrix of given size")
+            .describedAs("Returns the n×n identity matrix")
+            .withParams("n")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.integer())
-            .implementedBy((n, ctx) -> {
+            .implementedBy((n, _) -> {
                 if (n <= 0) {
-                    throw new IllegalArgumentException("identity: size must be positive, got " + n);
+                    throw new IllegalArgumentException("identity: size must be positive, got: " + n);
                 }
                 return MatrixOperations.identityMatrix(n);
             });
@@ -119,7 +125,9 @@ public final class MatrixFunctions {
      */
     public static final MathFunction ZEROS = FunctionBuilder
             .named("zeros")
-            .describedAs("Zero matrix of given dimensions")
+            .describedAs("Returns a matrix of zeros with the given dimensions")
+            .withParams("n")
+            .withParams("rows", "cols")
             .inCategory(MathFunction.Category.MATRIX)
             .takingBetween(1, 2)
             .noBroadcasting()
@@ -147,7 +155,9 @@ public final class MatrixFunctions {
      */
     public static final MathFunction ONES = FunctionBuilder
             .named("ones")
-            .describedAs("Matrix of ones with given dimensions")
+            .describedAs("Returns a matrix of ones with the given dimensions")
+            .withParams("n")
+            .withParams("rows", "cols")
             .inCategory(MathFunction.Category.MATRIX)
             .takingBetween(1, 2)
             .noBroadcasting()
@@ -175,7 +185,9 @@ public final class MatrixFunctions {
      */
     public static final MathFunction DIAG = FunctionBuilder
             .named("diag")
-            .describedAs("Create diagonal matrix or extract diagonal")
+            .describedAs("Creates a diagonal matrix from a vector, or extracts the diagonal of a matrix as a vector")
+            .withParams("vector")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingUnary()
             .noBroadcasting()
@@ -205,8 +217,8 @@ public final class MatrixFunctions {
                     return new NodeVector(diagonal);
                 }
 
-                throw new TypeError("diag requires a vector or matrix, got " +
-                        arg.getClass().getSimpleName());
+                throw new TypeError("diag requires a vector or matrix, got: " +
+                        arg.typeName());
             });
 
     // ==================== Advanced Matrix Operations ====================
@@ -217,7 +229,8 @@ public final class MatrixFunctions {
     public static final MathFunction INVERSE = FunctionBuilder
             .named("inverse")
             .alias("inv")
-            .describedAs("Matrix inverse")
+            .describedAs("Returns the inverse of a square matrix")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix())
             .implementedBy((matrix, ctx) -> {
@@ -232,7 +245,8 @@ public final class MatrixFunctions {
      */
     public static final MathFunction RANK = FunctionBuilder
             .named("rank")
-            .describedAs("Matrix rank")
+            .describedAs("Returns the rank of the matrix (number of linearly independent rows)")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix())
             .implementedBy((nodeMatrix, ctx) -> {
@@ -291,7 +305,9 @@ public final class MatrixFunctions {
      */
     public static final MathFunction NORM = FunctionBuilder
             .named("norm")
-            .describedAs("Frobenius norm (or vector 2-norm)")
+            .describedAs("Returns the Frobenius norm of a matrix, or the Euclidean (2-norm) of a vector")
+            .withParams("vector")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingUnary()
             .noBroadcasting()
@@ -323,7 +339,8 @@ public final class MatrixFunctions {
      */
     public static final MathFunction ROW = FunctionBuilder
             .named("row")
-            .describedAs("Extract row from matrix")
+            .describedAs("Returns the row at index i of the matrix as a vector (0-based)")
+            .withParams("matrix", "i")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix(), ArgTypes.integer())
             .implementedBy((matrix, rowIdx, ctx) -> {
@@ -343,7 +360,8 @@ public final class MatrixFunctions {
     public static final MathFunction COL = FunctionBuilder
             .named("col")
             .alias("column")
-            .describedAs("Extract column from matrix")
+            .describedAs("Returns the column at index i of the matrix as a vector (0-based)")
+            .withParams("matrix", "i")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix(), ArgTypes.integer())
             .implementedBy((matrix, colIdx, ctx) -> {
@@ -364,7 +382,9 @@ public final class MatrixFunctions {
      */
     public static final MathFunction RESHAPE = FunctionBuilder
             .named("reshape")
-            .describedAs("Reshape to new dimensions")
+            .describedAs("Reshapes a vector or matrix to the specified rows×cols dimensions")
+            .withParams("vector", "rows", "cols")
+            .withParams("matrix", "rows", "cols")
             .inCategory(MathFunction.Category.MATRIX)
             .takingExactly(3)
             .noBroadcasting()
@@ -412,7 +432,8 @@ public final class MatrixFunctions {
      */
     public static final MathFunction MINOR = FunctionBuilder
             .named("minor")
-            .describedAs("Matrix minor (submatrix determinant)")
+            .describedAs("Returns the minor of the matrix at row i, col j (determinant of submatrix)")
+            .withParams("matrix", "i", "j")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix(), ArgTypes.integer(), ArgTypes.integer())
             .implementedBy((matrix, row, col, ctx) -> {
@@ -446,7 +467,8 @@ public final class MatrixFunctions {
      */
     public static final MathFunction COFACTOR = FunctionBuilder
             .named("cofactor")
-            .describedAs("Cofactor at (row, col)")
+            .describedAs("Returns the cofactor of the matrix at row i, col j")
+            .withParams("matrix", "i", "j")
             .inCategory(MathFunction.Category.MATRIX)
             .takingExactly(3)
             .noBroadcasting()
@@ -466,7 +488,8 @@ public final class MatrixFunctions {
     public static final MathFunction ADJUGATE = FunctionBuilder
             .named("adjugate")
             .alias("adj")
-            .describedAs("Adjugate matrix")
+            .describedAs("Returns the adjugate (classical adjoint) of the matrix")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix())
             .implementedBy((matrix, ctx) -> {

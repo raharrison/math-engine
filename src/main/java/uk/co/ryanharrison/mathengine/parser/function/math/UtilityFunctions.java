@@ -28,7 +28,8 @@ public final class UtilityFunctions {
     public static final MathFunction FRAC = FunctionBuilder
             .named("frac")
             .alias("fpart", "fractional")
-            .describedAs("Fractional part (x - floor(x))")
+            .describedAs("Returns the fractional part of x (x - floor(x))")
+            .withParams("x")
             .inCategory(UTILITY)
             .takingUnary()
             .implementedByDouble(MathUtils::fPart);
@@ -41,7 +42,8 @@ public final class UtilityFunctions {
     public static final MathFunction PERMUTATION = FunctionBuilder
             .named("permutation")
             .alias("perm", "npr")
-            .describedAs("Permutation: n! / (n-r)!")
+            .describedAs("Returns the number of ordered arrangements of r items from n (nPr)")
+            .withParams("n", "r")
             .inCategory(UTILITY)
             .takingBinary()
             .implementedBy((n, r, ctx) -> {
@@ -59,7 +61,8 @@ public final class UtilityFunctions {
     public static final MathFunction DOUBLEFACTORIAL = FunctionBuilder
             .named("doublefactorial")
             .alias("dfact")
-            .describedAs("Double factorial: n!!")
+            .describedAs("Returns n!! (product of every other integer from n down to 1 or 2)")
+            .withParams("n")
             .inCategory(UTILITY)
             .takingUnary()
             .implementedByDouble(MathUtils::doubleFactorial);
@@ -72,7 +75,8 @@ public final class UtilityFunctions {
     public static final MathFunction INVERSELERP = FunctionBuilder
             .named("inverselerp")
             .alias("ilerp")
-            .describedAs("Inverse linear interpolation")
+            .describedAs("Returns the t value such that lerp(start, end, t) = value")
+            .withParams("start", "end", "value")
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
@@ -90,7 +94,8 @@ public final class UtilityFunctions {
      */
     public static final MathFunction REMAP = FunctionBuilder
             .named("remap")
-            .describedAs("Map value from one range to another")
+            .describedAs("Remaps value from [fromMin, fromMax] to [toMin, toMax]")
+            .withParams("value", "fromMin", "fromMax", "toMin", "toMax")
             .inCategory(UTILITY)
             .takingBetween(5, 5)
             .implementedByAggregate((args, ctx) -> {
@@ -111,7 +116,8 @@ public final class UtilityFunctions {
      */
     public static final MathFunction SMOOTHSTEP = FunctionBuilder
             .named("smoothstep")
-            .describedAs("Smooth step interpolation")
+            .describedAs("Returns a smooth cubic interpolation of x between edge0 and edge1")
+            .withParams("edge0", "edge1", "x")
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
@@ -131,7 +137,8 @@ public final class UtilityFunctions {
     public static final MathFunction DISTANCE2D = FunctionBuilder
             .named("distance")
             .alias("dist")
-            .describedAs("2D Euclidean distance")
+            .describedAs("Returns the Euclidean distance between points (x1,y1) and (x2,y2)")
+            .withParams("x1", "y1", "x2", "y2")
             .inCategory(UTILITY)
             .takingBetween(4, 4)
             .implementedByAggregate((args, ctx) -> {
@@ -148,7 +155,8 @@ public final class UtilityFunctions {
     public static final MathFunction DISTANCE3D = FunctionBuilder
             .named("distance3d")
             .alias("dist3d")
-            .describedAs("3D Euclidean distance")
+            .describedAs("Returns the Euclidean distance between points (x1,y1,z1) and (x2,y2,z2)")
+            .withParams("x1", "y1", "z1", "x2", "y2", "z2")
             .inCategory(UTILITY)
             .takingBetween(6, 6)
             .implementedByAggregate((args, ctx) -> {
@@ -167,7 +175,8 @@ public final class UtilityFunctions {
      */
     public static final MathFunction MANHATTAN = FunctionBuilder
             .named("manhattan")
-            .describedAs("Manhattan (taxicab) distance")
+            .describedAs("Returns the Manhattan (taxicab) distance between (x1,y1) and (x2,y2)")
+            .withParams("x1", "y1", "x2", "y2")
             .inCategory(UTILITY)
             .takingBetween(4, 4)
             .implementedByAggregate((args, ctx) -> {
@@ -186,7 +195,9 @@ public final class UtilityFunctions {
     public static final MathFunction APPROXEQ = FunctionBuilder
             .named("approxeq")
             .alias("approx", "isclose")
-            .describedAs("Approximately equal within tolerance")
+            .describedAs("Returns true if a and b are within the given tolerance of each other")
+            .withParams("a", "b")
+            .withParams("a", "b", "tolerance")
             .inCategory(UTILITY)
             .takingBetween(2, 3)
             .implementedByAggregate((args, ctx) -> {
@@ -202,7 +213,8 @@ public final class UtilityFunctions {
     public static final MathFunction COMPARE = FunctionBuilder
             .named("compare")
             .alias("cmp")
-            .describedAs("Compare: returns -1, 0, or 1")
+            .describedAs("Returns -1, 0, or 1 depending on whether a is less than, equal to, or greater than b")
+            .withParams("a", "b")
             .inCategory(UTILITY)
             .takingBinary()
             .implementedBy((a, b, ctx) -> new NodeRational(Double.compare(
@@ -216,7 +228,9 @@ public final class UtilityFunctions {
      */
     public static final MathFunction COMPOUNDINTEREST = FunctionBuilder
             .named("compound")
-            .describedAs("Compound interest")
+            .describedAs("Returns the final amount after compound interest over time periods")
+            .withParams("principal", "rate", "time")
+            .withParams("principal", "rate", "time", "n")
             .inCategory(UTILITY)
             .takingBetween(3, 4)
             .implementedByAggregate((args, ctx) -> {
@@ -234,7 +248,8 @@ public final class UtilityFunctions {
      */
     public static final MathFunction WRAP = FunctionBuilder
             .named("wrap")
-            .describedAs("Wrap value to [min, max) range")
+            .describedAs("Wraps value into the range [min, max) by repeating cyclically")
+            .withParams("value", "min", "max")
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
@@ -253,7 +268,8 @@ public final class UtilityFunctions {
      */
     public static final MathFunction NORMALIZE = FunctionBuilder
             .named("normalize")
-            .describedAs("Normalize value to [0, 1] range")
+            .describedAs("Normalizes value to the [0, 1] range given min and max")
+            .withParams("value", "min", "max")
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
@@ -272,7 +288,8 @@ public final class UtilityFunctions {
     public static final MathFunction DEG2RAD = FunctionBuilder
             .named("deg2rad")
             .alias("radians")
-            .describedAs("Convert degrees to radians")
+            .describedAs("Converts x from degrees to radians")
+            .withParams("x")
             .inCategory(UTILITY)
             .takingUnary()
             .implementedByDouble(Math::toRadians);
@@ -283,7 +300,8 @@ public final class UtilityFunctions {
     public static final MathFunction RAD2DEG = FunctionBuilder
             .named("rad2deg")
             .alias("degrees")
-            .describedAs("Convert radians to degrees")
+            .describedAs("Converts x from radians to degrees")
+            .withParams("x")
             .inCategory(UTILITY)
             .takingUnary()
             .implementedByDouble(Math::toDegrees);

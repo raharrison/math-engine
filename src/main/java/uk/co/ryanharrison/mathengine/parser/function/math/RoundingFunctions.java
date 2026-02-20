@@ -25,7 +25,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction FLOOR = FunctionBuilder
             .named("floor")
-            .describedAs("Floor (round down)")
+            .describedAs("Returns the largest integer less than or equal to x")
+            .withParams("x")
             .inCategory(ROUNDING)
             .takingUnary()
             .implementedByDouble(Math::floor);
@@ -35,7 +36,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction CEIL = FunctionBuilder
             .named("ceil")
-            .describedAs("Ceiling (round up)")
+            .describedAs("Returns the smallest integer greater than or equal to x")
+            .withParams("x")
             .inCategory(ROUNDING)
             .takingUnary()
             .implementedByDouble(Math::ceil);
@@ -45,7 +47,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction ROUND = FunctionBuilder
             .named("round")
-            .describedAs("Round to nearest integer")
+            .describedAs("Rounds x to the nearest integer")
+            .withParams("x")
             .inCategory(ROUNDING)
             .takingUnary()
             .implementedByDouble(x -> (double) Math.round(x));
@@ -55,7 +58,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction TRUNC = FunctionBuilder
             .named("trunc")
-            .describedAs("Truncate toward zero")
+            .describedAs("Truncates x toward zero (removes fractional part)")
+            .withParams("x")
             .inCategory(ROUNDING)
             .takingUnary()
             .implementedByDouble(x -> x < 0 ? Math.ceil(x) : Math.floor(x));
@@ -65,7 +69,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction ROUNDN = FunctionBuilder
             .named("roundn")
-            .describedAs("Round to n decimal places")
+            .describedAs("Rounds x to the specified number of decimal places")
+            .withParams("x", "places")
             .inCategory(ROUNDING)
             .takingBinary()
             .implementedBy((x, n, ctx) -> {
@@ -82,7 +87,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction ABS = FunctionBuilder
             .named("abs")
-            .describedAs("Absolute value")
+            .describedAs("Returns the absolute value of x")
+            .withParams("x")
             .inCategory(UTILITY)
             .takingUnary()
             .noBroadcasting() // broadcasts internally via ctx.applyWithTypePreservation()
@@ -93,7 +99,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction SIGN = FunctionBuilder
             .named("sign")
-            .describedAs("Sign function")
+            .describedAs("Returns -1, 0, or 1 depending on the sign of x")
+            .withParams("x")
             .inCategory(UTILITY)
             .takingUnary()
             .implementedBy((arg, ctx) -> {
@@ -107,7 +114,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction COPYSIGN = FunctionBuilder
             .named("copysign")
-            .describedAs("Copy sign from y to x")
+            .describedAs("Returns x with the sign of y")
+            .withParams("x", "y")
             .inCategory(UTILITY)
             .takingBinary()
             .implementedByDouble(Math::copySign);
@@ -119,7 +127,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction FMOD = FunctionBuilder
             .named("fmod")
-            .describedAs("Floating-point modulo")
+            .describedAs("Returns the floating-point remainder of x divided by y")
+            .withParams("x", "y")
             .inCategory(UTILITY)
             .takingBinary()
             .implementedBy((x, y, ctx) -> {
@@ -133,7 +142,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction REMAINDER = FunctionBuilder
             .named("remainder")
-            .describedAs("IEEE remainder")
+            .describedAs("Returns the IEEE remainder of x divided by y")
+            .withParams("x", "y")
             .inCategory(UTILITY)
             .takingBinary()
             .implementedBy((x, y, ctx) -> {
@@ -149,7 +159,8 @@ public final class RoundingFunctions {
      */
     public static final MathFunction HYPOT = FunctionBuilder
             .named("hypot")
-            .describedAs("Hypotenuse")
+            .describedAs("Returns sqrt(x² + y²) without intermediate overflow")
+            .withParams("x", "y")
             .inCategory(UTILITY)
             .takingBinary()
             .implementedBy((x, y, ctx) -> {

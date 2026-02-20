@@ -25,7 +25,8 @@ public final class BitwiseFunctions {
      */
     public static final MathFunction BITAND = FunctionBuilder
             .named("bitand")
-            .describedAs("Bitwise AND")
+            .describedAs("Returns the bitwise AND of two or more integers")
+            .withParams("a", "b")
             .inCategory(BITWISE)
             .takingVariadic(2)
             .implementedByAggregate((args, ctx) -> {
@@ -39,7 +40,8 @@ public final class BitwiseFunctions {
      */
     public static final MathFunction BITOR = FunctionBuilder
             .named("bitor")
-            .describedAs("Bitwise OR")
+            .describedAs("Returns the bitwise OR of two or more integers")
+            .withParams("a", "b")
             .inCategory(BITWISE)
             .takingVariadic(2)
             .implementedByAggregate((args, ctx) -> {
@@ -53,7 +55,8 @@ public final class BitwiseFunctions {
      */
     public static final MathFunction BITXOR = FunctionBuilder
             .named("bitxor")
-            .describedAs("Bitwise XOR")
+            .describedAs("Returns the bitwise XOR of two or more integers")
+            .withParams("a", "b")
             .inCategory(BITWISE)
             .takingVariadic(2)
             .implementedByAggregate((args, ctx) -> {
@@ -67,7 +70,8 @@ public final class BitwiseFunctions {
      */
     public static final MathFunction BITNOT = FunctionBuilder
             .named("bitnot")
-            .describedAs("Bitwise NOT (complement)")
+            .describedAs("Returns the bitwise NOT (one's complement) of x")
+            .withParams("x")
             .inCategory(BITWISE)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((value, ctx) -> new NodeRational(~value));
@@ -78,7 +82,8 @@ public final class BitwiseFunctions {
     public static final MathFunction LSHIFT = FunctionBuilder
             .named("lshift")
             .alias("shl")
-            .describedAs("Left shift")
+            .describedAs("Returns value shifted left by shift bits")
+            .withParams("value", "shift")
             .inCategory(BITWISE)
             .takingTyped(ArgTypes.longInt(), ArgTypes.longInt())
             .implementedBy((v, s, ctx) -> new NodeRational(v << s.intValue()));
@@ -89,7 +94,8 @@ public final class BitwiseFunctions {
     public static final MathFunction RSHIFT = FunctionBuilder
             .named("rshift")
             .alias("shr")
-            .describedAs("Right shift (arithmetic)")
+            .describedAs("Returns value shifted right by shift bits (sign-preserving)")
+            .withParams("value", "shift")
             .inCategory(BITWISE)
             .takingTyped(ArgTypes.longInt(), ArgTypes.longInt())
             .implementedBy((v, s, ctx) -> new NodeRational(v >> s.intValue()));
@@ -100,7 +106,8 @@ public final class BitwiseFunctions {
     public static final MathFunction URSHIFT = FunctionBuilder
             .named("urshift")
             .alias("ushr")
-            .describedAs("Unsigned right shift")
+            .describedAs("Returns value shifted right by shift bits (zero-fill, unsigned)")
+            .withParams("value", "shift")
             .inCategory(BITWISE)
             .takingTyped(ArgTypes.longInt(), ArgTypes.longInt())
             .implementedBy((v, s, ctx) -> new NodeRational(v >>> s.intValue()));
@@ -111,7 +118,8 @@ public final class BitwiseFunctions {
     public static final MathFunction POPCOUNT = FunctionBuilder
             .named("popcount")
             .alias("bitcount")
-            .describedAs("Count number of 1 bits")
+            .describedAs("Returns the number of 1-bits in the binary representation of x")
+            .withParams("x")
             .inCategory(BITWISE)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((value, ctx) -> new NodeRational(Long.bitCount(value)));
@@ -121,7 +129,8 @@ public final class BitwiseFunctions {
      */
     public static final MathFunction CLZ = FunctionBuilder
             .named("clz")
-            .describedAs("Count leading zeros")
+            .describedAs("Returns the number of leading zero bits in x (treating x as a 64-bit integer)")
+            .withParams("x")
             .inCategory(BITWISE)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((value, ctx) -> new NodeRational(Long.numberOfLeadingZeros(value)));
@@ -131,7 +140,8 @@ public final class BitwiseFunctions {
      */
     public static final MathFunction CTZ = FunctionBuilder
             .named("ctz")
-            .describedAs("Count trailing zeros")
+            .describedAs("Returns the number of trailing zero bits in x (treating x as a 64-bit integer)")
+            .withParams("x")
             .inCategory(BITWISE)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((value, ctx) -> new NodeRational(Long.numberOfTrailingZeros(value)));
@@ -141,7 +151,8 @@ public final class BitwiseFunctions {
      */
     public static final MathFunction ROTL = FunctionBuilder
             .named("rotl")
-            .describedAs("Rotate left")
+            .describedAs("Returns value rotated left by shift bit positions within a 64-bit boundary")
+            .withParams("value", "shift")
             .inCategory(BITWISE)
             .takingTyped(ArgTypes.longInt(), ArgTypes.longInt())
             .implementedBy((v, s, ctx) -> new NodeRational(Long.rotateLeft(v, s.intValue())));
@@ -151,7 +162,8 @@ public final class BitwiseFunctions {
      */
     public static final MathFunction ROTR = FunctionBuilder
             .named("rotr")
-            .describedAs("Rotate right")
+            .describedAs("Returns value rotated right by shift bit positions within a 64-bit boundary")
+            .withParams("value", "shift")
             .inCategory(BITWISE)
             .takingTyped(ArgTypes.longInt(), ArgTypes.longInt())
             .implementedBy((v, s, ctx) -> new NodeRational(Long.rotateRight(v, s.intValue())));
@@ -161,7 +173,8 @@ public final class BitwiseFunctions {
      */
     public static final MathFunction BITREVERSE = FunctionBuilder
             .named("bitreverse")
-            .describedAs("Reverse bits")
+            .describedAs("Returns x with its 64-bit binary representation reversed")
+            .withParams("x")
             .inCategory(BITWISE)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((value, ctx) -> new NodeRational(Long.reverse(value)));

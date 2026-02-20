@@ -29,7 +29,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction SUM = FunctionBuilder
             .named("sum")
-            .describedAs("Sum of all elements")
+            .describedAs("Returns the sum of all values in the collection")
+            .withParams("values")
             .inCategory(MathFunction.Category.VECTOR)
             .takingVariadic(1)
             .noBroadcasting()
@@ -52,7 +53,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction PRODUCT = FunctionBuilder
             .named("product")
-            .describedAs("Product of all elements")
+            .describedAs("Returns the product of all values in the collection")
+            .withParams("values")
             .inCategory(MathFunction.Category.VECTOR)
             .takingVariadic(1)
             .noBroadcasting()
@@ -75,7 +77,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction MIN = FunctionBuilder
             .named("min")
-            .describedAs("Minimum value")
+            .describedAs("Returns the smallest value in the collection")
+            .withParams("values")
             .inCategory(MathFunction.Category.VECTOR)
             .takingVariadic(1)
             .noBroadcasting()
@@ -103,7 +106,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction MAX = FunctionBuilder
             .named("max")
-            .describedAs("Maximum value")
+            .describedAs("Returns the largest value in the collection")
+            .withParams("values")
             .inCategory(MathFunction.Category.VECTOR)
             .takingVariadic(1)
             .noBroadcasting()
@@ -133,7 +137,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction MEAN = FunctionBuilder
             .named("mean")
-            .describedAs("Arithmetic mean")
+            .describedAs("Returns the arithmetic mean of all values in the collection")
+            .withParams("values")
             .inCategory(MathFunction.Category.STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -160,7 +165,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction MEDIAN = FunctionBuilder
             .named("median")
-            .describedAs("Median value")
+            .describedAs("Returns the median of the collection; averages the two middle values for even-length collections")
+            .withParams("values")
             .inCategory(MathFunction.Category.STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -188,7 +194,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction VARIANCE = FunctionBuilder
             .named("variance")
-            .describedAs("Sample variance")
+            .describedAs("Returns the sample variance of the collection")
+            .withParams("values")
             .inCategory(MathFunction.Category.STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -210,7 +217,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction STDDEV = FunctionBuilder
             .named("stddev")
-            .describedAs("Sample standard deviation")
+            .describedAs("Returns the sample standard deviation of the collection")
+            .withParams("values")
             .inCategory(MathFunction.Category.STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -234,7 +242,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction SORT = FunctionBuilder
             .named("sort")
-            .describedAs("Sort vector ascending")
+            .describedAs("Returns a sorted copy of the vector in ascending order")
+            .withParams("vector")
             .inCategory(MathFunction.Category.VECTOR)
             .takingUnary()
             .noBroadcasting()
@@ -252,7 +261,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction REVERSE = FunctionBuilder
             .named("reverse")
-            .describedAs("Reverse vector")
+            .describedAs("Returns the vector with elements in reversed order")
+            .withParams("vector")
             .inCategory(MathFunction.Category.VECTOR)
             .takingUnary()
             .noBroadcasting()
@@ -274,7 +284,9 @@ public final class VectorFunctions {
     public static final MathFunction LEN = FunctionBuilder
             .named("len")
             .alias("length")
-            .describedAs("Length of vector")
+            .describedAs("Returns the number of elements in a vector, or [rows, cols] for a matrix")
+            .withParams("vector")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.VECTOR)
             .takingUnary()
             .noBroadcasting()
@@ -297,7 +309,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction FIRST = FunctionBuilder
             .named("first")
-            .describedAs("First element of vector")
+            .describedAs("Returns the first element of the vector")
+            .withParams("vector")
             .inCategory(MathFunction.Category.VECTOR)
             .takingUnary()
             .noBroadcasting()
@@ -314,7 +327,8 @@ public final class VectorFunctions {
      */
     public static final MathFunction LAST = FunctionBuilder
             .named("last")
-            .describedAs("Last element of vector")
+            .describedAs("Returns the last element of the vector")
+            .withParams("vector")
             .inCategory(MathFunction.Category.VECTOR)
             .takingUnary()
             .noBroadcasting()

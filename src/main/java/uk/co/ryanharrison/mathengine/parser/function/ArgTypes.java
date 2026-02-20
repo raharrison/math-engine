@@ -122,8 +122,8 @@ public final class ArgTypes {
     public static ArgType<NodeFunction> function() {
         return (node, ctx) -> {
             if (node instanceof NodeFunction func) return func;
-            throw new TypeError("Function '" + ctx.functionName() + "' requires a function argument, got " +
-                    node.getClass().getSimpleName());
+            throw new TypeError("Function '" + ctx.functionName() + "' requires a function argument, got: " +
+                    node.typeName());
         };
     }
 

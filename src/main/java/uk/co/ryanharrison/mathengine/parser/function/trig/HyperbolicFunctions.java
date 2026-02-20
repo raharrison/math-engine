@@ -26,7 +26,8 @@ public final class HyperbolicFunctions {
      */
     public static final MathFunction SINH = FunctionBuilder
             .named("sinh")
-            .describedAs("Hyperbolic sine")
+            .describedAs("Returns the hyperbolic sine of x")
+            .withParams("x")
             .inCategory(HYPERBOLIC)
             .takingUnary()
             .implementedByDouble(Math::sinh);
@@ -36,7 +37,8 @@ public final class HyperbolicFunctions {
      */
     public static final MathFunction COSH = FunctionBuilder
             .named("cosh")
-            .describedAs("Hyperbolic cosine")
+            .describedAs("Returns the hyperbolic cosine of x")
+            .withParams("x")
             .inCategory(HYPERBOLIC)
             .takingUnary()
             .implementedByDouble(Math::cosh);
@@ -46,7 +48,8 @@ public final class HyperbolicFunctions {
      */
     public static final MathFunction TANH = FunctionBuilder
             .named("tanh")
-            .describedAs("Hyperbolic tangent")
+            .describedAs("Returns the hyperbolic tangent of x")
+            .withParams("x")
             .inCategory(HYPERBOLIC)
             .takingUnary()
             .implementedByDouble(Math::tanh);
@@ -58,7 +61,8 @@ public final class HyperbolicFunctions {
      */
     public static final MathFunction ASINH = FunctionBuilder
             .named("asinh")
-            .describedAs("Inverse hyperbolic sine")
+            .describedAs("Returns the inverse hyperbolic sine of x")
+            .withParams("x")
             .inCategory(HYPERBOLIC)
             .takingUnary()
             .implementedByDouble(TrigUtils::asinh);
@@ -68,7 +72,8 @@ public final class HyperbolicFunctions {
      */
     public static final MathFunction ACOSH = FunctionBuilder
             .named("acosh")
-            .describedAs("Inverse hyperbolic cosine")
+            .describedAs("Returns the inverse hyperbolic cosine of x")
+            .withParams("x")
             .inCategory(HYPERBOLIC)
             .takingUnary()
             .implementedByDouble(TrigUtils::acosh);
@@ -78,7 +83,8 @@ public final class HyperbolicFunctions {
      */
     public static final MathFunction ATANH = FunctionBuilder
             .named("atanh")
-            .describedAs("Inverse hyperbolic tangent")
+            .describedAs("Returns the inverse hyperbolic tangent of x")
+            .withParams("x")
             .inCategory(HYPERBOLIC)
             .takingUnary()
             .implementedByDouble(TrigUtils::atanh);
@@ -90,7 +96,8 @@ public final class HyperbolicFunctions {
      */
     public static final MathFunction SECH = FunctionBuilder
             .named("sech")
-            .describedAs("Hyperbolic secant")
+            .describedAs("Returns the hyperbolic secant of x (1/cosh(x))")
+            .withParams("x")
             .inCategory(HYPERBOLIC)
             .takingUnary()
             .implementedByDouble(TrigUtils::sech);
@@ -100,7 +107,8 @@ public final class HyperbolicFunctions {
      */
     public static final MathFunction CSCH = FunctionBuilder
             .named("csch")
-            .describedAs("Hyperbolic cosecant")
+            .describedAs("Returns the hyperbolic cosecant of x (1/sinh(x))")
+            .withParams("x")
             .inCategory(HYPERBOLIC)
             .takingUnary()
             .implementedByDouble(TrigUtils::cosech);
@@ -110,7 +118,8 @@ public final class HyperbolicFunctions {
      */
     public static final MathFunction COTH = FunctionBuilder
             .named("coth")
-            .describedAs("Hyperbolic cotangent")
+            .describedAs("Returns the hyperbolic cotangent of x (1/tanh(x))")
+            .withParams("x")
             .inCategory(HYPERBOLIC)
             .takingUnary()
             .implementedByDouble(TrigUtils::coth);

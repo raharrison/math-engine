@@ -27,7 +27,8 @@ public final class StatisticalFunctions {
      */
     public static final MathFunction RANGE = FunctionBuilder
             .named("range")
-            .describedAs("Range (max - min)")
+            .describedAs("Returns the range (max - min) of the values")
+            .withParams("values")
             .inCategory(STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -42,7 +43,8 @@ public final class StatisticalFunctions {
      */
     public static final MathFunction PERCENTILE = FunctionBuilder
             .named("percentile")
-            .describedAs("Calculate percentile")
+            .describedAs("Returns the p-th percentile of the values (p in 0-100 or 0-1)")
+            .withParams("values", "p")
             .inCategory(STATISTICAL)
             .takingBinary()
             .noBroadcasting()
@@ -70,7 +72,8 @@ public final class StatisticalFunctions {
      */
     public static final MathFunction IQR = FunctionBuilder
             .named("iqr")
-            .describedAs("Interquartile range (Q3 - Q1)")
+            .describedAs("Returns the interquartile range (Q3 - Q1) of the values")
+            .withParams("values")
             .inCategory(STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -86,7 +89,8 @@ public final class StatisticalFunctions {
     public static final MathFunction GMEAN = FunctionBuilder
             .named("gmean")
             .alias("geometricmean")
-            .describedAs("Geometric mean")
+            .describedAs("Returns the geometric mean of the values")
+            .withParams("values")
             .inCategory(STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -102,7 +106,8 @@ public final class StatisticalFunctions {
     public static final MathFunction HMEAN = FunctionBuilder
             .named("hmean")
             .alias("harmonicmean")
-            .describedAs("Harmonic mean")
+            .describedAs("Returns the harmonic mean of the values")
+            .withParams("values")
             .inCategory(STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -118,7 +123,8 @@ public final class StatisticalFunctions {
     public static final MathFunction RMS = FunctionBuilder
             .named("rms")
             .alias("rootmeansquare")
-            .describedAs("Root mean square")
+            .describedAs("Returns the root mean square (RMS) of the values")
+            .withParams("values")
             .inCategory(STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -133,7 +139,8 @@ public final class StatisticalFunctions {
      */
     public static final MathFunction SKEWNESS = FunctionBuilder
             .named("skewness")
-            .describedAs("Skewness (asymmetry measure)")
+            .describedAs("Returns the skewness (asymmetry measure) of the values")
+            .withParams("values")
             .inCategory(STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -148,7 +155,8 @@ public final class StatisticalFunctions {
      */
     public static final MathFunction KURTOSIS = FunctionBuilder
             .named("kurtosis")
-            .describedAs("Kurtosis (excess, relative to normal)")
+            .describedAs("Returns the excess kurtosis (tailedness relative to normal) of the values")
+            .withParams("values")
             .inCategory(STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -164,7 +172,8 @@ public final class StatisticalFunctions {
     public static final MathFunction COVARIANCE = FunctionBuilder
             .named("covariance")
             .alias("cov")
-            .describedAs("Covariance between two vectors")
+            .describedAs("Returns the sample covariance between two vectors xs and ys")
+            .withParams("xs", "ys")
             .inCategory(STATISTICAL)
             .takingBinary()
             .noBroadcasting()
@@ -191,7 +200,8 @@ public final class StatisticalFunctions {
     public static final MathFunction CORRELATION = FunctionBuilder
             .named("correlation")
             .alias("corr")
-            .describedAs("Pearson correlation coefficient")
+            .describedAs("Returns the Pearson correlation coefficient between vectors xs and ys")
+            .withParams("xs", "ys")
             .inCategory(STATISTICAL)
             .takingBinary()
             .noBroadcasting()
@@ -217,7 +227,8 @@ public final class StatisticalFunctions {
      */
     public static final MathFunction MODE = FunctionBuilder
             .named("mode")
-            .describedAs("Most frequent value")
+            .describedAs("Returns the most frequently occurring value in the collection; returns the smallest if there are multiple modes")
+            .withParams("values")
             .inCategory(STATISTICAL)
             .takingVariadic(1)
             .noBroadcasting()
@@ -234,7 +245,8 @@ public final class StatisticalFunctions {
      */
     public static final MathFunction QUARTILE = FunctionBuilder
             .named("quartile")
-            .describedAs("Calculate quartile (1, 2, or 3)")
+            .describedAs("Returns the q-th quartile of the values (q = 1, 2, or 3)")
+            .withParams("values", "q")
             .inCategory(STATISTICAL)
             .takingBinary()
             .noBroadcasting()

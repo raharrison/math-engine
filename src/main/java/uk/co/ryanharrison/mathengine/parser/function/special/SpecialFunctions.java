@@ -26,7 +26,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction GAMMA = FunctionBuilder
             .named("gamma")
-            .describedAs("Gamma function")
+            .describedAs("Returns the gamma function Γ(x) — generalisation of (x-1)!")
+            .withParams("x")
             .inCategory(SPECIAL)
             .takingUnary()
             .implementedByDouble(Gamma::gamma);
@@ -36,7 +37,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction LGAMMA = FunctionBuilder
             .named("lgamma")
-            .describedAs("Log of gamma function")
+            .describedAs("Returns the natural log of the gamma function ln(Γ(x))")
+            .withParams("x")
             .inCategory(SPECIAL)
             .takingUnary()
             .implementedByDouble(Gamma::gammaLn);
@@ -46,7 +48,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction FACTORIAL = FunctionBuilder
             .named("factorial")
-            .describedAs("Factorial function")
+            .describedAs("Returns n! (exact for integers, uses gamma for non-integers)")
+            .withParams("n")
             .inCategory(SPECIAL)
             .takingUnary()
             .implementedBy((arg, ctx) -> {
@@ -62,7 +65,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction GCD = FunctionBuilder
             .named("gcd")
-            .describedAs("Greatest common divisor")
+            .describedAs("Returns the greatest common divisor of two or more integers")
+            .withParams("a", "b")
             .inCategory(SPECIAL)
             .takingVariadic(2)
             .implementedByAggregate((args, ctx) -> {
@@ -78,7 +82,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction LCM = FunctionBuilder
             .named("lcm")
-            .describedAs("Least common multiple")
+            .describedAs("Returns the least common multiple of two or more integers")
+            .withParams("a", "b")
             .inCategory(SPECIAL)
             .takingVariadic(2)
             .implementedByAggregate((args, ctx) -> {
@@ -94,7 +99,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction BINOMIAL = FunctionBuilder
             .named("binomial")
-            .describedAs("Binomial coefficient (n choose k)")
+            .describedAs("Returns the binomial coefficient n choose k")
+            .withParams("n", "k")
             .inCategory(SPECIAL)
             .takingBinary()
             .implementedBy((n, k, ctx) -> {
@@ -114,7 +120,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction RANDOM = FunctionBuilder
             .named("random")
-            .describedAs("Random number in [0, 1)")
+            .describedAs("Returns a random number uniformly distributed in [0, 1)")
+            .withParams()
             .inCategory(SPECIAL)
             .takingBetween(0, 0)
             .implementedByAggregate((args, ctx) -> new NodeDouble(Math.random()));
@@ -124,7 +131,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction RANDINT = FunctionBuilder
             .named("randint")
-            .describedAs("Random integer in [min, max]")
+            .describedAs("Returns a random integer uniformly distributed in [min, max]")
+            .withParams("min", "max")
             .inCategory(SPECIAL)
             .takingBinary()
             .implementedBy((min, max, ctx) -> {
@@ -138,7 +146,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction BETA = FunctionBuilder
             .named("beta")
-            .describedAs("Beta function B(z, w)")
+            .describedAs("Returns the beta function B(a, b) = Γ(a)Γ(b)/Γ(a+b)")
+            .withParams("a", "b")
             .inCategory(SPECIAL)
             .takingBinary()
             .implementedBy((z, w, ctx) -> {
@@ -152,7 +161,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction ERF = FunctionBuilder
             .named("erf")
-            .describedAs("Error function")
+            .describedAs("Returns the error function erf(x)")
+            .withParams("x")
             .inCategory(SPECIAL)
             .takingUnary()
             .implementedByDouble(Erf::erf);
@@ -162,7 +172,8 @@ public final class SpecialFunctions {
      */
     public static final MathFunction ERFC = FunctionBuilder
             .named("erfc")
-            .describedAs("Complementary error function")
+            .describedAs("Returns the complementary error function 1 - erf(x)")
+            .withParams("x")
             .inCategory(SPECIAL)
             .takingUnary()
             .implementedByDouble(Erf::erfc);
@@ -173,7 +184,8 @@ public final class SpecialFunctions {
     public static final MathFunction DIGAMMA = FunctionBuilder
             .named("digamma")
             .alias("psi")
-            .describedAs("Digamma function (logarithmic derivative of gamma)")
+            .describedAs("Returns the digamma function ψ(x) = d/dx ln(Γ(x))")
+            .withParams("x")
             .inCategory(SPECIAL)
             .takingUnary()
             .implementedBy((arg, ctx) -> new NodeDouble(Gamma.digamma(ctx.toNumber(arg).doubleValue())));

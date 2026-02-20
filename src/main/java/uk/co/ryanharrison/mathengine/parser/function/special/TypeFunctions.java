@@ -23,7 +23,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISNAN = FunctionBuilder
             .named("isnan")
-            .describedAs("Check if value is NaN")
+            .describedAs("Returns true if x is NaN (not a number)")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, _) -> new NodeBoolean(arg instanceof NodeNumber num && Double.isNaN(num.doubleValue())));
@@ -34,7 +35,8 @@ public final class TypeFunctions {
     public static final MathFunction ISINF = FunctionBuilder
             .named("isinf")
             .alias("isinfinite")
-            .describedAs("Check if value is infinite")
+            .describedAs("Returns true if x is positive or negative infinity")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, _) -> new NodeBoolean(arg instanceof NodeNumber num && Double.isInfinite(num.doubleValue())));
@@ -44,7 +46,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISFINITE = FunctionBuilder
             .named("isfinite")
-            .describedAs("Check if value is finite")
+            .describedAs("Returns true if x is a finite number (not NaN or infinite)")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, _) -> new NodeBoolean(arg instanceof NodeNumber num && Double.isFinite(num.doubleValue())));
@@ -55,7 +58,8 @@ public final class TypeFunctions {
     public static final MathFunction ISINT = FunctionBuilder
             .named("isint")
             .alias("isinteger")
-            .describedAs("Check if value is an integer")
+            .describedAs("Returns true if x has no fractional part")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, _) -> {
@@ -72,7 +76,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISEVEN = FunctionBuilder
             .named("iseven")
-            .describedAs("Check if value is an even integer")
+            .describedAs("Returns true if x is an even integer")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, _) -> {
@@ -88,7 +93,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISODD = FunctionBuilder
             .named("isodd")
-            .describedAs("Check if value is an odd integer")
+            .describedAs("Returns true if x is an odd integer")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, _) -> {
@@ -104,7 +110,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISPOSITIVE = FunctionBuilder
             .named("ispositive")
-            .describedAs("Check if value is positive")
+            .describedAs("Returns true if x is strictly greater than zero")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, _) -> new NodeBoolean(arg instanceof NodeNumber num && num.doubleValue() > 0));
@@ -114,7 +121,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISNEGATIVE = FunctionBuilder
             .named("isnegative")
-            .describedAs("Check if value is negative")
+            .describedAs("Returns true if x is strictly less than zero")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, _) -> new NodeBoolean(arg instanceof NodeNumber num && num.doubleValue() < 0));
@@ -124,7 +132,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISZERO = FunctionBuilder
             .named("iszero")
-            .describedAs("Check if value is zero")
+            .describedAs("Returns true if x equals zero")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, _) -> new NodeBoolean(arg instanceof NodeNumber num && num.doubleValue() == 0));
@@ -137,7 +146,8 @@ public final class TypeFunctions {
     public static final MathFunction TOINT = FunctionBuilder
             .named("int")
             .alias("toint", "integer")
-            .describedAs("Convert to integer (truncate toward zero)")
+            .describedAs("Converts x to an integer by truncating toward zero")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, ctx) -> {
@@ -151,7 +161,8 @@ public final class TypeFunctions {
     public static final MathFunction TODOUBLE = FunctionBuilder
             .named("float")
             .alias("tofloat", "todouble")
-            .describedAs("Convert to floating point number")
+            .describedAs("Converts x to a floating-point number")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, ctx) -> new NodeDouble(ctx.toNumber(arg).doubleValue()));
@@ -162,7 +173,8 @@ public final class TypeFunctions {
     public static final MathFunction TOBOOL = FunctionBuilder
             .named("bool")
             .alias("tobool", "boolean")
-            .describedAs("Convert to boolean")
+            .describedAs("Converts x to a boolean (non-zero is true)")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, ctx) -> new NodeBoolean(ctx.toBoolean(arg)));
@@ -172,7 +184,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction TOMATRIX = FunctionBuilder
             .named("tomatrix")
-            .describedAs("Convert vector of vectors to matrix")
+            .describedAs("Converts a vector of row vectors into a matrix")
+            .withParams("vector")
             .inCategory(TYPE)
             .takingUnary()
             .noBroadcasting()
@@ -208,7 +221,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction TOVECTOR = FunctionBuilder
             .named("tovector")
-            .describedAs("Convert matrix to vector of vectors")
+            .describedAs("Converts a matrix to a vector of its row vectors")
+            .withParams("matrix")
             .inCategory(TYPE)
             .takingUnary()
             .noBroadcasting()
@@ -230,7 +244,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction NUMERATOR = FunctionBuilder
             .named("numerator")
-            .describedAs("Get numerator of a rational")
+            .describedAs("Returns the numerator of a rational number x")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, ctx) ->
@@ -241,7 +256,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction DENOMINATOR = FunctionBuilder
             .named("denominator")
-            .describedAs("Get denominator of a rational")
+            .describedAs("Returns the denominator of a rational number x")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, _) ->
@@ -254,7 +270,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction TYPEOF = FunctionBuilder
             .named("typeof")
-            .describedAs("Get the type name of a value")
+            .describedAs("Returns a string describing the type of x")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .noBroadcasting()
@@ -275,7 +292,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISNUMBER = FunctionBuilder
             .named("isnumber")
-            .describedAs("Check if value is a number")
+            .describedAs("Returns true if x is a numeric value (excludes booleans)")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .noBroadcasting()
@@ -286,7 +304,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISVECTOR = FunctionBuilder
             .named("isvector")
-            .describedAs("Check if value is a vector")
+            .describedAs("Returns true if x is a vector")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .noBroadcasting()
@@ -297,7 +316,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISMATRIX = FunctionBuilder
             .named("ismatrix")
-            .describedAs("Check if value is a matrix")
+            .describedAs("Returns true if x is a matrix")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .noBroadcasting()
@@ -308,7 +328,8 @@ public final class TypeFunctions {
      */
     public static final MathFunction ISBOOLEAN = FunctionBuilder
             .named("isboolean")
-            .describedAs("Check if value is a boolean")
+            .describedAs("Returns true if x is a boolean value")
+            .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
             .noBroadcasting()

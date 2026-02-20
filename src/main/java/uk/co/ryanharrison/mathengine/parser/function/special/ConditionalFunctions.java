@@ -22,7 +22,8 @@ public final class ConditionalFunctions {
      */
     public static final MathFunction IF = FunctionBuilder
             .named("if")
-            .describedAs("Conditional if-then-else")
+            .describedAs("Returns 'then' if condition is true, otherwise returns 'else'")
+            .withParams("condition", "then", "else")
             .inCategory(CONDITIONAL)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> ctx.toBoolean(args.getFirst()) ? args.get(1) : args.get(2));
@@ -32,7 +33,8 @@ public final class ConditionalFunctions {
      */
     public static final MathFunction CLAMP = FunctionBuilder
             .named("clamp")
-            .describedAs("Clamp value to range [min, max]")
+            .describedAs("Returns value clamped to the range [min, max]")
+            .withParams("value", "min", "max")
             .inCategory(CONDITIONAL)
             .takingTyped(ArgTypes.number(), ArgTypes.number(), ArgTypes.number())
             .implementedBy((value, min, max, ctx) -> new NodeDouble(Math.max(min, Math.min(max, value))));
@@ -42,7 +44,8 @@ public final class ConditionalFunctions {
      */
     public static final MathFunction LERP = FunctionBuilder
             .named("lerp")
-            .describedAs("Linear interpolation between a and b")
+            .describedAs("Linearly interpolates between a and b by factor t (0=a, 1=b)")
+            .withParams("a", "b", "t")
             .inCategory(CONDITIONAL)
             .takingTyped(ArgTypes.number(), ArgTypes.number(), ArgTypes.number())
             .implementedBy((a, b, t, ctx) -> new NodeDouble(a + t * (b - a)));

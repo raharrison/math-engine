@@ -47,7 +47,8 @@ public final class HigherOrderFunctions {
      */
     public static final MathFunction MAP = FunctionBuilder
             .named("map")
-            .describedAs("Apply function to each element of a collection")
+            .describedAs("Applies function f to each element of collection and returns the results")
+            .withParams("f", "collection")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.function(), ArgTypes.any())
             .implementedBy((func, collection, ctx) -> {
@@ -77,7 +78,8 @@ public final class HigherOrderFunctions {
      */
     public static final MathFunction FILTER = FunctionBuilder
             .named("filter")
-            .describedAs("Filter elements based on predicate")
+            .describedAs("Returns elements of collection for which predicate returns true")
+            .withParams("predicate", "collection")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.function(), ArgTypes.any())
             .implementedBy((func, collection, ctx) -> {
@@ -109,7 +111,8 @@ public final class HigherOrderFunctions {
      */
     public static final MathFunction REDUCE = FunctionBuilder
             .named("reduce")
-            .describedAs("Reduce collection to single value using binary function")
+            .describedAs("Reduces collection to a single value by applying f(accumulator, element) from left to right")
+            .withParams("f", "collection", "initial")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.function(), ArgTypes.any(), ArgTypes.any())
             .implementedBy((func, collection, initial, ctx) -> {
@@ -157,7 +160,7 @@ public final class HigherOrderFunctions {
             return result;
         }
 
-        throw new TypeError("Cannot iterate over " + TypeCoercion.typeName(node) +
+        throw new TypeError("Cannot iterate over a" + node.typeName() +
                 " in higher-order function");
     }
 

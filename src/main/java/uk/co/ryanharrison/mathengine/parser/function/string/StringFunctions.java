@@ -25,7 +25,8 @@ public final class StringFunctions {
      */
     public static final MathFunction STRLEN = FunctionBuilder
             .named("strlen")
-            .describedAs("String length")
+            .describedAs("Returns the number of characters in string str")
+            .withParams("str")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -37,7 +38,8 @@ public final class StringFunctions {
     public static final MathFunction UPPER = FunctionBuilder
             .named("upper")
             .alias("uppercase", "toupper")
-            .describedAs("Convert to uppercase")
+            .describedAs("Returns string str converted to uppercase")
+            .withParams("str")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -49,7 +51,8 @@ public final class StringFunctions {
     public static final MathFunction LOWER = FunctionBuilder
             .named("lower")
             .alias("lowercase", "tolower")
-            .describedAs("Convert to lowercase")
+            .describedAs("Returns string str converted to lowercase")
+            .withParams("str")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -60,7 +63,8 @@ public final class StringFunctions {
      */
     public static final MathFunction TRIM = FunctionBuilder
             .named("trim")
-            .describedAs("Trim leading and trailing whitespace")
+            .describedAs("Returns string str with leading and trailing whitespace removed")
+            .withParams("str")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -72,7 +76,8 @@ public final class StringFunctions {
     public static final MathFunction LTRIM = FunctionBuilder
             .named("ltrim")
             .alias("trimleft")
-            .describedAs("Trim leading whitespace")
+            .describedAs("Returns string str with leading whitespace removed")
+            .withParams("str")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -84,7 +89,8 @@ public final class StringFunctions {
     public static final MathFunction RTRIM = FunctionBuilder
             .named("rtrim")
             .alias("trimright")
-            .describedAs("Trim trailing whitespace")
+            .describedAs("Returns string str with trailing whitespace removed")
+            .withParams("str")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -98,7 +104,9 @@ public final class StringFunctions {
     public static final MathFunction SUBSTRING = FunctionBuilder
             .named("substring")
             .alias("substr", "mid")
-            .describedAs("Extract substring (start, length)")
+            .describedAs("Returns a substring of string str from start, optionally limited to length characters")
+            .withParams("str", "start")
+            .withParams("str", "start", "length")
             .inCategory(STRING)
             .takingBetween(2, 3)
             .noBroadcasting()
@@ -124,7 +132,8 @@ public final class StringFunctions {
      */
     public static final MathFunction LEFT = FunctionBuilder
             .named("left")
-            .describedAs("Get leftmost n characters")
+            .describedAs("Returns the leftmost count characters of string str")
+            .withParams("str", "count")
             .inCategory(STRING)
             .takingBinary()
             .noBroadcasting()
@@ -140,7 +149,8 @@ public final class StringFunctions {
      */
     public static final MathFunction RIGHT = FunctionBuilder
             .named("right")
-            .describedAs("Get rightmost n characters")
+            .describedAs("Returns the rightmost count characters of string str")
+            .withParams("str", "count")
             .inCategory(STRING)
             .takingBinary()
             .noBroadcasting()
@@ -157,7 +167,8 @@ public final class StringFunctions {
     public static final MathFunction CHARAT = FunctionBuilder
             .named("charat")
             .alias("char")
-            .describedAs("Get character at index")
+            .describedAs("Returns the character of string str at the given index (0-based)")
+            .withParams("str", "index")
             .inCategory(STRING)
             .takingBinary()
             .noBroadcasting()
@@ -182,7 +193,9 @@ public final class StringFunctions {
     public static final MathFunction STRINDEXOF = FunctionBuilder
             .named("strindexof")
             .alias("strfind")
-            .describedAs("Find first index of substring (-1 if not found)")
+            .describedAs("Returns the first index of substr in string str (-1 if not found)")
+            .withParams("str", "substr")
+            .withParams("str", "substr", "start")
             .inCategory(STRING)
             .takingBetween(2, 3)
             .noBroadcasting()
@@ -199,7 +212,8 @@ public final class StringFunctions {
     public static final MathFunction STRLASTINDEXOF = FunctionBuilder
             .named("strlastindexof")
             .alias("strrfind")
-            .describedAs("Find last index of substring")
+            .describedAs("Returns the last index of substr in string str (-1 if not found)")
+            .withParams("str", "substr")
             .inCategory(STRING)
             .takingBinary()
             .noBroadcasting()
@@ -214,7 +228,8 @@ public final class StringFunctions {
      */
     public static final MathFunction STRCONTAINS = FunctionBuilder
             .named("strcontains")
-            .describedAs("Check if string contains substring")
+            .describedAs("Returns true if string str contains substr")
+            .withParams("str", "substr")
             .inCategory(STRING)
             .takingBinary()
             .noBroadcasting()
@@ -229,7 +244,8 @@ public final class StringFunctions {
      */
     public static final MathFunction STARTSWITH = FunctionBuilder
             .named("startswith")
-            .describedAs("Check if string starts with prefix")
+            .describedAs("Returns true if string str starts with the given prefix")
+            .withParams("str", "prefix")
             .inCategory(STRING)
             .takingBinary()
             .noBroadcasting()
@@ -244,7 +260,8 @@ public final class StringFunctions {
      */
     public static final MathFunction ENDSWITH = FunctionBuilder
             .named("endswith")
-            .describedAs("Check if string ends with suffix")
+            .describedAs("Returns true if string str ends with the given suffix")
+            .withParams("str", "suffix")
             .inCategory(STRING)
             .takingBinary()
             .noBroadcasting()
@@ -261,7 +278,8 @@ public final class StringFunctions {
      */
     public static final MathFunction REPLACE = FunctionBuilder
             .named("replace")
-            .describedAs("Replace all occurrences of pattern")
+            .describedAs("Returns string str with all occurrences of target replaced by replacement")
+            .withParams("str", "target", "replacement")
             .inCategory(STRING)
             .takingExactly(3)
             .noBroadcasting()
@@ -277,7 +295,8 @@ public final class StringFunctions {
      */
     public static final MathFunction REPLACEFIRST = FunctionBuilder
             .named("replacefirst")
-            .describedAs("Replace first occurrence")
+            .describedAs("Returns string str with the first occurrence of target replaced by replacement")
+            .withParams("str", "target", "replacement")
             .inCategory(STRING)
             .takingExactly(3)
             .noBroadcasting()
@@ -298,7 +317,8 @@ public final class StringFunctions {
      */
     public static final MathFunction STRREVERSE = FunctionBuilder
             .named("strreverse")
-            .describedAs("Reverse a string")
+            .describedAs("Returns string str with its characters in reversed order")
+            .withParams("str")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -312,7 +332,8 @@ public final class StringFunctions {
      */
     public static final MathFunction STRREPEAT = FunctionBuilder
             .named("strrepeat")
-            .describedAs("Repeat string n times")
+            .describedAs("Returns string str repeated count times")
+            .withParams("str", "count")
             .inCategory(STRING)
             .takingBinary()
             .noBroadcasting()
@@ -329,7 +350,9 @@ public final class StringFunctions {
     public static final MathFunction PADLEFT = FunctionBuilder
             .named("padleft")
             .alias("lpad")
-            .describedAs("Pad string on left to length")
+            .describedAs("Pads string str on the left with spaces (or pad char) to reach the given total length")
+            .withParams("str", "length")
+            .withParams("str", "length", "pad")
             .inCategory(STRING)
             .takingBetween(2, 3)
             .noBroadcasting()
@@ -357,7 +380,9 @@ public final class StringFunctions {
     public static final MathFunction PADRIGHT = FunctionBuilder
             .named("padright")
             .alias("rpad")
-            .describedAs("Pad string on right to length")
+            .describedAs("Pads string str on the right with spaces (or pad char) to reach the given total length")
+            .withParams("str", "length")
+            .withParams("str", "length", "pad")
             .inCategory(STRING)
             .takingBetween(2, 3)
             .noBroadcasting()
@@ -386,7 +411,8 @@ public final class StringFunctions {
     public static final MathFunction STR = FunctionBuilder
             .named("str")
             .alias("tostring")
-            .describedAs("Convert value to string")
+            .describedAs("Converts x to its string representation")
+            .withParams("x")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -397,7 +423,9 @@ public final class StringFunctions {
      */
     public static final MathFunction SPLIT = FunctionBuilder
             .named("split")
-            .describedAs("Split string by delimiter")
+            .describedAs("Splits string str by delimiter into a vector of strings (no delimiter = individual chars)")
+            .withParams("str")
+            .withParams("str", "delimiter")
             .inCategory(STRING)
             .takingBetween(1, 2)
             .noBroadcasting()
@@ -425,7 +453,9 @@ public final class StringFunctions {
      */
     public static final MathFunction JOIN = FunctionBuilder
             .named("join")
-            .describedAs("Join vector elements with delimiter")
+            .describedAs("Joins the elements of a vector into a string, separated by delimiter")
+            .withParams("vector")
+            .withParams("vector", "delimiter")
             .inCategory(STRING)
             .takingBetween(1, 2)
             .noBroadcasting()
@@ -447,7 +477,8 @@ public final class StringFunctions {
     public static final MathFunction ORD = FunctionBuilder
             .named("ord")
             .alias("ascii")
-            .describedAs("Get ASCII/Unicode code of first character")
+            .describedAs("Returns the Unicode code point of the first character of string str")
+            .withParams("str")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -464,7 +495,8 @@ public final class StringFunctions {
      */
     public static final MathFunction CHR = FunctionBuilder
             .named("chr")
-            .describedAs("Get character from ASCII/Unicode code")
+            .describedAs("Returns the character corresponding to the Unicode code point n")
+            .withParams("n")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -482,7 +514,8 @@ public final class StringFunctions {
     public static final MathFunction ISEMPTY = FunctionBuilder
             .named("isempty")
             .alias("isblank")
-            .describedAs("Check if string is empty or blank")
+            .describedAs("Returns true if string str is empty or contains only whitespace")
+            .withParams("str")
             .inCategory(STRING)
             .takingUnary()
             .noBroadcasting()
@@ -496,7 +529,8 @@ public final class StringFunctions {
      */
     public static final MathFunction FORMAT = FunctionBuilder
             .named("format")
-            .describedAs("Format number with decimal places")
+            .describedAs("Formats value as a string with the specified number of decimal places")
+            .withParams("value", "places")
             .inCategory(STRING)
             .takingBinary()
             .noBroadcasting()

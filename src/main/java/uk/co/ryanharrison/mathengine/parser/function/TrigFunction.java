@@ -46,6 +46,7 @@ public final class TrigFunction {
         return FunctionBuilder
                 .named(name)
                 .describedAs(description)
+                .withParams("x")
                 .inCategory(MathFunction.Category.TRIGONOMETRIC)
                 .takingUnary()
                 .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
@@ -69,6 +70,7 @@ public final class TrigFunction {
         return FunctionBuilder
                 .named(name)
                 .describedAs(description)
+                .withParams("x")
                 .inCategory(MathFunction.Category.TRIGONOMETRIC)
                 .takingUnary()
                 .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()

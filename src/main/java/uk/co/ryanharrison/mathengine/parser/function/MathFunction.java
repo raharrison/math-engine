@@ -72,6 +72,24 @@ public interface MathFunction {
     }
 
     /**
+     * Returns the documented parameter name overloads for this function.
+     * Each inner list represents one call signature (a set of parameter names).
+     * An empty outer list means no documented parameters.
+     *
+     * <p>Examples:
+     * <pre>
+     *   sin   → [["x"]]
+     *   log   → [["x"], ["x", "base"]]
+     *   clamp → [["value", "min", "max"]]
+     * </pre>
+     *
+     * @return list of parameter-name lists, one per overload
+     */
+    default List<List<String>> parameterSets() {
+        return List.of();
+    }
+
+    /**
      * Gets the minimum number of arguments this function accepts.
      *
      * @return minimum arity (0 or greater)

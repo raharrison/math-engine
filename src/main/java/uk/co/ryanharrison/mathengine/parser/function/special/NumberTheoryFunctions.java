@@ -26,7 +26,8 @@ public final class NumberTheoryFunctions {
      */
     public static final MathFunction ISPRIME = FunctionBuilder
             .named("isprime")
-            .describedAs("Check if number is prime")
+            .describedAs("Returns true if n is a prime number")
+            .withParams("n")
             .inCategory(NUMBER_THEORY)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((n, ctx) -> new NodeBoolean(Primes.isPrime(n)));
@@ -36,7 +37,8 @@ public final class NumberTheoryFunctions {
      */
     public static final MathFunction NEXTPRIME = FunctionBuilder
             .named("nextprime")
-            .describedAs("Next prime number after n")
+            .describedAs("Returns the smallest prime number greater than n")
+            .withParams("n")
             .inCategory(NUMBER_THEORY)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((n, ctx) -> new NodeRational(Primes.nextPrime(n)));
@@ -46,7 +48,8 @@ public final class NumberTheoryFunctions {
      */
     public static final MathFunction PREVPRIME = FunctionBuilder
             .named("prevprime")
-            .describedAs("Previous prime number before n")
+            .describedAs("Returns the largest prime number less than n")
+            .withParams("n")
             .inCategory(NUMBER_THEORY)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((n, ctx) -> new NodeRational(Primes.previousPrime(n)));
@@ -57,7 +60,8 @@ public final class NumberTheoryFunctions {
     public static final MathFunction FACTORS = FunctionBuilder
             .named("factors")
             .alias("primefactors")
-            .describedAs("Prime factorization of a number")
+            .describedAs("Returns all prime factors of n as a vector with repetition (e.g. factors(12) = {2, 2, 3})")
+            .withParams("n")
             .inCategory(NUMBER_THEORY)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((n, ctx) -> {
@@ -70,7 +74,8 @@ public final class NumberTheoryFunctions {
      */
     public static final MathFunction DISTINCTFACTORS = FunctionBuilder
             .named("distinctfactors")
-            .describedAs("Distinct prime factors of a number")
+            .describedAs("Returns the unique prime factors of n as a vector, without repetition (e.g. distinctfactors(12) = {2, 3})")
+            .withParams("n")
             .inCategory(NUMBER_THEORY)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((n, ctx) -> {
@@ -83,7 +88,8 @@ public final class NumberTheoryFunctions {
      */
     public static final MathFunction DIVISORCOUNT = FunctionBuilder
             .named("divisorcount")
-            .describedAs("Count of divisors of a number")
+            .describedAs("Returns the number of positive divisors of n")
+            .withParams("n")
             .inCategory(NUMBER_THEORY)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((n, ctx) -> {
@@ -105,7 +111,8 @@ public final class NumberTheoryFunctions {
      */
     public static final MathFunction DIVISORSUM = FunctionBuilder
             .named("divisorsum")
-            .describedAs("Sum of divisors of a number")
+            .describedAs("Returns the sum of all positive divisors of n")
+            .withParams("n")
             .inCategory(NUMBER_THEORY)
             .takingTyped(ArgTypes.longInt())
             .implementedBy((n, ctx) -> {
@@ -126,7 +133,8 @@ public final class NumberTheoryFunctions {
      */
     public static final MathFunction MODPOW = FunctionBuilder
             .named("modpow")
-            .describedAs("Modular exponentiation: base^exp mod m")
+            .describedAs("Returns (base^exp) mod modulus using fast modular exponentiation")
+            .withParams("base", "exp", "modulus")
             .inCategory(NUMBER_THEORY)
             .takingTyped(ArgTypes.longInt(), ArgTypes.longInt(), ArgTypes.longInt())
             .implementedBy((base, exp, mod, ctx) -> {
@@ -148,7 +156,8 @@ public final class NumberTheoryFunctions {
      */
     public static final MathFunction ISCOPRIME = FunctionBuilder
             .named("iscoprime")
-            .describedAs("Check if two numbers are coprime")
+            .describedAs("Returns true if a and b share no common factors (gcd = 1)")
+            .withParams("a", "b")
             .inCategory(NUMBER_THEORY)
             .takingTyped(ArgTypes.longInt(), ArgTypes.longInt())
             .implementedBy((a, b, ctx) -> new NodeBoolean(gcd(a, b) == 1));

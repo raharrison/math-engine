@@ -246,8 +246,8 @@ public final class FunctionContext {
         if (value instanceof NodeVector vector) {
             return vector;
         }
-        throw new TypeError("Function '" + functionName + "' requires a vector, got " +
-                value.getClass().getSimpleName());
+        throw new TypeError("Function '" + functionName + "' requires a vector, got: " +
+                value.typeName());
     }
 
     /**
@@ -261,8 +261,8 @@ public final class FunctionContext {
         if (value instanceof NodeMatrix matrix) {
             return matrix;
         }
-        throw new TypeError("Function '" + functionName + "' requires a matrix, got " +
-                value.getClass().getSimpleName());
+        throw new TypeError("Function '" + functionName + "' requires a matrix, got: " +
+                value.typeName());
     }
 
     /**
@@ -457,8 +457,8 @@ public final class FunctionContext {
         if (value instanceof NodeString str) {
             return str;
         }
-        throw new TypeError("Function '" + functionName + "' requires a string, got " +
-                value.getClass().getSimpleName());
+        throw new TypeError("Function '" + functionName + "' requires a string, got: " +
+                value.typeName());
     }
 
     /**

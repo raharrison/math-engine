@@ -26,7 +26,8 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction TAKE = FunctionBuilder
             .named("take")
-            .describedAs("Take first n elements")
+            .describedAs("Returns the first n elements of the vector")
+            .withParams("vector", "n")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.vector(), ArgTypes.integer())
             .implementedBy((vector, n, ctx) -> {
@@ -45,7 +46,8 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction DROP = FunctionBuilder
             .named("drop")
-            .describedAs("Drop first n elements")
+            .describedAs("Returns the vector with its first n elements removed")
+            .withParams("vector", "n")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.vector(), ArgTypes.integer())
             .implementedBy((vector, n, ctx) -> {
@@ -67,7 +69,10 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction SLICE = FunctionBuilder
             .named("slice")
-            .describedAs("Slice vector [start, end) with optional step")
+            .describedAs("Returns a sub-vector from start (inclusive) to end (exclusive), with optional step")
+            .withParams("vector", "start")
+            .withParams("vector", "start", "end")
+            .withParams("vector", "start", "end", "step")
             .inCategory(MathFunction.Category.VECTOR)
             .takingBetween(2, 4)
             .noBroadcasting()
@@ -113,7 +118,8 @@ public final class VectorManipulationFunctions {
     public static final MathFunction GET = FunctionBuilder
             .named("get")
             .alias("at", "nth")
-            .describedAs("Get element at index (0-based)")
+            .describedAs("Returns the element at index (0-based; negative indices count from end)")
+            .withParams("vector", "index")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.vector(), ArgTypes.integer())
             .implementedBy((vector, index, ctx) -> {
@@ -132,7 +138,8 @@ public final class VectorManipulationFunctions {
     public static final MathFunction INDEXOF = FunctionBuilder
             .named("indexof")
             .alias("find")
-            .describedAs("Find first index of element (-1 if not found)")
+            .describedAs("Returns the first index of value in vector, or -1 if not found")
+            .withParams("vector", "value")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.vector(), ArgTypes.number())
             .implementedBy((vector, target, ctx) -> {
@@ -151,7 +158,8 @@ public final class VectorManipulationFunctions {
     public static final MathFunction CONTAINS = FunctionBuilder
             .named("contains")
             .alias("includes")
-            .describedAs("Check if vector contains element")
+            .describedAs("Returns true if value appears in the vector")
+            .withParams("vector", "value")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.vector(), ArgTypes.number())
             .implementedBy((vector, target, ctx) -> {
@@ -172,7 +180,8 @@ public final class VectorManipulationFunctions {
     public static final MathFunction UNIQUE = FunctionBuilder
             .named("unique")
             .alias("distinct")
-            .describedAs("Remove duplicate elements")
+            .describedAs("Returns the vector with duplicate elements removed (preserving order)")
+            .withParams("vector")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.vector())
             .implementedBy((vector, ctx) -> {
@@ -194,7 +203,8 @@ public final class VectorManipulationFunctions {
     public static final MathFunction CONCAT = FunctionBuilder
             .named("concat")
             .alias("append")
-            .describedAs("Concatenate vectors")
+            .describedAs("Returns a new vector with all input vectors concatenated; scalars are treated as single-element vectors")
+            .withParams("a", "b")
             .inCategory(MathFunction.Category.VECTOR)
             .takingVariadic(2)
             .noBroadcasting()
@@ -218,7 +228,9 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction FLATTEN = FunctionBuilder
             .named("flatten")
-            .describedAs("Flatten nested vectors")
+            .describedAs("Recursively flattens nested vectors or a matrix into a single flat vector")
+            .withParams("vector")
+            .withParams("matrix")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.any())
             .implementedBy((arg, ctx) -> {
@@ -248,7 +260,8 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction ZIP = FunctionBuilder
             .named("zip")
-            .describedAs("Zip vectors into matrix of pairs")
+            .describedAs("Zips two or more vectors into a matrix of rows, truncated to the shortest")
+            .withParams("a", "b")
             .inCategory(MathFunction.Category.VECTOR)
             .takingVariadic(2)
             .noBroadcasting()
@@ -278,7 +291,9 @@ public final class VectorManipulationFunctions {
     public static final MathFunction REPEAT = FunctionBuilder
             .named("repeat")
             .alias("replicate")
-            .describedAs("Repeat value or vector n times")
+            .describedAs("Returns a new vector with the scalar or vector repeated n times")
+            .withParams("number", "n")
+            .withParams("vector", "n")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.any(), ArgTypes.integer())
             .implementedBy((input, n, ctx) -> {
@@ -310,7 +325,8 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction COUNT = FunctionBuilder
             .named("count")
-            .describedAs("Count occurrences of value")
+            .describedAs("Returns the number of times value appears in the vector")
+            .withParams("vector", "value")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.vector(), ArgTypes.number())
             .implementedBy((vector, target, ctx) -> {
@@ -327,7 +343,8 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction ANY = FunctionBuilder
             .named("any")
-            .describedAs("Check if any element is truthy")
+            .describedAs("Returns true if any element in the collection is truthy (non-zero)")
+            .withParams("values")
             .inCategory(MathFunction.Category.VECTOR)
             .takingVariadic(1)
             .noBroadcasting()
@@ -353,7 +370,8 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction ALL = FunctionBuilder
             .named("all")
-            .describedAs("Check if all elements are truthy")
+            .describedAs("Returns true if all elements in the collection are truthy (non-zero)")
+            .withParams("values")
             .inCategory(MathFunction.Category.VECTOR)
             .takingVariadic(1)
             .noBroadcasting()
@@ -379,7 +397,8 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction NONE = FunctionBuilder
             .named("none")
-            .describedAs("Check if no elements are truthy")
+            .describedAs("Returns true if no elements in the collection are truthy")
+            .withParams("values")
             .inCategory(MathFunction.Category.VECTOR)
             .takingVariadic(1)
             .noBroadcasting()
@@ -403,12 +422,15 @@ public final class VectorManipulationFunctions {
     // ==================== Generator Functions ====================
 
     /**
-     * Generate range [start, end) with optional step
+     * Generate range [start, end] with optional step
      */
     public static final MathFunction RANGEGEN = FunctionBuilder
             .named("seq")
             .alias("sequence", "arange")
-            .describedAs("Generate sequence [start, end] with step")
+            .describedAs("Generates a sequence of numbers from start to end (inclusive) with the given step")
+            .withParams("end")
+            .withParams("start", "end")
+            .withParams("start", "end", "step")
             .inCategory(MathFunction.Category.VECTOR)
             .takingBetween(1, 3)
             .noBroadcasting()
@@ -451,7 +473,8 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction LINSPACE = FunctionBuilder
             .named("linspace")
-            .describedAs("Generate n evenly spaced values")
+            .describedAs("Generates n evenly spaced values between start and end (inclusive)")
+            .withParams("start", "end", "n")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.number(), ArgTypes.number(), ArgTypes.integer())
             .implementedBy((start, end, n, ctx) -> {
@@ -476,7 +499,8 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction FILL = FunctionBuilder
             .named("fill")
-            .describedAs("Create vector filled with value")
+            .describedAs("Creates a vector of n copies of value")
+            .withParams("value", "n")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.any(), ArgTypes.integer())
             .implementedBy((value, n, ctx) -> {
