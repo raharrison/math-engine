@@ -1,10 +1,13 @@
 package uk.co.ryanharrison.mathengine.parser.operator.binary;
 
+import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
+import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
+
+import java.math.BigInteger;
 
 /**
  * Modulo operator (mod).
@@ -39,14 +42,31 @@ public final class ModOperator implements BinaryOperator {
 
     @Override
     public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-        return BroadcastingEngine.applyBinary(left, right, (l, r) -> {
-            double lVal = ctx.toNumber(l).doubleValue();
-            double rVal = ctx.toNumber(r).doubleValue();
+        return BroadcastingEngine.applyBinary(left, right, (l, r) ->
+                NumericOperations.applyNumeric(l, r,
+                        (a, b) -> a - b * Math.floor(a / b),
+                        ModOperator::floorMod,
+                        false));
+    }
 
-            // Use floor modulo: a mod b = a - b * floor(a / b)
-            // This differs from Java's % which is remainder
-            double result = lVal - rVal * Math.floor(lVal / rVal);
-            return new NodeDouble(result);
-        });
+    /**
+     * Floor modulo for BigRational: {@code a - b * floor(a/b)}.
+     */
+    private static BigRational floorMod(BigRational a, BigRational b) {
+        BigRational quotient = a.divide(b);
+        BigInteger floor = floorBigRational(quotient);
+        return a.subtract(b.multiply(BigRational.of(floor)));
+    }
+
+    /**
+     * Floor of a BigRational — largest integer <= the value.
+     */
+    private static BigInteger floorBigRational(BigRational r) {
+        BigInteger[] divRem = r.getNumerator().divideAndRemainder(r.getDenominator());
+        // BigInteger division truncates toward zero; adjust for negative non-integers
+        if (divRem[1].signum() < 0) {
+            return divRem[0].subtract(BigInteger.ONE);
+        }
+        return divRem[0];
     }
 }

@@ -130,51 +130,51 @@
         {
             "id": "clamp_001",
             "input": "clamp(5, 0, 10)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Clamp value within range"
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Clamp value within range preserves type"
         },
         {
             "id": "clamp_002",
             "input": "clamp(-5, 0, 10)",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
-            "notes": "Clamp value below range"
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Clamp below range returns min"
         },
         {
             "id": "clamp_003",
             "input": "clamp(15, 0, 10)",
-            "expected": 10.0,
-            "expectedType": "NodeDouble",
-            "notes": "Clamp value above range"
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Clamp above range returns max"
         },
         {
             "id": "clamp_004",
             "input": "clamp(0, 0, 10)",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
+            "expected": 0,
+            "expectedType": "NodeRational",
             "notes": "Clamp at lower bound"
         },
         {
             "id": "clamp_005",
             "input": "clamp(10, 0, 10)",
-            "expected": 10.0,
-            "expectedType": "NodeDouble",
+            "expected": 10,
+            "expectedType": "NodeRational",
             "notes": "Clamp at upper bound"
         },
         {
             "id": "lerp_001",
             "input": "lerp(0, 10, 0)",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
-            "notes": "Lerp at t=0"
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Lerp at t=0 preserves rational"
         },
         {
             "id": "lerp_002",
             "input": "lerp(0, 10, 1)",
-            "expected": 10.0,
-            "expectedType": "NodeDouble",
-            "notes": "Lerp at t=1"
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Lerp at t=1 preserves rational"
         },
         {
             "id": "lerp_003",

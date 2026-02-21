@@ -1,10 +1,13 @@
 package uk.co.ryanharrison.mathengine.parser.function.math;
 
+import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
+import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static uk.co.ryanharrison.mathengine.parser.function.MathFunction.Category.ROUNDING;
@@ -18,6 +21,28 @@ public final class RoundingFunctions {
     private RoundingFunctions() {
     }
 
+    /**
+     * Truncated remainder for BigRational: {@code a - b * trunc(a/b)}.
+     * Equivalent to Java's {@code %} operator semantics.
+     */
+    static BigRational truncatedRemainder(BigRational a, BigRational b) {
+        // a/b as BigRational, then truncate toward zero
+        BigRational quotient = a.divide(b);
+        BigInteger truncated = quotient.getNumerator().divide(quotient.getDenominator());
+        return a.subtract(b.multiply(BigRational.of(truncated)));
+    }
+
+    /**
+     * IEEE remainder for BigRational: {@code a - b * round(a/b)}.
+     * Equivalent to {@link Math#IEEEremainder} semantics.
+     */
+    static BigRational ieeeRemainder(BigRational a, BigRational b) {
+        BigRational quotient = a.divide(b);
+        // Round to nearest integer (half-even)
+        long rounded = Math.round(quotient.doubleValue());
+        return a.subtract(b.multiply(BigRational.of(rounded)));
+    }
+
     // ==================== Rounding Functions ====================
 
     /**
@@ -29,7 +54,9 @@ public final class RoundingFunctions {
             .withParams("x")
             .inCategory(ROUNDING)
             .takingUnary()
-            .implementedByDouble(Math::floor);
+            .implementedBy((arg, ctx) -> ctx.applyWithTypePreservation(arg,
+                    r -> BigRational.of((long) Math.floor(r.doubleValue())),
+                    Math::floor));
 
     /**
      * Ceiling function (round up)
@@ -40,7 +67,9 @@ public final class RoundingFunctions {
             .withParams("x")
             .inCategory(ROUNDING)
             .takingUnary()
-            .implementedByDouble(Math::ceil);
+            .implementedBy((arg, ctx) -> ctx.applyWithTypePreservation(arg,
+                    r -> BigRational.of((long) Math.ceil(r.doubleValue())),
+                    Math::ceil));
 
     /**
      * Round to nearest integer
@@ -51,7 +80,9 @@ public final class RoundingFunctions {
             .withParams("x")
             .inCategory(ROUNDING)
             .takingUnary()
-            .implementedByDouble(x -> (double) Math.round(x));
+            .implementedBy((arg, ctx) -> ctx.applyWithTypePreservation(arg,
+                    r -> BigRational.of(Math.round(r.doubleValue())),
+                    d -> (double) Math.round(d)));
 
     /**
      * Truncate toward zero
@@ -62,7 +93,12 @@ public final class RoundingFunctions {
             .withParams("x")
             .inCategory(ROUNDING)
             .takingUnary()
-            .implementedByDouble(x -> x < 0 ? Math.ceil(x) : Math.floor(x));
+            .implementedBy((arg, ctx) -> ctx.applyWithTypePreservation(arg,
+                    r -> {
+                        double d = r.doubleValue();
+                        return BigRational.of((long) (d < 0 ? Math.ceil(d) : Math.floor(d)));
+                    },
+                    d -> d < 0 ? Math.ceil(d) : Math.floor(d)));
 
     /**
      * Round to specified decimal places
@@ -91,7 +127,6 @@ public final class RoundingFunctions {
             .withParams("x")
             .inCategory(UTILITY)
             .takingUnary()
-            .noBroadcasting() // broadcasts internally via ctx.applyWithTypePreservation()
             .implementedBy((arg, ctx) -> ctx.applyWithTypePreservation(arg, r -> r.abs(), Math::abs));
 
     /**
@@ -131,11 +166,11 @@ public final class RoundingFunctions {
             .withParams("x", "y")
             .inCategory(UTILITY)
             .takingBinary()
-            .implementedBy((x, y, ctx) -> {
-                double xVal = ctx.toNumber(x).doubleValue();
-                double yVal = ctx.toNumber(y).doubleValue();
-                return new NodeDouble(xVal % yVal);
-            });
+            .implementedBy((x, y, ctx) ->
+                    NumericOperations.applyNumeric(x, y,
+                            (a, b) -> a % b,
+                            RoundingFunctions::truncatedRemainder,
+                            false));
 
     /**
      * IEEE remainder
@@ -146,11 +181,11 @@ public final class RoundingFunctions {
             .withParams("x", "y")
             .inCategory(UTILITY)
             .takingBinary()
-            .implementedBy((x, y, ctx) -> {
-                double xVal = ctx.toNumber(x).doubleValue();
-                double yVal = ctx.toNumber(y).doubleValue();
-                return new NodeDouble(Math.IEEEremainder(xVal, yVal));
-            });
+            .implementedBy((x, y, ctx) ->
+                    NumericOperations.applyNumeric(x, y,
+                            Math::IEEEremainder,
+                            RoundingFunctions::ieeeRemainder,
+                            false));
 
     // ==================== Hypotenuse ====================
 

@@ -164,7 +164,7 @@ public final class FunctionBuilder {
 
         return createMathFunction(() -> (args, ctx) -> {
             // Safe: arity validated by FunctionExecutor before calling apply()
-            NodeConstant arg = args.get(0);
+            NodeConstant arg = args.getFirst();
             if (supportsBroadcasting) {
                 return ctx.applyWithBroadcasting(arg, op);
             } else {
@@ -191,9 +191,9 @@ public final class FunctionBuilder {
         // Safe: arity validated by FunctionExecutor before calling apply()
         return createMathFunction(() -> (args, ctx) -> {
             if (supportsBroadcasting) {
-                return BroadcastingEngine.applyUnary(args.get(0), v -> fn.apply(v, ctx));
+                return BroadcastingEngine.applyUnary(args.getFirst(), v -> fn.apply(v, ctx));
             }
-            return fn.apply(args.get(0), ctx);
+            return fn.apply(args.getFirst(), ctx);
         });
     }
 

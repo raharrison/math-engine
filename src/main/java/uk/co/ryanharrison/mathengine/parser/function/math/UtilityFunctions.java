@@ -217,9 +217,10 @@ public final class UtilityFunctions {
             .withParams("a", "b")
             .inCategory(UTILITY)
             .takingBinary()
-            .implementedBy((a, b, ctx) -> new NodeRational(Double.compare(
-                    ctx.toNumber(a).doubleValue(),
-                    ctx.toNumber(b).doubleValue())));
+            .implementedBy((a, b, ctx) -> {
+                int cmp = a.compareTo(b);
+                return new NodeRational(Integer.signum(cmp));
+            });
 
     // ==================== Interest and Financial ====================
 

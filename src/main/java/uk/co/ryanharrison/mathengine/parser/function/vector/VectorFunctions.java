@@ -5,6 +5,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
 import uk.co.ryanharrison.mathengine.utils.StatUtils;
 
 import java.util.Arrays;
@@ -176,16 +177,17 @@ public final class VectorFunctions {
                     throw new TypeError("median requires at least one element");
                 }
 
-                double[] values = elements.stream()
-                        .mapToDouble(e -> ctx.toNumber(e).doubleValue())
-                        .sorted()
-                        .toArray();
+                List<NodeConstant> sorted = elements.stream()
+                        .sorted(NumericOperations::compareNumeric)
+                        .toList();
 
-                int n = values.length;
-                if (n % 2 == 0) {
-                    return new NodeDouble((values[n / 2 - 1] + values[n / 2]) / 2.0);
+                int n = sorted.size();
+                if (n % 2 == 1) {
+                    return sorted.get(n / 2);
                 } else {
-                    return new NodeDouble(values[n / 2]);
+                    NodeConstant lo = sorted.get(n / 2 - 1);
+                    NodeConstant hi = sorted.get(n / 2);
+                    return lo.add(hi).divide(new NodeRational(BigRational.TWO));
                 }
             });
 

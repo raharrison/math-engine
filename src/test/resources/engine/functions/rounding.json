@@ -33,16 +33,16 @@
         {
             "id": "floor_005",
             "input": "floor(5)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Floor of integer"
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Floor of integer preserves rational"
         },
         {
             "id": "floor_006",
             "input": "floor(0)",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
-            "notes": "Floor of zero"
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Floor of zero preserves rational"
         },
         {
             "id": "ceil_001",
@@ -75,16 +75,16 @@
         {
             "id": "ceil_005",
             "input": "ceil(5)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Ceiling of integer"
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Ceiling of integer preserves rational"
         },
         {
             "id": "ceil_006",
             "input": "ceil(0)",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
-            "notes": "Ceiling of zero"
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Ceiling of zero preserves rational"
         },
         {
             "id": "round_001",
@@ -124,9 +124,9 @@
         {
             "id": "round_006",
             "input": "round(0)",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
-            "notes": "Round zero"
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Round zero preserves rational"
         },
         {
             "id": "trunc_001",
@@ -145,9 +145,9 @@
         {
             "id": "trunc_003",
             "input": "trunc(5)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Truncate integer"
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Truncate integer preserves rational"
         },
         {
             "id": "roundn_001",

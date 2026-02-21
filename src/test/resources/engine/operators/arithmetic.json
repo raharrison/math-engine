@@ -272,42 +272,42 @@
             "id": "mod_001",
             "input": "7 mod 3",
             "expected": 1,
-            "expectedType": "NodeDouble",
-            "notes": "Modulo operation"
+            "expectedType": "NodeRational",
+            "notes": "Modulo preserves rational for integer inputs"
         },
         {
             "id": "mod_002",
             "input": "10 mod 5",
             "expected": 0,
-            "expectedType": "NodeDouble",
+            "expectedType": "NodeRational",
             "notes": "Modulo with no remainder"
         },
         {
             "id": "mod_003",
             "input": "15 mod 4",
             "expected": 3,
-            "expectedType": "NodeDouble",
+            "expectedType": "NodeRational",
             "notes": "Modulo with remainder"
         },
         {
             "id": "mod_004",
             "input": "-7 mod 3",
             "expected": 2,
-            "expectedType": "NodeDouble",
-            "notes": "Modulo with negative dividend"
+            "expectedType": "NodeRational",
+            "notes": "Floor modulo with negative dividend"
         },
         {
             "id": "mod_005",
             "input": "7 mod -3",
             "expected": -2,
-            "expectedType": "NodeDouble",
-            "notes": "Modulo with negative divisor"
+            "expectedType": "NodeRational",
+            "notes": "Floor modulo with negative divisor"
         },
         {
             "id": "mod_006",
             "input": "0 mod 5",
             "expected": 0,
-            "expectedType": "NodeDouble",
+            "expectedType": "NodeRational",
             "notes": "Zero modulo anything"
         },
         {

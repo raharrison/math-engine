@@ -1,0 +1,315 @@
+{
+    "category": "Type Preservation",
+    "description": "Tests that functions and operators preserve rational, unit, and percent types instead of collapsing to double",
+    "tests": [
+        {
+            "id": "floor_rational_001",
+            "input": "floor(7/2)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Floor of rational preserves rational type"
+        },
+        {
+            "id": "floor_rational_002",
+            "input": "floor(1/3)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Floor of small rational"
+        },
+        {
+            "id": "ceil_rational_001",
+            "input": "ceil(1/3)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Ceil of rational preserves rational type"
+        },
+        {
+            "id": "ceil_rational_002",
+            "input": "ceil(7/2)",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "Ceil of rational fraction"
+        },
+        {
+            "id": "round_rational_001",
+            "input": "round(5/3)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Round of rational preserves rational type"
+        },
+        {
+            "id": "round_rational_002",
+            "input": "round(1/3)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Round of small rational"
+        },
+        {
+            "id": "trunc_rational_001",
+            "input": "trunc(7/2)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Trunc of rational preserves rational type"
+        },
+        {
+            "id": "trunc_rational_002",
+            "input": "trunc(-7/2)",
+            "expected": -3,
+            "expectedType": "NodeRational",
+            "notes": "Trunc of negative rational toward zero"
+        },
+        {
+            "id": "floor_double_001",
+            "input": "floor(3.7)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Floor of double stays double"
+        },
+        {
+            "id": "floor_vector_001",
+            "input": "floor({7/2, 5/3, 2.7})",
+            "expected": [
+                3,
+                1,
+                2.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Floor broadcasts over vector, preserving per-element types"
+        },
+        {
+            "id": "pow_rational_001",
+            "input": "pow(2/3, 3)",
+            "expected": "8/27",
+            "expectedType": "NodeRational",
+            "notes": "Rational base with integer exponent preserves rational"
+        },
+        {
+            "id": "pow_rational_002",
+            "input": "pow(1/2, 2)",
+            "expected": "1/4",
+            "expectedType": "NodeRational",
+            "notes": "Half squared stays rational"
+        },
+        {
+            "id": "pow_rational_003",
+            "input": "pow(3, 4)",
+            "expected": 81,
+            "expectedType": "NodeRational",
+            "notes": "Integer power stays rational"
+        },
+        {
+            "id": "pow_double_001",
+            "input": "pow(2, 0.5)",
+            "expected": 1.4142135623730951,
+            "expectedType": "NodeDouble",
+            "notes": "Non-integer exponent produces double"
+        },
+        {
+            "id": "pow_vector_001",
+            "input": "pow({1/2, 1/3}, 2)",
+            "expected": [
+                "1/4",
+                "1/9"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Power broadcasts over vector preserving rational"
+        },
+        {
+            "id": "mod_rational_001",
+            "input": "7 mod 3",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Integer mod produces rational"
+        },
+        {
+            "id": "mod_double_001",
+            "input": "7.5 mod 2.0",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double mod stays double"
+        },
+        {
+            "id": "mod_vector_001",
+            "input": "{7, 10, 15} mod 3",
+            "expected": [
+                1,
+                1,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Mod broadcasts over vector"
+        },
+        {
+            "id": "fmod_rational_001",
+            "input": "fmod(7, 3)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Integer fmod produces rational"
+        },
+        {
+            "id": "fmod_double_001",
+            "input": "fmod(5.5, 2.0)",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double fmod stays double"
+        },
+        {
+            "id": "remainder_rational_001",
+            "input": "remainder(7, 4)",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "Integer IEEE remainder produces rational"
+        },
+        {
+            "id": "compare_numeric_001",
+            "input": "compare(3, 5)",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "Compare less than"
+        },
+        {
+            "id": "compare_numeric_002",
+            "input": "compare(5, 5)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Compare equal"
+        },
+        {
+            "id": "compare_numeric_003",
+            "input": "compare(7, 3)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Compare greater than"
+        },
+        {
+            "id": "compare_string_001",
+            "input": "compare(\"apple\", \"banana\")",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "String comparison via compare function"
+        },
+        {
+            "id": "compare_string_002",
+            "input": "compare(\"zebra\", \"apple\")",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "String compare greater"
+        },
+        {
+            "id": "compare_string_003",
+            "input": "compare(\"abc\", \"abc\")",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "String compare equal"
+        },
+        {
+            "id": "clamp_rational_001",
+            "input": "clamp(1/3, 0, 1)",
+            "expected": "1/3",
+            "expectedType": "NodeRational",
+            "notes": "Clamp in range preserves original rational"
+        },
+        {
+            "id": "clamp_rational_002",
+            "input": "clamp(-1, 0, 1)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Clamp below returns min bound"
+        },
+        {
+            "id": "clamp_rational_003",
+            "input": "clamp(5, 0, 1)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Clamp above returns max bound"
+        },
+        {
+            "id": "clamp_vector_001",
+            "input": "clamp({-1, 0, 2}, 0, 1)",
+            "expected": [
+                0,
+                0,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Clamp broadcasts over vector"
+        },
+        {
+            "id": "lerp_rational_001",
+            "input": "lerp(0, 1, 1/2)",
+            "expected": "1/2",
+            "expectedType": "NodeRational",
+            "notes": "Lerp with rational t preserves rational"
+        },
+        {
+            "id": "lerp_rational_002",
+            "input": "lerp(0, 100, 1/4)",
+            "expected": 25,
+            "expectedType": "NodeRational",
+            "notes": "Lerp with rational t produces integer"
+        },
+        {
+            "id": "lerp_double_001",
+            "input": "lerp(0, 10, 0.5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Lerp with double t stays double"
+        },
+        {
+            "id": "lerp_vector_001",
+            "input": "lerp({0, 10}, {100, 200}, 1/2)",
+            "expected": [
+                50,
+                105
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Lerp broadcasts over vectors"
+        },
+        {
+            "id": "median_rational_odd_001",
+            "input": "median(1/4, 1/2, 3/4)",
+            "expected": "1/2",
+            "expectedType": "NodeRational",
+            "notes": "Median of odd-length preserves middle element type"
+        },
+        {
+            "id": "median_rational_odd_002",
+            "input": "median(3, 1, 2)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Median of integers preserves rational"
+        },
+        {
+            "id": "median_rational_even_001",
+            "input": "median(1, 2, 3, 4)",
+            "expected": "5/2",
+            "expectedType": "NodeRational",
+            "notes": "Median of even-length averages middle two as rational"
+        },
+        {
+            "id": "of_double_001",
+            "input": "50% of 200",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent is inherently double, so result is double"
+        },
+        {
+            "id": "of_vector_001",
+            "input": "50% of {100, 200, 300}",
+            "expected": [
+                50.0,
+                100.0,
+                150.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent of vector broadcasts, results are double"
+        },
+        {
+            "id": "abs_rational_001",
+            "input": "abs(-3/4)",
+            "expected": "3/4",
+            "expectedType": "NodeRational",
+            "notes": "Abs of rational preserves rational"
+        }
+    ]
+}

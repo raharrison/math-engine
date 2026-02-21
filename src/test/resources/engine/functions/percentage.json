@@ -259,7 +259,7 @@
             "input": "50% of 200",
             "expected": 100.0,
             "expectedType": "NodeDouble",
-            "notes": "Percent of syntax"
+            "notes": "Percent of syntax — percent is double-valued so result is double"
         }
     ]
 }

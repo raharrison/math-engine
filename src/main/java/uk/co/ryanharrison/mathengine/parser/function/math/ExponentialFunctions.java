@@ -3,7 +3,7 @@ package uk.co.ryanharrison.mathengine.parser.function.math;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
+import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
 
 import java.util.List;
 
@@ -205,20 +205,7 @@ public final class ExponentialFunctions {
             .inCategory(EXPONENTIAL)
             .takingBinary()
             .withBroadcasting()
-            .implementedBy((base, exp, ctx) -> {
-                double baseVal = ctx.toNumber(base).doubleValue();
-                double expVal = ctx.toNumber(exp).doubleValue();
-
-                // Preserve rational precision for integer exponents
-                if (base instanceof NodeRational baseRat) {
-                    if (expVal == Math.floor(expVal) && !Double.isInfinite(expVal)) {
-                        int intExp = (int) expVal;
-                        return new NodeRational(baseRat.getValue().pow(intExp));
-                    }
-                }
-
-                return new NodeDouble(Math.pow(baseVal, expVal));
-            });
+            .implementedBy((base, exp, ctx) -> NumericOperations.applyPower(base, exp, false));
 
     // ==================== All Functions ====================
 

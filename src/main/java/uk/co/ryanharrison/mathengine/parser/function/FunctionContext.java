@@ -354,8 +354,7 @@ public final class FunctionContext {
     public NodeConstant applyWithTypePreservation(NodeConstant value,
                                                   UnaryOperator<BigRational> rationalOp,
                                                   DoubleUnaryOperator doubleOp) {
-        return BroadcastingEngine.applyUnary(value, v ->
-                NumericOperations.applyUnary(v, rationalOp, doubleOp));
+        return NumericOperations.applyUnary(value, rationalOp, doubleOp);
     }
 
     // ==================== Array Validation ====================
