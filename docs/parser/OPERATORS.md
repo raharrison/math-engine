@@ -294,6 +294,28 @@ Always returns Double (except for integer powers of rationals).
 7.5 mod 2.0 → 1.5
 ```
 
+#### Units under arithmetic
+
+The label rides along through every operator, and two like quantities cancel when
+divided:
+
+```text
+(2 m) + (3 m)   → 5 meters
+(2 m) * (3 m)   → 6 meters
+(2 m) ^ 3       → 8 meters
+1 / (2 m)       → 0.5 meters
+(4 m) / (2 m)   → 2            a plain ratio
+(2 m) * (3 s)   → TypeError    different quantities do not combine
+```
+
+A product of two lengths is really an area, and without compound units there is no way to
+say so, so it keeps the label it started with. Refusing instead would be worse: `^`
+already carries the label, so refusing `*` would leave one operator out of step with the
+rest and would block `product` and `covariance` from working on units at all. Different
+unit *types* still refuse, since carrying "metres" out of `2 m * 3 s` would be arbitrary.
+A same-type operand is converted to the left operand's unit first, exactly as addition
+does, so `1 m * 100 cm` is `1 m`.
+
 #### OfOperator (of)
 
 **Purpose:** Taking a share of a quantity

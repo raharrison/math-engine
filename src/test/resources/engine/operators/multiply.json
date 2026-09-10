@@ -832,9 +832,9 @@
         {
             "id": "multiply_types_unit_unit",
             "input": "(4 meters) * (4 meters)",
-            "expectError": true,
-            "expectedErrorType": "TypeError",
-            "notes": "Unit multiplies a unit is not defined"
+            "notes": "Unit multiplies a unit: the label rides along, since the engine has no way to spell m^2. This used to be a TypeError",
+            "expected": "16.0 meters",
+            "expectedType": "NodeUnit"
         },
         {
             "id": "multiply_types_unit_vector",
@@ -1029,9 +1029,9 @@
         {
             "id": "unit_times_unit",
             "input": "(4 meters) * (2 meters)",
-            "expectError": true,
-            "expectedErrorType": "TypeError",
-            "notes": "Two labels cannot merge into a name the engine has, so multiplying quantities is refused"
+            "notes": "Two like quantities multiply, converting to the left operand's unit first, as addition does",
+            "expected": "8.0 meters",
+            "expectedType": "NodeUnit"
         },
         {
             "id": "percent_on_the_right_measures",

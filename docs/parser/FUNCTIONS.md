@@ -486,6 +486,31 @@ stddev(vec)      // Standard deviation
 percentile(vec, p)
 ```
 
+The same three rules apply outside this package. `UtilityFunctions` and
+`PercentageFunctions` are written as the arithmetic they stand for, so `frac(3/2)` is 1/2
+and `distance(0, 0, 3 m, 4 m)` is 5 meters. The percentage functions are spelled as the
+operator that means the same thing, so `addpercent(x, p)` is `x + p` and
+`percentof(p, x)` is `p of x`, and neither can drift from it.
+
+These compute on the values, not on a `double[]`, which is what keeps units,
+percentages and exact rationals. See `vector/Statistics.java`. Three rules decide the
+answer's type, and no per-function table is needed:
+
+- a function that **selects** one of its inputs returns that input, so `mode`,
+  `percentile` and `quartile` come back with whatever the element wore
+- a function whose answer is a **sum, difference, product or quotient** of its inputs is
+  written that way, so `range`, `iqr`, `variance`, `hmean` and `covariance` stay exact
+- a function needing a **root or a logarithm** maps the magnitude and keeps the label, so
+  `stddev`, `rms` and `gmean` are inexact but still measured in metres
+
+`skewness`, `kurtosis` and `correlation` come out as plain doubles, not by special case
+but because they divide like into like and the label cancels. They are ratios, so that is
+what they should be.
+
+The one place this is a compromise is `variance` and `covariance`, whose real dimension is
+the input's label squared. The engine has no way to spell m², so they keep the label they
+had. That is the same compromise `(2 m)^2` already makes.
+
 **Manipulation** (`vector/VectorManipulationFunctions.java`):
 
 ```
@@ -522,10 +547,41 @@ diag(v)          // Diagonal matrix from vector
 **Higher-Order** (`vector/HigherOrderFunctions.java`):
 
 ```
-map(fn, vec)            // Apply fn to each element
-filter(fn, vec)         // Keep elements where fn is truthy
-reduce(fn, vec, init)   // Fold vector with binary function
+map(fn, vec)             // Apply fn to each element
+flatmap(fn, vec)         // Apply fn, then splice each result in
+filter(pred, vec)        // Keep the elements that match
+partition(pred, vec)     // The matches and the rest, as two vectors
+takewhile(pred, vec)     // The leading run that matches
+dropwhile(pred, vec)     // Everything after that run
+reduce(fn, vec, init)    // Fold to a single value
+scan(fn, vec, init)      // The same fold, keeping every step
+sortby(key, vec)         // Sort by a computed key
+zipwith(fn, a, b)        // Combine two collections pairwise
 ```
+
+Two argument orders, and one rule that decides which:
+
+- a **dedicated** higher-order function takes the function **first**, as `map` always has
+- an **existing** function that already took a value keeps its own order and accepts a
+  function **where that value went**
+
+So `filter(pred, vec)` but `count(vec, pred)`. Extending in place is what lets
+`sort(vec)` keep working while `sort(vec, comparator)` appears beside it. The functions
+that gained a callback this way:
+
+```
+sort(vec, comparator)    // (a, b) -> negative, zero or positive, as compare returns
+count(vec, pred)         // how many match
+indexof(vec, pred)       // the first position that matches, or -1
+contains(vec, pred)      // whether any match
+unique(vec, key)         // deduplicate by a computed key
+first(vec, pred)         // the first match
+last(vec, pred)          // the last match
+```
+
+A function argument is told apart from a value at runtime, so the two forms never
+collide. Arity is checked before the first call, so a one-parameter comparator fails with
+a message rather than at some arbitrary element.
 
 ### Special Functions
 

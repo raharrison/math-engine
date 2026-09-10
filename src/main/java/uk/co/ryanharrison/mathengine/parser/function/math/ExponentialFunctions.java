@@ -188,11 +188,11 @@ public final class ExponentialFunctions {
                     throw ctx.error("cannot take even root of negative number (x=" + x + ", n=" + n + ")");
                 }
                 double validN = ctx.requireNonZero(n);
-                if (x < 0) {
-                    // An odd root of a negative number is real, but Math.pow answers NaN
-                    return new NodeDouble(-Math.pow(-x, 1.0 / validN));
-                }
-                return new NodeDouble(Math.pow(x, 1.0 / validN));
+                // Mapping the magnitude keeps the label, so nroot agrees with sqrt and cbrt
+                return ctx.mapMagnitude(first, value -> value < 0
+                        // An odd root of a negative number is real, but Math.pow answers NaN
+                        ? -Math.pow(-value, 1.0 / validN)
+                        : Math.pow(value, 1.0 / validN));
             });
 
     /**

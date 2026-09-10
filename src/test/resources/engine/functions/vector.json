@@ -544,6 +544,101 @@
             "expected": "cba",
             "expectedType": "NodeString",
             "notes": "Reversing text gives text, not a type error"
+        },
+        {
+            "id": "sort_with_a_comparator",
+            "input": "sort({3, 1, 2}, (a, b) -> b - a)",
+            "expected": [
+                3,
+                2,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A comparator returns a negative, zero or positive number, as compare does; this used to be an arity error"
+        },
+        {
+            "id": "sort_with_a_comparator_that_ties_everything",
+            "input": "sort({3, 1, 2}, (a, b) -> 0)",
+            "expected": [
+                3,
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A comparator calling everything equal leaves the order alone"
+        },
+        {
+            "id": "sort_comparator_must_take_two",
+            "input": "sort({3, 1, 2}, x -> x)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "A comparator compares two elements, so a one-parameter function is refused"
+        },
+        {
+            "id": "count_with_a_predicate",
+            "input": "count({1, 2, 3, 4}, x -> x > 2)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "A function in place of the value counts the elements it accepts"
+        },
+        {
+            "id": "count_matches_across_unit_scales",
+            "input": "count({1 m, 100 cm}, 1 m)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Counting compares by value, as indexof and contains do; it used to compare raw magnitudes and answer 1"
+        },
+        {
+            "id": "indexof_with_a_predicate",
+            "input": "indexof({1, 2, 3}, x -> x > 1)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "The first position the predicate accepts"
+        },
+        {
+            "id": "indexof_with_a_predicate_that_never_matches",
+            "input": "indexof({1, 2}, x -> x > 9)",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "Absent is -1, the same answer the value form gives"
+        },
+        {
+            "id": "contains_with_a_predicate",
+            "input": "contains({1, 2, 3}, x -> x > 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "True when any element is accepted"
+        },
+        {
+            "id": "unique_with_a_key",
+            "input": "unique({1, 2, 3, 4}, x -> x mod 2)",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The key decides what counts as a duplicate, and the first element of each group is kept"
+        },
+        {
+            "id": "first_with_a_predicate",
+            "input": "first({1, 2, 3}, x -> x > 1)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "The first element the predicate accepts"
+        },
+        {
+            "id": "last_with_a_predicate",
+            "input": "last({1, 2, 3}, x -> x < 3)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "The last element the predicate accepts"
+        },
+        {
+            "id": "first_with_a_predicate_that_never_matches",
+            "input": "first({1, 2}, x -> x > 9)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "No element matches, which is as much an error as an empty vector is"
         }
     ]
 }

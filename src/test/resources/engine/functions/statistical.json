@@ -26,16 +26,16 @@
         {
             "id": "covariance_001",
             "input": "covariance({1, 2, 3}, {4, 5, 6})",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
-            "notes": "Covariance of perfectly correlated"
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Covariance of two exact vectors stays exact"
         },
         {
             "id": "covariance_002",
             "input": "covariance({1, 2, 3, 4, 5}, {5, 4, 3, 2, 1})",
-            "expected": -2.5,
-            "expectedType": "NodeDouble",
-            "notes": "Negative covariance"
+            "expected": "-5/2",
+            "expectedType": "NodeRational",
+            "notes": "A perfectly negative relationship, exact"
         },
         {
             "id": "gmean_001",
@@ -61,37 +61,37 @@
         {
             "id": "hmean_001",
             "input": "hmean(1, 2)",
-            "expected": 1.3333333333333333,
-            "expectedType": "NodeDouble",
-            "notes": "Harmonic mean of 1 and 2"
+            "expected": "4/3",
+            "expectedType": "NodeRational",
+            "notes": "n over the sum of the reciprocals, so 2/(1+1/2) stays exact"
         },
         {
             "id": "hmean_002",
             "input": "hmean({2, 4, 4})",
-            "expected": 3.0,
-            "expectedType": "NodeDouble",
-            "notes": "Harmonic mean"
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Harmonic mean of a vector"
         },
         {
             "id": "hmean_003",
             "input": "hmean(40, 60)",
-            "expected": 48.0,
-            "expectedType": "NodeDouble",
-            "notes": "Harmonic mean for average speed"
+            "expected": 48,
+            "expectedType": "NodeRational",
+            "notes": "The classic average-speed case, exact"
         },
         {
             "id": "iqr_001",
             "input": "iqr({1, 2, 3, 4, 5, 6, 7, 8})",
-            "expected": 3.5,
-            "expectedType": "NodeDouble",
-            "notes": "Interquartile range"
+            "expected": "7/2",
+            "expectedType": "NodeRational",
+            "notes": "Q3 minus Q1, both interpolated between exact elements"
         },
         {
             "id": "iqr_002",
             "input": "iqr({2, 4, 4, 4, 5, 5, 7, 9})",
-            "expected": 1.5,
-            "expectedType": "NodeDouble",
-            "notes": "IQR of typical dataset"
+            "expected": "3/2",
+            "expectedType": "NodeRational",
+            "notes": "Interquartile range of a repeated dataset"
         },
         {
             "id": "kurtosis_001",
@@ -103,23 +103,23 @@
         {
             "id": "mode_001",
             "input": "mode({1, 2, 2, 3})",
-            "expected": 2.0,
-            "expectedType": "NodeDouble",
-            "notes": "Mode of simple dataset"
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Mode hands back one of its own inputs, so it keeps that input's type"
         },
         {
             "id": "mode_002",
             "input": "mode({1, 1, 2, 2, 2, 3, 3})",
-            "expected": 2.0,
-            "expectedType": "NodeDouble",
-            "notes": "Mode with multiple occurrences"
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "The most frequent value wins"
         },
         {
             "id": "mode_003",
             "input": "mode({5, 5, 5, 5})",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Mode of identical values"
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Every value is the mode when they are all equal"
         },
         {
             "id": "new_011",
@@ -166,79 +166,79 @@
         {
             "id": "percentile_001",
             "input": "percentile({1, 2, 3, 4, 5}, 50)",
-            "expected": 3.0,
-            "expectedType": "NodeDouble",
-            "notes": "50th percentile (median)"
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "A percentile landing on an element returns that element untouched"
         },
         {
             "id": "percentile_002",
             "input": "percentile({1, 2, 3, 4, 5}, 0)",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
-            "notes": "0th percentile (minimum)"
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "The zeroth percentile is the smallest element"
         },
         {
             "id": "percentile_003",
             "input": "percentile({1, 2, 3, 4, 5}, 100)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "100th percentile (maximum)"
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "The hundredth is the largest"
         },
         {
             "id": "percentile_004",
             "input": "percentile({1, 2, 3, 4, 5}, 0.5)",
-            "expected": 3.0,
-            "expectedType": "NodeDouble",
-            "notes": "50th percentile using decimal format"
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "A fraction and a percentage mean the same thing"
         },
         {
             "id": "percentile_005",
             "input": "percentile({10, 20, 30, 40, 50}, 25)",
-            "expected": 20.0,
-            "expectedType": "NodeDouble",
-            "notes": "25th percentile (Q1)"
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "The quarter mark lands on an element"
         },
         {
             "id": "quartile_001",
             "input": "quartile({1, 2, 3, 4, 5, 6, 7, 8}, 1)",
-            "expected": 2.75,
-            "expectedType": "NodeDouble",
-            "notes": "First quartile (Q1)"
+            "expected": "11/4",
+            "expectedType": "NodeRational",
+            "notes": "Interpolated between two elements, exactly"
         },
         {
             "id": "quartile_002",
             "input": "quartile({1, 2, 3, 4, 5, 6, 7, 8}, 2)",
-            "expected": 4.5,
-            "expectedType": "NodeDouble",
-            "notes": "Second quartile (median)"
+            "expected": "9/2",
+            "expectedType": "NodeRational",
+            "notes": "The second quartile is the median"
         },
         {
             "id": "quartile_003",
             "input": "quartile({1, 2, 3, 4, 5, 6, 7, 8}, 3)",
-            "expected": 6.25,
-            "expectedType": "NodeDouble",
-            "notes": "Third quartile (Q3)"
+            "expected": "25/4",
+            "expectedType": "NodeRational",
+            "notes": "Interpolated between two elements, exactly"
         },
         {
             "id": "range_001",
             "input": "range({1, 5, 3, 9, 2})",
-            "expected": 8.0,
-            "expectedType": "NodeDouble",
-            "notes": "Range (max - min)"
+            "expected": 8,
+            "expectedType": "NodeRational",
+            "notes": "Largest minus smallest, which is arithmetic on the elements"
         },
         {
             "id": "range_002",
             "input": "range({5, 5, 5})",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
-            "notes": "Range of identical values"
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "No spread at all"
         },
         {
             "id": "range_003",
             "input": "range(1, 2, 3, 4, 5)",
-            "expected": 4.0,
-            "expectedType": "NodeDouble",
-            "notes": "Range with variadic arguments"
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "Loose arguments and a vector agree"
         },
         {
             "id": "rms_001",
@@ -292,16 +292,156 @@
         {
             "id": "variance_001",
             "input": "variance({2, 4, 4, 4, 5, 5, 7, 9})",
-            "expected": 4.571428571428571,
-            "expectedType": "NodeDouble",
-            "notes": "Sample variance of dataset"
+            "expected": "32/7",
+            "expectedType": "NodeRational",
+            "notes": "Sample variance of exact inputs is exact"
         },
         {
             "id": "variance_002",
             "input": "variance({1, 1, 1, 1})",
-            "expected": 0.0,
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Identical values have no variance"
+        },
+        {
+            "id": "mode_keeps_the_unit",
+            "input": "mode({1 m, 1 m, 2 m})",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Mode returns one of its own inputs, so it returns it whole. This used to be a plain 1"
+        },
+        {
+            "id": "mode_keeps_exactness",
+            "input": "mode({1/3, 1/3, 2/3})",
+            "expected": "1/3",
+            "expectedType": "NodeRational",
+            "notes": "The same reason keeps the rational exact, where it used to become 0.3333333333333333"
+        },
+        {
+            "id": "mode_matches_across_unit_scales",
+            "input": "mode({1 m, 100 cm, 2 m})",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Equality converts units, so 1 m and 100 cm are one value counted twice, returned in the spelling that sorts first"
+        },
+        {
+            "id": "mode_keeps_a_percentage",
+            "input": "mode({10%, 10%, 20%})",
+            "expected": "10.00%",
+            "expectedType": "NodePercent",
+            "notes": "A percentage survives for the same reason a unit does"
+        },
+        {
+            "id": "percentile_keeps_the_unit",
+            "input": "percentile({1 m, 2 m, 3 m}, 50)",
+            "expected": "2.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A percentile landing on an element hands that element back, label and all"
+        },
+        {
+            "id": "percentile_interpolates_exactly",
+            "input": "percentile({1, 2}, 25)",
+            "expected": "5/4",
+            "expectedType": "NodeRational",
+            "notes": "Between two elements it interpolates with exact arithmetic rather than in doubles"
+        },
+        {
+            "id": "quartile_keeps_the_unit",
+            "input": "quartile({1 m, 2 m, 3 m, 4 m}, 2)",
+            "expected": "2.5 meters",
+            "expectedType": "NodeUnit",
+            "notes": "The median quartile falls between two elements and still carries the unit"
+        },
+        {
+            "id": "range_keeps_the_unit",
+            "input": "range({1 m, 5 m})",
+            "expected": "4.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Range is literally the largest minus the smallest, so it is a length. It used to be a plain 4"
+        },
+        {
+            "id": "range_keeps_exactness",
+            "input": "range({1/4, 3/4})",
+            "expected": "1/2",
+            "expectedType": "NodeRational",
+            "notes": "Subtracting two exact values stays exact"
+        },
+        {
+            "id": "iqr_keeps_the_unit",
+            "input": "iqr({1 m, 2 m, 3 m, 4 m})",
+            "expected": "1.5 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Q3 minus Q1 is a difference of two lengths"
+        },
+        {
+            "id": "hmean_keeps_the_unit",
+            "input": "hmean({1 m, 2 m})",
+            "expected": "1.3333333333333333 meters",
+            "expectedType": "NodeUnit",
+            "notes": "n over the sum of the reciprocals keeps the length"
+        },
+        {
+            "id": "hmean_keeps_exactness",
+            "input": "hmean({1/2, 1/3})",
+            "expected": "2/5",
+            "expectedType": "NodeRational",
+            "notes": "Reciprocals of exact values are exact, so the harmonic mean is too"
+        },
+        {
+            "id": "covariance_keeps_the_unit",
+            "input": "covariance({1 m, 2 m, 3 m}, {1 m, 2 m, 4 m})",
+            "expected": "1.5 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A product of two lengths keeps one label, since there is no way to spell m^2"
+        },
+        {
+            "id": "variance_keeps_the_unit",
+            "input": "variance({1 m, 2 m})",
+            "expected": "0.5 meters",
+            "expectedType": "NodeUnit",
+            "notes": "The true dimension is metres squared, which the engine cannot spell, so it keeps the label it had"
+        },
+        {
+            "id": "stddev_keeps_the_unit",
+            "input": "stddev({1 m, 2 m})",
+            "expected": "0.7071067811865476 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A square root is not exact, but the label rides along with the magnitude"
+        },
+        {
+            "id": "rms_keeps_the_unit",
+            "input": "rms({1 m, 2 m})",
+            "expected": "1.5811388300841898 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Root mean square is a length, arrived at through a root"
+        },
+        {
+            "id": "gmean_keeps_the_unit",
+            "input": "gmean({1 m, 4 m})",
+            "expected": "2.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Computed through logarithms to avoid overflow, then put back under the label its inputs wore"
+        },
+        {
+            "id": "correlation_is_a_plain_ratio",
+            "input": "correlation({1 m, 2 m, 3 m}, {1 m, 2 m, 4 m})",
+            "expected": 0.9819805060619659,
             "expectedType": "NodeDouble",
-            "notes": "Variance of identical values"
+            "notes": "Covariance over the two spreads divides like into like, so the label cancels with no special case"
+        },
+        {
+            "id": "skewness_is_a_plain_ratio",
+            "input": "skewness({1 m, 2 m, 4 m})",
+            "expected": 0.3818017741606059,
+            "expectedType": "NodeDouble",
+            "notes": "Skewness is a shape measure, so a unit would be meaningless"
+        },
+        {
+            "id": "kurtosis_is_a_plain_ratio",
+            "input": "kurtosis({1 m, 2 m, 3 m, 9 m})",
+            "expected": -0.7980853277835589,
+            "expectedType": "NodeDouble",
+            "notes": "Excess kurtosis is a shape measure, so a unit would be meaningless"
         }
     ]
 }

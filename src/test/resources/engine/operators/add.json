@@ -707,9 +707,9 @@
         {
             "id": "add_types_unit_percent",
             "input": "(4 meters) + (20%)",
-            "expected": "4.2 meters",
+            "expected": "4.8 meters",
             "expectedType": "NodeUnit",
-            "notes": "Unit adds a percent"
+            "notes": "A percentage beside a quantity means a share of it, so this matches '4 + 20%'. It used to add a bare 0.2 and give 4.2 meters"
         },
         {
             "id": "add_types_unit_range",

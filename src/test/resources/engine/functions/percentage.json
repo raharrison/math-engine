@@ -117,43 +117,43 @@
         {
             "id": "percentpoints_001",
             "input": "percentpoints(30%, 50%)",
-            "expected": 20.0,
-            "expectedType": "NodeDouble",
+            "expected": 20,
+            "expectedType": "NodeRational",
             "notes": "Difference of 20 percentage points"
         },
         {
             "id": "percentpoints_002",
             "input": "percentpoints(50%, 30%)",
-            "expected": -20.0,
-            "expectedType": "NodeDouble",
+            "expected": -20,
+            "expectedType": "NodeRational",
             "notes": "Negative difference"
         },
         {
             "id": "percenttoratio_001",
             "input": "percenttoratio(20%)",
-            "expected": 1.2,
-            "expectedType": "NodeDouble",
+            "expected": "6/5",
+            "expectedType": "NodeRational",
             "notes": "20% increase = 1.2 ratio"
         },
         {
             "id": "percenttoratio_002",
             "input": "percenttoratio(-20%)",
-            "expected": 0.8,
-            "expectedType": "NodeDouble",
+            "expected": "4/5",
+            "expectedType": "NodeRational",
             "notes": "20% decrease = 0.8 ratio"
         },
         {
             "id": "percentvalue_001",
             "input": "percentvalue(50%)",
-            "expected": 50.0,
-            "expectedType": "NodeDouble",
+            "expected": 50,
+            "expectedType": "NodeRational",
             "notes": "Get 50 from 50%"
         },
         {
             "id": "percentvalue_002",
             "input": "percentvalue(0.5)",
-            "expected": 50.0,
-            "expectedType": "NodeDouble",
+            "expected": 50,
+            "expectedType": "NodeRational",
             "notes": "0.5 as 50%"
         },
         {
@@ -215,22 +215,22 @@
         {
             "id": "topercent_001",
             "input": "topercent(50%)",
-            "expected": 0.5,
-            "expectedType": "NodeDouble",
+            "expected": "1/2",
+            "expectedType": "NodeRational",
             "notes": "50% as decimal"
         },
         {
             "id": "topercent_002",
             "input": "topercent(100%)",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
+            "expected": 1,
+            "expectedType": "NodeRational",
             "notes": "100% as decimal"
         },
         {
             "id": "topercent_003",
             "input": "topercent(25%)",
-            "expected": 0.25,
-            "expectedType": "NodeDouble",
+            "expected": "1/4",
+            "expectedType": "NodeRational",
             "notes": "25% as decimal"
         },
         {

@@ -3,6 +3,7 @@ package uk.co.ryanharrison.mathengine.parser.function.vector;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.function.ArgTypes;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.util.Sequences;
@@ -139,8 +140,9 @@ public final class VectorManipulationFunctions {
     public static final MathFunction INDEXOF = FunctionBuilder
             .named("indexof")
             .alias("find", "strindexof", "strfind")
-            .describedAs("Returns the first index of value in a vector, or of a substring in a string, or -1 if absent")
+            .describedAs("Returns the first index of value in a vector, of an element matching a predicate, or of a substring in a string; -1 if absent")
             .withParams("vector", "value")
+            .withParams("vector", "predicate")
             .withParams("str", "substr")
             .withParams("str", "substr", "start")
             .inCategory(MathFunction.Category.VECTOR)
@@ -148,6 +150,9 @@ public final class VectorManipulationFunctions {
             .noBroadcasting()
             .implementedByAggregate((args, ctx) -> {
                 int from = args.size() > 2 ? ctx.toInt(args.get(2)) : 0;
+                if (Callbacks.isFunction(args.get(1))) {
+                    return new NodeRational(indexMatching(args.get(0), args.get(1), from, ctx, "indexof"));
+                }
                 return new NodeRational(Sequences.indexOf(args.get(0), args.get(1), from));
             });
 
@@ -155,13 +160,16 @@ public final class VectorManipulationFunctions {
     public static final MathFunction CONTAINS = FunctionBuilder
             .named("contains")
             .alias("includes", "strcontains")
-            .describedAs("Returns true if the value appears in the vector, or the substring appears in the string")
+            .describedAs("Returns true if the value appears in the vector, an element matches the predicate, or the substring appears in the string")
             .withParams("vector", "value")
+            .withParams("vector", "predicate")
             .withParams("str", "substr")
             .inCategory(MathFunction.Category.VECTOR)
             .takingBinary()
             .noBroadcasting()
-            .implementedBy((sequence, target, ctx) -> NodeBoolean.of(Sequences.contains(sequence, target)));
+            .implementedBy((sequence, target, ctx) -> NodeBoolean.of(Callbacks.isFunction(target)
+                    ? indexMatching(sequence, target, 0, ctx, "contains") >= 0
+                    : Sequences.contains(sequence, target)));
 
     // ==================== Transformation Functions ====================
 
@@ -171,22 +179,43 @@ public final class VectorManipulationFunctions {
     public static final MathFunction UNIQUE = FunctionBuilder
             .named("unique")
             .alias("distinct")
-            .describedAs("Returns the vector with duplicate elements removed (preserving order)")
+            .describedAs("Returns the vector with duplicates removed, preserving order; a key function decides what counts as a duplicate")
             .withParams("vector")
+            .withParams("vector", "key")
             .inCategory(MathFunction.Category.VECTOR)
-            .takingTyped(ArgTypes.vector())
-            .implementedBy((vector, ctx) -> {
+            .takingBetween(1, 2)
+            .noBroadcasting()
+            .implementedByAggregate((args, ctx) -> {
+                NodeVector vector = ctx.requireVector(args.getFirst());
+                NodeFunction key = args.size() > 1
+                        ? Callbacks.requireArity(args.get(1), 1, "unique")
+                        : null;
+
                 Set<Double> seen = new LinkedHashSet<>();
                 List<Node> result = new ArrayList<>();
-
-                for (int i = 0; i < vector.size(); i++) {
-                    double val = ctx.toDouble((NodeConstant) vector.getElement(i));
-                    if (seen.add(val)) {
-                        result.add(vector.getElement(i));
+                for (NodeConstant element : Callbacks.elements(vector, ctx)) {
+                    NodeConstant identity = key == null ? element : Callbacks.call(ctx, key, element);
+                    if (seen.add(ctx.toDouble(identity))) {
+                        result.add(element);
                     }
                 }
                 return new NodeVector(result.toArray(Node[]::new));
             });
+
+    /**
+     * The first index at or after {@code from} whose element the predicate accepts, or -1.
+     */
+    private static int indexMatching(NodeConstant sequence, NodeConstant predicate, int from,
+                                     FunctionContext ctx, String name) {
+        NodeFunction test = Callbacks.requireArity(predicate, 1, name);
+        List<NodeConstant> elements = Callbacks.elements(sequence, ctx);
+        for (int i = Math.max(from, 0); i < elements.size(); i++) {
+            if (Callbacks.test(ctx, test, elements.get(i))) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     /**
      * Concatenate vectors
@@ -297,15 +326,23 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction COUNT = FunctionBuilder
             .named("count")
-            .describedAs("Returns the number of times value appears in the vector")
+            .describedAs("Returns how many elements equal the given value, or match the given predicate")
             .withParams("vector", "value")
+            .withParams("vector", "predicate")
             .inCategory(MathFunction.Category.VECTOR)
-            .takingTyped(ArgTypes.vector(), ArgTypes.number())
+            .takingTyped(ArgTypes.vector(), ArgTypes.any())
             .implementedBy((vector, target, ctx) -> {
+                boolean byPredicate = Callbacks.isFunction(target);
                 int count = 0;
-                for (int i = 0; i < vector.size(); i++) {
-                    double val = ctx.toDouble((NodeConstant) vector.getElement(i));
-                    if (val == target) count++;
+                for (NodeConstant element : Callbacks.elements(vector, ctx)) {
+                    // Value matching goes through equalTo, as indexof and contains do, so
+                    // count({1 m, 100 cm}, 1 m) sees one value in two spellings
+                    boolean matches = byPredicate
+                            ? Callbacks.test(ctx, (NodeFunction) target, element)
+                            : element.equalTo(target);
+                    if (matches) {
+                        count++;
+                    }
                 }
                 return new NodeRational(count);
             });

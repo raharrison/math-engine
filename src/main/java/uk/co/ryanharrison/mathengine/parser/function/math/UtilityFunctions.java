@@ -4,6 +4,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
 import uk.co.ryanharrison.mathengine.special.Gamma;
@@ -15,6 +16,11 @@ import static uk.co.ryanharrison.mathengine.parser.function.MathFunction.Categor
 
 /**
  * Collection of general-purpose utility functions.
+ * <p>
+ * These combine their arguments with {@link NodeConstant} arithmetic rather than in
+ * doubles, so a unit rides along and an exact input gives an exact answer:
+ * {@code frac(3/2)} is 1/2 and {@code distance(0, 0, 3 m, 4 m)} is 5 meters. Only the ones
+ * that genuinely need a root or a gamma end in a double, and even those keep the label.
  */
 public final class UtilityFunctions {
 
@@ -33,7 +39,7 @@ public final class UtilityFunctions {
             .withParams("x")
             .inCategory(UTILITY)
             .takingUnary()
-            .implementedByMagnitude(MathUtils::fPart);
+            .implementedBy((x, ctx) -> x.subtract(x.floor()));
 
     // ==================== Combinatorial Functions ====================
 
@@ -51,7 +57,15 @@ public final class UtilityFunctions {
                 double nVal = ctx.toDouble(n);
                 double rVal = ctx.toDouble(r);
                 if (rVal < 0 || rVal > nVal) {
-                    return new NodeDouble(0);
+                    return new NodeRational(0);
+                }
+                // Whole arguments have an exact answer, as factorial and binomial already give
+                if (isWhole(nVal) && isWhole(rVal) && rVal <= MathUtils.MAX_EXACT_FACTORIAL) {
+                    NodeConstant arrangements = new NodeRational(1);
+                    for (long i = 0; i < (long) rVal; i++) {
+                        arrangements = arrangements.multiply(new NodeRational((long) nVal - i));
+                    }
+                    return arrangements;
                 }
                 return new NodeDouble(Gamma.gamma(nVal + 1) / Gamma.gamma(nVal - rVal + 1));
             });
@@ -81,13 +95,14 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
-                double start = ctx.toDouble(args.get(0));
-                double end = ctx.toDouble(args.get(1));
-                double value = ctx.toDouble(args.get(2));
-                if (start == end) {
+                NodeConstant start = args.get(0);
+                NodeConstant end = args.get(1);
+                NodeConstant value = args.get(2);
+                if (start.equalTo(end)) {
                     throw new DomainException("inverselerp: start and end cannot be equal");
                 }
-                return new NodeDouble((value - start) / (end - start));
+                // Two like quantities divide into a plain fraction, which is what t is
+                return value.subtract(start).divide(end.subtract(start));
             });
 
     /**
@@ -100,16 +115,16 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(5, 5)
             .implementedByAggregate((args, ctx) -> {
-                double value = ctx.toDouble(args.get(0));
-                double fromMin = ctx.toDouble(args.get(1));
-                double fromMax = ctx.toDouble(args.get(2));
-                double toMin = ctx.toDouble(args.get(3));
-                double toMax = ctx.toDouble(args.get(4));
-                if (fromMin == fromMax) {
+                NodeConstant value = args.get(0);
+                NodeConstant fromMin = args.get(1);
+                NodeConstant fromMax = args.get(2);
+                NodeConstant toMin = args.get(3);
+                NodeConstant toMax = args.get(4);
+                if (fromMin.equalTo(fromMax)) {
                     throw new DomainException("map: source range cannot have zero width");
                 }
-                double t = (value - fromMin) / (fromMax - fromMin);
-                return new NodeDouble(toMin + t * (toMax - toMin));
+                NodeConstant t = value.subtract(fromMin).divide(fromMax.subtract(fromMin));
+                return toMin.add(t.multiply(toMax.subtract(toMin)));
             });
 
     /**
@@ -122,12 +137,20 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
-                double edge0 = ctx.toDouble(args.get(0));
-                double edge1 = ctx.toDouble(args.get(1));
-                double x = ctx.toDouble(args.get(2));
-                double t = (x - edge0) / (edge1 - edge0);
-                t = Math.max(0, Math.min(1, t));
-                return new NodeDouble(t * t * (3 - 2 * t));
+                NodeConstant edge0 = args.get(0);
+                NodeConstant edge1 = args.get(1);
+                NodeConstant x = args.get(2);
+
+                NodeConstant zero = new NodeRational(0);
+                NodeConstant one = new NodeRational(1);
+                NodeConstant t = x.subtract(edge0).divide(edge1.subtract(edge0));
+                if (t.compareTo(zero) < 0) {
+                    t = zero;
+                } else if (t.compareTo(one) > 0) {
+                    t = one;
+                }
+                NodeConstant slope = new NodeRational(3).subtract(new NodeRational(2).multiply(t));
+                return t.multiply(t).multiply(slope);
             });
 
     // ==================== Distance Functions ====================
@@ -143,11 +166,9 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(4, 4)
             .implementedByAggregate((args, ctx) -> {
-                double x1 = ctx.toDouble(args.get(0));
-                double y1 = ctx.toDouble(args.get(1));
-                double x2 = ctx.toDouble(args.get(2));
-                double y2 = ctx.toDouble(args.get(3));
-                return new NodeDouble(Math.hypot(x2 - x1, y2 - y1));
+                NodeConstant dx = args.get(2).subtract(args.get(0));
+                NodeConstant dy = args.get(3).subtract(args.get(1));
+                return squared(dx).add(squared(dy)).mapMagnitude(Math::sqrt);
             });
 
     /**
@@ -161,14 +182,10 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(6, 6)
             .implementedByAggregate((args, ctx) -> {
-                double x1 = ctx.toDouble(args.get(0));
-                double y1 = ctx.toDouble(args.get(1));
-                double z1 = ctx.toDouble(args.get(2));
-                double x2 = ctx.toDouble(args.get(3));
-                double y2 = ctx.toDouble(args.get(4));
-                double z2 = ctx.toDouble(args.get(5));
-                double dx = x2 - x1, dy = y2 - y1, dz = z2 - z1;
-                return new NodeDouble(Math.sqrt(dx * dx + dy * dy + dz * dz));
+                NodeConstant dx = args.get(3).subtract(args.get(0));
+                NodeConstant dy = args.get(4).subtract(args.get(1));
+                NodeConstant dz = args.get(5).subtract(args.get(2));
+                return squared(dx).add(squared(dy)).add(squared(dz)).mapMagnitude(Math::sqrt);
             });
 
     /**
@@ -181,11 +198,9 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(4, 4)
             .implementedByAggregate((args, ctx) -> {
-                double x1 = ctx.toDouble(args.get(0));
-                double y1 = ctx.toDouble(args.get(1));
-                double x2 = ctx.toDouble(args.get(2));
-                double y2 = ctx.toDouble(args.get(3));
-                return new NodeDouble(Math.abs(x2 - x1) + Math.abs(y2 - y1));
+                NodeConstant dx = args.get(2).subtract(args.get(0)).abs();
+                NodeConstant dy = args.get(3).subtract(args.get(1)).abs();
+                return dx.add(dy);
             });
 
     // ==================== Comparison Functions ====================
@@ -202,10 +217,11 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(2, 3)
             .implementedByAggregate((args, ctx) -> {
-                double a = ctx.toDouble(args.get(0));
-                double b = ctx.toDouble(args.get(1));
-                double tolerance = args.size() > 2 ? ctx.toDouble(args.get(2)) : 1e-9;
-                return new NodeBoolean(Math.abs(a - b) <= Math.abs(tolerance));
+                // Subtracting rather than converting to doubles is what lets
+                // approxeq(1 m, 100 cm) see one value in two spellings
+                NodeConstant gap = args.get(0).subtract(args.get(1)).abs();
+                NodeConstant tolerance = args.size() > 2 ? args.get(2).abs() : new NodeDouble(1e-9);
+                return new NodeBoolean(gap.compareTo(tolerance) <= 0);
             });
 
     /**
@@ -236,11 +252,14 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(3, 4)
             .implementedByAggregate((args, ctx) -> {
-                double principal = ctx.toDouble(args.get(0));
-                double rate = ctx.toDouble(args.get(1));
-                double time = ctx.toDouble(args.get(2));
-                double n = args.size() > 3 ? ctx.toDouble(args.get(3)) : 1;
-                return new NodeDouble(principal * Math.pow(1 + rate / (100 * n), n * time));
+                NodeConstant principal = args.get(0);
+                NodeConstant rate = args.get(1);
+                NodeConstant time = args.get(2);
+                NodeConstant periods = args.size() > 3 ? args.get(3) : new NodeRational(1);
+
+                NodeConstant perPeriod = rate.divide(new NodeRational(100).multiply(periods));
+                NodeConstant growth = new NodeRational(1).add(perPeriod).power(periods.multiply(time));
+                return principal.multiply(growth);
             });
 
     // ==================== Wrap and Normalize ====================
@@ -255,14 +274,15 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
-                double value = ctx.toDouble(args.get(0));
-                double min = ctx.toDouble(args.get(1));
-                double max = ctx.toDouble(args.get(2));
-                if (min >= max) {
+                NodeConstant value = args.get(0);
+                NodeConstant min = args.get(1);
+                NodeConstant max = args.get(2);
+                if (min.compareTo(max) >= 0) {
                     throw new DomainException("wrap: min must be less than max");
                 }
-                double range = max - min;
-                return new NodeDouble(((value - min) % range + range) % range + min);
+                NodeConstant range = max.subtract(min);
+                NodeConstant offset = value.subtract(min).modulo(range).add(range).modulo(range);
+                return offset.add(min);
             });
 
     /**
@@ -275,13 +295,13 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
-                double value = ctx.toDouble(args.get(0));
-                double min = ctx.toDouble(args.get(1));
-                double max = ctx.toDouble(args.get(2));
-                if (min == max) {
+                NodeConstant value = args.get(0);
+                NodeConstant min = args.get(1);
+                NodeConstant max = args.get(2);
+                if (min.equalTo(max)) {
                     throw new DomainException("normalize: min and max cannot be equal");
                 }
-                return new NodeDouble((value - min) / (max - min));
+                return value.subtract(min).divide(max.subtract(min));
             });
 
     /**
@@ -307,6 +327,16 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingUnary()
             .implementedByDouble(Math::toDegrees);
+
+    // ==================== Helpers ====================
+
+    private static boolean isWhole(double value) {
+        return Double.isFinite(value) && value == Math.floor(value);
+    }
+
+    private static NodeConstant squared(NodeConstant value) {
+        return value.multiply(value);
+    }
 
     /**
      * Gets all utility functions.

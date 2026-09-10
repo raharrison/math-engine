@@ -3,12 +3,12 @@ package uk.co.ryanharrison.mathengine.parser.function.vector;
 import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.util.Sequences;
-import uk.co.ryanharrison.mathengine.utils.StatUtils;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,7 +42,7 @@ public final class VectorFunctions {
                     return new NodeRational(0);
                 }
 
-                return sum(elements);
+                return Statistics.sum(elements);
             });
 
     /** Product of all values. */
@@ -106,7 +106,7 @@ public final class VectorFunctions {
                     throw new TypeError("mean requires at least one element");
                 }
 
-                return sum(elements).divide(new NodeRational(elements.size()));
+                return Statistics.mean(elements);
             });
 
     /** Middle value, averaging the two middle values when the count is even. */
@@ -152,12 +152,7 @@ public final class VectorFunctions {
                 if (elements.size() < 2) {
                     throw new TypeError("variance requires at least two elements");
                 }
-
-                double[] values = elements.stream()
-                        .mapToDouble(e -> ctx.toDouble(e))
-                        .toArray();
-
-                return new NodeDouble(StatUtils.variance(values));
+                return Statistics.variance(elements);
             });
 
     /**
@@ -175,30 +170,45 @@ public final class VectorFunctions {
                 if (elements.size() < 2) {
                     throw new TypeError("stddev requires at least two elements");
                 }
-
-                double[] values = elements.stream()
-                        .mapToDouble(e -> ctx.toDouble(e))
-                        .toArray();
-
-                return new NodeDouble(StatUtils.standardDeviation(values));
+                return Statistics.standardDeviation(elements);
             });
 
     // ==================== Vector Transformation Functions ====================
 
     /**
-     * Sort vector ascending
+     * Sorts a vector, by the natural order of its elements or by a caller's comparator.
+     * <p>
+     * The comparator takes two elements and returns a negative number, zero or a positive
+     * number, as {@code compare} does, so {@code sort({3, 1, 2}, (a, b) -> b - a)} sorts
+     * descending.
      */
     public static final MathFunction SORT = FunctionBuilder
             .named("sort")
-            .describedAs("Returns a sorted copy of the vector in ascending order")
+            .describedAs("Returns a sorted copy of the vector, ascending by default or by the given comparator")
             .withParams("vector")
+            .withParams("vector", "comparator")
             .inCategory(MathFunction.Category.VECTOR)
-            .takingUnary()
+            .takingBetween(1, 2)
             .noBroadcasting()
-            .implementedBy((arg, ctx) -> {
-                Node[] elements = ctx.requireVector(arg).getElements();
-                Arrays.sort(elements, (a, b) -> ((NodeConstant) a).compareTo((NodeConstant) b));
-                return new NodeVector(elements);
+            .implementedByAggregate((args, ctx) -> {
+                List<NodeConstant> elements = Callbacks.elements(ctx.requireVector(args.getFirst()), ctx);
+                var sorted = new ArrayList<>(elements);
+
+                if (args.size() == 1) {
+                    sorted.sort(NodeConstant::compareTo);
+                    return Callbacks.vectorOf(sorted);
+                }
+
+                NodeFunction comparator = Callbacks.requireArity(args.get(1), 2, "sort");
+                try {
+                    sorted.sort((a, b) -> (int) Math.signum(
+                            ctx.toDouble(ctx.callFunction(comparator, List.of(a, b)))));
+                } catch (IllegalArgumentException inconsistent) {
+                    // The JDK's sort detects a comparator that contradicts itself; surfacing
+                    // that as an engine error beats letting a raw JDK message escape
+                    throw new TypeError("sort: comparator is not consistent, so the order it asks for cannot exist");
+                }
+                return Callbacks.vectorOf(sorted);
             });
 
     /** Reverses a vector or a string. */
@@ -235,52 +245,52 @@ public final class VectorFunctions {
             });
 
     /**
-     * First element
+     * The first element, or the first one matching a predicate.
      */
     public static final MathFunction FIRST = FunctionBuilder
             .named("first")
-            .describedAs("Returns the first element of the vector")
+            .describedAs("Returns the first element of the vector, or the first matching the given predicate")
             .withParams("vector")
+            .withParams("vector", "predicate")
             .inCategory(MathFunction.Category.VECTOR)
-            .takingUnary()
+            .takingBetween(1, 2)
             .noBroadcasting()
-            .implementedBy((arg, ctx) -> {
-                NodeVector vector = ctx.requireVector(arg);
-                if (vector.size() == 0) {
-                    throw new TypeError("first: vector is empty");
-                }
-                return (NodeConstant) vector.getElement(0);
-            });
+            .implementedByAggregate((args, ctx) -> matching(args, ctx, "first", false));
 
     /**
-     * Last element
+     * The last element, or the last one matching a predicate.
      */
     public static final MathFunction LAST = FunctionBuilder
             .named("last")
-            .describedAs("Returns the last element of the vector")
+            .describedAs("Returns the last element of the vector, or the last matching the given predicate")
             .withParams("vector")
+            .withParams("vector", "predicate")
             .inCategory(MathFunction.Category.VECTOR)
-            .takingUnary()
+            .takingBetween(1, 2)
             .noBroadcasting()
-            .implementedBy((arg, ctx) -> {
-                NodeVector vector = ctx.requireVector(arg);
-                if (vector.size() == 0) {
-                    throw new TypeError("last: vector is empty");
-                }
-                return (NodeConstant) vector.getElement(vector.size() - 1);
-            });
+            .implementedByAggregate((args, ctx) -> matching(args, ctx, "last", true));
 
     // ==================== All Functions ====================
 
     /**
-     * Gets all vector functions.
+     * The first or last element, optionally restricted to those a predicate accepts.
      */
-    private static NodeConstant sum(List<NodeConstant> elements) {
-        NodeConstant total = elements.getFirst();
-        for (int i = 1; i < elements.size(); i++) {
-            total = total.add(elements.get(i));
+    private static NodeConstant matching(List<NodeConstant> args, FunctionContext ctx,
+                                         String name, boolean fromEnd) {
+        List<NodeConstant> elements = Callbacks.elements(ctx.requireVector(args.getFirst()), ctx);
+        NodeFunction predicate = args.size() > 1
+                ? Callbacks.requireArity(args.get(1), 1, name)
+                : null;
+
+        for (int i = 0; i < elements.size(); i++) {
+            NodeConstant element = elements.get(fromEnd ? elements.size() - 1 - i : i);
+            if (predicate == null || Callbacks.test(ctx, predicate, element)) {
+                return element;
+            }
         }
-        return total;
+        throw new TypeError(predicate == null
+                ? name + ": vector is empty"
+                : name + ": no element matches the predicate");
     }
 
     /**

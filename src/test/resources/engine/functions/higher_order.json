@@ -1,6 +1,6 @@
 {
     "category": "Functions: higher order",
-    "description": "Functions that take a function: map, filter and reduce over vectors and matrices.",
+    "description": "Functions that take a function. The dedicated ones put the function first, as map does; a function that already took a value instead accepts a function in that value's place and keeps its own argument order.",
     "tests": [
         {
             "id": "compose_001",
@@ -108,6 +108,185 @@
             "expected": 9,
             "expectedType": "NodeRational",
             "notes": "Reduce max"
+        },
+        {
+            "id": "flatmap_expands_each_element",
+            "input": "flatmap(x -> {x, x}, {1, 2})",
+            "expected": [
+                1,
+                1,
+                2,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Each result is spliced in rather than nested, which is what separates it from map"
+        },
+        {
+            "id": "flatmap_of_ranges",
+            "input": "flatmap(x -> 1..x, {1, 2, 3})",
+            "expected": [
+                1,
+                1,
+                2,
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A range counts as a collection to splice"
+        },
+        {
+            "id": "flatmap_keeps_a_scalar_result",
+            "input": "flatmap(x -> x * 2, {1, 2})",
+            "expected": [
+                2,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A result that is not a collection is taken as a single element, so flatmap degrades to map"
+        },
+        {
+            "id": "partition_splits_on_the_predicate",
+            "input": "partition(x -> x > 2, {1, 2, 3, 4})",
+            "expected": [
+                [
+                    3,
+                    4
+                ],
+                [
+                    1,
+                    2
+                ]
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The matches come first, then the rest, so nothing is lost as filter would lose it"
+        },
+        {
+            "id": "partition_with_no_matches",
+            "input": "partition(x -> x > 9, {1, 2})",
+            "expected": [
+                [],
+                [
+                    1,
+                    2
+                ]
+            ],
+            "expectedType": "NodeVector",
+            "notes": "An empty first half rather than an error"
+        },
+        {
+            "id": "takewhile_stops_at_the_first_failure",
+            "input": "takewhile(x -> x < 3, {1, 2, 3, 1})",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "It stops at the first element that fails, so the trailing 1 is not taken"
+        },
+        {
+            "id": "dropwhile_resumes_at_the_first_failure",
+            "input": "dropwhile(x -> x < 3, {1, 2, 3, 1})",
+            "expected": [
+                3,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Exactly what takewhile left behind"
+        },
+        {
+            "id": "takewhile_over_a_range",
+            "input": "sum(takewhile(x -> x < 4, 1..10))",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "A range works wherever a vector does"
+        },
+        {
+            "id": "scan_keeps_every_step",
+            "input": "scan((acc, x) -> acc + x, {1, 2, 3}, 0)",
+            "expected": [
+                0,
+                1,
+                3,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The same fold as reduce, but showing its working, which is how a running total is written"
+        },
+        {
+            "id": "scan_stays_exact",
+            "input": "scan((acc, x) -> acc + x, {1/3, 1/3, 1/3}, 0)",
+            "expected": [
+                0,
+                "1/3",
+                "2/3",
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The accumulator is combined with value arithmetic, so the thirds stay exact"
+        },
+        {
+            "id": "scan_ends_where_reduce_does",
+            "input": "last(scan((a, x) -> a + x, {1, 2, 3}, 0)) == reduce((a, x) -> a + x, {1, 2, 3}, 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The final step of a scan is the answer reduce gives"
+        },
+        {
+            "id": "sortby_orders_by_the_key",
+            "input": "sortby(x -> -x, {1, 3, 2})",
+            "expected": [
+                3,
+                2,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Negating the key reverses the order without needing a comparator"
+        },
+        {
+            "id": "sortby_returns_the_elements_not_the_keys",
+            "input": "sortby(x -> -x, {1 m, 3 m, 2 m})",
+            "expected": [
+                "3.0 meters",
+                "2.0 meters",
+                "1.0 meter"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The key decides the order; the elements come back whole"
+        },
+        {
+            "id": "zipwith_combines_pairwise",
+            "input": "zipwith((p, q) -> p * q, {1, 2}, {3, 4})",
+            "expected": [
+                3,
+                8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Where zip pairs the elements up, zipwith applies a function to each pair"
+        },
+        {
+            "id": "zipwith_stops_at_the_shorter",
+            "input": "zipwith((p, q) -> p + q, {1, 2, 3}, {10, 20})",
+            "expected": [
+                11,
+                22
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The extra element of the longer collection has nothing to pair with"
+        },
+        {
+            "id": "scan_requires_a_binary_function",
+            "input": "scan(x -> x, {1, 2}, 0)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "A scan needs an accumulator and an element, as reduce does"
+        },
+        {
+            "id": "zipwith_requires_a_binary_function",
+            "input": "zipwith(x -> x, {1}, {2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "One argument from each collection means two parameters"
         }
     ]
 }

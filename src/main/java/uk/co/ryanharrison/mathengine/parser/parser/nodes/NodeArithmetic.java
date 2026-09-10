@@ -214,6 +214,17 @@ final class NodeArithmetic {
             return bothUnits(op, (NodeUnit) left, (NodeUnit) right);
         }
 
+        if (left instanceof NodePercent || right instanceof NodePercent) {
+            // A percentage means the same thing beside a quantity as beside a plain number,
+            // so '100 m + 10%' is 110 meters. Reading it as the bare 0.1 gave 100.1 meters
+            NodeUnit labelled = (NodeUnit) (leftIsUnit ? left : right);
+            NodeConstant magnitude = new NodeDouble(labelled.getValue());
+            NodeConstant result = leftIsUnit
+                    ? percents(op, magnitude, right)
+                    : percents(op, left, magnitude);
+            return NodeUnit.of(result.doubleValue(), labelled.getUnit());
+        }
+
         // One side carries a label: the arithmetic happens on the magnitude, the label rides
         NodeUnit unit = (NodeUnit) (leftIsUnit ? left : right);
         double scalar = requireNumber(op, leftIsUnit ? right : left).doubleValue();
@@ -230,13 +241,15 @@ final class NodeArithmetic {
         }
         double rightValue = right.convertTo(left.getUnit()).getValue();
 
-        if (op.isAdditive() || op == Op.MODULO) {
-            // Two lengths add, subtract and divide into one another without changing dimension
-            return NodeUnit.of(op.apply(left.getValue(), rightValue), left.getUnit());
-        }
         if (op == Op.DIVIDE) {
             // Like quantities cancel, leaving a plain ratio
             return new NodeDouble(left.getValue() / rightValue);
+        }
+        if (op.isAdditive() || op == Op.MODULO || op == Op.MULTIPLY) {
+            // The label rides along, as it does for a scalar and for a power. Without
+            // compound units there is no way to spell m^2, so a product keeps the label
+            // it started with rather than refusing to be a product at all
+            return NodeUnit.of(op.apply(left.getValue(), rightValue), left.getUnit());
         }
         throw new TypeError("Cannot apply '" + op.symbol + "' to two unit values");
     }

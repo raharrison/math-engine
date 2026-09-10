@@ -4,10 +4,8 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodePercent;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 import java.util.List;
 
@@ -15,12 +13,19 @@ import java.util.List;
  * Collection of percentage-related functions.
  * <p>
  * Percentages are represented as decimal values internally (50% = 0.5).
- * These functions help with common percentage calculations.
+ * <p>
+ * Each of these is spelled as the arithmetic it stands for, so it cannot disagree with the
+ * operator that means the same thing: {@code addpercent(x, p)} is {@code x + p},
+ * {@code percentof(p, x)} is {@code p of x}. That is also what carries units and exactness
+ * through, so {@code addpercent(100 m, 10%)} is 110 meters rather than a bare double.
  */
 public final class PercentageFunctions {
 
     private PercentageFunctions() {
     }
+
+    private static final NodeConstant ONE = new NodeRational(1);
+    private static final NodeConstant HUNDRED = new NodeRational(100);
 
     // ==================== Conversion Functions ====================
 
@@ -50,10 +55,7 @@ public final class PercentageFunctions {
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingUnary()
             .noBroadcasting()
-            .implementedBy((arg, ctx) -> {
-                double value = ctx.toPercentDecimal(arg);
-                return new NodeDouble(value);
-            });
+            .implementedBy((arg, ctx) -> asFraction(arg));
 
     /**
      * Get percentage value (50% -> 50)
@@ -66,12 +68,7 @@ public final class PercentageFunctions {
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingUnary()
             .noBroadcasting()
-            .implementedBy((arg, ctx) -> {
-                if (arg instanceof NodePercent pct) {
-                    return new NodeDouble(pct.getPercentValue());
-                }
-                return new NodeDouble(ctx.toDouble(arg) * 100);
-            });
+            .implementedBy((arg, ctx) -> asFraction(arg).multiply(HUNDRED));
 
     // ==================== Percentage Calculations ====================
 
@@ -86,11 +83,7 @@ public final class PercentageFunctions {
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
-            .implementedBy((first, second, ctx) -> {
-                double percent = ctx.toPercentDecimal(first);
-                double value = ctx.toDouble(second);
-                return new NodeDouble(percent * value);
-            });
+            .implementedBy((first, second, ctx) -> spendPercentage(first.multiply(second)));
 
     /**
      * What percent is X of Y? (10 is what % of 50? = 20%)
@@ -144,11 +137,7 @@ public final class PercentageFunctions {
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
-            .implementedBy((first, second, ctx) -> {
-                double value = ctx.toDouble(first);
-                double percent = ctx.toPercentDecimal(second);
-                return new NodeDouble(value * (1 + percent));
-            });
+            .implementedBy((first, second, ctx) -> first.add(asPercentage(second)));
 
     /**
      * Subtract percentage from value (100 - 20% = 80)
@@ -161,11 +150,7 @@ public final class PercentageFunctions {
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
-            .implementedBy((first, second, ctx) -> {
-                double value = ctx.toDouble(first);
-                double percent = ctx.toPercentDecimal(second);
-                return new NodeDouble(value * (1 - percent));
-            });
+            .implementedBy((first, second, ctx) -> first.subtract(asPercentage(second)));
 
     // ==================== Percentage Inverse Operations ====================
 
@@ -181,12 +166,10 @@ public final class PercentageFunctions {
             .takingBinary()
             .noBroadcasting()
             .implementedBy((first, second, ctx) -> {
-                double current = ctx.toDouble(first);
-                double percent = ctx.toPercentDecimal(second);
-                if (percent == -1) {
+                if (ctx.toPercentDecimal(second) == -1) {
                     throw new DomainException("reversepercent: cannot reverse 100% decrease");
                 }
-                return new NodeDouble(current / (1 + percent));
+                return first.divide(ONE.add(asPercentage(second)));
             });
 
     /**
@@ -216,10 +199,7 @@ public final class PercentageFunctions {
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingUnary()
             .noBroadcasting()
-            .implementedBy((arg, ctx) -> {
-                double percent = ctx.toPercentDecimal(arg);
-                return new NodeDouble(1 + percent);
-            });
+            .implementedBy((arg, ctx) -> ONE.add(asFraction(arg)));
 
     // ==================== Percentage Points ====================
 
@@ -234,11 +214,8 @@ public final class PercentageFunctions {
             .inCategory(MathFunction.Category.PERCENTAGE)
             .takingBinary()
             .noBroadcasting()
-            .implementedBy((first, second, ctx) -> {
-                double pct1 = ctx.toPercentDecimal(first) * 100;
-                double pct2 = ctx.toPercentDecimal(second) * 100;
-                return new NodeDouble(pct2 - pct1);
-            });
+            .implementedBy((first, second, ctx) ->
+                    asFraction(second).subtract(asFraction(first)).multiply(HUNDRED));
 
     /**
      * Check if value is a percentage type
@@ -284,6 +261,37 @@ public final class PercentageFunctions {
             return new NodeBoolean(args.getFirst() instanceof NodePercent);
         }
     };
+
+    // ==================== Helpers ====================
+
+    /**
+     * The value a percentage stands for, so 50% becomes 1/2 and a plain number is itself.
+     */
+    private static NodeConstant asFraction(NodeConstant value) {
+        return value instanceof NodePercent percent
+                ? TypeCoercion.toNumber(percent.getValue())
+                : value;
+    }
+
+    /**
+     * Reads a bare number as the percentage it was meant to be, so
+     * {@code addpercent(100, 20)} and {@code addpercent(100, 20%)} agree.
+     */
+    private static NodeConstant asPercentage(NodeConstant value) {
+        return value instanceof NodePercent ? value : NodePercent.fromDecimal(divideByHundred(value));
+    }
+
+    private static double divideByHundred(NodeConstant value) {
+        return value.doubleValue() / 100.0;
+    }
+
+    /**
+     * A share of something is a plain amount, not another percentage. Matches
+     * {@code OfOperator}, which this has to agree with.
+     */
+    private static NodeConstant spendPercentage(NodeConstant product) {
+        return product instanceof NodePercent percent ? new NodeDouble(percent.getValue()) : product;
+    }
 
     /**
      * Gets all percentage functions.

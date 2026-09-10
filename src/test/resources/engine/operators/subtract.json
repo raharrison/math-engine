@@ -723,9 +723,9 @@
         {
             "id": "subtract_types_unit_percent",
             "input": "(4 meters) - (20%)",
-            "expected": "3.8 meters",
+            "expected": "3.2 meters",
             "expectedType": "NodeUnit",
-            "notes": "Unit subtracts a percent"
+            "notes": "The same reading as '4 - 20%'; it used to subtract a bare 0.2"
         },
         {
             "id": "subtract_types_unit_range",

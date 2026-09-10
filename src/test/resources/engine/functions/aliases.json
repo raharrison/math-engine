@@ -582,6 +582,20 @@
             "expected": true,
             "expectedType": "NodeBoolean",
             "notes": "'pp' is another spelling of 'percentpoints' and must give the same answer"
+        },
+        {
+            "id": "alias_concatmap",
+            "input": "flatmap(x -> {x}, {1, 2}) == concatmap(x -> {x}, {1, 2})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'concatmap' is another spelling of 'flatmap' and must give the same answer"
+        },
+        {
+            "id": "alias_accumulate",
+            "input": "scan((a, x) -> a + x, {1, 2}, 0) == accumulate((a, x) -> a + x, {1, 2}, 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'accumulate' is another spelling of 'scan' and must give the same answer"
         }
     ]
 }

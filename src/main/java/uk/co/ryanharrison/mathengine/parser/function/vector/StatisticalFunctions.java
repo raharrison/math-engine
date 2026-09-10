@@ -3,20 +3,29 @@ package uk.co.ryanharrison.mathengine.parser.function.vector;
 import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
 import uk.co.ryanharrison.mathengine.utils.StatUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.ryanharrison.mathengine.parser.function.MathFunction.Category.STATISTICAL;
 
 /**
- * Collection of advanced statistical functions.
+ * Advanced statistics, computed on the values rather than on a {@code double[]}.
  * <p>
- * These functions delegate to {@link StatUtils} for their implementations where possible.
- * </p>
+ * A function that selects one of its inputs returns that input, and one whose answer is a
+ * sum, difference, product or quotient of its inputs is written that way, so units,
+ * percentages and exact rationals carry through. See {@link Statistics}.
+ * <p>
+ * Three answers are ratios by definition and so wear no label at all: {@code skewness},
+ * {@code kurtosis} and {@code correlation}. Those still go through {@link StatUtils},
+ * because a plain double really is what they are.
  */
 public final class StatisticalFunctions {
 
@@ -34,9 +43,8 @@ public final class StatisticalFunctions {
             .takingVariadic(1)
             .noBroadcasting()
             .implementedByAggregate((args, ctx) -> {
-                double[] values = ctx.flattenToDoubles(args);
-                ctx.requireNonEmpty(values);
-                return new NodeDouble(StatUtils.range(values));
+                List<NodeConstant> sorted = Statistics.sorted(elements(args, ctx, 1, "range"));
+                return sorted.getLast().subtract(sorted.getFirst());
             });
 
     /**
@@ -62,10 +70,7 @@ public final class StatisticalFunctions {
                     throw new DomainException("percentile must be between 0 and 1 (or 0 and 100)");
                 }
 
-                double[] values = ctx.toDoubleArray(vec);
-                ctx.requireNonEmpty(values);
-
-                return new NodeDouble(StatUtils.percentile(values, p));
+                return Statistics.percentile(sortedVector(vec, ctx, 1, "percentile"), p);
             });
 
     /**
@@ -79,9 +84,8 @@ public final class StatisticalFunctions {
             .takingVariadic(1)
             .noBroadcasting()
             .implementedByAggregate((args, ctx) -> {
-                double[] values = ctx.flattenToDoubles(args);
-                ctx.requireMinSize(values, 4);
-                return new NodeDouble(StatUtils.interQuartileRange(values));
+                List<NodeConstant> sorted = Statistics.sorted(elements(args, ctx, 4, "iqr"));
+                return Statistics.percentile(sorted, 0.75).subtract(Statistics.percentile(sorted, 0.25));
             });
 
     /**
@@ -96,9 +100,11 @@ public final class StatisticalFunctions {
             .takingVariadic(1)
             .noBroadcasting()
             .implementedByAggregate((args, ctx) -> {
-                double[] values = ctx.flattenToDoubles(args);
-                ctx.requireNonEmpty(values);
-                return new NodeDouble(StatUtils.geometricMean(values));
+                List<NodeConstant> values = elements(args, ctx, 1, "gmean");
+                // Computed through logarithms, which is what keeps a long product from
+                // overflowing, so the magnitude is mapped back onto one of the inputs
+                double result = StatUtils.geometricMean(magnitudes(values, ctx));
+                return labelledLike(values.getFirst(), result);
             });
 
     /**
@@ -113,9 +119,16 @@ public final class StatisticalFunctions {
             .takingVariadic(1)
             .noBroadcasting()
             .implementedByAggregate((args, ctx) -> {
-                double[] values = ctx.flattenToDoubles(args);
-                ctx.requireNonEmpty(values);
-                return new NodeDouble(StatUtils.harmonicMean(values));
+                List<NodeConstant> values = elements(args, ctx, 1, "hmean");
+
+                var reciprocals = new ArrayList<NodeConstant>(values.size());
+                for (NodeConstant value : values) {
+                    if (ctx.toDouble(value) == 0.0) {
+                        throw new ArithmeticException("Harmonic mean is undefined when data contains zero");
+                    }
+                    reciprocals.add(new NodeRational(1).divide(value));
+                }
+                return new NodeRational(values.size()).divide(Statistics.sum(reciprocals));
             });
 
     /**
@@ -130,9 +143,13 @@ public final class StatisticalFunctions {
             .takingVariadic(1)
             .noBroadcasting()
             .implementedByAggregate((args, ctx) -> {
-                double[] values = ctx.flattenToDoubles(args);
-                ctx.requireNonEmpty(values);
-                return new NodeDouble(StatUtils.rootmeanSquare(values));
+                List<NodeConstant> values = elements(args, ctx, 1, "rms");
+
+                var squares = new ArrayList<NodeConstant>(values.size());
+                for (NodeConstant value : values) {
+                    squares.add(value.multiply(value));
+                }
+                return Statistics.mean(squares).mapMagnitude(Math::sqrt);
             });
 
     /**
@@ -140,7 +157,7 @@ public final class StatisticalFunctions {
      */
     public static final MathFunction SKEWNESS = FunctionBuilder
             .named("skewness")
-            .describedAs("Returns the skewness (asymmetry measure) of the values")
+            .describedAs("Returns the skewness (asymmetry measure) of the values; a ratio, so it carries no unit")
             .withParams("values")
             .inCategory(STATISTICAL)
             .takingVariadic(1)
@@ -156,7 +173,7 @@ public final class StatisticalFunctions {
      */
     public static final MathFunction KURTOSIS = FunctionBuilder
             .named("kurtosis")
-            .describedAs("Returns the excess kurtosis (tailedness relative to normal) of the values")
+            .describedAs("Returns the excess kurtosis (tailedness relative to normal) of the values; a ratio, so it carries no unit")
             .withParams("values")
             .inCategory(STATISTICAL)
             .takingVariadic(1)
@@ -178,22 +195,7 @@ public final class StatisticalFunctions {
             .inCategory(STATISTICAL)
             .takingBinary()
             .noBroadcasting()
-            .implementedBy((v1, v2, ctx) -> {
-                NodeVector vec1 = ctx.requireVector(v1);
-                NodeVector vec2 = ctx.requireVector(v2);
-
-                if (vec1.size() != vec2.size()) {
-                    throw new DomainException("covariance requires vectors of equal length");
-                }
-                if (vec1.size() < 2) {
-                    throw new TypeError("covariance requires at least 2 elements");
-                }
-
-                double[] x = ctx.toDoubleArray(vec1);
-                double[] y = ctx.toDoubleArray(vec2);
-
-                return new NodeDouble(StatUtils.covariance(x, y));
-            });
+            .implementedBy((v1, v2, ctx) -> covariance(v1, v2, ctx, "covariance"));
 
     /**
      * Correlation coefficient between two vectors
@@ -201,26 +203,18 @@ public final class StatisticalFunctions {
     public static final MathFunction CORRELATION = FunctionBuilder
             .named("correlation")
             .alias("corr")
-            .describedAs("Returns the Pearson correlation coefficient between vectors xs and ys")
+            .describedAs("Returns the Pearson correlation coefficient between vectors xs and ys; a ratio, so it carries no unit")
             .withParams("xs", "ys")
             .inCategory(STATISTICAL)
             .takingBinary()
             .noBroadcasting()
             .implementedBy((v1, v2, ctx) -> {
-                NodeVector vec1 = ctx.requireVector(v1);
-                NodeVector vec2 = ctx.requireVector(v2);
-
-                if (vec1.size() != vec2.size()) {
-                    throw new DomainException("correlation requires vectors of equal length");
-                }
-                if (vec1.size() < 2) {
-                    throw new TypeError("correlation requires at least 2 elements");
-                }
-
-                double[] x = ctx.toDoubleArray(vec1);
-                double[] y = ctx.toDoubleArray(vec2);
-
-                return new NodeDouble(StatUtils.correlationCoefficient(x, y));
+                NodeConstant covariance = covariance(v1, v2, ctx, "correlation");
+                NodeConstant spread = Statistics.standardDeviation(ctx.requireVector(v1).toList())
+                        .multiply(Statistics.standardDeviation(ctx.requireVector(v2).toList()));
+                // Two like quantities divide into a plain ratio, which is what a
+                // correlation is; no case is needed to strip the label
+                return covariance.divide(spread);
             });
 
     /**
@@ -234,11 +228,22 @@ public final class StatisticalFunctions {
             .takingVariadic(1)
             .noBroadcasting()
             .implementedByAggregate((args, ctx) -> {
-                double[] values = ctx.flattenToDoubles(args);
-                ctx.requireNonEmpty(values);
-                // StatUtils.mode returns all modes; return the first one
-                double[] modes = StatUtils.mode(values);
-                return new NodeDouble(modes[0]);
+                List<NodeConstant> sorted = Statistics.sorted(elements(args, ctx, 1, "mode"));
+
+                // Equal values are adjacent once sorted, so the longest run is the mode and
+                // its first member is the smallest. Equality converts units, so 1 m and
+                // 100 cm count as the same value and come back in the spelling seen first
+                NodeConstant mode = sorted.getFirst();
+                int best = 0;
+                int run = 0;
+                for (int i = 0; i < sorted.size(); i++) {
+                    run = i > 0 && sorted.get(i).equalTo(sorted.get(i - 1)) ? run + 1 : 1;
+                    if (run > best) {
+                        best = run;
+                        mode = sorted.get(i - run + 1);
+                    }
+                }
+                return mode;
             });
 
     /**
@@ -259,11 +264,65 @@ public final class StatisticalFunctions {
                     throw new DomainException("quartile must be 1, 2, or 3");
                 }
 
-                double[] values = ctx.toDoubleArray(vec);
-                ctx.requireNonEmpty(values);
-
-                return new NodeDouble(StatUtils.quartile(values, q));
+                return Statistics.percentile(sortedVector(vec, ctx, 1, "quartile"), q * 0.25);
             });
+
+    // ==================== Helpers ====================
+
+    /**
+     * The arguments flattened to values, checked for size.
+     */
+    private static List<NodeConstant> elements(List<NodeConstant> args, FunctionContext ctx,
+                                               int minimum, String name) {
+        List<NodeConstant> elements = ctx.flattenArguments(args);
+        if (elements.size() < minimum) {
+            throw new TypeError(name + " requires at least " + minimum +
+                    (minimum == 1 ? " element" : " elements"));
+        }
+        return elements;
+    }
+
+    private static List<NodeConstant> sortedVector(NodeVector vector, FunctionContext ctx,
+                                                   int minimum, String name) {
+        return Statistics.sorted(elements(List.of(vector), ctx, minimum, name));
+    }
+
+    private static double[] magnitudes(List<NodeConstant> values, FunctionContext ctx) {
+        double[] magnitudes = new double[values.size()];
+        for (int i = 0; i < magnitudes.length; i++) {
+            magnitudes[i] = ctx.toDouble(values.get(i));
+        }
+        return magnitudes;
+    }
+
+    /**
+     * Puts a magnitude computed in doubles back under the label the inputs were wearing.
+     */
+    private static NodeConstant labelledLike(NodeConstant sample, double magnitude) {
+        return sample.mapMagnitude(ignored -> magnitude);
+    }
+
+    private static NodeConstant covariance(NodeConstant v1, NodeConstant v2,
+                                           FunctionContext ctx, String name) {
+        List<NodeConstant> xs = ctx.requireVector(v1).toList();
+        List<NodeConstant> ys = ctx.requireVector(v2).toList();
+
+        if (xs.size() != ys.size()) {
+            throw new DomainException(name + " requires vectors of equal length");
+        }
+        if (xs.size() < 2) {
+            throw new TypeError(name + " requires at least 2 elements");
+        }
+
+        NodeConstant xMean = Statistics.mean(xs);
+        NodeConstant yMean = Statistics.mean(ys);
+        NodeConstant total = null;
+        for (int i = 0; i < xs.size(); i++) {
+            NodeConstant product = xs.get(i).subtract(xMean).multiply(ys.get(i).subtract(yMean));
+            total = total == null ? product : total.add(product);
+        }
+        return total.divide(new NodeRational(xs.size() - 1));
+    }
 
     /**
      * Gets all statistical functions.

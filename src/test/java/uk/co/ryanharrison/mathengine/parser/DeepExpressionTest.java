@@ -29,11 +29,6 @@ class DeepExpressionTest {
     private static final int TERMS = 5_000;
 
     /**
-     * Well past what any of the nested shapes below survive on this stack.
-     */
-    private static final int LEVELS = 2_000;
-
-    /**
      * Depth limits off, so it is the JVM stack that gives out and the boundary guard,
      * rather than a limit, that has to produce the exception.
      */
@@ -84,20 +79,26 @@ class DeepExpressionTest {
     @DisplayName("Running out of JVM stack is an exception, not an Error")
     class OutOfStack {
 
+        /**
+         * The level counts are per shape because the cost of a level differs by an order of
+         * magnitude: a grouping spends ten Java frames, a prefix operator one. Each is well
+         * clear of where that shape gives out on this stack, so none of these sits near the
+         * boundary where the answer would depend on what the JIT had compiled.
+         */
         @ParameterizedTest(name = "{0}")
         @CsvSource({
-                "groupings,        (,        )",
-                "vectors,          '{',      '}'",
-                "matrices,         '[',      ']'",
-                "calls,            abs(,     )",
-                "argument lists,   'max(1,', )",
-                "prefix operators, -,        ''",
-                "power chain,      '1^',     ''",
-                "subscript chain,  '',       '[0]'"
+                "groupings,         5000, (,        )",
+                "vectors,           5000, '{',      '}'",
+                "matrices,          5000, '[',      ']'",
+                "calls,             5000, abs(,     )",
+                "argument lists,    5000, 'max(1,', )",
+                "subscript chain,   5000, '',       '[0]'",
+                "prefix operators, 50000, -,        ''",
+                "power chain,      50000, '1^',     ''"
         })
-        void nesting(String shape, String open, String close) {
-            assertThat(outcome(open.repeat(LEVELS) + "{1}" + close.repeat(LEVELS), NO_DEPTH_LIMITS))
-                    .as("%s nested %d deep", shape, LEVELS)
+        void nesting(String shape, int levels, String open, String close) {
+            assertThat(outcome(open.repeat(levels) + "{1}" + close.repeat(levels), NO_DEPTH_LIMITS))
+                    .as("%s nested %d deep", shape, levels)
                     .isInstanceOf(MathEngineException.class);
         }
 
