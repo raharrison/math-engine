@@ -11,6 +11,8 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
+import java.util.ArrayDeque;
+
 /**
  * Evaluates an Abstract Syntax Tree to produce a value.
  * <p>
@@ -141,20 +143,48 @@ public final class Evaluator {
 
     /**
      * The right operand stays lazy so short-circuiting operators can skip it.
+     * <p>
+     * The left spine is collected and folded back up rather than recursed down, so a long
+     * {@code 1 + 1 + 1 + ...} costs heap rather than Java stack.
      */
     private NodeConstant evaluateBinary(NodeBinary node, EvaluationContext context) {
-        NodeConstant left = evaluate(node.getLeft(), context);
-        return operatorExecutor.executeBinary(
-                node.getOperator().type(),
-                left,
-                () -> evaluate(node.getRight(), context),
-                context.operatorContext(functionCallHandler));
+        var spine = new ArrayDeque<NodeBinary>();
+        Node current = node;
+        while (current instanceof NodeBinary binary) {
+            spine.push(binary);
+            current = binary.getLeft();
+        }
+
+        NodeConstant result = evaluate(current, context);
+        while (!spine.isEmpty()) {
+            NodeBinary step = spine.pop();
+            Node right = step.getRight();
+            result = operatorExecutor.executeBinary(
+                    step.getOperator().type(),
+                    result,
+                    () -> evaluate(right, context),
+                    context.operatorContext(functionCallHandler));
+        }
+        return result;
     }
 
+    /**
+     * Folds the operand chain iteratively, for the same reason as {@link #evaluateBinary}.
+     */
     private NodeConstant evaluateUnary(NodeUnary node, EvaluationContext context) {
-        NodeConstant operand = evaluate(node.getOperand(), context);
-        return operatorExecutor.executeUnary(
-                node.getOperator().type(), operand, context.operatorContext(functionCallHandler));
+        var chain = new ArrayDeque<NodeUnary>();
+        Node current = node;
+        while (current instanceof NodeUnary unary) {
+            chain.push(unary);
+            current = unary.getOperand();
+        }
+
+        NodeConstant result = evaluate(current, context);
+        while (!chain.isEmpty()) {
+            result = operatorExecutor.executeUnary(
+                    chain.pop().getOperator().type(), result, context.operatorContext(functionCallHandler));
+        }
+        return result;
     }
 
     // ==================== Statements ====================

@@ -258,7 +258,23 @@ public final class MathEngineConfig {
     // ==================== Limits ====================
 
     /**
+     * Default limit on how many user function calls may be nested.
+     * <p>
+     * A level costs about fourteen Java frames, so this is set to be reached before the
+     * 1MB stack a thread gets by default. Raise it if you run on a larger stack.
+     */
+    public static final int DEFAULT_MAX_RECURSION_DEPTH = 256;
+
+    /**
+     * Default limit on how deeply expressions may nest, set for the same reason as
+     * {@link #DEFAULT_MAX_RECURSION_DEPTH}. A grouping costs about ten Java frames.
+     */
+    public static final int DEFAULT_MAX_EXPRESSION_DEPTH = 256;
+
+    /**
      * Maximum recursion depth for function calls.
+     *
+     * @see #DEFAULT_MAX_RECURSION_DEPTH
      */
     public int maxRecursionDepth() {
         return maxRecursionDepth;
@@ -266,6 +282,8 @@ public final class MathEngineConfig {
 
     /**
      * Maximum nesting depth for expressions.
+     *
+     * @see #DEFAULT_MAX_EXPRESSION_DEPTH
      */
     public int maxExpressionDepth() {
         return maxExpressionDepth;
@@ -448,8 +466,8 @@ public final class MathEngineConfig {
         private int decimalPlaces = -1;
         private boolean forceDoubleArithmetic = false;
         private boolean silentValidation = false;
-        private int maxRecursionDepth = 1000;
-        private int maxExpressionDepth = 1000;
+        private int maxRecursionDepth = DEFAULT_MAX_RECURSION_DEPTH;
+        private int maxExpressionDepth = DEFAULT_MAX_EXPRESSION_DEPTH;
         private int maxVectorSize = 1_000_000;
         private int maxMatrixDimension = 10_000;
         private int maxIdentifierLength = 256;

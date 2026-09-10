@@ -620,7 +620,7 @@ factorial(n) := if(n <= 1, 1, n * factorial(n-1))
 
 ```java
 MathEngineConfig config = MathEngineConfig.builder()
-    .maxRecursionDepth(1000)  // Default
+    .maxRecursionDepth(256)  // Default
     .build();
 ```
 

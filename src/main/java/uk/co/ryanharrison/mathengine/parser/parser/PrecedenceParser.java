@@ -82,6 +82,10 @@ public final class PrecedenceParser {
 
     /**
      * Enters a new expression depth level, checking against the maximum allowed depth.
+     * <p>
+     * Counted by every construct that makes this parser call itself: a grouping, a vector,
+     * a matrix, a call's arguments, a subscript's indices, a prefix operator and the right
+     * side of a power. Constructs that only iterate cost nothing.
      *
      * @throws ParseException if maximum expression depth is exceeded
      */
@@ -354,8 +358,13 @@ public final class PrecedenceParser {
         if (stream.match(TokenType.MINUS, TokenType.PLUS, TokenType.NOT) ||
                 stream.checkKeyword("not") && stream.match(TokenType.KEYWORD)) {
             Token op = stream.previous();
-            Node operand = parseUnary(); // Right-associative
-            return new NodeUnary(op, operand);
+            enterDepth();
+            try {
+                Node operand = parseUnary(); // Right-associative
+                return new NodeUnary(op, operand);
+            } finally {
+                exitDepth();
+            }
         }
 
         return parsePower();
@@ -371,8 +380,13 @@ public final class PrecedenceParser {
 
         if (stream.match(TokenType.POWER)) {
             Token op = stream.previous();
-            Node right = parseUnary(); // Right-associative
-            return new NodeBinary(op, left, right);
+            enterDepth();
+            try {
+                Node right = parseUnary(); // Right-associative
+                return new NodeBinary(op, left, right);
+            } finally {
+                exitDepth();
+            }
         }
 
         return left;
@@ -412,7 +426,13 @@ public final class PrecedenceParser {
                 stream.expect(TokenType.RPAREN, "Expected ')' after function arguments");
                 expr = new NodeCall(expr, args);
             } else if (stream.match(TokenType.LBRACKET)) {
-                List<NodeSubscript.SliceArg> indices = collectionParser.parseSliceArgs();
+                enterDepth();
+                List<NodeSubscript.SliceArg> indices;
+                try {
+                    indices = collectionParser.parseSliceArgs();
+                } finally {
+                    exitDepth();
+                }
                 stream.expect(TokenType.RBRACKET, "Expected ']' after subscript");
                 expr = new NodeSubscript(expr, indices);
             } else if (stream.check(TokenType.MULTIPLY) && isCallableOrParenthesized(expr)) {
@@ -451,15 +471,20 @@ public final class PrecedenceParser {
      * Parses function arguments.
      */
     private List<Node> parseArguments() {
-        var args = new ArrayList<Node>();
+        enterDepth();
+        try {
+            var args = new ArrayList<Node>();
 
-        if (!stream.check(TokenType.RPAREN)) {
-            do {
-                args.add(parseExpression());
-            } while (stream.match(TokenType.COMMA));
+            if (!stream.check(TokenType.RPAREN)) {
+                do {
+                    args.add(parseExpression());
+                } while (stream.match(TokenType.COMMA));
+            }
+
+            return args;
+        } finally {
+            exitDepth();
         }
-
-        return args;
     }
 
     // ==================== Primary Expressions ====================

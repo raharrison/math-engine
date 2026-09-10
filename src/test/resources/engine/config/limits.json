@@ -272,6 +272,110 @@
             "expectError": true,
             "expectedErrorType": "ParseException",
             "notes": "A tiny literal is as long as a huge one, since the digits are in the denominator"
+        },
+        {
+            "id": "expression_depth_ignores_flat_chains",
+            "input": "1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxExpressionDepth": 1
+            },
+            "notes": "A left-associative chain is parsed by a loop, so its length costs no depth however long it runs"
+        },
+        {
+            "id": "expression_depth_counts_prefix_operators_just_under",
+            "input": "---1",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxExpressionDepth": 3
+            },
+            "notes": "Three signs fit inside a limit of three; each one is a level of parser recursion"
+        },
+        {
+            "id": "expression_depth_counts_prefix_operators_just_over",
+            "input": "----1",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "config": {
+                "maxExpressionDepth": 3
+            },
+            "notes": "Four do not; an uncounted run of signs used to die with StackOverflowError"
+        },
+        {
+            "id": "expression_depth_counts_power_chain_just_under",
+            "input": "2 ^ 2 ^ 2 ^ 2",
+            "expected": 65536,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxExpressionDepth": 3
+            },
+            "notes": "Power is right-associative, so three operators nest three deep and fit inside a limit of three"
+        },
+        {
+            "id": "expression_depth_counts_power_chain_just_over",
+            "input": "2 ^ 2 ^ 2 ^ 2 ^ 2",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "config": {
+                "maxExpressionDepth": 3
+            },
+            "notes": "Four do not; the right-hand side of a power was uncounted and overflowed the JVM stack instead"
+        },
+        {
+            "id": "expression_depth_counts_call_arguments_just_under",
+            "input": "abs(abs(abs(-1)))",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxExpressionDepth": 4
+            },
+            "notes": "Three calls and the sign inside them come to four, which fits a limit of four"
+        },
+        {
+            "id": "expression_depth_counts_call_arguments_just_over",
+            "input": "abs(abs(abs(abs(-1))))",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "config": {
+                "maxExpressionDepth": 4
+            },
+            "notes": "A fourth call does not; nesting through an argument list used to cost stack without costing depth"
+        },
+        {
+            "id": "expression_depth_counts_subscript_indices_just_under",
+            "input": "v := {1, 2, 3}; v[v[v[0]]]",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxExpressionDepth": 3
+            },
+            "notes": "An index that is itself a subscript nests, and three levels fit inside a limit of three"
+        },
+        {
+            "id": "expression_depth_counts_subscript_indices_just_over",
+            "input": "v := {1, 2, 3}; v[v[v[v[0]]]]",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "config": {
+                "maxExpressionDepth": 3
+            },
+            "notes": "Four do not, for the same reason a fourth call does not"
+        },
+        {
+            "id": "recursion_default_limit_allows_useful_depth",
+            "input": "countdown(n) := if(n <= 0, 0, countdown(n - 1)); countdown(200)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Two hundred nested calls fit inside the default limit of 256"
+        },
+        {
+            "id": "recursion_default_limit_stops_before_the_jvm_stack",
+            "input": "countdown(n) := if(n <= 0, 0, countdown(n - 1)); countdown(300)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "notes": "Three hundred do not. The default dropped from 1000 to 256, a depth the JVM stack could not reach"
         }
     ]
 }

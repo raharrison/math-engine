@@ -1970,7 +1970,16 @@ private Node parseTuple() {
 
 **Issue:** Deep expression nesting → deep call stack
 
-**Mitigation:** MathEngineConfig has `maxExpressionDepth` limit
+**Mitigation:** `maxExpressionDepth` bounds it, and every construct that makes the parser
+call itself is counted against it: a grouping, a vector, a matrix, a call's arguments, a
+subscript's indices, a prefix operator and the right side of a power. Constructs that only
+iterate cost nothing, so the length of `1 + 1 + 1 + ...` is free however long it runs.
+
+The default is 256 rather than 1000 because a level of grouping costs about ten Java frames,
+and a thread's default 1MB stack runs out somewhere near 460. A limit the stack cannot reach
+is not a limit. `MathEngine` catches `StackOverflowError` at its boundary regardless and
+rethrows it as `StackOverflowException`, so a caller on an unusually shallow stack still sees
+a `MathEngineException`.
 
 **Example:**
 

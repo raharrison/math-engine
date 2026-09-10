@@ -689,7 +689,7 @@ exit();
 
 ```java
 MathEngineConfig config = MathEngineConfig.builder()
-        .maxRecursionDepth(1000)  // Default
+        .maxRecursionDepth(256)  // Default
         .build();
 ```
 

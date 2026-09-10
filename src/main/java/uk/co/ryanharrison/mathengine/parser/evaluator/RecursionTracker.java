@@ -1,5 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.evaluator;
 
+import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
+
 /**
  * Tracks recursion depth across all evaluation contexts.
  * Shared across parent and child contexts to properly detect and prevent infinite recursion.
@@ -15,7 +17,7 @@ public final class RecursionTracker {
     /**
      * Create a new recursion tracker with the specified maximum depth.
      *
-     * @param maxDepth the maximum allowed recursion depth (default: 1000)
+     * @param maxDepth the maximum allowed recursion depth
      */
     public RecursionTracker(int maxDepth) {
         this.maxDepth = maxDepth;
@@ -23,10 +25,12 @@ public final class RecursionTracker {
     }
 
     /**
-     * Create a new recursion tracker with default maximum depth of 1000.
+     * Create a new recursion tracker with the engine's default maximum depth.
+     *
+     * @see MathEngineConfig#DEFAULT_MAX_RECURSION_DEPTH
      */
     public RecursionTracker() {
-        this(1000);
+        this(MathEngineConfig.DEFAULT_MAX_RECURSION_DEPTH);
     }
 
     /**

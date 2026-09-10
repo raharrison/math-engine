@@ -21,6 +21,17 @@ public class StackOverflowException extends EvaluationException {
         this.maxDepth = -1;
     }
 
+    /**
+     * The JVM stack ran out before any configured limit was reached. Whether the limit or
+     * the stack goes first depends on how much the calling thread has left.
+     */
+    public static StackOverflowException outOfStack() {
+        return new StackOverflowException(
+                "Expression nests too deeply to process: the JVM stack ran out before any "
+                        + "configured limit was reached. Simplify the expression, or run the "
+                        + "engine on a thread with a larger stack.", null);
+    }
+
     public String getTrace() {
         return trace;
     }

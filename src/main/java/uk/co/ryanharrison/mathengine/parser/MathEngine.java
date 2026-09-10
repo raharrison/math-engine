@@ -1,9 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser;
 
-import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
-import uk.co.ryanharrison.mathengine.parser.evaluator.Evaluator;
-import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
-import uk.co.ryanharrison.mathengine.parser.evaluator.RecursionTracker;
+import uk.co.ryanharrison.mathengine.parser.evaluator.*;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.lexer.Lexer;
@@ -21,6 +18,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Main entry point for the Math Engine parser and evaluator.
@@ -220,7 +218,7 @@ public final class MathEngine {
      * @throws MathEngineException if parsing or evaluation fails
      */
     public NodeConstant evaluate(String expression) {
-        return evaluator.evaluate(parse(expression));
+        return evaluate(parse(expression));
     }
 
     private Node parse(String expression) {
@@ -228,8 +226,20 @@ public final class MathEngine {
             throw new IllegalArgumentException("Expression cannot be null or empty");
         }
         List<Token> tokens = lexer.tokenize(expression);
-        return new Parser(tokens, expression, config.maxExpressionDepth(),
-                config.forceDoubleArithmetic(), config.maxLiteralDigits()).parse();
+        return onGuardedStack(() -> new Parser(tokens, expression, config.maxExpressionDepth(),
+                config.forceDoubleArithmetic(), config.maxLiteralDigits()).parse());
+    }
+
+    /**
+     * Runs one stage of the pipeline, converting stack exhaustion into an ordinary engine
+     * exception so that everything thrown from here is a {@link MathEngineException}.
+     */
+    private static <T> T onGuardedStack(Supplier<T> stage) {
+        try {
+            return stage.get();
+        } catch (StackOverflowError e) {
+            throw StackOverflowException.outOfStack();
+        }
     }
 
     /**
@@ -250,14 +260,14 @@ public final class MathEngine {
      * @throws MathEngineException if evaluation fails
      */
     public NodeConstant evaluate(Node node) {
-        return evaluator.evaluate(node);
+        return onGuardedStack(() -> evaluator.evaluate(node));
     }
 
     /**
      * Evaluates an already-parsed expression in a specific scope.
      */
     NodeConstant evaluate(Node node, EvaluationContext scope) {
-        return evaluator.evaluate(node, scope);
+        return onGuardedStack(() -> evaluator.evaluate(node, scope));
     }
 
     // ==================== Variable/Function Definition ====================

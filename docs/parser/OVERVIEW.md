@@ -345,8 +345,8 @@ Immutable configuration object with builder pattern.
 
 ```java
 .angleUnit(AngleUnit.RADIANS)           // or DEGREES
-.maxRecursionDepth(1000)                // Stack overflow protection
-.maxExpressionDepth(1000)               // Parse depth limit
+.maxRecursionDepth(256)                 // Levels of user function nesting
+.maxExpressionDepth(256)                // Levels of parser recursion
 .forceDoubleArithmetic(false)           // Disable exact rationals
 ```
 
@@ -394,11 +394,15 @@ MathEngineException (base)
 ├─ EvaluationException
 │   ├─ TypeError (type mismatches)
 │   ├─ ArityException (wrong number of arguments)
-│   ├─ StackOverflowException (recursion limit)
+│   ├─ StackOverflowException (recursion limit, or the JVM stack)
 │   └─ UndefinedVariableException (unknown variable)
 ```
 
 ### Error Context
+
+`MathEngine` converts a `StackOverflowError` raised anywhere in the pipeline into a
+`StackOverflowException`, so a caller catching `MathEngineException` catches everything the
+engine can throw.
 
 All exceptions include:
 

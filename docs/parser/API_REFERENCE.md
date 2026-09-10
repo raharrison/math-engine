@@ -80,8 +80,8 @@ MathEngineConfig config = MathEngineConfig.builder()
         .decimalPlaces(-1)                      // -1 = full precision
 
         // Limits (DoS protection)
-        .maxRecursionDepth(1000)
-        .maxExpressionDepth(1000)
+        .maxRecursionDepth(256)                 // levels of user function nesting
+        .maxExpressionDepth(256)                // levels of parser recursion
         .maxVectorSize(1_000_000)
         .maxMatrixDimension(10_000)
         .maxIdentifierLength(256)
