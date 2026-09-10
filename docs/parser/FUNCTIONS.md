@@ -297,30 +297,29 @@ NodeString s = ctx.requireString(node);  // must be string
 
 ```java
 double rad = ctx.toRadians(angle);    // context unit -> radians
+double rad2 = ctx.toRadians(value);   // a NodeConstant: an angle label wins over the context unit
 double angle = ctx.fromRadians(rad);  // radians -> context unit
 ```
 
 ### Broadcasting
 
-Two element-wise helpers, and choosing between them is the whole decision about what your
+Three element-wise helpers. Choosing between them is the whole decision about what your
 function does to a quantity or a percentage.
 
-```java
-// The answer is a pure number, so a unit or a percentage marker is dropped.
-// This is what a logarithm, an exponential or a trigonometric ratio wants.
-ctx.mapDouble(arg, Math::log);
+| Helper         | The answer is                                     | Example                         |
+|----------------|---------------------------------------------------|---------------------------------|
+| `mapDouble`    | a pure number, so the marker is dropped           | `log(100 meters)` is 2          |
+| `mapMagnitude` | the same kind of thing, so the marker rides along | `sqrt(100 meters)` is 10 meters |
+| `mapAngle`     | a ratio, and the argument is read as an angle     | `sin(90 degrees)` is 1          |
 
-// The answer is the same kind of thing as the argument, so the marker rides along:
-// sqrt(100 meters) is 10 meters and sqrt(4%) is 20%.
-ctx.
-
-mapMagnitude(arg, Math::sqrt);
-
-// The two-argument form takes the marker from whichever side carries one, the left
-// first, and converts the right into the left's unit before the two meet.
-ctx.
-
-mapMagnitude(x, y, Math::hypot);
+```text
+ctx.mapDouble(arg, Math::log);          // a logarithm, an exponential, a gamma
+ctx.mapMagnitude(arg, Math::sqrt);      // a root, a fractional part
+ctx.mapMagnitude(x, y, Math::hypot);    // two arguments: the marker comes from whichever
+                                        // side has one, the left first, and the right is
+                                        // converted into the left's unit first
+ctx.mapAngle(arg, Math::sin);           // an angle label decides the unit, the configured
+                                        // angle unit applies otherwise
 ```
 
 `FunctionBuilder` has the same pair as one-liners: `implementedByDouble` for a pure
@@ -329,17 +328,11 @@ number and `implementedByMagnitude` for a marker-preserving transform.
 When you want to keep exactness as well as the marker, use the operations on the value
 itself. They preserve units, percentages and exact rationals, and broadcast:
 
-```java
+```text
 arg.negate();
-arg.
-
-floor();
-arg.
-
-abs();
-left.
-
-multiply(right);
+arg.floor();
+arg.abs();
+left.multiply(right);
 ```
 
 ### Collection Operations
@@ -682,15 +675,11 @@ sqrt([[4,9]])     -> [[2,3]]    (matrix - auto-broadcast)
 ### Manual Broadcasting (Level 2 with `noBroadcasting()`)
 
 Functions that need pre-processing before broadcasting (e.g., angle conversion) disable
-automatic broadcasting and use `FunctionContext.mapDouble()`:
+automatic broadcasting and broadcast through a `FunctionContext` helper instead:
 
-```java
+```text
 .noBroadcasting()
-.implementedBy((arg, ctx) ->
-        ctx.
-
-mapDouble(arg, value ->
-        Math.sin(ctx.toRadians(value))));
+.implementedBy((arg, ctx) -> ctx.mapAngle(arg, Math::sin));
 ```
 
 ### No Broadcasting (Level 1 and Level 3)

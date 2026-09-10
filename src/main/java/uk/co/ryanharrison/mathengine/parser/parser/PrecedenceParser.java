@@ -314,9 +314,13 @@ public final class PrecedenceParser {
      * Expects a unit name. An unknown identifier is accepted here and reported at
      * evaluation time, which gives a better message and allows dynamic unit names.
      * Explicit references are accepted too: {@code @fahrenheit} or {@code @"km/h"}.
+     * <p>
+     * A function name is accepted too, since only a unit can be meant here. Without that,
+     * {@code in radians} was a parse error, because {@code radians} also spells deg2rad.
      */
     private Token expectUnitOrIdentifier() {
-        if (stream.check(TokenType.UNIT) || stream.check(TokenType.IDENTIFIER) || stream.check(TokenType.UNIT_REF)) {
+        if (stream.check(TokenType.UNIT) || stream.check(TokenType.IDENTIFIER)
+                || stream.check(TokenType.UNIT_REF) || stream.check(TokenType.FUNCTION)) {
             Token token = stream.advance();
             if (token.type() == TokenType.UNIT_REF) {
                 return new Token(TokenType.UNIT, (String) token.literal(), token.line(), token.column());

@@ -225,6 +225,59 @@
             "expected": -1.0,
             "expectedType": "NodeDouble",
             "notes": "tan(-pi/4) = -1"
+        },
+        {
+            "id": "sin_of_degree_quantity",
+            "input": "sin(90 degrees)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "The argument's own angle label says which unit it is in, so no configuration change is needed to ask this"
+        },
+        {
+            "id": "cos_of_gradian_quantity",
+            "input": "cos(100 gradians)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "Every angle unit in the registry works, not only the two the configuration offers"
+        },
+        {
+            "id": "sin_of_radian_quantity_in_degree_mode",
+            "input": "sin(1 radian)",
+            "expected": 0.8414709848078965,
+            "expectedType": "NodeDouble",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "tolerance": 1e-12,
+            "notes": "The label beats the configured angle unit, which is the point of honouring it"
+        },
+        {
+            "id": "trig_answer_has_no_label",
+            "input": "typeof(sin(90 degrees))",
+            "expected": "double",
+            "expectedType": "NodeString",
+            "notes": "A sine is a ratio, so the answer carries no marker however the argument was written"
+        },
+        {
+            "id": "sin_of_non_angle_quantity",
+            "input": "sin(3 meters)",
+            "expected": 0.1411200080598672,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "A label that is not an angle says nothing about how to read the argument, so the magnitude is used as it stands"
+        },
+        {
+            "id": "sin_broadcasts_over_angle_quantities",
+            "input": "sin({0 degrees, 90 degrees})",
+            "expected": [
+                0.0,
+                1.0
+            ],
+            "expectedType": "NodeVector",
+            "tolerance": 1e-12,
+            "notes": "Each element is read through its own label"
         }
     ]
 }

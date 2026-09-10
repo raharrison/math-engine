@@ -7,7 +7,8 @@ import java.util.function.DoubleUnaryOperator;
  * <p>
  * This abstraction handles the common patterns in trigonometric functions:
  * <ul>
- *     <li>Standard trig (sin, cos, tan): input angle is converted from context unit to radians</li>
+ *     <li>Standard trig (sin, cos, tan): the input is converted to radians, through its own
+ *     angle label if it has one, otherwise through the context unit</li>
  *     <li>Inverse trig (asin, acos, atan): output radians are converted to context unit</li>
  * </ul>
  *
@@ -34,8 +35,8 @@ public final class TrigFunction {
     /**
      * Creates a standard trigonometric function where input is an angle.
      * <p>
-     * The input value is converted from the context's angle unit (degrees or radians)
-     * to radians before applying the function.
+     * An argument carrying an angle unit is converted through that label, so
+     * {@code sin(90 degrees)} is 1 in either mode; a bare number uses the context unit.
      *
      * @param name        function name
      * @param description function description
@@ -49,10 +50,8 @@ public final class TrigFunction {
                 .withParams("x")
                 .inCategory(MathFunction.Category.TRIGONOMETRIC)
                 .takingUnary()
-                .noBroadcasting() // broadcasts internally via ctx.mapDouble()
-                .implementedBy((arg, ctx) ->
-                        ctx.mapDouble(arg, value ->
-                                fn.applyAsDouble(ctx.toRadians(value))));
+                .noBroadcasting() // broadcasts internally via ctx.mapAngle()
+                .implementedBy((arg, ctx) -> ctx.mapAngle(arg, fn));
     }
 
     /**

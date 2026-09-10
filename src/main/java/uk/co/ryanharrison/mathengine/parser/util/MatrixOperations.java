@@ -199,12 +199,9 @@ public final class MatrixOperations {
     /**
      * Rank by Gaussian elimination, carried out in the element type.
      * <p>
-     * The rank is the number of pivots the reduction finds, so everything turns on which
-     * elements count as zero. Reducing in {@link NodeConstant} means an exact matrix is
-     * decided exactly: a row that is an exact multiple of another cancels to exactly zero,
-     * rather than to a residue that a threshold has to guess about. Only a matrix that
-     * already holds a double falls back to a threshold, and it is the same 1e-10 the
-     * previous {@code double[][]} implementation used for every matrix.
+     * The rank is the count of pivots, so everything turns on which elements count as zero.
+     * An exact matrix is decided exactly, with no threshold to guess about; only a matrix
+     * already holding a double falls back to {@link #INEXACT_ZERO_TOLERANCE}.
      *
      * @return the number of linearly independent rows, between 0 and {@code min(rows, cols)}
      */

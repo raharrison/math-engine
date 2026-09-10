@@ -173,11 +173,8 @@ public final class FunctionBuilder {
     }
 
     /**
-     * Creates a unary function from a double operation whose answer is the same kind of
-     * thing as its argument, so a quantity or a percentage keeps its marker.
-     * <p>
-     * Use {@link #implementedByDouble(DoubleUnaryOperator)} for the transforms whose
-     * answer is a pure number, such as a logarithm or a trigonometric ratio.
+     * As {@link #implementedByDouble(DoubleUnaryOperator)}, but the answer keeps the
+     * argument's marker: use it for a root, not for a logarithm.
      */
     public MathFunction implementedByMagnitude(DoubleUnaryOperator op) {
         validateUnaryArity();

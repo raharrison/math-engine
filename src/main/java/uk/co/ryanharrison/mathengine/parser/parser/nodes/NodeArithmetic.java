@@ -126,10 +126,6 @@ final class NodeArithmetic {
 
     /**
      * Applies a real-valued transform to the magnitude, keeping the label.
-     * <p>
-     * This is the function-side half of the rule the operators follow: a root or a
-     * fractional part of a length is still a length, so the marker survives. Transforms
-     * whose answer is a pure number by nature, such as a logarithm, do not come here.
      */
     static NodeConstant mapMagnitude(NodeConstant value, DoubleUnaryOperator op) {
         return mapScalar(value, number -> new NodeDouble(op.applyAsDouble(number.doubleValue())));
@@ -217,11 +213,7 @@ final class NodeArithmetic {
             return bothUnits(op, (NodeUnit) left, (NodeUnit) right);
         }
 
-        // Exactly one side carries a unit, so the value is a magnitude wearing a label:
-        // the arithmetic happens on the magnitude and the label rides along. That is why
-        // (2 meters) ^ 2 is 4 meters and 1 / (10 meters) is 0.1 meters. Neither answer is
-        // a dimensional statement; the engine has no compound units and does not pretend
-        // to. A label is only ever lost where it cancels, in bothUnits below.
+        // One side carries a label: the arithmetic happens on the magnitude, the label rides
         NodeUnit unit = (NodeUnit) (leftIsUnit ? left : right);
         double scalar = requireNumber(op, leftIsUnit ? right : left).doubleValue();
         double magnitude = leftIsUnit

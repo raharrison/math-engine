@@ -339,7 +339,7 @@ cannot be redefined.
 
 **Basic Trigonometry:**
 
-- `sin(x)` - Sine (angle unit aware)
+- `sin(x)` - Sine (angle unit aware: a bare number uses the configured unit, `sin(90 degrees)` is 1 in either mode)
 - `cos(x)` - Cosine (angle unit aware)
 - `tan(x)` - Tangent (angle unit aware)
 - `sec(x)` - Secant (1/cos)

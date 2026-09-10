@@ -1,7 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
 import uk.co.ryanharrison.mathengine.core.AngleUnit;
-import uk.co.ryanharrison.mathengine.linearalgebra.Matrix;
 import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
@@ -28,6 +27,11 @@ import java.util.function.DoubleUnaryOperator;
  * }</pre>
  */
 public final class FunctionContext {
+
+    /**
+     * The unit family whose base unit is the radian.
+     */
+    private static final String ANGLE_UNIT_TYPE = "angle";
 
     private final String functionName;
     private final EvaluationContext evaluationContext;
@@ -222,6 +226,18 @@ public final class FunctionContext {
     }
 
     /**
+     * Interprets a value as an angle, in radians. An angle label says which unit and beats
+     * the configured one; anything else is read in the configured unit.
+     */
+    public double toRadians(NodeConstant value) {
+        if (value instanceof NodeUnit quantity && ANGLE_UNIT_TYPE.equals(quantity.getUnit().type())) {
+            // Every angle unit has the radian as its base, so this is the conversion
+            return quantity.getUnit().toBase(quantity.getValue());
+        }
+        return toRadians(toDouble(value));
+    }
+
+    /**
      * Expresses a result computed in radians in the configured unit.
      */
     public double fromRadians(double radians) {
@@ -240,22 +256,16 @@ public final class FunctionContext {
     }
 
     /**
-     * Applies a real-valued function to the magnitude, element-wise, keeping any marker,
-     * so {@code sqrt(100 meters)} is 10 meters and {@code sqrt(20%)} is a percentage.
-     * <p>
-     * This is the counterpart to {@link #mapDouble}: use it where the answer is the same
-     * kind of thing as the argument, such as a root or a fractional part, and
-     * {@code mapDouble} where the answer is a pure number, such as a logarithm.
+     * The counterpart to {@link #mapDouble}: keeps the marker, so {@code sqrt(100 meters)}
+     * is 10 meters.
      */
     public NodeConstant mapMagnitude(NodeConstant value, DoubleUnaryOperator op) {
         return value.mapMagnitude(op);
     }
 
     /**
-     * The two-argument form: whichever argument carries a marker lends it to the result,
-     * the left one first. A bare number meeting a quantity is read in the quantity's own
-     * terms, exactly as {@code (4 meters) + 3} reads a bare 3 as three metres, and two
-     * quantities are converted to the left's unit before they meet.
+     * The two-argument form: the marker comes from whichever side has one, the left first,
+     * and two quantities are converted to the left's unit before they meet.
      *
      * @throws TypeError if the two arguments carry units measuring different things
      */
@@ -270,6 +280,14 @@ public final class FunctionContext {
         }
         double rightValue = toDouble(right);
         return left.mapMagnitude(value -> op.applyAsDouble(value, rightValue));
+    }
+
+    /**
+     * Applies a function of an angle, element-wise. The answer is a ratio, so it has no marker.
+     */
+    public NodeConstant mapAngle(NodeConstant value, DoubleUnaryOperator radiansOp) {
+        return BroadcastingEngine.applyUnary(value,
+                v -> new NodeDouble(radiansOp.applyAsDouble(toRadians(v))));
     }
 
     /**
@@ -314,25 +332,5 @@ public final class FunctionContext {
             values[i] = toDouble(flattened.get(i));
         }
         return values;
-    }
-
-    public Matrix toMatrix(NodeMatrix matrix) {
-        double[][] data = new double[matrix.getRows()][matrix.getCols()];
-        for (int i = 0; i < data.length; i++) {
-            for (int j = 0; j < data[i].length; j++) {
-                data[i][j] = toDouble((NodeConstant) matrix.getElement(i, j));
-            }
-        }
-        return Matrix.of(data);
-    }
-
-    public NodeMatrix fromMatrix(Matrix matrix) {
-        Node[][] elements = new Node[matrix.getRowCount()][matrix.getColumnCount()];
-        for (int i = 0; i < elements.length; i++) {
-            for (int j = 0; j < elements[i].length; j++) {
-                elements[i][j] = new NodeDouble(matrix.get(i, j));
-            }
-        }
-        return new NodeMatrix(elements);
     }
 }

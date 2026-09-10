@@ -234,6 +234,22 @@
             "expected": "0.0 centimeters",
             "expectedType": "NodeUnit",
             "notes": "Zero value conversion"
+        },
+        {
+            "id": "convert_degrees_to_radians",
+            "input": "(90 degrees) in radians",
+            "expected": "1.5707963267948966 radians",
+            "expectedType": "NodeUnit",
+            "tolerance": 1e-12,
+            "notes": "'radians' is also a spelling of deg2rad, and a function name after 'in' used to be a parse error"
+        },
+        {
+            "id": "convert_radians_to_degrees",
+            "input": "(1 radian) in degrees",
+            "expected": "57.29577951308232 degrees",
+            "expectedType": "NodeUnit",
+            "tolerance": 1e-12,
+            "notes": "The same collision the other way round, since 'degrees' also spells rad2deg"
         }
     ]
 }

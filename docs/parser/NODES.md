@@ -307,9 +307,23 @@ carrying the label into a place it means nothing.
 
 ```java
 log(100 meters)           →  NodeDouble(2.0)
-sin(90 degrees)           →  NodeDouble(...)
+sin(90 degrees)           →  NodeDouble(1.0)
 sign(-3 meters)           →  NodeRational(-1)
 (1 km) > (500 meters)     →  NodeBoolean(true)
+```
+
+**Angle labels are read, not just dropped:**
+
+Trigonometry is the one place where a label changes how the argument is *read* rather
+than what the answer is labelled. An angle-typed quantity states its own unit, and that
+beats the engine's configured angle unit, so a question can be asked without changing a
+global setting. The answer is still a ratio, so it carries no label.
+
+```java
+sin(90 degrees)           →  NodeDouble(1.0)    // in either configured mode
+cos(100 gradians)         →  NodeDouble(0.0)
+sin(1 radian)             →  NodeDouble(0.841)  // even in degrees mode
+sin(3 meters)             →  NodeDouble(0.141)  // not an angle, so the label says nothing
 ```
 
 ---

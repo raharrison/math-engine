@@ -117,13 +117,9 @@ public abstract sealed class NodeConstant extends Node permits
     }
 
     /**
-     * Applies a real-valued transform to this value's magnitude, keeping its shape:
-     * collections stay collections, and a quantity or a percentage keeps its marker,
-     * so {@code sqrt(100 meters)} is 10 meters.
-     * <p>
-     * Use this for a transform whose answer is the same kind of thing as its argument,
-     * such as a root or a fractional part. A transform whose answer is a pure number,
-     * such as a logarithm or a trigonometric ratio, should return one.
+     * Applies a real-valued transform to the magnitude, keeping the marker and the shape,
+     * so {@code sqrt(100 meters)} is 10 meters. For a root or a fractional part, not for a
+     * logarithm, whose answer is a pure number.
      *
      * @throws TypeError if the value is not numeric
      */
