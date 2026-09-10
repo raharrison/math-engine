@@ -50,6 +50,28 @@
             "expected": 6,
             "expectedType": "NodeRational",
             "notes": "Factorial of 3"
+        },
+        {
+            "id": "factorial_past_a_long",
+            "input": "21!",
+            "expected": "51090942171709440000",
+            "expectedType": "NodeRational",
+            "notes": "The first factorial that does not fit in a long, which used to wrap to a negative number"
+        },
+        {
+            "id": "factorial_hundred",
+            "input": "100!",
+            "expected": "93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000",
+            "expectedType": "NodeRational",
+            "notes": "Well past a long, where the wrapped product used to come out as exactly zero"
+        },
+        {
+            "id": "factorial_above_exact_limit",
+            "input": "10001!",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "exact arithmetic limit",
+            "notes": "An exact factorial is capped rather than allowed to exhaust memory"
         }
     ]
 }

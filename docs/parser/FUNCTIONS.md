@@ -303,8 +303,7 @@ double angle = ctx.fromRadians(rad);  // radians -> context unit
 
 ### Broadcasting
 
-Three element-wise helpers. Choosing between them is the whole decision about what your
-function does to a quantity or a percentage.
+Three element-wise helpers, one per answer type:
 
 | Helper         | The answer is                                     | Example                         |
 |----------------|---------------------------------------------------|---------------------------------|

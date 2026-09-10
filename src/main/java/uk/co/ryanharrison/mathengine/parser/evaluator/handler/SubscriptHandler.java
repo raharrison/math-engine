@@ -53,8 +53,33 @@ public final class SubscriptHandler {
                 }
                 yield evaluateMatrixSubscript(matrix, subscript.getIndices(), context);
             }
+            case NodeString text -> evaluateStringSubscript(text, subscript.getIndices(), context);
             default -> throw new TypeError("Cannot subscript a " + target.typeName());
         };
+    }
+
+    /**
+     * Evaluates {@code s[i]} or {@code s[start:end]}. Both answer a string.
+     */
+    private NodeConstant evaluateStringSubscript(NodeString text, List<NodeSubscript.SliceArg> indices,
+                                                 EvaluationContext context) {
+        if (indices.size() != 1) {
+            throw new TypeError("String subscript requires exactly one index, got " + indices.size());
+        }
+
+        String value = text.getValue();
+        NodeSubscript.SliceArg arg = indices.getFirst();
+
+        if (!arg.isRange() && arg.getStart() != null) {
+            int index = requireIndex(arg.getStart(), value.length(), "String index", context);
+            return new NodeString(String.valueOf(value.charAt(index)));
+        }
+
+        int start = arg.getStart() == null ? 0 : resolveIndex(arg.getStart(), value.length(), "start", context);
+        int end = arg.getEnd() == null ? value.length() : resolveIndex(arg.getEnd(), value.length(), "end", context);
+        start = clamp(start, 0, value.length());
+        end = clamp(end, 0, value.length());
+        return new NodeString(start >= end ? "" : value.substring(start, end));
     }
 
     /**
@@ -153,7 +178,7 @@ public final class SubscriptHandler {
         boolean singleRow = false;
 
         if (rowArg.getStart() != null && !rowArg.isRange()) {
-            startRow = resolveIndex(rowArg.getStart(), matrix.getRows(), "row", context);
+            startRow = requireIndex(rowArg.getStart(), matrix.getRows(), "Matrix row index", context);
             endRow = startRow + 1;
             singleRow = true;
         } else if (rowArg.isRange()) {
@@ -171,7 +196,7 @@ public final class SubscriptHandler {
 
         if (colArg != null) {
             if (colArg.getStart() != null && !colArg.isRange()) {
-                startCol = resolveIndex(colArg.getStart(), matrix.getCols(), "column", context);
+                startCol = requireIndex(colArg.getStart(), matrix.getCols(), "Matrix column index", context);
                 endCol = startCol + 1;
                 singleCol = true;
             } else if (colArg.isRange()) {
@@ -254,7 +279,11 @@ public final class SubscriptHandler {
         if (!TypeCoercion.isNumeric(indexValue)) {
             throw new TypeError(description + " must be a number");
         }
-        return TypeCoercion.toInt(indexValue);
+        double index = TypeCoercion.toDouble(indexValue);
+        if (index != Math.floor(index) || Double.isInfinite(index)) {
+            throw new TypeError(description + " must be a whole number, got: " + index);
+        }
+        return (int) index;
     }
 
     /**

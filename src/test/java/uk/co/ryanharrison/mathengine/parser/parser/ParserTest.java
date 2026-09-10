@@ -37,7 +37,7 @@ class ParserTest {
 
     private Node parse(String input) {
         List<Token> tokens = lexer.tokenize(input);
-        Parser parser = new Parser(tokens, input, 1000, false);
+        Parser parser = new Parser(tokens, input, 1000, false, 10_000);
         return parser.parse();
     }
 

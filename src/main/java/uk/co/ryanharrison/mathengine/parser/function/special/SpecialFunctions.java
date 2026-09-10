@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.function.special;
 
+import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
@@ -54,9 +55,14 @@ public final class SpecialFunctions {
             .takingUnary()
             .implementedBy((arg, ctx) -> {
                 double n = ctx.requireNonNegative(ctx.toDouble(arg));
-                return Math.floor(n) == n
-                        ? new NodeRational(MathUtils.factorial((long) n))
-                        : new NodeDouble(MathUtils.factorial(n));
+                if (Math.floor(n) != n || Double.isInfinite(n)) {
+                    return new NodeDouble(MathUtils.factorial(n));
+                }
+                if (n > MathUtils.MAX_EXACT_FACTORIAL) {
+                    throw ctx.error("argument " + (long) n +
+                            " is beyond the exact arithmetic limit of " + MathUtils.MAX_EXACT_FACTORIAL);
+                }
+                return new NodeRational(BigRational.of(MathUtils.factorialExact((long) n)));
             });
 
     /**

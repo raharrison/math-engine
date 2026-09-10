@@ -356,11 +356,12 @@ Immutable configuration object with builder pattern.
 .maxVectorSize(1_000_000)
 .maxMatrixDimension(10_000)
 .maxIdentifierLength(256)
+.maxLiteralDigits(10_000)   // how long a number a literal may name; -1 for no limit
 ```
 
 **3. Feature Toggles**
 
-```java
+```text
 .implicitMultiplication(true)           // 2x → 2 * x
 .vectorsEnabled(true)
 .matricesEnabled(true)

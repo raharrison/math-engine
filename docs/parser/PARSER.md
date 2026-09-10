@@ -77,7 +77,7 @@ Token peek()                  // Look at current token
 
 The parser supports multiple statements separated by semicolons:
 
-```java
+```text
 // Single statement
 "x := 5"           →NodeAssignment
 
@@ -603,7 +603,7 @@ Node parsePostfix() {
 
 **Left-to-Right Chaining:**
 
-```java
+```text
 private Node parseCallAndSubscript() {
     Node expr = parsePrimary();
 
@@ -989,7 +989,7 @@ private Node parseComprehension() {
 
 **Examples:**
 
-```java
+```text
 // Single iteration
 {x^2 for
 x in 1..5}
@@ -1157,7 +1157,7 @@ private List<Node> extractRowElements(Node rowNode) {
 
 **Examples:**
 
-```java
+```text
 // Traditional syntax
 [1,2;3,4]
         →Matrix([[1,2],[3,4]])
@@ -1230,7 +1230,7 @@ public List<SliceArg> parseSliceArgs() {
 
 **Examples:**
 
-```java
+```text
 v[0]        → [
 
 SliceArg(0,null,false)]
@@ -1340,7 +1340,7 @@ private String getSuggestion() {
 
 **1. Unclosed Delimiters:**
 
-```java
+```text
 parse("(2 + 3")
 →ParseException:Expected ')'
 after expression
@@ -1359,7 +1359,7 @@ brace '}'
 
 **2. Unexpected Token:**
 
-```java
+```text
 parse("2 * / 3")
 →ParseException:
 Expected expression
@@ -1373,7 +1373,7 @@ operators]
 
 **3. Empty Expression:**
 
-```java
+```text
 parse("")
 →ParseException:
 Empty expression
@@ -1385,7 +1385,7 @@ Empty expression
 
 **4. Malformed Assignment:**
 
-```java
+```text
 parse("x =")
 →LexerException:
 Invalid operator '='(use ':='for assignment)
@@ -1398,7 +1398,7 @@ after assignment
 
 **5. Matrix Size Mismatch:**
 
-```java
+```text
 parse("[1, 2; 3]")
 →ParseException:
 Matrix rows

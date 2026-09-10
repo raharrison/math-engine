@@ -35,6 +35,7 @@ public record SpecConfig(
         Integer maxVectorSize,
         Integer maxMatrixDimension,
         Integer maxIdentifierLength,
+        Integer maxLiteralDigits,
         Boolean forceDoubleArithmetic,
         Integer decimalPlaces,
         Boolean silentValidation
@@ -61,6 +62,7 @@ public record SpecConfig(
         applyIfPresent(maxVectorSize, builder::maxVectorSize);
         applyIfPresent(maxMatrixDimension, builder::maxMatrixDimension);
         applyIfPresent(maxIdentifierLength, builder::maxIdentifierLength);
+        applyIfPresent(maxLiteralDigits, builder::maxLiteralDigits);
         applyIfPresent(forceDoubleArithmetic, builder::forceDoubleArithmetic);
         applyIfPresent(decimalPlaces, builder::decimalPlaces);
         applyIfPresent(silentValidation, builder::silentValidation);

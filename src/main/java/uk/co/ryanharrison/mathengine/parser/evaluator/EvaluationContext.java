@@ -169,6 +169,13 @@ public final class EvaluationContext {
         return config.forceDoubleArithmetic();
     }
 
+    /**
+     * Decimal places for displayed output, or negative for full precision.
+     */
+    public int getDecimalPlaces() {
+        return config.decimalPlaces();
+    }
+
     public boolean isSilentValidation() {
         return config.silentValidation();
     }

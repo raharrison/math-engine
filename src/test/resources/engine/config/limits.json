@@ -224,6 +224,54 @@
                 "maxVectorSize": 3
             },
             "notes": "Three elements fit inside a limit of three"
+        },
+        {
+            "id": "literal_digits_just_under",
+            "input": "1e50",
+            "config": {
+                "maxLiteralDigits": 100
+            },
+            "expected": "1e50",
+            "expectedType": "NodeRational",
+            "notes": "Fifty-one digits fit inside a limit of a hundred"
+        },
+        {
+            "id": "literal_digits_just_over",
+            "input": "1e400",
+            "config": {
+                "maxLiteralDigits": 100
+            },
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "beyond the limit",
+            "notes": "Four hundred and one do not, and the failure names the size and the limit"
+        },
+        {
+            "id": "literal_digits_unlimited",
+            "input": "1e400",
+            "config": {
+                "maxLiteralDigits": -1
+            },
+            "expected": "1e400",
+            "expectedType": "NodeRational",
+            "notes": "A negative limit allows any size, for a caller who wants the old behaviour"
+        },
+        {
+            "id": "literal_digits_default_allows_ordinary_sizes",
+            "input": "1e308",
+            "expected": "1e308",
+            "expectedType": "NodeRational",
+            "notes": "The default of ten thousand digits is far above anything typed on purpose"
+        },
+        {
+            "id": "literal_digits_negative_exponent",
+            "input": "1e-400",
+            "config": {
+                "maxLiteralDigits": 100
+            },
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "A tiny literal is as long as a huge one, since the digits are in the denominator"
         }
     ]
 }

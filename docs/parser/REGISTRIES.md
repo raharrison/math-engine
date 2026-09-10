@@ -387,7 +387,7 @@ void register(String name) {
 
 For compound identifier splitting, longest-match-first:
 
-```java
+```text
 // If registry contains: "sin", "s", "in"
 "sin2" → Check "sin" first (matches!) → ["sin", "2"]
        → Not "s" + "in" + "2"

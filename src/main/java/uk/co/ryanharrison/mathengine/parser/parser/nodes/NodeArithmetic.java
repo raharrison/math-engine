@@ -1,6 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
 import uk.co.ryanharrison.mathengine.core.BigRational;
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
@@ -256,18 +257,15 @@ final class NodeArithmetic {
         }
 
         if (rightIsPercent) {
-            // "100 + 10%" reads as "100 plus 10% of 100", the usual calculator convention
+            // Read against the number on its left, so "100 * 10%" is the amount 10
             if (op.isAdditive()) {
                 double delta = leftValue * rightValue;
                 return new NodeDouble(op == Op.ADD ? leftValue + delta : leftValue - delta);
             }
-            if (op == Op.MULTIPLY) {
-                return NodePercent.fromDecimal(leftValue * rightValue);
-            }
             return new NodeDouble(op.apply(leftValue, rightValue));
         }
 
-        // Percent on the left of a plain number: scaling keeps it a percent, anything else measures it
+        // On the left it is the thing being scaled, so 10% * 5 is 50%
         return op == Op.MULTIPLY || op == Op.DIVIDE || op == Op.POWER
                 ? NodePercent.fromDecimal(op.apply(leftValue, rightValue))
                 : new NodeDouble(op.apply(leftValue, rightValue));
@@ -288,7 +286,21 @@ final class NodeArithmetic {
                 // Division by zero, or a non-integer exponent: fall through to doubles
             }
         }
+        if (op == Op.POWER && left.doubleValue() < 0 && rightExact != null) {
+            return new NodeDouble(realRoot(left.doubleValue(), rightExact));
+        }
         return new NodeDouble(op.apply(left.doubleValue(), right.doubleValue()));
+    }
+
+    /**
+     * An odd denominator has a real root, so {@code (-8) ^ (1/3)} is -2; an even one is NaN.
+     */
+    private static double realRoot(double base, BigRational exponent) {
+        if (!exponent.getDenominator().testBit(0)) {
+            return Double.NaN;
+        }
+        double magnitude = Math.pow(-base, exponent.doubleValue());
+        return exponent.getNumerator().testBit(0) ? -magnitude : magnitude;
     }
 
     /**
@@ -327,10 +339,19 @@ final class NodeArithmetic {
             throw new ArithmeticException("Fractional exponent");
         }
         long power = exponent.getNumerator().longValueExact();
-        if (Math.abs(power) > MAX_EXACT_POWER) {
-            throw new ArithmeticException("Exponent too large for exact arithmetic");
+        if (Math.abs(power) > MAX_EXACT_POWER && !isUnitMagnitude(base)) {
+            throw new DomainException("Exponent " + power + " is beyond the exact arithmetic limit of "
+                    + MAX_EXACT_POWER);
         }
         return base.pow(power);
+    }
+
+    /**
+     * 0, 1 and -1 are cheap at any exponent.
+     */
+    private static boolean isUnitMagnitude(BigRational base) {
+        return base.getDenominator().equals(BigInteger.ONE)
+                && base.getNumerator().abs().compareTo(BigInteger.ONE) <= 0;
     }
 
     // ==================== Ordering ====================

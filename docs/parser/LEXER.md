@@ -55,7 +55,7 @@ The scanner must distinguish between:
 
 **Number Formats:**
 
-```java
+```text
 // Integers
 "42"        → INTEGER(42)
 "-17"       → MINUS, INTEGER(17)  // Unary minus handled by parser
@@ -76,7 +76,7 @@ The scanner must distinguish between:
 
 Multi-character operators require lookahead:
 
-```java
+```text
 '=' → check next:
     '=' → EQUALS (==)
     else → ERROR (= is not valid, must use :=)
@@ -99,7 +99,7 @@ Multi-character operators require lookahead:
 
 The scanner recognizes reference symbols for explicit disambiguation:
 
-```java
+```text
 '@' → UNIT_REF or UNIT_REF_STR (unit reference)
     '@' 'identifier' → UNIT_REF(@m)
     '@' '"' string '"' → UNIT_REF_STR(@"km/h")  // For units with spaces

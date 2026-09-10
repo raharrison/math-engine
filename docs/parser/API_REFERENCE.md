@@ -85,6 +85,7 @@ MathEngineConfig config = MathEngineConfig.builder()
         .maxVectorSize(1_000_000)
         .maxMatrixDimension(10_000)
         .maxIdentifierLength(256)
+        .maxLiteralDigits(10_000)               // -1 = no limit
 
         // Features (disable for security/performance)
         .implicitMultiplication(true)           // "2x" means "2*x"
@@ -104,6 +105,8 @@ MathEngineConfig config = MathEngineConfig.builder()
 - **userDefinedFunctionsEnabled**: Disable if users shouldn't define functions
 - **lambdasEnabled/comprehensionsEnabled**: Disable if not needed (reduces attack surface)
 - **maxVectorSize/maxMatrixDimension**: Critical for DoS prevention
+- **maxLiteralDigits**: caps how long a number a literal may name, since `1e100000000`
+  would exhaust memory. Default 10,000; negative lifts it
 
 ## 3. Input Format
 

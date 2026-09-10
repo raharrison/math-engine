@@ -3,6 +3,7 @@ package uk.co.ryanharrison.mathengine.utils;
 import uk.co.ryanharrison.mathengine.special.Gamma;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 
 /**
@@ -72,6 +73,16 @@ public final class MathUtils {
     // ==================== Factorial Functions ====================
 
     /**
+     * The largest n whose factorial fits in a long.
+     */
+    public static final long MAX_LONG_FACTORIAL = 20;
+
+    /**
+     * Cap on an exact factorial.
+     */
+    public static final long MAX_EXACT_FACTORIAL = 10_000;
+
+    /**
      * Calculates the factorial of a non-negative integer.
      * <p>
      * The factorial is defined as: n! = n × (n-1) × (n-2) × ... × 2 × 1
@@ -87,12 +98,36 @@ public final class MathUtils {
         if (num < 0) {
             throw new IllegalArgumentException("Factorial requires non-negative integer, got: " + num);
         }
+        if (num > MAX_LONG_FACTORIAL) {
+            throw new ArithmeticException("Factorial of " + num + " overflows a long; use factorialExact");
+        }
 
         long answer = 1;
         for (long i = 2; i <= num; i++) {
             answer *= i;
         }
 
+        return answer;
+    }
+
+    /**
+     * Exact factorial at any size. {@link #factorial(long)} wraps past 20!.
+     *
+     * @throws IllegalArgumentException if negative or above {@link #MAX_EXACT_FACTORIAL}
+     */
+    public static BigInteger factorialExact(long num) {
+        if (num < 0) {
+            throw new IllegalArgumentException("Factorial requires non-negative integer, got: " + num);
+        }
+        if (num > MAX_EXACT_FACTORIAL) {
+            throw new IllegalArgumentException("Factorial of " + num +
+                    " is too large to compute exactly; the limit is " + MAX_EXACT_FACTORIAL);
+        }
+
+        BigInteger answer = BigInteger.ONE;
+        for (long i = 2; i <= num; i++) {
+            answer = answer.multiply(BigInteger.valueOf(i));
+        }
         return answer;
     }
 
@@ -109,8 +144,9 @@ public final class MathUtils {
      * @see Gamma#gamma(double)
      */
     public static double factorial(double x) {
-        // For integers, use the exact integer factorial
-        if (Math.floor(x) == x && x >= 0) {
+        // For small integers, use the exact integer factorial. Beyond 20! a long wraps,
+        // so the gamma approximation is the better answer rather than the worse one.
+        if (Math.floor(x) == x && x >= 0 && x <= MAX_LONG_FACTORIAL) {
             return factorial((long) x);
         }
         return Gamma.gamma(x + 1.0);

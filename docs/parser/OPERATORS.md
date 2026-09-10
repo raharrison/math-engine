@@ -158,7 +158,7 @@ NodeConstant result = executor.executeUnary(
 
 For logical operators (`&&`, `||`), the right operand may not need evaluation:
 
-```java
+```text
 // false && expensive_operation  →  doesn't evaluate expensive_operation
 NodeConstant result = executor.executeBinaryShortCircuit(
     TokenType.AND,
@@ -194,7 +194,7 @@ Map<TokenType, BinaryOperator> operators = StandardBinaryOperators.all();
 
 **Type Promotion:**
 
-```java
+```text
 Rational + Rational → Rational (exact)
 Rational + Double   → Double
 Double + Double     → Double
@@ -202,7 +202,7 @@ Double + Double     → Double
 
 **Broadcasting:**
 
-```java
+```text
 {1, 2, 3} + 5       → {6, 7, 8}
 5 + {1, 2, 3}       → {6, 7, 8}
 {1, 2} + {3, 4, 5}  → {4, 6, 5}  // Extend shorter with zeros
@@ -229,13 +229,11 @@ Same as PlusOperator but for subtraction.
 than truncated, because rounding it silently turned `"ab" * 2.5` into `"abab"` and
 `20% * "ab"` into the empty string.
 
-```java
-"ab"*3            → "ababab"
-        "ab"*0            → ""
-        "ab"*2.5          →TypeError(fractional count)
-"ab"*(4meters)   →
-
-TypeError(a count is a plain number)
+```text
+"ab" * 3            → "ababab"
+"ab" * 0            → ""
+"ab" * 2.5          → TypeError, fractional count
+"ab" * (4 meters)   → TypeError, a count is a plain number
 ```
 
 #### DivideOperator (/)
@@ -250,29 +248,26 @@ TypeError(a count is a plain number)
   ```
 - Vector / Vector → Vector (element-wise)
 - Vector / Scalar → Vector (broadcast)
-- Quantity / like quantity → Number (the labels cancel)
-- Number / Quantity → Quantity (the label rides along, so `1 / x` and `x ^ -1` agree)
+- Quantity / like quantity → Number (labels cancel)
+- Number / Quantity → Quantity (so `1 / x` and `x ^ -1` agree)
 
 #### PowerOperator (^)
 
 **Behavior:**
 
 - Number ^ Number → Number
-- Negative base with fractional exponent → Complex (currently error)
 - 0^0 → 1 (by convention)
 - Vector ^ Scalar → Vector (element-wise)
 - Quantity ^ Number → Quantity (the magnitude is raised, the label rides along)
+- Negative base with a fractional exponent → the real root where one exists, else NaN
 
-```java
-(2meters)^2      → 4
-
-meters
-        (4meters) ^0.5    → 2
-
-meters(and equals sqrt(4meters))
-        (4meters)^(2meters) →
-
-TypeError(two labels cannot merge)
+```text
+(2 meters) ^ 2          → 4 meters
+(4 meters) ^ 0.5        → 2 meters       and equals sqrt(4 meters)
+(4 meters) ^ (2 meters) → TypeError      two labels cannot merge
+(-8) ^ (1/3)            → -2             an odd denominator has a real root
+(-4) ^ (1/2)            → NaN            an even one does not
+2 ^ 100000              → DomainException, beyond the exact arithmetic limit
 ```
 
 **Type Promotion:**
@@ -293,7 +288,7 @@ Always returns Double (except for integer powers of rationals).
 - Always returns non-negative result
 - Works with rationals and doubles
 
-```java
+```text
 7 mod 3     → 1
 -7 mod 3    → 2  (not -1)
 7.5 mod 2.0 → 1.5
@@ -305,7 +300,7 @@ Always returns Double (except for integer powers of rationals).
 
 **Behavior:**
 
-```java
+```text
 50%of 200          → 100
         25%of 80           → 20
         50%of 100meters   → 50
@@ -347,7 +342,7 @@ exactness.
 
 **Dimension Check:**
 
-```java
+```text
 [m × n] @ [n × p] → [m × p]
 [1 × n] @ [n × 1] → [1 × 1] (scalar)
 ```
@@ -379,7 +374,7 @@ All comparison operators return `NodeBoolean`.
 - String comparison (lexicographic)
 - Vector comparison (element-wise, returns vector of booleans)
 
-```java
+```text
 5 < 10           → true
 "abc" < "xyz"    → true
 {1, 5, 3} < 4    → {true, false, true}
@@ -394,7 +389,7 @@ All comparison operators return `NodeBoolean`.
 - Boolean equality
 - Vector equality (element-wise)
 
-```java
+```text
 5 == 5                  → true
 5.0 == 5                → true (cross-type)
 "hello" == "hello"      → true
@@ -403,7 +398,7 @@ All comparison operators return `NodeBoolean`.
 
 **Floating-Point Tolerance:**
 
-```java
+```text
 0.1 + 0.2 == 0.3  → true  (with small epsilon)
 ```
 
@@ -420,7 +415,7 @@ All comparison operators return `NodeBoolean`.
 
 **Behavior:**
 
-```java
+```text
 true && true    → true
 true && false   → false
 false && true   → false
@@ -429,13 +424,13 @@ false && false  → false
 
 **Short-Circuit:**
 
-```java
+```text
 false && expensive()  → false (expensive not called)
 ```
 
 **Numeric:**
 
-```java
+```text
 5 && 3   → true  (both non-zero)
 0 && 5   → false (first is zero)
 ```
@@ -444,7 +439,7 @@ false && expensive()  → false (expensive not called)
 
 **Behavior:**
 
-```java
+```text
 true || true    → true
 true || false   → true
 false || true   → true
@@ -453,7 +448,7 @@ false || false  → false
 
 **Short-Circuit:**
 
-```java
+```text
 true || expensive()  → true (expensive not called)
 ```
 
@@ -461,7 +456,7 @@ true || expensive()  → true (expensive not called)
 
 **Behavior:**
 
-```java
+```text
 true xor true   → false
 true xor false  → true
 false xor true  → true
@@ -480,7 +475,7 @@ false xor false → false
 
 **Behavior:**
 
-```java
+```text
 -5        → -5
 -(-5)     → 5
 -{1,2,3}  → {-1,-2,-3}
@@ -488,7 +483,7 @@ false xor false → false
 
 **Type Preservation:**
 
-```java
+```text
 -NodeRational(5, 2) → NodeRational(-5, 2)
 -NodeDouble(3.14)   → NodeDouble(-3.14)
 ```
@@ -498,7 +493,7 @@ false xor false → false
 **Behavior:**
 No-op, returns operand unchanged.
 
-```java
+```text
 +5  → 5
 ```
 
@@ -506,7 +501,7 @@ No-op, returns operand unchanged.
 
 **Behavior:**
 
-```java
+```text
 not true   → false
 not false  → true
 not 0      → true
@@ -517,7 +512,7 @@ not 5      → false
 
 **Behavior:**
 
-```java
+```text
 5!   → 120
 0!   → 1
 (-1)! → ERROR (negative factorial)
@@ -533,7 +528,7 @@ Typically limited to n <= 170 (double overflow prevention).
 
 **Behavior:**
 
-```java
+```text
 6!!  → 6 * 4 * 2 = 48
 7!!  → 7 * 5 * 3 * 1 = 105
 ```
@@ -546,7 +541,7 @@ Typically limited to n <= 170 (double overflow prevention).
 
 **Behavior:**
 
-```java
+```text
 50%  → 0.5 (NodePercent)
 ```
 
@@ -565,7 +560,7 @@ Returns `NodePercent` which displays as percentage but computes as decimal.
 
 ### Scalar Broadcasting
 
-```java
+```text
 5 + {1, 2, 3}       → {6, 7, 8}
 {1, 2, 3} * 2       → {2, 4, 6}
 5 + [1, 2; 3, 4]    → [6, 7; 8, 9]
@@ -575,7 +570,7 @@ Returns `NodePercent` which displays as percentage but computes as decimal.
 
 When vectors have different sizes, extend shorter with zeros:
 
-```java
+```text
 {1, 2} + {3, 4, 5}  → {1, 2, 0} + {3, 4, 5} = {4, 6, 5}
 ```
 
@@ -583,7 +578,7 @@ When vectors have different sizes, extend shorter with zeros:
 
 Scalar to matrix:
 
-```java
+```text
 2 * [1, 2; 3, 4] → [2, 4; 6, 8]
 ```
 

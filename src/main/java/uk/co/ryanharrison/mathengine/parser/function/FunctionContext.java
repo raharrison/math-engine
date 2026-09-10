@@ -4,6 +4,7 @@ import uk.co.ryanharrison.mathengine.core.AngleUnit;
 import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
+import uk.co.ryanharrison.mathengine.parser.format.StringNodeFormatter;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
@@ -28,9 +29,6 @@ import java.util.function.DoubleUnaryOperator;
  */
 public final class FunctionContext {
 
-    /**
-     * The unit family whose base unit is the radian.
-     */
     private static final String ANGLE_UNIT_TYPE = "angle";
 
     private final String functionName;
@@ -142,10 +140,14 @@ public final class FunctionContext {
     }
 
     /**
-     * The value as it would be displayed, without quotes around strings.
+     * Displayed form, unquoted, rounded to the configured decimal places.
      */
     public String toStringValue(NodeConstant value) {
-        return TypeCoercion.toDisplayString(value);
+        int places = evaluationContext.getDecimalPlaces();
+        if (places < 0 || value instanceof NodeString || value instanceof NodeBoolean) {
+            return TypeCoercion.toDisplayString(value);
+        }
+        return StringNodeFormatter.withDecimalPlaces(places).format(value);
     }
 
     /**
@@ -225,10 +227,7 @@ public final class FunctionContext {
         return getAngleUnit() == AngleUnit.DEGREES ? Math.toRadians(angle) : angle;
     }
 
-    /**
-     * Interprets a value as an angle, in radians. An angle label says which unit and beats
-     * the configured one; anything else is read in the configured unit.
-     */
+    /** An angle in radians. An angle label beats the configured unit. */
     public double toRadians(NodeConstant value) {
         if (value instanceof NodeUnit quantity && ANGLE_UNIT_TYPE.equals(quantity.getUnit().type())) {
             // Every angle unit has the radian as its base, so this is the conversion
@@ -255,19 +254,15 @@ public final class FunctionContext {
         return BroadcastingEngine.applyUnary(value, v -> new NodeDouble(op.applyAsDouble(toDouble(v))));
     }
 
-    /**
-     * The counterpart to {@link #mapDouble}: keeps the marker, so {@code sqrt(100 meters)}
-     * is 10 meters.
-     */
+    /** Like {@link #mapDouble}, but keeps the marker: {@code sqrt(100 meters)} is 10 meters. */
     public NodeConstant mapMagnitude(NodeConstant value, DoubleUnaryOperator op) {
         return value.mapMagnitude(op);
     }
 
     /**
-     * The two-argument form: the marker comes from whichever side has one, the left first,
-     * and two quantities are converted to the left's unit before they meet.
+     * The marker comes from whichever side has one, the left first.
      *
-     * @throws TypeError if the two arguments carry units measuring different things
+     * @throws TypeError if the two carry units measuring different things
      */
     public NodeConstant mapMagnitude(NodeConstant left, NodeConstant right, DoubleBinaryOperator op) {
         if (left instanceof NodeUnit leftUnit && right instanceof NodeUnit rightUnit) {

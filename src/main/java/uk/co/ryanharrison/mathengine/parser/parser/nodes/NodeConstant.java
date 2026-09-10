@@ -117,9 +117,7 @@ public abstract sealed class NodeConstant extends Node permits
     }
 
     /**
-     * Applies a real-valued transform to the magnitude, keeping the marker and the shape,
-     * so {@code sqrt(100 meters)} is 10 meters. For a root or a fractional part, not for a
-     * logarithm, whose answer is a pure number.
+     * Transforms the magnitude, keeping the marker: {@code sqrt(100 meters)} is 10 meters.
      *
      * @throws TypeError if the value is not numeric
      */

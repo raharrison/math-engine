@@ -14,7 +14,7 @@ import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 public final class MatrixOperations {
 
     /**
-     * Only used where an element is already inexact, so a residue can be round-off.
+     * Used only where an element is already inexact.
      */
     private static final double INEXACT_ZERO_TOLERANCE = 1e-10;
 
@@ -60,7 +60,7 @@ public final class MatrixOperations {
                     matrix.getRows() + "x" + matrix.getCols());
         }
         if (exponent < 0) {
-            throw new TypeError("Negative matrix exponentiation requires a matrix inverse, which is not supported");
+            return power(inverse(matrix), -exponent);
         }
         if (exponent == 1) {
             return matrix;
@@ -199,9 +199,8 @@ public final class MatrixOperations {
     /**
      * Rank by Gaussian elimination, carried out in the element type.
      * <p>
-     * The rank is the count of pivots, so everything turns on which elements count as zero.
-     * An exact matrix is decided exactly, with no threshold to guess about; only a matrix
-     * already holding a double falls back to {@link #INEXACT_ZERO_TOLERANCE}.
+     * An exact matrix is decided exactly; only one already holding a double falls back to
+     * {@link #INEXACT_ZERO_TOLERANCE}.
      *
      * @return the number of linearly independent rows, between 0 and {@code min(rows, cols)}
      */

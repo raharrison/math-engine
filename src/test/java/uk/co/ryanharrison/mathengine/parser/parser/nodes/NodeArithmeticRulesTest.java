@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 
@@ -205,11 +206,18 @@ class NodeArithmeticRulesTest {
         }
 
         @Test
-        void aHugeExponentFallsBackToDoubleRatherThanExhaustingMemory() {
-            NodeConstant result = new NodeRational(2).power(new NodeRational(1_000_000));
+        void aHugeExponentIsRefusedRatherThanExhaustingMemory() {
+            assertThatThrownBy(() -> new NodeRational(2).power(new NodeRational(1_000_000)))
+                    .isInstanceOf(DomainException.class)
+                    .hasMessageContaining("beyond the exact arithmetic limit");
+        }
 
-            assertThat(result).isInstanceOf(NodeDouble.class);
-            assertThat(result.doubleValue()).isInfinite();
+        @Test
+        void aHugeExponentOfOneIsStillCheap() {
+            NodeConstant result = new NodeRational(1).power(new NodeRational(1_000_000));
+
+            assertThat(result).isInstanceOf(NodeRational.class);
+            assertThat(result.doubleValue()).isEqualTo(1.0);
         }
     }
 }

@@ -166,9 +166,10 @@
         {
             "id": "multiply_types_boolean_percent",
             "input": "(true) * (20%)",
-            "expected": "20.0%",
-            "expectedType": "NodePercent",
-            "notes": "Boolean multiplies a percent"
+            "expected": 0.2,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "A percent on the right measures the number on its left, so the answer is an amount"
         },
         {
             "id": "multiply_types_boolean_range",
@@ -244,9 +245,10 @@
         {
             "id": "multiply_types_double_percent",
             "input": "(2.5d) * (20%)",
-            "expected": "50.0%",
-            "expectedType": "NodePercent",
-            "notes": "Double multiplies a percent"
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "A double times a percent is the share of that double"
         },
         {
             "id": "multiply_types_double_range",
@@ -342,16 +344,17 @@
             "input": "([1, 2; 3, 4]) * (20%)",
             "expected": [
                 [
-                    "20.0%",
-                    "40.0%"
+                    0.2,
+                    0.4
                 ],
                 [
-                    "60.00000000000001%",
-                    "80.0%"
+                    0.6,
+                    0.8
                 ]
             ],
             "expectedType": "NodeMatrix",
-            "notes": "Matrix multiplies a percent"
+            "tolerance": 1e-12,
+            "notes": "Broadcasting takes the share of each element"
         },
         {
             "id": "multiply_types_matrix_range",
@@ -551,11 +554,12 @@
             "id": "multiply_types_range_percent",
             "input": "(1..2) * (20%)",
             "expected": [
-                "20.0%",
-                "40.0%"
+                0.2,
+                0.4
             ],
             "expectedType": "NodeVector",
-            "notes": "Range multiplies a percent"
+            "tolerance": 1e-12,
+            "notes": "A range broadcasts over its members"
         },
         {
             "id": "multiply_types_range_range",
@@ -640,9 +644,10 @@
         {
             "id": "multiply_types_rational_percent",
             "input": "(3) * (20%)",
-            "expected": "60.00000000000001%",
-            "expectedType": "NodePercent",
-            "notes": "Rational multiplies a percent"
+            "expected": 0.6,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "Twenty percent of three is 0.6, the amount, rather than 60%"
         },
         {
             "id": "multiply_types_rational_range",
@@ -881,11 +886,12 @@
             "id": "multiply_types_vector_percent",
             "input": "({1, 2}) * (20%)",
             "expected": [
-                "20.0%",
-                "40.0%"
+                0.2,
+                0.4
             ],
             "expectedType": "NodeVector",
-            "notes": "Vector multiplies a percent"
+            "tolerance": 1e-12,
+            "notes": "A vector broadcasts over its elements"
         },
         {
             "id": "multiply_types_vector_range",
@@ -1026,6 +1032,22 @@
             "expectError": true,
             "expectedErrorType": "TypeError",
             "notes": "Two labels cannot merge into a name the engine has, so multiplying quantities is refused"
+        },
+        {
+            "id": "percent_on_the_right_measures",
+            "input": "100 * 10%",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "A percent on the right is read against the number on its left, so this is the amount 10, agreeing with 10% of 100"
+        },
+        {
+            "id": "percent_on_the_left_scales",
+            "input": "10% * 5",
+            "expected": "50%",
+            "expectedType": "NodePercent",
+            "tolerance": 1e-12,
+            "notes": "A percent on the left is the thing being scaled, so it stays a percentage"
         }
     ]
 }

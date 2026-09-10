@@ -34,10 +34,8 @@ src/test/resources/engine/
 └── integration/  several features at once, and real formulae
 ```
 
-There is one home per concern and no separate place for fixed bugs. A defect is a
-statement about some operator, function or value type, so its case belongs in that
-thing's file, next to the cases it contradicts. Filing it anywhere else is how a suite
-ends up asserting the same behaviour twice and disagreeing with itself.
+One home per concern, and no separate place for fixed bugs: a defect is a statement about
+an operator, a function or a value type, so its case goes in that thing's file.
 
 ---
 
@@ -244,11 +242,8 @@ file and the case.
 
 When a bug is found and fixed:
 
-1. Add the case to the file that owns the behaviour, using the table above. A unit that
-   went missing under `mod` is a `mod` case, so it goes in `operators/modulo.json`.
-2. Put the defect in the `notes`: say what the wrong answer was, not only what the right
-   one is. That sentence is what stops someone "simplifying" the fix away later, and it
-   sits where the next reader of that operator will actually see it.
+1. Add the case to the file that owns the behaviour, by the table above.
+2. Put the wrong answer in the `notes`, not only the right one.
 3. Add the neighbouring cases that must keep working, in their own files.
 
 ```json
@@ -261,8 +256,7 @@ When a bug is found and fixed:
 }
 ```
 
-A defect worth a paragraph rather than a sentence belongs in the file's `description`,
-which is the place to say what the file as a whole is guarding.
+A defect worth a paragraph belongs in the file's `description`.
 
 ---
 

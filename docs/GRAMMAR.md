@@ -239,6 +239,14 @@ Examples:
 - `m[:,j]` - Column j
 - `m[1:3, 2:4]` - Sub-matrix
 
+**String:**
+
+- `s[0]` - Character access, answering a one-character string
+- `s[-1]` - From end
+- `s[1:3]` - Slice, answering a string
+
+An index must be whole. A single index out of range is an error; a slice clamps.
+
 ### Unit Conversion
 
 `value unit1 in unit2` - Convert between units

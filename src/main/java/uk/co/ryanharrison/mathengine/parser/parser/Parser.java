@@ -62,8 +62,10 @@ public final class Parser {
      * @param sourceCode            the original source code (for error messages)
      * @param maxExpressionDepth    maximum allowed nesting depth for expressions
      * @param forceDoubleArithmetic whether to force double arithmetic for decimal literals
+     * @param maxLiteralDigits      digit limit for an exact literal, or negative for none
      */
-    public Parser(List<Token> tokens, String sourceCode, int maxExpressionDepth, boolean forceDoubleArithmetic) {
+    public Parser(List<Token> tokens, String sourceCode, int maxExpressionDepth,
+                  boolean forceDoubleArithmetic, int maxLiteralDigits) {
         this.stream = new TokenStream(tokens, sourceCode);
 
         // Use a holder to break the circular initialization dependency
@@ -71,7 +73,8 @@ public final class Parser {
         var collectionParser = new CollectionParser(stream, this::parseExpressionInternal);
 
         // Create precedence parser with max expression depth and arithmetic mode
-        this.precedenceParser = new PrecedenceParser(stream, collectionParser, maxExpressionDepth, forceDoubleArithmetic);
+        this.precedenceParser = new PrecedenceParser(stream, collectionParser, maxExpressionDepth,
+                forceDoubleArithmetic, maxLiteralDigits);
     }
 
     /**

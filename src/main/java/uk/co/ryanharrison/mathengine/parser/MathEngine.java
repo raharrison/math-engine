@@ -76,6 +76,9 @@ import java.util.Map;
  * MathEngine engine = MathEngine.create();
  * engine = engine.withFunction(myCustomFunction);
  * }</pre>
+ *
+ * <h2>Thread Safety:</h2>
+ * Not thread-safe: an engine owns a mutable session. Give each thread its own.
  */
 public final class MathEngine {
 
@@ -225,8 +228,8 @@ public final class MathEngine {
             throw new IllegalArgumentException("Expression cannot be null or empty");
         }
         List<Token> tokens = lexer.tokenize(expression);
-        return new Parser(tokens, expression,
-                config.maxExpressionDepth(), config.forceDoubleArithmetic()).parse();
+        return new Parser(tokens, expression, config.maxExpressionDepth(),
+                config.forceDoubleArithmetic(), config.maxLiteralDigits()).parse();
     }
 
     /**

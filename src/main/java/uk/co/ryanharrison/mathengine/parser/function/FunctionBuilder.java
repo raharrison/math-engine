@@ -173,8 +173,7 @@ public final class FunctionBuilder {
     }
 
     /**
-     * As {@link #implementedByDouble(DoubleUnaryOperator)}, but the answer keeps the
-     * argument's marker: use it for a root, not for a logarithm.
+     * As {@link #implementedByDouble(DoubleUnaryOperator)}, but keeping the marker.
      */
     public MathFunction implementedByMagnitude(DoubleUnaryOperator op) {
         validateUnaryArity();

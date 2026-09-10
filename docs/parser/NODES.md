@@ -118,14 +118,14 @@ String s = r.toString();     // "22/7"
 
 **Automatic Simplification:**
 
-```java
+```text
 new NodeRational(4, 6)  →  stores as 2/3 (simplified)
 ```
 
 **Promotion to Double:**
 When mixed with doubles in operations:
 
-```java
+```text
 NodeRational(5, 2) + NodeDouble(3.5)  →  NodeDouble(6.0)
 ```
 
@@ -159,7 +159,7 @@ double v = b.doubleValue();  // 1.0
 
 **Type Promotion:**
 
-```java
+```text
 true + 5      →  NodeDouble(6.0)
 false * 10    →  NodeDouble(0.0)
 ```
@@ -189,11 +189,16 @@ String s = p.toString();     // "50%"
 
 **Operations:**
 
-```java
+```text
 50%           →  NodePercent(50) → value 0.5
 50% of 200    →  NodeDouble(100.0)
 50% + 25%     →  NodePercent(75) → value 0.75
+10% * 5       →  NodePercent(50)     // on the left it is being scaled
+100 * 10%     →  NodeDouble(10.0)    // on the right it measures the number to its left
 ```
+
+A percentage on the right is read against the number on its left, as in `100 + 10%`. Both
+spellings agree on the value.
 
 ---
 
@@ -263,7 +268,7 @@ Two quantities of the same kind are converted to the left operand's unit before 
 operation, so how each side is written never changes the answer. Quantities of different
 kinds cannot be combined at all.
 
-```java
+```text
 5 meters + 3 meters       →  NodeUnit(8, meters)
 5 meters + 10 feet        →  NodeUnit(8.048, meters)   // converted, then added
 100 meters in feet        →  NodeUnit(328.084, feet)
@@ -271,14 +276,10 @@ kinds cannot be combined at all.
 5 meters + 3 kilograms    →  TypeError (length and mass)
 ```
 
-**The label rides the magnitude:**
+**The label rides the magnitude:** a quantity is a magnitude wearing a label. Arithmetic
+happens on the magnitude, the label survives, and the scalar is read in the unit.
 
-A quantity here is a magnitude wearing a label, not a dimensioned value in the physics
-sense. When a plain number meets a quantity, the arithmetic happens on the magnitude and
-the label survives it, whichever side the label was on. The scalar is read in the
-quantity's own unit.
-
-```java
+```text
 10 meters * 2             →  NodeUnit(20, meters)
 10 meters mod 3           →  NodeUnit(1, meters)
 2 meters ^ 2              →  NodeUnit(4, meters)
@@ -286,40 +287,30 @@ quantity's own unit.
 sqrt(100 meters)          →  NodeUnit(10, meters)
 ```
 
-This is a deliberate choice of usefulness over dimensional bookkeeping. The engine can
-name a metre but not a square metre, so the alternative would be to refuse every one of
-these, which turns ordinary calculator expressions into errors. A label is a label, not a
-claim about dimension, and it is the same rule NodePercent follows.
+A label is not a claim about dimension. NodePercent follows the same rule.
 
-**Where a label is not carried:**
+**Where a label is not carried:** it cancels under division by a like quantity, and two
+labels never merge, since the engine has no name for the product.
 
-Two cases, and only two. A label cancels when a quantity meets a like quantity under
-division, and two labels are never merged, because the engine has no name for the product.
-
-```java
+```text
 10 meters / 5 meters      →  NodeDouble(2.0)    // the labels cancel
 4 meters * 2 meters       →  TypeError          // no name for a square metre
 4 meters ^ 2 meters       →  TypeError          // same reason
 ```
 
-A function whose answer is a pure number by its own nature returns one, rather than
-carrying the label into a place it means nothing.
+A function whose answer is a pure number returns one:
 
-```java
+```text
 log(100 meters)           →  NodeDouble(2.0)
 sin(90 degrees)           →  NodeDouble(1.0)
 sign(-3 meters)           →  NodeRational(-1)
 (1 km) > (500 meters)     →  NodeBoolean(true)
 ```
 
-**Angle labels are read, not just dropped:**
+**Angle labels are read, not just dropped:** in trigonometry an angle label decides the
+unit of the argument, beating the configured one. The answer is a ratio, so it has no label.
 
-Trigonometry is the one place where a label changes how the argument is *read* rather
-than what the answer is labelled. An angle-typed quantity states its own unit, and that
-beats the engine's configured angle unit, so a question can be asked without changing a
-global setting. The answer is still a ratio, so it carries no label.
-
-```java
+```text
 sin(90 degrees)           →  NodeDouble(1.0)    // in either configured mode
 cos(100 gradians)         →  NodeDouble(0.0)
 sin(1 radian)             →  NodeDouble(0.841)  // even in degrees mode
@@ -363,7 +354,7 @@ Node elem = v.getElements()[0];
 
 **Broadcasting:**
 
-```java
+```text
 {1, 2, 3} + 5           →  {6, 7, 8}
 {1, 2, 3} * 2           →  {2, 4, 6}
 {1, 2} + {3, 4, 5}      →  {4, 6, 5}  // Shorter extended with zeros
@@ -409,7 +400,7 @@ int cols = m.getColumnCount();   // 2
 
 **Matrix Operations:**
 
-```java
+```text
 [1, 2; 3, 4] + [5, 6; 7, 8]       →  [6, 8; 10, 12]
 [1, 2; 3, 4] @ [5, 6; 7, 8]       →  [19, 22; 43, 50]  // Matrix multiply
 [1, 2; 3, 4] * 2                  →  [2, 4; 6, 8]      // Scalar multiply
@@ -459,7 +450,7 @@ NodeVector vector = range.toVector();  // {1, 2, 3, 4, 5}
 
 **Examples:**
 
-```java
+```text
 1..5              →  {1, 2, 3, 4, 5}
 1..10 step 2      →  {1, 3, 5, 7, 9}
 10..1 step -1     →  {10, 9, 8, 7, 6, 5, 4, 3, 2, 1}
@@ -568,7 +559,7 @@ return new NodeFunction(def);
 
 **Usage:**
 
-```java
+```text
 map(x -> x^2, {1, 2, 3})     →  {1, 4, 9}
 filter(x -> x > 5, 1..10)    →  {6, 7, 8, 9, 10}
 ```
@@ -653,7 +644,7 @@ NodeVariable x = new NodeVariable("x");
 **Resolution:**
 During evaluation, resolved by `VariableResolver` with context-aware priority:
 
-```java
+```text
 // General context: variable → function → unit → implicit mult
 NodeConstant value = variableResolver.resolve(
     variable,

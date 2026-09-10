@@ -230,7 +230,7 @@ define("param",argValue);
 
 **ResolutionContext Types:**
 
-```java
+```text
 enum ResolutionContext {
     GENERAL,          // x + 1 (variable → function → unit → implicit mult)
     CALL_TARGET,      // f(x) (function → variable)
@@ -362,7 +362,7 @@ NodeConstant resolveConstRef(String constName, EvaluationContext context) {
 
 **Splits compound identifiers into resolvable parts:**
 
-```java
+```text
 // "xy" where x=2, y=3 → 2 * 3 = 6
 // "xpi" where x=2 → 2 * π
 // "abc" where a=1, b=2, c=3 → 1 * 2 * 3 = 6
@@ -382,7 +382,7 @@ NodeConstant trySplitIntoVariables(String name, EvaluationContext context, Opera
 
 **Example:**
 
-```java
+```text
 // x := 2
 context.define("x", new NodeRational(2));
 
@@ -506,7 +506,7 @@ evaluate(elseExpr);
 
 **Algorithm:**
 
-```java
+```text
 1.Evaluate iterable →
 get collection
 2.
@@ -634,13 +634,13 @@ Handled by operators via `BroadcastingDispatcher`:
 
 **Scalar to Vector:**
 
-```java
+```text
 5+{1,2,3}  →  {6,7,8}
 ```
 
 **Vector Size Normalization:**
 
-```java
+```text
 {1,2}+{3,4,5}  →  {1,2,0}+{3,4,5}={4,6,5}
 ```
 
@@ -735,24 +735,16 @@ private NodeConstant evaluateFunctionDef(NodeFunctionDef node) {
 throw new UndefinedVariableException("Variable 'x' not defined");
 
 // Type error
-throw new
-
-TypeError("Cannot add string and number");
+throw new TypeError("Cannot add string and number");
 
 // Arity error (wrong argument count)
-throw new
-
-ArityException("Function 'max' expects 2 arguments, got 3");
+throw new ArityException("Function 'max' expects 2 arguments, got 3");
 
 // Stack overflow
-throw new
-
-StackOverflowException("Max recursion depth (1000) exceeded");
+throw new StackOverflowException("Max recursion depth (1000) exceeded");
 
 // General evaluation error
-throw new
-
-EvaluationException("Division by zero");
+throw new EvaluationException("Division by zero");
 ```
 
 ### Error Context

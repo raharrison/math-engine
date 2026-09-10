@@ -285,6 +285,7 @@ public final class TypeFunctions {
                 case NodeVector _ -> "vector";
                 case NodeMatrix _ -> "matrix";
                 case NodeString _ -> "string";
+                case NodeLambda _, NodeFunction _ -> "function";
                 default -> "unknown";
             }));
 

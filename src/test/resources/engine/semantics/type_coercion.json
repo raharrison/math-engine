@@ -212,16 +212,18 @@
         {
             "id": "mixed_017",
             "input": "true * 50%",
-            "expected": "50%",
-            "expectedType": "NodePercent",
-            "notes": "Boolean * Percent: true (1) * 50% (0.5) = 50%"
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "True counts as one, so this is half of one"
         },
         {
             "id": "mixed_018",
             "input": "false * 50%",
-            "expected": "0%",
-            "expectedType": "NodePercent",
-            "notes": "Boolean * Percent: false (0) * 50% (0.5) = 0.0%"
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "False counts as zero, so this is nothing"
         },
         {
             "id": "mixed_019",
@@ -261,9 +263,10 @@
         {
             "id": "mixed_024",
             "input": "(true + false) * 50%",
-            "expected": "50%",
-            "expectedType": "NodePercent",
-            "notes": "Parentheses: (1 + 0) * 0.5 = 50%"
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "The sum is one, and half of one is 0.5"
         },
         {
             "id": "mixed_025",

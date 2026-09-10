@@ -432,6 +432,20 @@
             "expected": "double",
             "expectedType": "NodeString",
             "notes": "Type of double"
+        },
+        {
+            "id": "typeof_lambda",
+            "input": "typeof(x -> x)",
+            "expected": "function",
+            "expectedType": "NodeString",
+            "notes": "A lambda has a type name like every other value; this answered 'unknown'"
+        },
+        {
+            "id": "typeof_named_function",
+            "input": "f(x) := x; typeof(f)",
+            "expected": "function",
+            "expectedType": "NodeString",
+            "notes": "And so does a named function"
         }
     ]
 }

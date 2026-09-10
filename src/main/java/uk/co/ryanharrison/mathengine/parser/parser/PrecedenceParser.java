@@ -45,6 +45,7 @@ public final class PrecedenceParser {
     private final CollectionParser collectionParser;
     private final int maxExpressionDepth;
     private final boolean forceDoubleArithmetic;
+    private final int maxLiteralDigits;
     private int currentDepth;
 
     /**
@@ -55,12 +56,28 @@ public final class PrecedenceParser {
      * @param maxExpressionDepth    maximum allowed nesting depth for expressions
      * @param forceDoubleArithmetic whether to force double arithmetic for decimal literals
      */
-    public PrecedenceParser(TokenStream stream, CollectionParser collectionParser, int maxExpressionDepth, boolean forceDoubleArithmetic) {
+    public PrecedenceParser(TokenStream stream, CollectionParser collectionParser, int maxExpressionDepth,
+                            boolean forceDoubleArithmetic, int maxLiteralDigits) {
         this.stream = stream;
         this.collectionParser = collectionParser;
         this.maxExpressionDepth = maxExpressionDepth;
         this.forceDoubleArithmetic = forceDoubleArithmetic;
+        this.maxLiteralDigits = maxLiteralDigits;
         this.currentDepth = 0;
+    }
+
+    /**
+     * Refuses a literal longer than the configured digit limit, before expanding it.
+     */
+    private void requireRepresentable(BigDecimal decimal, Token token) {
+        if (maxLiteralDigits < 0) {
+            return;
+        }
+        long digits = (long) decimal.precision() + Math.abs((long) decimal.scale());
+        if (digits > maxLiteralDigits) {
+            throw stream.error(token, "Number literal needs " + digits +
+                    " digits, beyond the limit of " + maxLiteralDigits);
+        }
     }
 
     /**
@@ -314,9 +331,7 @@ public final class PrecedenceParser {
      * Expects a unit name. An unknown identifier is accepted here and reported at
      * evaluation time, which gives a better message and allows dynamic unit names.
      * Explicit references are accepted too: {@code @fahrenheit} or {@code @"km/h"}.
-     * <p>
-     * A function name is accepted too, since only a unit can be meant here. Without that,
-     * {@code in radians} was a parse error, because {@code radians} also spells deg2rad.
+     * A function name counts, since {@code radians} also spells deg2rad.
      */
     private Token expectUnitOrIdentifier() {
         if (stream.check(TokenType.UNIT) || stream.check(TokenType.IDENTIFIER)
@@ -494,7 +509,9 @@ public final class PrecedenceParser {
                     return new NodeDouble(Double.parseDouble(strVal));
                 }
                 try {
-                    return new NodeRational(BigRational.of(new BigDecimal(strVal)));
+                    BigDecimal decimal = new BigDecimal(strVal);
+                    requireRepresentable(decimal, token);
+                    return new NodeRational(BigRational.of(decimal));
                 } catch (NumberFormatException e) {
                     throw stream.error(token, "Invalid decimal literal");
                 }

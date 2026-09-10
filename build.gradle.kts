@@ -50,8 +50,9 @@ tasks.test {
 tasks.register("testSummary") {
     group = "verification"
     description = "Prints a summary of test results from XML reports"
+    val testResults = layout.buildDirectory.dir("test-results/test")
     doLast {
-        val testResultsDir = file("build/test-results/test")
+        val testResultsDir = testResults.get().asFile
         if (!testResultsDir.exists()) {
             println("No test results found. Run './gradlew test' first.")
             return@doLast
@@ -63,9 +64,7 @@ tasks.register("testSummary") {
         var skipped = 0
         val failedTests = mutableListOf<String>()
 
-        fileTree(testResultsDir).matching {
-            include("**/*.xml")
-        }.forEach { xmlFile ->
+        testResultsDir.walkTopDown().filter { it.isFile && it.extension == "xml" }.forEach { xmlFile ->
             val doc = javax.xml.parsers.DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder()
                 .parse(xmlFile)

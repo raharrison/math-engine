@@ -88,6 +88,16 @@
                 "decimalPlaces": 3
             },
             "notes": "Vector elements stored at full precision"
+        },
+        {
+            "id": "decimal_places_reaches_str",
+            "input": "str(pi)",
+            "config": {
+                "decimalPlaces": 3
+            },
+            "expected": "3.142",
+            "expectedType": "NodeString",
+            "notes": "The display setting reaches the engine's own string conversion, not only a formatter the caller builds"
         }
     ]
 }

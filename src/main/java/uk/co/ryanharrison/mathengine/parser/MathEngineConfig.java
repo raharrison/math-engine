@@ -65,6 +65,7 @@ public final class MathEngineConfig {
     private final int maxVectorSize;
     private final int maxMatrixDimension;
     private final int maxIdentifierLength;
+    private final int maxLiteralDigits;
 
     // Feature toggles
     private final boolean implicitMultiplication;
@@ -99,6 +100,7 @@ public final class MathEngineConfig {
         this.maxVectorSize = builder.maxVectorSize;
         this.maxMatrixDimension = builder.maxMatrixDimension;
         this.maxIdentifierLength = builder.maxIdentifierLength;
+        this.maxLiteralDigits = builder.maxLiteralDigits;
 
         // Feature toggles
         this.implicitMultiplication = builder.implicitMultiplication;
@@ -198,6 +200,7 @@ public final class MathEngineConfig {
                 .maxVectorSize(maxVectorSize)
                 .maxMatrixDimension(maxMatrixDimension)
                 .maxIdentifierLength(maxIdentifierLength)
+                .maxLiteralDigits(maxLiteralDigits)
                 .implicitMultiplication(implicitMultiplication)
                 .vectorsEnabled(vectorsEnabled)
                 .matricesEnabled(matricesEnabled)
@@ -287,6 +290,13 @@ public final class MathEngineConfig {
      */
     public int maxIdentifierLength() {
         return maxIdentifierLength;
+    }
+
+    /**
+     * Digits an exact literal may expand to, or negative for no limit.
+     */
+    public int maxLiteralDigits() {
+        return maxLiteralDigits;
     }
 
     // ==================== Feature Toggles ====================
@@ -443,6 +453,7 @@ public final class MathEngineConfig {
         private int maxVectorSize = 1_000_000;
         private int maxMatrixDimension = 10_000;
         private int maxIdentifierLength = 256;
+        private int maxLiteralDigits = 10_000;
         private boolean implicitMultiplication = true;
         private boolean vectorsEnabled = true;
         private boolean matricesEnabled = true;
@@ -548,6 +559,14 @@ public final class MathEngineConfig {
             if (maxIdentifierLength <= 0)
                 throw new IllegalArgumentException("Max identifier length must be positive, got: " + maxIdentifierLength);
             this.maxIdentifierLength = maxIdentifierLength;
+            return this;
+        }
+
+        /**
+         * Digits an exact literal may expand to; negative for no limit.
+         */
+        public Builder maxLiteralDigits(int maxLiteralDigits) {
+            this.maxLiteralDigits = maxLiteralDigits;
             return this;
         }
 

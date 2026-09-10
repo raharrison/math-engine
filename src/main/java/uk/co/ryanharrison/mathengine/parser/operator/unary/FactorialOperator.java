@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.operator.unary;
 
+import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.operator.UnaryOperator;
@@ -33,9 +34,14 @@ public final class FactorialOperator implements UnaryOperator {
             if (n < 0) {
                 throw new DomainException("Factorial is not defined for negative numbers: " + n);
             }
-            return Math.floor(n) == n
-                    ? new NodeRational(MathUtils.factorial((long) n))
-                    : new NodeDouble(MathUtils.factorial(n));
+            if (Math.floor(n) != n || Double.isInfinite(n)) {
+                return new NodeDouble(MathUtils.factorial(n));
+            }
+            if (n > MathUtils.MAX_EXACT_FACTORIAL) {
+                throw new DomainException("Factorial of " + (long) n +
+                        " is beyond the exact arithmetic limit of " + MathUtils.MAX_EXACT_FACTORIAL);
+            }
+            return new NodeRational(BigRational.of(MathUtils.factorialExact((long) n)));
         });
     }
 }

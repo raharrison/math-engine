@@ -474,6 +474,51 @@
             "expectedErrorType": "EvaluationException",
             "expectedErrorMessage": "out of bounds: -4",
             "notes": "One further back is out of range, where a doubled translation once wrapped it round to the last element"
+        },
+        {
+            "id": "string_index",
+            "input": "\"abc\"[1]",
+            "expected": "b",
+            "expectedType": "NodeString",
+            "notes": "Text is a sequence of characters, as len and reverse already treat it"
+        },
+        {
+            "id": "string_index_from_the_end",
+            "input": "\"abc\"[-1]",
+            "expected": "c",
+            "expectedType": "NodeString",
+            "notes": "A negative index counts from the end, as it does for a vector"
+        },
+        {
+            "id": "string_slice",
+            "input": "\"hello\"[0:2]",
+            "expected": "he",
+            "expectedType": "NodeString",
+            "notes": "A slice of text is text"
+        },
+        {
+            "id": "string_index_out_of_bounds",
+            "input": "\"abc\"[9]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "expectedErrorMessage": "out of bounds",
+            "notes": "And it is bounds checked like any other sequence"
+        },
+        {
+            "id": "matrix_element_out_of_bounds",
+            "input": "[1, 2; 3, 4][2, 2]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "expectedErrorMessage": "out of bounds",
+            "notes": "This used to clamp the index into the array and escape a raw ArrayIndexOutOfBoundsException"
+        },
+        {
+            "id": "fractional_vector_index",
+            "input": "{1, 2, 3}[1.5]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "expectedErrorMessage": "whole number",
+            "notes": "A fractional index is refused rather than truncated to 1"
         }
     ]
 }
