@@ -5,16 +5,10 @@ import uk.co.ryanharrison.mathengine.parser.operator.UnaryOperator;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
 /**
- * Unary plus operator (+).
- * <p>
- * A no-op that returns the operand unchanged. Supports all node types
- * including vectors and matrices.
+ * Unary plus, which leaves its operand alone.
  */
 public final class UnaryPlusOperator implements UnaryOperator {
 
-    /**
-     * Singleton instance
-     */
     public static final UnaryPlusOperator INSTANCE = new UnaryPlusOperator();
 
     private UnaryPlusOperator() {
@@ -27,7 +21,6 @@ public final class UnaryPlusOperator implements UnaryOperator {
 
     @Override
     public NodeConstant apply(NodeConstant operand, OperatorContext ctx) {
-        // Unary plus is a no-op, return operand unchanged
         return operand;
     }
 }

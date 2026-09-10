@@ -229,7 +229,7 @@ public final class VariableResolver {
     public NodeConstant resolveUnitRef(String unitName, EvaluationContext context) {
         return context.resolveUnit(unitName)
                 .map(unit -> NodeUnit.of(1.0, unit))
-                .orElseThrow(() -> new UndefinedVariableException("Unknown unit: @" + unitName));
+                .orElseThrow(() -> UndefinedVariableException.unit(unitName));
     }
 
     /**
@@ -244,7 +244,7 @@ public final class VariableResolver {
      */
     public NodeConstant resolveVarRef(String varName, EvaluationContext context) {
         return context.resolve(varName)
-                .orElseThrow(() -> new UndefinedVariableException("Undefined variable: $" + varName));
+                .orElseThrow(() -> UndefinedVariableException.variable(varName));
     }
 
     /**
@@ -261,7 +261,7 @@ public final class VariableResolver {
      */
     public NodeConstant resolveConstRef(String constName, EvaluationContext context) {
         return context.resolveConstant(constName)
-                .orElseThrow(() -> new UndefinedVariableException("Undefined constant: #" + constName));
+                .orElseThrow(() -> UndefinedVariableException.constant(constName));
     }
 
     // ==================== Implicit Multiplication Support ====================

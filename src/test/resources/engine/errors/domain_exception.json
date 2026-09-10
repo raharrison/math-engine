@@ -1,0 +1,218 @@
+{
+    "category": "Errors: DomainException",
+    "description": "Arguments outside a function's mathematical domain, where the function exists and the types are right but the value is not.",
+    "tests": [
+        {
+            "id": "acos_domain_001",
+            "input": "acos(-2)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "arccos outside [-1, 1]"
+        },
+        {
+            "id": "acos_outofrange_001",
+            "input": "acos(2)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "acos requires input in range [-1,1]"
+        },
+        {
+            "id": "asin_outofrange_001",
+            "input": "asin(2)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "asin requires input in range [-1,1]"
+        },
+        {
+            "id": "col_outofbounds_001",
+            "input": "col([[1, 2], [3, 4]], 5)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Column index out of bounds"
+        },
+        {
+            "id": "correlation_length_001",
+            "input": "correlation({1, 2, 3}, {1, 2})",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Correlation requires equal length vectors"
+        },
+        {
+            "id": "covariance_length_001",
+            "input": "covariance({1, 2, 3}, {1, 2})",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Covariance requires equal length vectors"
+        },
+        {
+            "id": "det_nonsquare_001",
+            "input": "det([[1, 2, 3], [4, 5, 6]])",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Determinant requires square matrix"
+        },
+        {
+            "id": "doublefactorial_negative_001",
+            "input": "(-3)!!",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Double factorial of negative number"
+        },
+        {
+            "id": "err_eval_004",
+            "input": "ln(0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Logarithm of zero"
+        },
+        {
+            "id": "err_eval_005",
+            "input": "ln(-5)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Logarithm of negative number"
+        },
+        {
+            "id": "err_eval_013",
+            "input": "(-10)!",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Factorial of negative number"
+        },
+        {
+            "id": "factorial_negative_001",
+            "input": "factorial(-3)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Factorial of negative integer"
+        },
+        {
+            "id": "factorial_negative_001_domain_exception",
+            "input": "(-5)!",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Factorial of negative number"
+        },
+        {
+            "id": "identity_negative_001",
+            "input": "identity(-1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Identity size must be positive"
+        },
+        {
+            "id": "identity_nonpositive_001",
+            "input": "identity(0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Identity size must be positive"
+        },
+        {
+            "id": "inverse_singular_001",
+            "input": "inverse([[1, 2], [2, 4]])",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "singular",
+            "notes": "A singular matrix has no inverse, which is a domain problem rather than a bad argument"
+        },
+        {
+            "id": "inverselerp_equal_001",
+            "input": "inverselerp(5, 5, 3)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Inverse lerp with equal start and end"
+        },
+        {
+            "id": "log_negative_001",
+            "input": "ln(-1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Log of negative"
+        },
+        {
+            "id": "log_negative_001_domain_exception",
+            "input": "log(-1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "log is not defined for negative values"
+        },
+        {
+            "id": "log_zero_001",
+            "input": "log(0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "log is not defined for zero"
+        },
+        {
+            "id": "normalize_equal_001",
+            "input": "normalize(5, 10, 10)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Normalize with equal min and max"
+        },
+        {
+            "id": "nroot_even_negative_001",
+            "input": "nroot(-8, 2)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Even root of negative"
+        },
+        {
+            "id": "percentchange_zero_001",
+            "input": "percentchange(0, 100)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Percent change from zero"
+        },
+        {
+            "id": "reshape_mismatch_001",
+            "input": "reshape({1, 2, 3, 4, 5}, 2, 3)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Cannot reshape 5 elements to 2x3"
+        },
+        {
+            "id": "row_outofbounds_001",
+            "input": "row([[1, 2], [3, 4]], 5)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Row index out of bounds"
+        },
+        {
+            "id": "sqrt_negative_001",
+            "input": "sqrt(-1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Square root of negative (without complex)"
+        },
+        {
+            "id": "tomatrix_flat_vector",
+            "input": "tomatrix({1, 2, 3})",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "not a vector",
+            "notes": "tomatrix takes a vector of rows, so a flat vector is rejected rather than guessed at"
+        },
+        {
+            "id": "trace_nonsquare_001",
+            "input": "trace([[1, 2, 3], [4, 5, 6]])",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Trace requires square matrix"
+        },
+        {
+            "id": "whatpercent_zero_001",
+            "input": "whatpercent(10, 0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "What percent of zero"
+        },
+        {
+            "id": "zeros_negative_001",
+            "input": "zeros(-2)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "Zeros dimensions must be positive"
+        }
+    ]
+}

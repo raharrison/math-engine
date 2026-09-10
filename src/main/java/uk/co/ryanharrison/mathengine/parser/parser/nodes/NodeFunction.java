@@ -26,49 +26,12 @@ public final class NodeFunction extends NodeConstant {
 
     @Override
     public double doubleValue() {
-        throw new UnsupportedOperationException("Cannot convert function to double");
+        throw new TypeError("Cannot use a function as a number");
     }
 
     @Override
     public String typeName() {
         return "function";
-    }
-
-    // ==================== Universal Arithmetic ====================
-
-    @Override
-    public NodeConstant add(NodeConstant other) {
-        throw new TypeError("Cannot perform arithmetic on function");
-    }
-
-    @Override
-    public NodeConstant subtract(NodeConstant other) {
-        throw new TypeError("Cannot perform arithmetic on function");
-    }
-
-    @Override
-    public NodeConstant multiply(NodeConstant other) {
-        throw new TypeError("Cannot perform arithmetic on function");
-    }
-
-    @Override
-    public NodeConstant divide(NodeConstant other) {
-        throw new TypeError("Cannot perform arithmetic on function");
-    }
-
-    @Override
-    public NodeConstant power(NodeConstant other) {
-        throw new TypeError("Cannot perform arithmetic on function");
-    }
-
-    @Override
-    public NodeConstant negate() {
-        throw new TypeError("Cannot perform arithmetic on function");
-    }
-
-    @Override
-    public int compareTo(NodeConstant other) {
-        throw new TypeError("Cannot compare functions");
     }
 
     @Override

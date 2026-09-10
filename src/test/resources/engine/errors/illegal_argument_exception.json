@@ -1,0 +1,27 @@
+{
+    "category": "Errors: IllegalArgumentException",
+    "description": "Argument validation raised by the underlying maths library rather than by the engine's own checks.",
+    "tests": [
+        {
+            "id": "acosh_domain_001",
+            "input": "acosh(0.5)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "arccosh requires x >= 1"
+        },
+        {
+            "id": "atanh_domain_001",
+            "input": "atanh(2)",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "arctanh outside (-1, 1)"
+        },
+        {
+            "id": "gmean_negative_001",
+            "input": "gmean({-1, 2, 3})",
+            "expectError": true,
+            "expectedErrorType": "IllegalArgumentException",
+            "notes": "Geometric mean requires positive values"
+        }
+    ]
+}

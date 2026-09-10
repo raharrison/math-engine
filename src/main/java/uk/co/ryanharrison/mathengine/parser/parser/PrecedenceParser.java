@@ -4,6 +4,7 @@ import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.registry.SymbolRegistry;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 import java.math.BigDecimal;
@@ -12,35 +13,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Precedence chain parser for mathematical expressions.
+ * Turns a token stream into an expression tree.
  * <p>
- * Implements the complete precedence chain from lowest to highest:
- * <ol>
- *     <li>Expression (top level)</li>
- *     <li>Assignment</li>
- *     <li>Lambda</li>
- *     <li>Logical OR</li>
- *     <li>Logical XOR</li>
- *     <li>Logical AND</li>
- *     <li>Equality</li>
- *     <li>Range</li>
- *     <li>Relational</li>
- *     <li>Additive</li>
- *     <li>Multiplicative</li>
- *     <li>Unary</li>
- *     <li>Power</li>
- *     <li>Postfix</li>
- *     <li>Call/Subscript</li>
- *     <li>Primary (literals, identifiers, groupings)</li>
- * </ol>
+ * Assignment and lambda are recognised first, since they need lookahead. Everything
+ * from logical OR down to multiplication is one precedence-climbing loop reading the
+ * precedence table in {@link SymbolRegistry}. Unary, power, postfix, call and subscript
+ * bind tighter still and are parsed by dedicated methods, because each has a shape the
+ * table cannot describe.
  *
- * <h2>Usage:</h2>
  * <pre>{@code
- * PrecedenceParser parser = new PrecedenceParser(stream, collectionParser, functionRegistry, unitRegistry);
- * Node ast = parser.parseExpression();
+ * Node ast = new PrecedenceParser(stream, collectionParser, maxDepth, forceDouble).parseExpression();
  * }</pre>
  */
 public final class PrecedenceParser {
+
+    private static final SymbolRegistry SYMBOLS = SymbolRegistry.getDefault();
+
+    /**
+     * Loosest binary operator; assignment and lambda are handled above this loop.
+     */
+    private static final int LOWEST_BINARY_PRECEDENCE = 2;
+
+    /**
+     * Unit conversion binds tighter than addition and looser than multiplication.
+     */
+    private static final int UNIT_CONVERSION_PRECEDENCE = 9;
+
+    private static final int NOT_AN_OPERATOR = Integer.MIN_VALUE;
 
     private final TokenStream stream;
     private final CollectionParser collectionParser;
@@ -232,196 +231,99 @@ public final class PrecedenceParser {
             stream.restorePosition(savepoint);
         }
 
-        return parseLogicalOr();
+        return parseBinary(LOWEST_BINARY_PRECEDENCE);
     }
 
-    // ==================== Logical Operators ====================
+    // ==================== Binary Operators ====================
 
     /**
-     * Parses logical OR: {@code expr || expr} or {@code expr or expr}
+     * Parses the binary operators by precedence climbing, driven by the precedence
+     * recorded in {@link SymbolRegistry}. Registering a new binary operator there and
+     * in the operator executor is enough; this loop needs no change.
+     * <p>
+     * Two levels are not plain infix operators and are handled inline: a range
+     * ({@code 1..10 step 2}) takes an optional step, and a unit conversion
+     * ({@code 5 km in miles}) takes a unit name rather than an expression.
+     *
+     * @param minPrecedence the loosest operator this call may consume
      */
-    private Node parseLogicalOr() {
-        Node left = parseLogicalXor();
+    private Node parseBinary(int minPrecedence) {
+        Node left = parseUnary();
 
-        while (stream.match(TokenType.OR) || stream.checkKeyword("or") && stream.match(TokenType.KEYWORD)) {
-            Token op = stream.previous();
-            Node right = parseLogicalXor();
-            left = new NodeBinary(op, left, right);
-        }
-
-        return left;
-    }
-
-    /**
-     * Parses logical XOR: {@code expr xor expr}
-     */
-    private Node parseLogicalXor() {
-        Node left = parseLogicalAnd();
-
-        while (stream.match(TokenType.XOR) || stream.checkKeyword("xor") && stream.match(TokenType.KEYWORD)) {
-            Token op = stream.previous();
-            Node right = parseLogicalAnd();
-            left = new NodeBinary(op, left, right);
-        }
-
-        return left;
-    }
-
-    /**
-     * Parses logical AND: {@code expr && expr} or {@code expr and expr}
-     */
-    private Node parseLogicalAnd() {
-        Node left = parseEquality();
-
-        while (stream.match(TokenType.AND) || stream.checkKeyword("and") && stream.match(TokenType.KEYWORD)) {
-            Token op = stream.previous();
-            Node right = parseEquality();
-            left = new NodeBinary(op, left, right);
-        }
-
-        return left;
-    }
-
-    // ==================== Comparison Operators ====================
-
-    /**
-     * Parses equality: {@code expr == expr} or {@code expr != expr}
-     */
-    private Node parseEquality() {
-        Node left = parseRange();
-
-        while (stream.match(TokenType.EQ, TokenType.NEQ)) {
-            Token op = stream.previous();
-            Node right = parseRange();
-            left = new NodeBinary(op, left, right);
-        }
-
-        return left;
-    }
-
-    /**
-     * Parses range expressions: {@code start..end} or {@code start..end step s}
-     */
-    private Node parseRange() {
-        Node left = parseRelational();
-
-        if (stream.match(TokenType.RANGE)) {
-            Node end = parseRelational(); // Parse at same level to support -10..-5
-            Node step = null;
-
-            if (stream.checkKeyword("step")) {
-                stream.advance();
-                step = parseUnary();
+        while (true) {
+            int precedence = infixPrecedence();
+            if (precedence < minPrecedence) {
+                return left;
             }
 
-            return new NodeRangeExpression(left, end, step);
-        }
-
-        return left;
-    }
-
-    /**
-     * Parses relational: {@code expr < expr}, {@code expr > expr}, etc.
-     */
-    private Node parseRelational() {
-        Node left = parseAdditive();
-
-        while (stream.match(TokenType.LT, TokenType.GT, TokenType.LTE, TokenType.GTE)) {
-            Token op = stream.previous();
-            Node right = parseAdditive();
-            left = new NodeBinary(op, left, right);
-        }
-
-        return left;
-    }
-
-    // ==================== Arithmetic Operators ====================
-
-    /**
-     * Parses additive: {@code expr + expr} or {@code expr - expr}
-     */
-    private Node parseAdditive() {
-        Node left = parseUnitConversion();
-
-        while (stream.match(TokenType.PLUS, TokenType.MINUS)) {
-            Token op = stream.previous();
-            Node right = parseUnitConversion();
-            left = new NodeBinary(op, left, right);
-        }
-
-        return left;
-    }
-
-    /**
-     * Parses unit conversions: {@code expr in unit}, {@code expr to unit}, {@code expr as unit}.
-     * Binds tighter than addition but looser than multiplication.
-     * <p>
-     * Accepts both UNIT and IDENTIFIER tokens as target units. Unknown units (identifiers that
-     * aren't registered units) will cause a TypeError at evaluation time, not parse time.
-     * This allows for better error messages and supports dynamic unit names.
-     */
-    private Node parseUnitConversion() {
-        Node left = parseMultiplicative();
-
-        while (stream.checkKeyword("in", "to", "as")) {
-            // Special case: if left is (number * identifier) and we're about to convert,
-            // replace the identifier with an explicit unit reference to force unit interpretation
-            // e.g., "50m in feet" where m is a variable → treat m as meter unit in this context
-            if (left instanceof NodeBinary binary &&
-                    binary.getOperator().type() == TokenType.MULTIPLY &&
-                    binary.getRight() instanceof NodeVariable variable) {
-                // Replace the variable with an explicit unit reference
-                // This forces the identifier to be treated as a unit, not a variable
-                var unitRef = new NodeUnitRef(variable.getName());
-                left = new NodeBinary(binary.getOperator(), binary.getLeft(), unitRef);
+            if (precedence == UNIT_CONVERSION_PRECEDENCE) {
+                left = parseUnitConversion(left);
+            } else if (stream.check(TokenType.RANGE)) {
+                left = parseRangeTail(left, precedence);
+            } else {
+                Token operator = stream.advance();
+                left = new NodeBinary(operator, left, parseBinary(precedence + 1));
             }
-
-            stream.advance();
-            // Accept both UNIT and IDENTIFIER tokens - unknown units will be caught during evaluation
-            Token unitToken = expectUnitOrIdentifier();
-            left = new NodeUnitConversion(left, unitToken.lexeme());
         }
-
-        return left;
     }
 
     /**
-     * Expects a unit name token (UNIT, IDENTIFIER, or UNIT_REF).
+     * The precedence of the operator at the cursor, or {@link #NOT_AN_OPERATOR}.
+     */
+    private int infixPrecedence() {
+        if (stream.checkKeyword("in", "to", "as")) {
+            return UNIT_CONVERSION_PRECEDENCE;
+        }
+        TokenType type = stream.peek().type();
+        return SYMBOLS.isBinaryOperator(type) ? SYMBOLS.getPrecedence(type) : NOT_AN_OPERATOR;
+    }
+
+    /**
+     * Parses the rest of {@code start..end} and its optional {@code step}.
+     */
+    private Node parseRangeTail(Node start, int precedence) {
+        stream.advance();
+        Node end = parseBinary(precedence + 1);
+        Node step = stream.checkKeyword("step") ? consumeStep() : null;
+        return new NodeRangeExpression(start, end, step);
+    }
+
+    private Node consumeStep() {
+        stream.advance();
+        return parseUnary();
+    }
+
+    /**
+     * Parses {@code expr in unit}, and the {@code to} and {@code as} spellings.
      * <p>
-     * Allows unknown identifiers to be used as unit names, with validation
-     * deferred to evaluation time. This provides better error messages and
-     * supports dynamic unit resolution.
-     * <p>
-     * Accepts explicit unit references: {@code @fahrenheit} or {@code @"km/h"}.
-     * The quoted form allows complex unit names containing operators.
+     * When the left side is {@code number * identifier}, as in {@code 50m in feet},
+     * the identifier is pinned to a unit so that a same-named variable does not win.
+     */
+    private Node parseUnitConversion(Node left) {
+        if (left instanceof NodeBinary binary
+                && binary.getOperator().type() == TokenType.MULTIPLY
+                && binary.getRight() instanceof NodeVariable variable) {
+            left = new NodeBinary(binary.getOperator(), binary.getLeft(), new NodeUnitRef(variable.getName()));
+        }
+
+        stream.advance();
+        return new NodeUnitConversion(left, expectUnitOrIdentifier().lexeme());
+    }
+
+    /**
+     * Expects a unit name. An unknown identifier is accepted here and reported at
+     * evaluation time, which gives a better message and allows dynamic unit names.
+     * Explicit references are accepted too: {@code @fahrenheit} or {@code @"km/h"}.
      */
     private Token expectUnitOrIdentifier() {
         if (stream.check(TokenType.UNIT) || stream.check(TokenType.IDENTIFIER) || stream.check(TokenType.UNIT_REF)) {
             Token token = stream.advance();
-            // For UNIT_REF tokens, extract the unit name from the literal
             if (token.type() == TokenType.UNIT_REF) {
-                String unitName = (String) token.literal();
-                return new Token(TokenType.UNIT, unitName, token.line(), token.column());
+                return new Token(TokenType.UNIT, (String) token.literal(), token.line(), token.column());
             }
             return token;
         }
         throw stream.error(stream.peek(), "Expected unit name after conversion keyword");
-    }
-
-    /**
-     * Parses multiplicative: {@code expr * expr}, {@code expr / expr}, etc.
-     */
-    private Node parseMultiplicative() {
-        Node left = parseUnary();
-
-        while (stream.match(TokenType.MULTIPLY, TokenType.DIVIDE, TokenType.AT, TokenType.MOD, TokenType.OF) ||
-                stream.checkKeyword("mod", "of") && stream.match(TokenType.KEYWORD)) {
-            Token op = stream.previous();
-            Node right = parseUnary();
-            left = new NodeBinary(op, left, right);
-        }
-
-        return left;
     }
 
     // ==================== Unary and Power ====================
@@ -461,7 +363,6 @@ public final class PrecedenceParser {
 
     /**
      * Parses postfix operators: {@code expr!}, {@code expr!!}, {@code expr%}.
-     * Note: unit conversions are now handled in parseMultiplicative.
      */
     Node parsePostfix() {
         Node expr = parseCallAndSubscript();

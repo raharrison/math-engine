@@ -1,48 +1,118 @@
 {
-    "category": "Type Functions",
-    "description": "Comprehensive tests for isnan, isinf, isfinite, isint, iseven, isodd, ispositive, isnegative, iszero, int, float, bool, numerator, denominator, typeof, isnumber, isvector, ismatrix, isboolean",
+    "category": "Functions: type",
+    "description": "Asking what a value is, and converting it to another type.",
     "tests": [
         {
-            "id": "isnan_001",
-            "input": "isnan(0/0)",
+            "id": "bool_001",
+            "input": "bool(1)",
             "expected": true,
             "expectedType": "NodeBoolean",
-            "notes": "0/0 produces NaN"
+            "notes": "1 is truthy"
         },
         {
-            "id": "isnan_002",
-            "input": "isnan(5)",
+            "id": "bool_002",
+            "input": "bool(0)",
             "expected": false,
             "expectedType": "NodeBoolean",
-            "notes": "Regular number is not NaN"
+            "notes": "0 is falsy"
         },
         {
-            "id": "isnan_003",
-            "input": "isnan(1/0)",
-            "expected": false,
-            "expectedType": "NodeBoolean",
-            "notes": "Infinity is not NaN"
-        },
-        {
-            "id": "isinf_001",
-            "input": "isinf(1/0)",
+            "id": "bool_003",
+            "input": "bool(-1)",
             "expected": true,
             "expectedType": "NodeBoolean",
-            "notes": "1/0 produces infinity"
+            "notes": "Non-zero is truthy"
         },
         {
-            "id": "isinf_002",
-            "input": "isinf(-1/0)",
+            "id": "denominator_001",
+            "input": "denominator(3/4)",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "Denominator of 3/4"
+        },
+        {
+            "id": "denominator_002",
+            "input": "denominator(5)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Denominator of integer"
+        },
+        {
+            "id": "float_001",
+            "input": "float(5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Convert to double"
+        },
+        {
+            "id": "float_002",
+            "input": "float(1/2)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Rational to double"
+        },
+        {
+            "id": "int_001",
+            "input": "int(5.7)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Truncate positive"
+        },
+        {
+            "id": "int_002",
+            "input": "int(-5.7)",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Truncate negative toward zero"
+        },
+        {
+            "id": "int_003",
+            "input": "int(5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Integer unchanged"
+        },
+        {
+            "id": "isboolean_001",
+            "input": "isboolean(true)",
             "expected": true,
             "expectedType": "NodeBoolean",
-            "notes": "Negative infinity"
+            "notes": "Boolean is boolean"
         },
         {
-            "id": "isinf_003",
-            "input": "isinf(5)",
+            "id": "isboolean_002",
+            "input": "isboolean(1)",
             "expected": false,
             "expectedType": "NodeBoolean",
-            "notes": "Regular number is finite"
+            "notes": "Number is not boolean"
+        },
+        {
+            "id": "iseven_001",
+            "input": "iseven(4)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "4 is even"
+        },
+        {
+            "id": "iseven_002",
+            "input": "iseven(5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "5 is odd"
+        },
+        {
+            "id": "iseven_003",
+            "input": "iseven(0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "0 is even"
+        },
+        {
+            "id": "iseven_004",
+            "input": "iseven(-2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative even"
         },
         {
             "id": "isfinite_001",
@@ -64,6 +134,27 @@
             "expected": false,
             "expectedType": "NodeBoolean",
             "notes": "NaN is not finite"
+        },
+        {
+            "id": "isinf_001",
+            "input": "isinf(1/0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "1/0 produces infinity"
+        },
+        {
+            "id": "isinf_002",
+            "input": "isinf(-1/0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative infinity"
+        },
+        {
+            "id": "isinf_003",
+            "input": "isinf(5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Regular number is finite"
         },
         {
             "id": "isint_001",
@@ -94,32 +185,81 @@
             "notes": "Zero is integer"
         },
         {
-            "id": "iseven_001",
-            "input": "iseven(4)",
+            "id": "ismatrix_001",
+            "input": "ismatrix([[1, 2], [3, 4]])",
             "expected": true,
             "expectedType": "NodeBoolean",
-            "notes": "4 is even"
+            "notes": "Matrix is matrix"
         },
         {
-            "id": "iseven_002",
-            "input": "iseven(5)",
+            "id": "ismatrix_002",
+            "input": "ismatrix({1, 2, 3})",
             "expected": false,
             "expectedType": "NodeBoolean",
-            "notes": "5 is odd"
+            "notes": "Vector is not matrix"
         },
         {
-            "id": "iseven_003",
-            "input": "iseven(0)",
+            "id": "isnan_001",
+            "input": "isnan(0/0)",
             "expected": true,
             "expectedType": "NodeBoolean",
-            "notes": "0 is even"
+            "notes": "0/0 produces NaN"
         },
         {
-            "id": "iseven_004",
-            "input": "iseven(-2)",
+            "id": "isnan_002",
+            "input": "isnan(5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Regular number is not NaN"
+        },
+        {
+            "id": "isnan_003",
+            "input": "isnan(1/0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Infinity is not NaN"
+        },
+        {
+            "id": "isnegative_001",
+            "input": "isnegative(-5)",
             "expected": true,
             "expectedType": "NodeBoolean",
-            "notes": "Negative even"
+            "notes": "-5 is negative"
+        },
+        {
+            "id": "isnegative_002",
+            "input": "isnegative(5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "5 is not negative"
+        },
+        {
+            "id": "isnegative_003",
+            "input": "isnegative(0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "0 is not negative"
+        },
+        {
+            "id": "isnumber_001",
+            "input": "isnumber(5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Integer is number"
+        },
+        {
+            "id": "isnumber_002",
+            "input": "isnumber(5.5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double is number"
+        },
+        {
+            "id": "isnumber_003",
+            "input": "isnumber(true)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean is not number"
         },
         {
             "id": "isodd_001",
@@ -164,25 +304,18 @@
             "notes": "0 is not positive"
         },
         {
-            "id": "isnegative_001",
-            "input": "isnegative(-5)",
+            "id": "isvector_001",
+            "input": "isvector({1, 2, 3})",
             "expected": true,
             "expectedType": "NodeBoolean",
-            "notes": "-5 is negative"
+            "notes": "Vector is vector"
         },
         {
-            "id": "isnegative_002",
-            "input": "isnegative(5)",
+            "id": "isvector_002",
+            "input": "isvector(5)",
             "expected": false,
             "expectedType": "NodeBoolean",
-            "notes": "5 is not negative"
-        },
-        {
-            "id": "isnegative_003",
-            "input": "isnegative(0)",
-            "expected": false,
-            "expectedType": "NodeBoolean",
-            "notes": "0 is not negative"
+            "notes": "Number is not vector"
         },
         {
             "id": "iszero_001",
@@ -206,62 +339,6 @@
             "notes": "1 is not zero"
         },
         {
-            "id": "int_001",
-            "input": "int(5.7)",
-            "expected": 5,
-            "expectedType": "NodeRational",
-            "notes": "Truncate positive"
-        },
-        {
-            "id": "int_002",
-            "input": "int(-5.7)",
-            "expected": -5,
-            "expectedType": "NodeRational",
-            "notes": "Truncate negative toward zero"
-        },
-        {
-            "id": "int_003",
-            "input": "int(5)",
-            "expected": 5,
-            "expectedType": "NodeRational",
-            "notes": "Integer unchanged"
-        },
-        {
-            "id": "float_001",
-            "input": "float(5)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Convert to double"
-        },
-        {
-            "id": "float_002",
-            "input": "float(1/2)",
-            "expected": 0.5,
-            "expectedType": "NodeDouble",
-            "notes": "Rational to double"
-        },
-        {
-            "id": "bool_001",
-            "input": "bool(1)",
-            "expected": true,
-            "expectedType": "NodeBoolean",
-            "notes": "1 is truthy"
-        },
-        {
-            "id": "bool_002",
-            "input": "bool(0)",
-            "expected": false,
-            "expectedType": "NodeBoolean",
-            "notes": "0 is falsy"
-        },
-        {
-            "id": "bool_003",
-            "input": "bool(-1)",
-            "expected": true,
-            "expectedType": "NodeBoolean",
-            "notes": "Non-zero is truthy"
-        },
-        {
             "id": "numerator_001",
             "input": "numerator(3/4)",
             "expected": 3,
@@ -276,18 +353,43 @@
             "notes": "Numerator of integer"
         },
         {
-            "id": "denominator_001",
-            "input": "denominator(3/4)",
-            "expected": 4,
-            "expectedType": "NodeRational",
-            "notes": "Denominator of 3/4"
+            "id": "tomatrix_001",
+            "input": "tomatrix({{1, 2}, {3, 4}})",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "A vector of row vectors becomes a matrix"
         },
         {
-            "id": "denominator_002",
-            "input": "denominator(5)",
-            "expected": 1,
-            "expectedType": "NodeRational",
-            "notes": "Denominator of integer"
+            "id": "tovector_001",
+            "input": "tovector([[1, 2], [3, 4]])",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A matrix becomes a vector of its row vectors"
+        },
+        {
+            "id": "tovector_002",
+            "input": "tomatrix(tovector([[1, 2], [3, 4]])) == [[1, 2], [3, 4]]",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The two conversions are inverses of one another"
         },
         {
             "id": "typeof_001",
@@ -330,69 +432,6 @@
             "expected": "double",
             "expectedType": "NodeString",
             "notes": "Type of double"
-        },
-        {
-            "id": "isnumber_001",
-            "input": "isnumber(5)",
-            "expected": true,
-            "expectedType": "NodeBoolean",
-            "notes": "Integer is number"
-        },
-        {
-            "id": "isnumber_002",
-            "input": "isnumber(5.5)",
-            "expected": true,
-            "expectedType": "NodeBoolean",
-            "notes": "Double is number"
-        },
-        {
-            "id": "isnumber_003",
-            "input": "isnumber(true)",
-            "expected": false,
-            "expectedType": "NodeBoolean",
-            "notes": "Boolean is not number"
-        },
-        {
-            "id": "isvector_001",
-            "input": "isvector({1, 2, 3})",
-            "expected": true,
-            "expectedType": "NodeBoolean",
-            "notes": "Vector is vector"
-        },
-        {
-            "id": "isvector_002",
-            "input": "isvector(5)",
-            "expected": false,
-            "expectedType": "NodeBoolean",
-            "notes": "Number is not vector"
-        },
-        {
-            "id": "ismatrix_001",
-            "input": "ismatrix([[1, 2], [3, 4]])",
-            "expected": true,
-            "expectedType": "NodeBoolean",
-            "notes": "Matrix is matrix"
-        },
-        {
-            "id": "ismatrix_002",
-            "input": "ismatrix({1, 2, 3})",
-            "expected": false,
-            "expectedType": "NodeBoolean",
-            "notes": "Vector is not matrix"
-        },
-        {
-            "id": "isboolean_001",
-            "input": "isboolean(true)",
-            "expected": true,
-            "expectedType": "NodeBoolean",
-            "notes": "Boolean is boolean"
-        },
-        {
-            "id": "isboolean_002",
-            "input": "isboolean(1)",
-            "expected": false,
-            "expectedType": "NodeBoolean",
-            "notes": "Number is not boolean"
         }
     ]
 }

@@ -1,0 +1,41 @@
+{
+    "category": "Semantics: closures",
+    "description": "A lambda captures the scope it was written in, not the scope it is called from.",
+    "tests": [
+        {
+            "id": "closure_over_parameter",
+            "input": "adder(n) := (x -> x + n); add5 := adder(5); add5(3)",
+            "expected": 8,
+            "expectedType": "NodeRational",
+            "notes": "The captured value is the parameter of the enclosing call"
+        },
+        {
+            "id": "lambda_captures_defining_scope",
+            "input": "a := 1; g := (x -> x + a); a := 2; g(1)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "The lambda captured a as it was when it was written, so the later change is not seen"
+        },
+        {
+            "id": "lambda_closure_001",
+            "input": "a := 10; f := x -> x + a; f(5)",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Lambda with closure"
+        },
+        {
+            "id": "named_function_resolves_at_call",
+            "input": "a := 1; h(x) := x + a; a := 2; h(1)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "A named function is not a closure: it looks a up when it runs, so it sees 2"
+        },
+        {
+            "id": "two_closures_capture_separately",
+            "input": "adder(n) := (x -> x + n); a := adder(1); b := adder(100); a(0) + b(0)",
+            "expected": 101,
+            "expectedType": "NodeRational",
+            "notes": "Each call captures its own binding rather than sharing one"
+        }
+    ]
+}

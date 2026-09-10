@@ -1,17 +1,18 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
+import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
+
+import java.util.function.DoubleUnaryOperator;
+
 /**
- * Base class for nodes representing constant values that have already been evaluated.
+ * A value: the result of evaluating an expression, needing no further computation.
  * <p>
- * NodeConstant instances are the final results of evaluation and don't require
- * further computation. They include numbers, booleans, strings, vectors, matrices, etc.
+ * Arithmetic and ordering are defined once here for every value type, so operators,
+ * built-in functions and library callers all share the same semantics. See
+ * {@link NodeArithmetic} for the type rules, which cover string concatenation,
+ * unit conversion, percentages, exact rationals and element-wise broadcasting.
  * <p>
- * Sealed to enable exhaustiveness checking in pattern matching.
- * <p>
- * Provides universal arithmetic dispatch via instance methods ({@link #add}, {@link #subtract},
- * {@link #multiply}, {@link #divide}, {@link #power}, {@link #negate}, {@link #compareTo}).
- * This allows any code to perform {@code left.add(right)} with correct type-preserving dispatch,
- * including string concatenation/repetition and lexicographic comparison.
+ * Sealed to give pattern switches exhaustiveness checking.
  */
 public abstract sealed class NodeConstant extends Node permits
         NodeNumber,
@@ -24,114 +25,131 @@ public abstract sealed class NodeConstant extends Node permits
         NodeFunction {
 
     /**
-     * Convert this constant to a double value for numeric operations.
-     * Throws an exception if this constant is not numeric.
+     * This value as a double.
+     *
+     * @throws TypeError if the value is not numeric
      */
     public abstract double doubleValue();
 
-    /**
-     * Check if this constant represents a numeric value.
-     */
     public abstract boolean isNumeric();
 
-    /**
-     * Check if this constant represents a boolean value.
-     */
     public boolean isBoolean() {
         return false;
     }
 
-    /**
-     * Check if this constant represents a string value.
-     */
     public boolean isString() {
         return false;
     }
 
-    /**
-     * Check if this constant represents a vector.
-     */
     public boolean isVector() {
         return false;
     }
 
-    /**
-     * Check if this constant represents a matrix.
-     */
     public boolean isMatrix() {
         return false;
     }
 
-    // ==================== Universal Arithmetic Dispatch ====================
+    // ==================== Arithmetic ====================
 
-    /**
-     * Adds this constant to another constant.
-     * <p>
-     * Type dispatch rules:
-     * <ul>
-     *     <li>Numeric types delegate to {@link uk.co.ryanharrison.mathengine.parser.util.NumericOperations}</li>
-     *     <li>String + anything = string concatenation</li>
-     *     <li>Vectors/matrices broadcast element-wise</li>
-     * </ul>
-     *
-     * @param other the right-hand operand
-     * @return the result of the addition
-     */
-    public abstract NodeConstant add(NodeConstant other);
-
-    /**
-     * Subtracts another constant from this constant.
-     *
-     * @param other the right-hand operand
-     * @return the result of the subtraction
-     */
-    public abstract NodeConstant subtract(NodeConstant other);
-
-    /**
-     * Multiplies this constant by another constant.
-     * <p>
-     * Supports string repetition: {@code "ab" * 3} = {@code "ababab"}.
-     *
-     * @param other the right-hand operand
-     * @return the result of the multiplication
-     */
-    public abstract NodeConstant multiply(NodeConstant other);
-
-    /**
-     * Divides this constant by another constant.
-     *
-     * @param other the right-hand operand
-     * @return the result of the division
-     */
-    public abstract NodeConstant divide(NodeConstant other);
-
-    /**
-     * Raises this constant to the power of another constant.
-     *
-     * @param other the exponent
-     * @return the result of the exponentiation
-     */
-    public abstract NodeConstant power(NodeConstant other);
-
-    /**
-     * Negates this constant (unary minus).
-     *
-     * @return the negated value
-     */
-    public abstract NodeConstant negate();
-
-    /**
-     * Compares this constant to another constant for ordering.
-     * <p>
-     * Supports numeric comparison and lexicographic string comparison.
-     *
-     * @param other the other constant to compare to
-     * @return negative if this &lt; other, zero if equal, positive if this &gt; other
-     */
-    public abstract int compareTo(NodeConstant other);
-
-    @Override
-    public <T> T accept(NodeVisitor<T> visitor) {
-        return visitor.visitConstant(this);
+    public NodeConstant add(NodeConstant other) {
+        return NodeArithmetic.apply(NodeArithmetic.Op.ADD, this, other);
     }
+
+    public NodeConstant subtract(NodeConstant other) {
+        return NodeArithmetic.apply(NodeArithmetic.Op.SUBTRACT, this, other);
+    }
+
+    public NodeConstant multiply(NodeConstant other) {
+        return NodeArithmetic.apply(NodeArithmetic.Op.MULTIPLY, this, other);
+    }
+
+    public NodeConstant divide(NodeConstant other) {
+        return NodeArithmetic.apply(NodeArithmetic.Op.DIVIDE, this, other);
+    }
+
+    public NodeConstant power(NodeConstant other) {
+        return NodeArithmetic.apply(NodeArithmetic.Op.POWER, this, other);
+    }
+
+    /**
+     * Floor modulo, so {@code -7 mod 3} is 2 rather than -1.
+     */
+    public NodeConstant modulo(NodeConstant other) {
+        return NodeArithmetic.apply(NodeArithmetic.Op.MODULO, this, other);
+    }
+
+    public NodeConstant negate() {
+        return NodeArithmetic.negate(this);
+    }
+
+    // ==================== Rounding ====================
+
+    /**
+     * Largest whole number no greater than this value.
+     */
+    public NodeConstant floor() {
+        return NodeArithmetic.round(this, NodeArithmetic.Rounding.FLOOR);
+    }
+
+    /**
+     * Smallest whole number no less than this value.
+     */
+    public NodeConstant ceil() {
+        return NodeArithmetic.round(this, NodeArithmetic.Rounding.CEIL);
+    }
+
+    /**
+     * Nearest whole number, with halves going up.
+     */
+    public NodeConstant round() {
+        return NodeArithmetic.round(this, NodeArithmetic.Rounding.NEAREST);
+    }
+
+    /**
+     * Drops the fractional part, moving towards zero.
+     */
+    public NodeConstant truncate() {
+        return NodeArithmetic.round(this, NodeArithmetic.Rounding.TOWARDS_ZERO);
+    }
+
+    public NodeConstant abs() {
+        return NodeArithmetic.abs(this);
+    }
+
+    /**
+     * Applies a real-valued transform to this value's magnitude, keeping its shape:
+     * collections stay collections, and a quantity or a percentage keeps its marker,
+     * so {@code sqrt(100 meters)} is 10 meters.
+     * <p>
+     * Use this for a transform whose answer is the same kind of thing as its argument,
+     * such as a root or a fractional part. A transform whose answer is a pure number,
+     * such as a logarithm or a trigonometric ratio, should return one.
+     *
+     * @throws TypeError if the value is not numeric
+     */
+    public NodeConstant mapMagnitude(DoubleUnaryOperator op) {
+        return NodeArithmetic.mapMagnitude(this, op);
+    }
+
+    // ==================== Ordering ====================
+
+    /**
+     * Orders this value against another, converting units and comparing strings
+     * lexicographically.
+     *
+     * @return negative, zero or positive as this value is less than, equal to or greater than {@code other}
+     * @throws TypeError if the two values have no ordering
+     */
+    public int compareTo(NodeConstant other) {
+        return NodeArithmetic.compare(this, other);
+    }
+
+    /**
+     * Value equality as the {@code ==} operator sees it: units are converted before
+     * comparing, collections compare structurally, and NaN equals nothing.
+     */
+    public boolean equalTo(NodeConstant other) {
+        return NodeArithmetic.equalTo(this, other);
+    }
+
 }

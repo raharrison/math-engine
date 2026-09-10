@@ -1,0 +1,55 @@
+{
+    "category": "Operator: ! (factorial)",
+    "description": "The postfix factorial, which extends to non-integers through the gamma function.",
+    "tests": [
+        {
+            "id": "fact_001",
+            "input": "5!",
+            "expected": 120,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 5"
+        },
+        {
+            "id": "fact_005",
+            "input": "10!",
+            "expected": 3628800,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 10"
+        },
+        {
+            "id": "fact_008",
+            "input": "(3 + 2)!",
+            "expected": 120,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of parenthesized expression"
+        },
+        {
+            "id": "fact_009",
+            "input": "3! + 2!",
+            "expected": 8,
+            "expectedType": "NodeRational",
+            "notes": "Multiple factorials"
+        },
+        {
+            "id": "factorial_nonint_001",
+            "input": "(2.5)!",
+            "expected": 3.32335097044784,
+            "expectedType": "NodeDouble",
+            "notes": "Factorial of non-integer uses gamma function"
+        },
+        {
+            "id": "unary_008",
+            "input": "1!",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 1 is 1"
+        },
+        {
+            "id": "unary_009",
+            "input": "3!",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Factorial of 3"
+        }
+    ]
+}

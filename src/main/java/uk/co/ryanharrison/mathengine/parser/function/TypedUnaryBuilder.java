@@ -41,9 +41,7 @@ public final class TypedUnaryBuilder<A> {
      * @return the built MathFunction
      */
     public MathFunction implementedBy(TypedUnaryFunction<A> implementation) {
-        parent.validateMetadata();
-
-        return parent.createMathFunction(() -> (args, ctx) -> {
+        return parent.implementedByAggregate((args, ctx) -> {
             A arg = argType.extract(args.get(0), ctx);
             return implementation.apply(arg, ctx);
         });

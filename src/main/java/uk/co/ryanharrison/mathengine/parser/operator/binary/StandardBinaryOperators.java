@@ -30,6 +30,12 @@ public final class StandardBinaryOperators {
      * @return immutable map of token types to operators
      */
     public static Map<TokenType, BinaryOperator> all() {
+        return ALL;
+    }
+
+    private static final Map<TokenType, BinaryOperator> ALL = buildAll();
+
+    private static Map<TokenType, BinaryOperator> buildAll() {
         return Map.ofEntries(
                 // Arithmetic
                 Map.entry(TokenType.PLUS, PlusOperator.INSTANCE),

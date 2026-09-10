@@ -44,9 +44,7 @@ public final class TypedBinaryBuilder<A, B> {
      * @return the built MathFunction
      */
     public MathFunction implementedBy(TypedBinaryFunction<A, B> implementation) {
-        parent.validateMetadata();
-
-        return parent.createMathFunction(() -> (args, ctx) -> {
+        return parent.implementedByAggregate((args, ctx) -> {
             A arg1 = arg1Type.extract(args.get(0), ctx);
             B arg2 = arg2Type.extract(args.get(1), ctx);
             return implementation.apply(arg1, arg2, ctx);

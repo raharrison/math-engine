@@ -1,0 +1,174 @@
+{
+    "category": "Value: number",
+    "description": "Numeric literals in every form, and the special values: infinity, NaN and negative zero.",
+    "tests": [
+        {
+            "id": "const_008",
+            "input": "ln(e)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Natural log of e"
+        },
+        {
+            "id": "const_009",
+            "input": "42",
+            "expected": 42.0,
+            "expectedType": "NodeRational",
+            "notes": "Integer literal"
+        },
+        {
+            "id": "const_010",
+            "input": "3.14159",
+            "expected": 3.14159,
+            "expectedType": "NodeRational",
+            "notes": "Decimal literal"
+        },
+        {
+            "id": "const_011",
+            "input": "1.5e2",
+            "expected": 150.0,
+            "expectedType": "NodeRational",
+            "notes": "Scientific notation"
+        },
+        {
+            "id": "const_012",
+            "input": "2.5e-3",
+            "expected": 0.0025,
+            "expectedType": "NodeRational",
+            "notes": "Scientific notation with negative exponent"
+        },
+        {
+            "id": "const_017",
+            "input": "0",
+            "expected": 0.0,
+            "expectedType": "NodeRational",
+            "notes": "Zero literal"
+        },
+        {
+            "id": "const_018",
+            "input": "1",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "One literal"
+        },
+        {
+            "id": "const_019",
+            "input": "-1",
+            "expected": -1.0,
+            "expectedType": "NodeRational",
+            "notes": "Negative one"
+        },
+        {
+            "id": "const_020",
+            "input": "-42",
+            "expected": -42.0,
+            "expectedType": "NodeRational",
+            "notes": "Negative integer"
+        },
+        {
+            "id": "const_021",
+            "input": "-3.14",
+            "expected": -3.14,
+            "expectedType": "NodeRational",
+            "notes": "Negative decimal"
+        },
+        {
+            "id": "const_027",
+            "input": "23d",
+            "expected": 23.0,
+            "expectedType": "NodeDouble",
+            "notes": "Integer with 'd' suffix forces double type"
+        },
+        {
+            "id": "const_028",
+            "input": "3.14d",
+            "expected": 3.14,
+            "expectedType": "NodeDouble",
+            "notes": "Decimal with 'd' suffix forces double type"
+        },
+        {
+            "id": "const_029",
+            "input": "1/2d",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Rational with 'd' suffix evaluates to double"
+        },
+        {
+            "id": "const_030",
+            "input": "1e3d",
+            "expected": 1000.0,
+            "expectedType": "NodeDouble",
+            "notes": "Scientific notation with 'd' suffix forces double"
+        },
+        {
+            "id": "const_031",
+            "input": "1d/2",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "1d is double, division by integer stays double"
+        },
+        {
+            "id": "div_zero_002",
+            "input": "-1/0",
+            "expected": "-Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Negative divided by zero"
+        },
+        {
+            "id": "div_zero_003",
+            "input": "0/0",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "Zero divided by zero is NaN"
+        },
+        {
+            "id": "err_eval_001",
+            "input": "1 / 0",
+            "expected": "Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Division by zero should throw error"
+        },
+        {
+            "id": "fmod_zero_001",
+            "input": "fmod(5, 0)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "fmod by zero"
+        },
+        {
+            "id": "inf_arithmetic_001",
+            "input": "(1/0) + 1",
+            "expected": "Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Infinity + finite = infinity"
+        },
+        {
+            "id": "inf_arithmetic_002",
+            "input": "(1/0) - (1/0)",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "Infinity - infinity = NaN"
+        },
+        {
+            "id": "inf_arithmetic_003",
+            "input": "(1/0) * 0",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "Infinity * 0 = NaN"
+        },
+        {
+            "id": "nan_propagation_001",
+            "input": "(0/0) + 5",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "NaN + anything = NaN"
+        },
+        {
+            "id": "nan_propagation_002",
+            "input": "(0/0) * 10",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "NaN * anything = NaN"
+        }
+    ]
+}

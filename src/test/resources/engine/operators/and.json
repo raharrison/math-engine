@@ -1,0 +1,62 @@
+{
+    "category": "Operator: && (logical and)",
+    "description": "Conjunction, the coercion of numbers to truth values, and where it short circuits.",
+    "tests": [
+        {
+            "id": "and_001",
+            "input": "true && true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: both true"
+        },
+        {
+            "id": "and_002",
+            "input": "true && false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: one false"
+        },
+        {
+            "id": "and_003",
+            "input": "false && true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: one false (reversed)"
+        },
+        {
+            "id": "and_004",
+            "input": "false && false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND: both false"
+        },
+        {
+            "id": "and_005",
+            "input": "true && true && true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple AND: all true"
+        },
+        {
+            "id": "logical_020",
+            "input": "5 > 3 && 4 < 2",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparison before AND: (5 > 3) && (4 < 2)"
+        },
+        {
+            "id": "logical_number_001",
+            "input": "5 && 3",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Numbers coerce to boolean (non-zero is true)"
+        },
+        {
+            "id": "paren_003_and",
+            "input": "(5 > 3) && (2 < 4)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Parenthesized comparisons"
+        }
+    ]
+}

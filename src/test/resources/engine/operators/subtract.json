@@ -1,0 +1,897 @@
+{
+    "category": "Operator: - (subtraction)",
+    "description": "Subtraction across every operand type it accepts.",
+    "tests": [
+        {
+            "id": "matrix_006",
+            "input": "[5, 6; 7, 8] - [1, 2; 3, 4]",
+            "expected": [
+                [
+                    4,
+                    4
+                ],
+                [
+                    4,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise matrix subtraction"
+        },
+        {
+            "id": "matrix_017",
+            "input": "[1, 2; 3, 4] - [1, 2; 3, 4]",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix subtraction yields zero matrix"
+        },
+        {
+            "id": "matrix_sub_001",
+            "input": "[[5, 6], [7, 8]] - [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    4,
+                    4
+                ],
+                [
+                    4,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise matrix subtraction"
+        },
+        {
+            "id": "matrix_sub_002",
+            "input": "[[10, 20], [30, 40]] - 5",
+            "expected": [
+                [
+                    5,
+                    15
+                ],
+                [
+                    25,
+                    35
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar subtraction from matrix"
+        },
+        {
+            "id": "sub_002",
+            "input": "0 - 0",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Zero subtraction"
+        },
+        {
+            "id": "sub_003",
+            "input": "3 - 5",
+            "expected": -2,
+            "expectedType": "NodeRational",
+            "notes": "Negative result"
+        },
+        {
+            "id": "sub_005",
+            "input": "10 - 5 - 2 - 1",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Multiple left-associative subtractions"
+        },
+        {
+            "id": "subtract_types_boolean_boolean",
+            "input": "(true) - (true)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Boolean subtracts a boolean"
+        },
+        {
+            "id": "subtract_types_boolean_double",
+            "input": "(true) - (2.5d)",
+            "expected": -1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean subtracts a double"
+        },
+        {
+            "id": "subtract_types_boolean_matrix",
+            "input": "(true) - ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0,
+                    -1
+                ],
+                [
+                    -2,
+                    -3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Boolean subtracts a matrix"
+        },
+        {
+            "id": "subtract_types_boolean_percent",
+            "input": "(true) - (20%)",
+            "expected": 0.8,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean subtracts a percent"
+        },
+        {
+            "id": "subtract_types_boolean_range",
+            "input": "(true) - (1..2)",
+            "expected": [
+                0,
+                -1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean subtracts a range"
+        },
+        {
+            "id": "subtract_types_boolean_rational",
+            "input": "(true) - (3)",
+            "expected": -2,
+            "expectedType": "NodeRational",
+            "notes": "Boolean subtracts a rational"
+        },
+        {
+            "id": "subtract_types_boolean_string",
+            "input": "(true) - (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Boolean subtracts a string is not defined"
+        },
+        {
+            "id": "subtract_types_boolean_unit",
+            "input": "(true) - (4 meters)",
+            "expected": "-3.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Boolean subtracts a unit"
+        },
+        {
+            "id": "subtract_types_boolean_vector",
+            "input": "(true) - ({1, 2})",
+            "expected": [
+                0,
+                -1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean subtracts a vector"
+        },
+        {
+            "id": "subtract_types_double_boolean",
+            "input": "(2.5d) - (true)",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double subtracts a boolean"
+        },
+        {
+            "id": "subtract_types_double_double",
+            "input": "(2.5d) - (2.5d)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Double subtracts a double"
+        },
+        {
+            "id": "subtract_types_double_matrix",
+            "input": "(2.5d) - ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1.5,
+                    0.5
+                ],
+                [
+                    -0.5,
+                    -1.5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Double subtracts a matrix"
+        },
+        {
+            "id": "subtract_types_double_percent",
+            "input": "(2.5d) - (20%)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Double subtracts a percent"
+        },
+        {
+            "id": "subtract_types_double_range",
+            "input": "(2.5d) - (1..2)",
+            "expected": [
+                1.5,
+                0.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double subtracts a range"
+        },
+        {
+            "id": "subtract_types_double_rational",
+            "input": "(2.5d) - (3)",
+            "expected": -0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double subtracts a rational"
+        },
+        {
+            "id": "subtract_types_double_string",
+            "input": "(2.5d) - (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Double subtracts a string is not defined"
+        },
+        {
+            "id": "subtract_types_double_unit",
+            "input": "(2.5d) - (4 meters)",
+            "expected": "-1.5 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Double subtracts a unit"
+        },
+        {
+            "id": "subtract_types_double_vector",
+            "input": "(2.5d) - ({1, 2})",
+            "expected": [
+                1.5,
+                0.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double subtracts a vector"
+        },
+        {
+            "id": "subtract_types_matrix_boolean",
+            "input": "([1, 2; 3, 4]) - (true)",
+            "expected": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    2,
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix subtracts a boolean"
+        },
+        {
+            "id": "subtract_types_matrix_double",
+            "input": "([1, 2; 3, 4]) - (2.5d)",
+            "expected": [
+                [
+                    -1.5,
+                    -0.5
+                ],
+                [
+                    0.5,
+                    1.5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix subtracts a double"
+        },
+        {
+            "id": "subtract_types_matrix_matrix",
+            "input": "([1, 2; 3, 4]) - ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix subtracts a matrix"
+        },
+        {
+            "id": "subtract_types_matrix_percent",
+            "input": "([1, 2; 3, 4]) - (20%)",
+            "expected": [
+                [
+                    0.8,
+                    1.6
+                ],
+                [
+                    2.4,
+                    3.2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix subtracts a percent"
+        },
+        {
+            "id": "subtract_types_matrix_range",
+            "input": "([1, 2; 3, 4]) - (1..2)",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    2,
+                    2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix subtracts a range"
+        },
+        {
+            "id": "subtract_types_matrix_rational",
+            "input": "([1, 2; 3, 4]) - (3)",
+            "expected": [
+                [
+                    -2,
+                    -1
+                ],
+                [
+                    0,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix subtracts a rational"
+        },
+        {
+            "id": "subtract_types_matrix_string",
+            "input": "([1, 2; 3, 4]) - (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix subtracts a string is not defined"
+        },
+        {
+            "id": "subtract_types_matrix_unit",
+            "input": "([1, 2; 3, 4]) - (4 meters)",
+            "expected": [
+                [
+                    "-3.0 meters",
+                    "-2.0 meters"
+                ],
+                [
+                    "-1.0 meters",
+                    "0.0 meters"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix subtracts a unit"
+        },
+        {
+            "id": "subtract_types_matrix_vector",
+            "input": "([1, 2; 3, 4]) - ({1, 2})",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    2,
+                    2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix subtracts a vector"
+        },
+        {
+            "id": "subtract_types_percent_boolean",
+            "input": "(20%) - (true)",
+            "expected": -0.8,
+            "expectedType": "NodeDouble",
+            "notes": "Percent subtracts a boolean"
+        },
+        {
+            "id": "subtract_types_percent_double",
+            "input": "(20%) - (2.5d)",
+            "expected": -2.3,
+            "expectedType": "NodeDouble",
+            "notes": "Percent subtracts a double"
+        },
+        {
+            "id": "subtract_types_percent_matrix",
+            "input": "(20%) - ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    -0.8,
+                    -1.8
+                ],
+                [
+                    -2.8,
+                    -3.8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Percent subtracts a matrix"
+        },
+        {
+            "id": "subtract_types_percent_percent",
+            "input": "(20%) - (20%)",
+            "expected": "0.0%",
+            "expectedType": "NodePercent",
+            "notes": "Percent subtracts a percent"
+        },
+        {
+            "id": "subtract_types_percent_range",
+            "input": "(20%) - (1..2)",
+            "expected": [
+                -0.8,
+                -1.8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent subtracts a range"
+        },
+        {
+            "id": "subtract_types_percent_rational",
+            "input": "(20%) - (3)",
+            "expected": -2.8,
+            "expectedType": "NodeDouble",
+            "notes": "Percent subtracts a rational"
+        },
+        {
+            "id": "subtract_types_percent_string",
+            "input": "(20%) - (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Percent subtracts a string is not defined"
+        },
+        {
+            "id": "subtract_types_percent_unit",
+            "input": "(20%) - (4 meters)",
+            "expected": "-3.8 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Percent subtracts a unit"
+        },
+        {
+            "id": "subtract_types_percent_vector",
+            "input": "(20%) - ({1, 2})",
+            "expected": [
+                -0.8,
+                -1.8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent subtracts a vector"
+        },
+        {
+            "id": "subtract_types_range_boolean",
+            "input": "(1..2) - (true)",
+            "expected": [
+                0,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range subtracts a boolean"
+        },
+        {
+            "id": "subtract_types_range_double",
+            "input": "(1..2) - (2.5d)",
+            "expected": [
+                -1.5,
+                -0.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range subtracts a double"
+        },
+        {
+            "id": "subtract_types_range_matrix",
+            "input": "(1..2) - ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    -2,
+                    -2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Range subtracts a matrix"
+        },
+        {
+            "id": "subtract_types_range_percent",
+            "input": "(1..2) - (20%)",
+            "expected": [
+                0.8,
+                1.6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range subtracts a percent"
+        },
+        {
+            "id": "subtract_types_range_range",
+            "input": "(1..2) - (1..2)",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range subtracts a range"
+        },
+        {
+            "id": "subtract_types_range_rational",
+            "input": "(1..2) - (3)",
+            "expected": [
+                -2,
+                -1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range subtracts a rational"
+        },
+        {
+            "id": "subtract_types_range_string",
+            "input": "(1..2) - (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range subtracts a string is not defined"
+        },
+        {
+            "id": "subtract_types_range_unit",
+            "input": "(1..2) - (4 meters)",
+            "expected": [
+                "-3.0 meters",
+                "-2.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range subtracts a unit"
+        },
+        {
+            "id": "subtract_types_range_vector",
+            "input": "(1..2) - ({1, 2})",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range subtracts a vector"
+        },
+        {
+            "id": "subtract_types_rational_boolean",
+            "input": "(3) - (true)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Rational subtracts a boolean"
+        },
+        {
+            "id": "subtract_types_rational_double",
+            "input": "(3) - (2.5d)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Rational subtracts a double"
+        },
+        {
+            "id": "subtract_types_rational_matrix",
+            "input": "(3) - ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    2,
+                    1
+                ],
+                [
+                    0,
+                    -1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Rational subtracts a matrix"
+        },
+        {
+            "id": "subtract_types_rational_percent",
+            "input": "(3) - (20%)",
+            "expected": 2.4,
+            "expectedType": "NodeDouble",
+            "notes": "Rational subtracts a percent"
+        },
+        {
+            "id": "subtract_types_rational_range",
+            "input": "(3) - (1..2)",
+            "expected": [
+                2,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational subtracts a range"
+        },
+        {
+            "id": "subtract_types_rational_rational",
+            "input": "(3) - (3)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Rational subtracts a rational"
+        },
+        {
+            "id": "subtract_types_rational_string",
+            "input": "(3) - (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Rational subtracts a string is not defined"
+        },
+        {
+            "id": "subtract_types_rational_unit",
+            "input": "(3) - (4 meters)",
+            "expected": "-1.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Rational subtracts a unit"
+        },
+        {
+            "id": "subtract_types_rational_vector",
+            "input": "(3) - ({1, 2})",
+            "expected": [
+                2,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational subtracts a vector"
+        },
+        {
+            "id": "subtract_types_string_boolean",
+            "input": "(\"ab\") - (true)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String subtracts a boolean is not defined"
+        },
+        {
+            "id": "subtract_types_string_double",
+            "input": "(\"ab\") - (2.5d)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String subtracts a double is not defined"
+        },
+        {
+            "id": "subtract_types_string_matrix",
+            "input": "(\"ab\") - ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String subtracts a matrix is not defined"
+        },
+        {
+            "id": "subtract_types_string_percent",
+            "input": "(\"ab\") - (20%)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String subtracts a percent is not defined"
+        },
+        {
+            "id": "subtract_types_string_range",
+            "input": "(\"ab\") - (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String subtracts a range is not defined"
+        },
+        {
+            "id": "subtract_types_string_rational",
+            "input": "(\"ab\") - (3)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String subtracts a rational is not defined"
+        },
+        {
+            "id": "subtract_types_string_string",
+            "input": "(\"ab\") - (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String subtracts a string is not defined"
+        },
+        {
+            "id": "subtract_types_string_unit",
+            "input": "(\"ab\") - (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String subtracts a unit is not defined"
+        },
+        {
+            "id": "subtract_types_string_vector",
+            "input": "(\"ab\") - ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String subtracts a vector is not defined"
+        },
+        {
+            "id": "subtract_types_unit_boolean",
+            "input": "(4 meters) - (true)",
+            "expected": "3.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit subtracts a boolean"
+        },
+        {
+            "id": "subtract_types_unit_double",
+            "input": "(4 meters) - (2.5d)",
+            "expected": "1.5 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit subtracts a double"
+        },
+        {
+            "id": "subtract_types_unit_matrix",
+            "input": "(4 meters) - ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "3.0 meters",
+                    "2.0 meters"
+                ],
+                [
+                    "1.0 meter",
+                    "0.0 meters"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Unit subtracts a matrix"
+        },
+        {
+            "id": "subtract_types_unit_percent",
+            "input": "(4 meters) - (20%)",
+            "expected": "3.8 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit subtracts a percent"
+        },
+        {
+            "id": "subtract_types_unit_range",
+            "input": "(4 meters) - (1..2)",
+            "expected": [
+                "3.0 meters",
+                "2.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit subtracts a range"
+        },
+        {
+            "id": "subtract_types_unit_rational",
+            "input": "(4 meters) - (3)",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Unit subtracts a rational"
+        },
+        {
+            "id": "subtract_types_unit_string",
+            "input": "(4 meters) - (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit subtracts a string is not defined"
+        },
+        {
+            "id": "subtract_types_unit_unit",
+            "input": "(4 meters) - (4 meters)",
+            "expected": "0.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit subtracts a unit"
+        },
+        {
+            "id": "subtract_types_unit_vector",
+            "input": "(4 meters) - ({1, 2})",
+            "expected": [
+                "3.0 meters",
+                "2.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit subtracts a vector"
+        },
+        {
+            "id": "subtract_types_vector_boolean",
+            "input": "({1, 2}) - (true)",
+            "expected": [
+                0,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector subtracts a boolean"
+        },
+        {
+            "id": "subtract_types_vector_double",
+            "input": "({1, 2}) - (2.5d)",
+            "expected": [
+                -1.5,
+                -0.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector subtracts a double"
+        },
+        {
+            "id": "subtract_types_vector_matrix",
+            "input": "({1, 2}) - ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    -2,
+                    -2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Vector subtracts a matrix"
+        },
+        {
+            "id": "subtract_types_vector_percent",
+            "input": "({1, 2}) - (20%)",
+            "expected": [
+                0.8,
+                1.6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector subtracts a percent"
+        },
+        {
+            "id": "subtract_types_vector_range",
+            "input": "({1, 2}) - (1..2)",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector subtracts a range"
+        },
+        {
+            "id": "subtract_types_vector_rational",
+            "input": "({1, 2}) - (3)",
+            "expected": [
+                -2,
+                -1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector subtracts a rational"
+        },
+        {
+            "id": "subtract_types_vector_string",
+            "input": "({1, 2}) - (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector subtracts a string is not defined"
+        },
+        {
+            "id": "subtract_types_vector_unit",
+            "input": "({1, 2}) - (4 meters)",
+            "expected": [
+                "-3.0 meters",
+                "-2.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector subtracts a unit"
+        },
+        {
+            "id": "subtract_types_vector_vector",
+            "input": "({1, 2}) - ({1, 2})",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector subtracts a vector"
+        },
+        {
+            "id": "vector_005",
+            "input": "{5, 6} - {1, 2}",
+            "expected": [
+                4,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise subtraction"
+        },
+        {
+            "id": "vector_sub_001",
+            "input": "{5, 6, 7} - {1, 2, 3}",
+            "expected": [
+                4,
+                4,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise subtraction"
+        },
+        {
+            "id": "vector_sub_002",
+            "input": "{10, 20, 30} - 5",
+            "expected": [
+                5,
+                15,
+                25
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar subtraction from vector"
+        }
+    ]
+}

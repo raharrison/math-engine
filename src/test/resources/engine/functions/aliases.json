@@ -1,0 +1,587 @@
+{
+    "category": "Functions: aliases",
+    "description": "Every alternate spelling of a function, asserted to give the same answer as its primary name. An alias nobody calls is an alias that can break, or collide with a new function, unnoticed.",
+    "tests": [
+        {
+            "id": "alias_log10",
+            "input": "log(100) == log10(100)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'log10' is another spelling of 'log' and must give the same answer"
+        },
+        {
+            "id": "alias_fpart",
+            "input": "frac(2.5) == fpart(2.5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'fpart' is another spelling of 'frac' and must give the same answer"
+        },
+        {
+            "id": "alias_fractional",
+            "input": "frac(2.5) == fractional(2.5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'fractional' is another spelling of 'frac' and must give the same answer"
+        },
+        {
+            "id": "alias_perm",
+            "input": "permutation(5, 2) == perm(5, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'perm' is another spelling of 'permutation' and must give the same answer"
+        },
+        {
+            "id": "alias_npr",
+            "input": "permutation(5, 2) == npr(5, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'npr' is another spelling of 'permutation' and must give the same answer"
+        },
+        {
+            "id": "alias_dfact",
+            "input": "doublefactorial(6) == dfact(6)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'dfact' is another spelling of 'doublefactorial' and must give the same answer"
+        },
+        {
+            "id": "alias_ilerp",
+            "input": "inverselerp(0, 10, 5) == ilerp(0, 10, 5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'ilerp' is another spelling of 'inverselerp' and must give the same answer"
+        },
+        {
+            "id": "alias_dist",
+            "input": "distance(0, 0, 3, 4) == dist(0, 0, 3, 4)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'dist' is another spelling of 'distance' and must give the same answer"
+        },
+        {
+            "id": "alias_dist3d",
+            "input": "distance3d(0, 0, 0, 1, 2, 2) == dist3d(0, 0, 0, 1, 2, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'dist3d' is another spelling of 'distance3d' and must give the same answer"
+        },
+        {
+            "id": "alias_approx",
+            "input": "approxeq(1, 1.0000000001) == approx(1, 1.0000000001)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'approx' is another spelling of 'approxeq' and must give the same answer"
+        },
+        {
+            "id": "alias_isclose",
+            "input": "approxeq(1, 1.0000000001) == isclose(1, 1.0000000001)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'isclose' is another spelling of 'approxeq' and must give the same answer"
+        },
+        {
+            "id": "alias_cmp",
+            "input": "compare(3, 5) == cmp(3, 5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'cmp' is another spelling of 'compare' and must give the same answer"
+        },
+        {
+            "id": "alias_radians",
+            "input": "deg2rad(180) == radians(180)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'radians' is another spelling of 'deg2rad' and must give the same answer"
+        },
+        {
+            "id": "alias_degrees",
+            "input": "rad2deg(pi) == degrees(pi)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'degrees' is another spelling of 'rad2deg' and must give the same answer"
+        },
+        {
+            "id": "alias_strreverse",
+            "input": "reverse({1, 2, 3}) == strreverse({1, 2, 3})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'strreverse' is another spelling of 'reverse' and must give the same answer"
+        },
+        {
+            "id": "alias_length",
+            "input": "len({1, 2, 3}) == length({1, 2, 3})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'length' is another spelling of 'len' and must give the same answer"
+        },
+        {
+            "id": "alias_strlen",
+            "input": "len({1, 2, 3}) == strlen({1, 2, 3})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'strlen' is another spelling of 'len' and must give the same answer"
+        },
+        {
+            "id": "alias_at",
+            "input": "get({1, 2, 3}, 1) == at({1, 2, 3}, 1)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'at' is another spelling of 'get' and must give the same answer"
+        },
+        {
+            "id": "alias_nth",
+            "input": "get({1, 2, 3}, 1) == nth({1, 2, 3}, 1)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'nth' is another spelling of 'get' and must give the same answer"
+        },
+        {
+            "id": "alias_find",
+            "input": "indexof({1, 2, 3}, 2) == find({1, 2, 3}, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'find' is another spelling of 'indexof' and must give the same answer"
+        },
+        {
+            "id": "alias_strindexof",
+            "input": "indexof({1, 2, 3}, 2) == strindexof({1, 2, 3}, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'strindexof' is another spelling of 'indexof' and must give the same answer"
+        },
+        {
+            "id": "alias_strfind",
+            "input": "indexof({1, 2, 3}, 2) == strfind({1, 2, 3}, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'strfind' is another spelling of 'indexof' and must give the same answer"
+        },
+        {
+            "id": "alias_includes",
+            "input": "contains({1, 2, 3}, 2) == includes({1, 2, 3}, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'includes' is another spelling of 'contains' and must give the same answer"
+        },
+        {
+            "id": "alias_strcontains",
+            "input": "contains({1, 2, 3}, 2) == strcontains({1, 2, 3}, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'strcontains' is another spelling of 'contains' and must give the same answer"
+        },
+        {
+            "id": "alias_distinct",
+            "input": "unique({1, 1, 2}) == distinct({1, 1, 2})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'distinct' is another spelling of 'unique' and must give the same answer"
+        },
+        {
+            "id": "alias_append",
+            "input": "concat({1, 2}, {3}) == append({1, 2}, {3})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'append' is another spelling of 'concat' and must give the same answer"
+        },
+        {
+            "id": "alias_replicate",
+            "input": "repeat(7, 3) == replicate(7, 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'replicate' is another spelling of 'repeat' and must give the same answer"
+        },
+        {
+            "id": "alias_strrepeat",
+            "input": "repeat(7, 3) == strrepeat(7, 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'strrepeat' is another spelling of 'repeat' and must give the same answer"
+        },
+        {
+            "id": "alias_sequence",
+            "input": "seq(1, 5) == sequence(1, 5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'sequence' is another spelling of 'seq' and must give the same answer"
+        },
+        {
+            "id": "alias_arange",
+            "input": "seq(1, 5) == arange(1, 5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'arange' is another spelling of 'seq' and must give the same answer"
+        },
+        {
+            "id": "alias_geometricmean",
+            "input": "gmean({1, 4}) == geometricmean({1, 4})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'geometricmean' is another spelling of 'gmean' and must give the same answer"
+        },
+        {
+            "id": "alias_harmonicmean",
+            "input": "hmean({1, 2}) == harmonicmean({1, 2})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'harmonicmean' is another spelling of 'hmean' and must give the same answer"
+        },
+        {
+            "id": "alias_rootmeansquare",
+            "input": "rms({3, 4}) == rootmeansquare({3, 4})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'rootmeansquare' is another spelling of 'rms' and must give the same answer"
+        },
+        {
+            "id": "alias_cov",
+            "input": "covariance({1, 2, 3}, {4, 5, 7}) == cov({1, 2, 3}, {4, 5, 7})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'cov' is another spelling of 'covariance' and must give the same answer"
+        },
+        {
+            "id": "alias_corr",
+            "input": "correlation({1, 2, 3}, {4, 5, 7}) == corr({1, 2, 3}, {4, 5, 7})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'corr' is another spelling of 'correlation' and must give the same answer"
+        },
+        {
+            "id": "alias_inv",
+            "input": "inverse([1, 2; 3, 4]) == inv([1, 2; 3, 4])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'inv' is another spelling of 'inverse' and must give the same answer"
+        },
+        {
+            "id": "alias_column",
+            "input": "col([1, 2; 3, 4], 0) == column([1, 2; 3, 4], 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'column' is another spelling of 'col' and must give the same answer"
+        },
+        {
+            "id": "alias_adj",
+            "input": "adjugate([1, 2; 3, 4]) == adj([1, 2; 3, 4])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'adj' is another spelling of 'adjugate' and must give the same answer"
+        },
+        {
+            "id": "alias_psi",
+            "input": "digamma(2) == psi(2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'psi' is another spelling of 'digamma' and must give the same answer"
+        },
+        {
+            "id": "alias_primefactors",
+            "input": "factors(12) == primefactors(12)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'primefactors' is another spelling of 'factors' and must give the same answer"
+        },
+        {
+            "id": "alias_isinfinite",
+            "input": "isinf(1/0) == isinfinite(1/0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'isinfinite' is another spelling of 'isinf' and must give the same answer"
+        },
+        {
+            "id": "alias_isinteger",
+            "input": "isint(4) == isinteger(4)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'isinteger' is another spelling of 'isint' and must give the same answer"
+        },
+        {
+            "id": "alias_toint",
+            "input": "int(3.7) == toint(3.7)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'toint' is another spelling of 'int' and must give the same answer"
+        },
+        {
+            "id": "alias_integer",
+            "input": "int(3.7) == integer(3.7)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'integer' is another spelling of 'int' and must give the same answer"
+        },
+        {
+            "id": "alias_tofloat",
+            "input": "float(3) == tofloat(3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'tofloat' is another spelling of 'float' and must give the same answer"
+        },
+        {
+            "id": "alias_todouble",
+            "input": "float(3) == todouble(3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'todouble' is another spelling of 'float' and must give the same answer"
+        },
+        {
+            "id": "alias_tobool",
+            "input": "bool(1) == tobool(1)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'tobool' is another spelling of 'bool' and must give the same answer"
+        },
+        {
+            "id": "alias_boolean",
+            "input": "bool(1) == boolean(1)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'boolean' is another spelling of 'bool' and must give the same answer"
+        },
+        {
+            "id": "alias_bitcount",
+            "input": "popcount(7) == bitcount(7)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'bitcount' is another spelling of 'popcount' and must give the same answer"
+        },
+        {
+            "id": "alias_shl",
+            "input": "lshift(1, 3) == shl(1, 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'shl' is another spelling of 'lshift' and must give the same answer"
+        },
+        {
+            "id": "alias_shr",
+            "input": "rshift(8, 2) == shr(8, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'shr' is another spelling of 'rshift' and must give the same answer"
+        },
+        {
+            "id": "alias_ushr",
+            "input": "urshift(8, 2) == ushr(8, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'ushr' is another spelling of 'urshift' and must give the same answer"
+        },
+        {
+            "id": "alias_uppercase",
+            "input": "upper(\"ab\") == uppercase(\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'uppercase' is another spelling of 'upper' and must give the same answer"
+        },
+        {
+            "id": "alias_toupper",
+            "input": "upper(\"ab\") == toupper(\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'toupper' is another spelling of 'upper' and must give the same answer"
+        },
+        {
+            "id": "alias_lowercase",
+            "input": "lower(\"AB\") == lowercase(\"AB\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'lowercase' is another spelling of 'lower' and must give the same answer"
+        },
+        {
+            "id": "alias_tolower",
+            "input": "lower(\"AB\") == tolower(\"AB\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'tolower' is another spelling of 'lower' and must give the same answer"
+        },
+        {
+            "id": "alias_trimleft",
+            "input": "ltrim(\"  a\") == trimleft(\"  a\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'trimleft' is another spelling of 'ltrim' and must give the same answer"
+        },
+        {
+            "id": "alias_trimright",
+            "input": "rtrim(\"a  \") == trimright(\"a  \")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'trimright' is another spelling of 'rtrim' and must give the same answer"
+        },
+        {
+            "id": "alias_substr",
+            "input": "substring(\"hello\", 1, 3) == substr(\"hello\", 1, 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'substr' is another spelling of 'substring' and must give the same answer"
+        },
+        {
+            "id": "alias_mid",
+            "input": "substring(\"hello\", 1, 3) == mid(\"hello\", 1, 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'mid' is another spelling of 'substring' and must give the same answer"
+        },
+        {
+            "id": "alias_char",
+            "input": "charat(\"hello\", 1) == char(\"hello\", 1)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'char' is another spelling of 'charat' and must give the same answer"
+        },
+        {
+            "id": "alias_strlastindexof",
+            "input": "lastindexof(\"banana\", \"a\") == strlastindexof(\"banana\", \"a\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'strlastindexof' is another spelling of 'lastindexof' and must give the same answer"
+        },
+        {
+            "id": "alias_strrfind",
+            "input": "lastindexof(\"banana\", \"a\") == strrfind(\"banana\", \"a\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'strrfind' is another spelling of 'lastindexof' and must give the same answer"
+        },
+        {
+            "id": "alias_lpad",
+            "input": "padleft(\"7\", 3) == lpad(\"7\", 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'lpad' is another spelling of 'padleft' and must give the same answer"
+        },
+        {
+            "id": "alias_rpad",
+            "input": "padright(\"7\", 3) == rpad(\"7\", 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'rpad' is another spelling of 'padright' and must give the same answer"
+        },
+        {
+            "id": "alias_tostring",
+            "input": "str(42) == tostring(42)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'tostring' is another spelling of 'str' and must give the same answer"
+        },
+        {
+            "id": "alias_ascii",
+            "input": "ord(\"A\") == ascii(\"A\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'ascii' is another spelling of 'ord' and must give the same answer"
+        },
+        {
+            "id": "alias_isblank",
+            "input": "isempty(\"\") == isblank(\"\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'isblank' is another spelling of 'isempty' and must give the same answer"
+        },
+        {
+            "id": "alias_pct",
+            "input": "percent(50) == pct(50)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'pct' is another spelling of 'percent' and must give the same answer"
+        },
+        {
+            "id": "alias_pctvalue",
+            "input": "percentvalue(50%) == pctvalue(50%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'pctvalue' is another spelling of 'percentvalue' and must give the same answer"
+        },
+        {
+            "id": "alias_pctof",
+            "input": "percentof(50, 200) == pctof(50, 200)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'pctof' is another spelling of 'percentof' and must give the same answer"
+        },
+        {
+            "id": "alias_whatpct",
+            "input": "whatpercent(50, 200) == whatpct(50, 200)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'whatpct' is another spelling of 'whatpercent' and must give the same answer"
+        },
+        {
+            "id": "alias_pctchange",
+            "input": "percentchange(100, 150) == pctchange(100, 150)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'pctchange' is another spelling of 'percentchange' and must give the same answer"
+        },
+        {
+            "id": "alias_pctdiff",
+            "input": "percentchange(100, 150) == pctdiff(100, 150)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'pctdiff' is another spelling of 'percentchange' and must give the same answer"
+        },
+        {
+            "id": "alias_addpct",
+            "input": "addpercent(100, 10) == addpct(100, 10)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'addpct' is another spelling of 'addpercent' and must give the same answer"
+        },
+        {
+            "id": "alias_markup",
+            "input": "addpercent(100, 10) == markup(100, 10)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'markup' is another spelling of 'addpercent' and must give the same answer"
+        },
+        {
+            "id": "alias_subpct",
+            "input": "subtractpercent(100, 10) == subpct(100, 10)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'subpct' is another spelling of 'subtractpercent' and must give the same answer"
+        },
+        {
+            "id": "alias_discount",
+            "input": "subtractpercent(100, 10) == discount(100, 10)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'discount' is another spelling of 'subtractpercent' and must give the same answer"
+        },
+        {
+            "id": "alias_reversepct",
+            "input": "reversepercent(110, 10) == reversepct(110, 10)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'reversepct' is another spelling of 'reversepercent' and must give the same answer"
+        },
+        {
+            "id": "alias_unmarkup",
+            "input": "reversepercent(110, 10) == unmarkup(110, 10)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'unmarkup' is another spelling of 'reversepercent' and must give the same answer"
+        },
+        {
+            "id": "alias_ratiopct",
+            "input": "ratiotopercent(0.5) == ratiopct(0.5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'ratiopct' is another spelling of 'ratiotopercent' and must give the same answer"
+        },
+        {
+            "id": "alias_pctratio",
+            "input": "percenttoratio(50) == pctratio(50)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'pctratio' is another spelling of 'percenttoratio' and must give the same answer"
+        },
+        {
+            "id": "alias_pp",
+            "input": "percentpoints(50, 30) == pp(50, 30)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'pp' is another spelling of 'percentpoints' and must give the same answer"
+        }
+    ]
+}

@@ -1,0 +1,90 @@
+{
+    "category": "Errors: ParseException",
+    "description": "Token streams that are not a valid expression: unbalanced brackets, missing operands and trailing input.",
+    "tests": [
+        {
+            "id": "comma_outside_a_call",
+            "input": "1, 2",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "A comma only separates arguments and elements, so it is not an expression on its own"
+        },
+        {
+            "id": "consecutive_operators_001",
+            "input": "5 + * 3",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Consecutive binary operators"
+        },
+        {
+            "id": "empty_parens_001",
+            "input": "()",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Empty parentheses"
+        },
+        {
+            "id": "error_at_alone",
+            "input": "@",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "@ alone is syntax error (binary operator needs operands)"
+        },
+        {
+            "id": "missing_operand_001",
+            "input": "5 +",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Missing right operand"
+        },
+        {
+            "id": "missing_operand_002",
+            "input": "* 5",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Missing left operand"
+        },
+        {
+            "id": "trailing_operator_at_end",
+            "input": "7 *",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "A binary operator with nothing on its right"
+        },
+        {
+            "id": "unknown_operator_pair",
+            "input": "2 @@ 3",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Two matrix multiplication signs in a row leave the second with no left operand"
+        },
+        {
+            "id": "unmatched_bracket_001",
+            "input": "{1, 2, 3",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Unclosed vector bracket"
+        },
+        {
+            "id": "unmatched_bracket_002",
+            "input": "[1, 2, 3",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Unclosed square bracket"
+        },
+        {
+            "id": "unmatched_paren_001",
+            "input": "(5 + 3",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Unclosed parenthesis"
+        },
+        {
+            "id": "unmatched_paren_002",
+            "input": "5 + 3)",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Extra closing parenthesis"
+        }
+    ]
+}

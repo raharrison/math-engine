@@ -2,6 +2,7 @@ package uk.co.ryanharrison.mathengine.parser.function;
 
 import org.junit.jupiter.api.Test;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.RecursionTracker;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
@@ -223,7 +224,7 @@ class FunctionBuilderTest {
 
         // Invalid input
         assertThatThrownBy(() -> positive.apply(List.of(new NodeDouble(-5.0)), ctx))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DomainException.class)
                 .hasMessageContaining("requires positive");
     }
 
@@ -247,7 +248,7 @@ class FunctionBuilderTest {
 
         // Invalid input
         assertThatThrownBy(() -> divide.apply(List.of(new NodeDouble(10.0), new NodeDouble(0.0)), ctx))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DomainException.class)
                 .hasMessageContaining("non-zero");
     }
 

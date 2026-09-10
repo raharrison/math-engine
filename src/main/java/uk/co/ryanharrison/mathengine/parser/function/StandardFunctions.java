@@ -63,15 +63,19 @@ import java.util.*;
  */
 public final class StandardFunctions {
 
+    private static final List<MathFunction> ALL = buildAll();
+
     private StandardFunctions() {
     }
 
     /**
-     * Gets all standard built-in functions.
-     *
-     * @return unmodifiable list of all functions
+     * Every standard function. The list is built once and shared.
      */
     public static List<MathFunction> all() {
+        return ALL;
+    }
+
+    private static List<MathFunction> buildAll() {
         var functions = new ArrayList<MathFunction>();
 
         // Trigonometric and hyperbolic

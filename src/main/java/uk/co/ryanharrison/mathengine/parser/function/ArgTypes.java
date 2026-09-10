@@ -36,6 +36,27 @@ public final class ArgTypes {
     private ArgTypes() {
     }
 
+    private static final ArgType<Double> NUMBER = (node, ctx) -> ctx.toDouble(node);
+    private static final ArgType<Integer> INTEGER = (node, ctx) -> ctx.requireInteger(node);
+    private static final ArgType<Long> LONG = (node, ctx) -> ctx.requireLong(node);
+    private static final ArgType<Boolean> BOOLEAN = (node, ctx) -> ctx.toBoolean(node);
+    private static final ArgType<String> STRING = (node, ctx) -> ctx.requireString(node).getValue();
+    private static final ArgType<NodeVector> VECTOR = (node, ctx) -> ctx.requireVector(node);
+    private static final ArgType<NodeMatrix> MATRIX = (node, ctx) -> ctx.requireMatrix(node);
+    private static final ArgType<double[]> DOUBLE_ARRAY = (node, ctx) -> ctx.toDoubleArray(ctx.requireVector(node));
+    private static final ArgType<NodeConstant> ANY = (node, ctx) -> node;
+
+    private static final ArgType<NodeFunction> FUNCTION = (node, ctx) -> {
+        if (node instanceof NodeFunction function) {
+            return function;
+        }
+        throw new TypeError("Function '" + ctx.functionName() + "' requires a function argument, got: " +
+                node.typeName());
+    };
+
+    private static final ArgType<NodeVector> VECTOR_OR_SCALAR = (node, ctx) ->
+            node instanceof NodeVector vector ? vector : new NodeVector(new Node[]{node});
+
     // ==================== Scalar Types ====================
 
     /**
@@ -43,7 +64,7 @@ public final class ArgTypes {
      * Handles NodeNumber, NodeBoolean (0/1), NodeUnit (strips unit), and NodePercent.
      */
     public static ArgType<Double> number() {
-        return (node, ctx) -> ctx.toNumber(node).doubleValue();
+        return NUMBER;
     }
 
     /**
@@ -52,7 +73,7 @@ public final class ArgTypes {
      * @throws TypeError if the value is not an integer
      */
     public static ArgType<Integer> integer() {
-        return (node, ctx) -> ctx.requireInteger(node);
+        return INTEGER;
     }
 
     /**
@@ -61,14 +82,14 @@ public final class ArgTypes {
      * @throws TypeError if the value is not an integer
      */
     public static ArgType<Long> longInt() {
-        return (node, ctx) -> ctx.requireLong(node);
+        return LONG;
     }
 
     /**
      * Extracts a boolean value. Numbers are truthy if non-zero.
      */
     public static ArgType<Boolean> bool() {
-        return (node, ctx) -> ctx.toBoolean(node);
+        return BOOLEAN;
     }
 
     /**
@@ -77,7 +98,7 @@ public final class ArgTypes {
      * @throws TypeError if the value is not a string
      */
     public static ArgType<String> string() {
-        return (node, ctx) -> ctx.requireString(node).getValue();
+        return STRING;
     }
 
     // ==================== Collection Types ====================
@@ -88,7 +109,7 @@ public final class ArgTypes {
      * @throws TypeError if the value is not a vector
      */
     public static ArgType<NodeVector> vector() {
-        return (node, ctx) -> ctx.requireVector(node);
+        return VECTOR;
     }
 
     /**
@@ -97,7 +118,7 @@ public final class ArgTypes {
      * @throws TypeError if the value is not a matrix
      */
     public static ArgType<NodeMatrix> matrix() {
-        return (node, ctx) -> ctx.requireMatrix(node);
+        return MATRIX;
     }
 
     /**
@@ -106,10 +127,7 @@ public final class ArgTypes {
      * @throws TypeError if the value is not a vector
      */
     public static ArgType<double[]> doubleArray() {
-        return (node, ctx) -> {
-            NodeVector vec = ctx.requireVector(node);
-            return ctx.toDoubleArray(vec);
-        };
+        return DOUBLE_ARRAY;
     }
 
     // ==================== Special Types ====================
@@ -120,11 +138,7 @@ public final class ArgTypes {
      * @throws TypeError if the value is not a function
      */
     public static ArgType<NodeFunction> function() {
-        return (node, ctx) -> {
-            if (node instanceof NodeFunction func) return func;
-            throw new TypeError("Function '" + ctx.functionName() + "' requires a function argument, got: " +
-                    node.typeName());
-        };
+        return FUNCTION;
     }
 
     // ==================== Flexible Types ====================
@@ -134,16 +148,13 @@ public final class ArgTypes {
      * Use when the function needs to inspect or preserve the exact type.
      */
     public static ArgType<NodeConstant> any() {
-        return (node, ctx) -> node;
+        return ANY;
     }
 
     /**
      * Accepts a vector OR wraps a scalar in a single-element vector.
      */
     public static ArgType<NodeVector> vectorOrScalar() {
-        return (node, ctx) -> {
-            if (node instanceof NodeVector vec) return vec;
-            return new NodeVector(new Node[]{node});
-        };
+        return VECTOR_OR_SCALAR;
     }
 }

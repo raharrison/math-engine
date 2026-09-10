@@ -39,22 +39,24 @@ src/main/java/uk/co/ryanharrison/mathengine/
 │   │   ├── CollectionParser.java     # Vectors/matrices/comprehensions
 │   │   └── nodes/                    # AST node types
 │   │       ├── Node.java             # Base class
-│   │       ├── NodeConstant.java     # Evaluated values
+│   │       ├── NodeConstant.java     # Values, and the arithmetic API
+│   │       ├── NodeArithmetic.java   # The one implementation of the type rules
 │   │       ├── NodeExpression.java   # Unevaluated AST
 │   │       ├── NodeVariable.java     # Variable reference
 │   │       └── (30+ other nodes)
 │   │
 │   ├── evaluator/                    # Evaluation engine
-│   │   ├── Evaluator.java            # Main evaluator
-│   │   ├── EvaluationContext.java    # Variable/function storage
+│   │   ├── Evaluator.java            # Main evaluator; scope is a parameter
+│   │   ├── EvaluationContext.java    # One scope, linked to its parent
+│   │   ├── NodeEvaluator.java        # (node, scope) -> value callback
+│   │   ├── DomainException.java      # Argument outside a function's domain
 │   │   └── handler/                  # Specialized handlers
 │   │       ├── VariableResolver.java # Context-aware resolution
 │   │       └── FunctionCallHandler.java
 │   │
 │   ├── operator/                     # Operator system
 │   │   ├── OperatorExecutor.java     # Dispatch system
-│   │   ├── OperatorContext.java      # Utilities for operators
-│   │   ├── MatrixOperations.java     # True matrix multiply/power
+│   │   ├── OperatorContext.java      # Scope and function-calling for operators
 │   │   ├── binary/                   # Binary operators (20+)
 │   │   └── unary/                    # Unary operators (10+)
 │   │
@@ -70,6 +72,8 @@ src/main/java/uk/co/ryanharrison/mathengine/
 │   │   ├── UnaryFunction.java        # Unary function interface
 │   │   ├── BinaryFunction.java       # Binary function interface
 │   │   ├── AggregateFunction.java    # Variadic function interface
+│   │   ├── LazyFunction.java         # Unevaluated arguments, e.g. if
+│   │   ├── BuiltinFunction.java      # Metadata + body, built by FunctionBuilder
 │   │   ├── TrigFunction.java         # Trig function factory (angle units)
 │   │   ├── math/                     # Math functions
 │   │   ├── trig/                     # Trigonometric functions
@@ -81,18 +85,19 @@ src/main/java/uk/co/ryanharrison/mathengine/
 │   │   └── NodeFormatter.java        # Node formatting by String or AsciiMath
 │   │
 │   ├── registry/                     # Lookup registries
+│   │   ├── SymbolRegistry.java       # Operator symbols and precedence
 │   │   ├── UnitRegistry.java         # Physical units
 │   │   ├── ConstantRegistry.java     # Mathematical constants
 │   │   └── KeywordRegistry.java      # Reserved keywords
 │   │
 │   ├── symbolic/                     # Symbolic math (differentiation)
 │   └── util/                         # Parser utilities
-│       ├── BroadcastingEngine.java   # Unified broadcasting for functions/operators
+│       ├── BroadcastingEngine.java   # Element-wise spreading over collections
+│       ├── MatrixOperations.java     # True matrix multiply/power, dot product
+│       ├── Sequences.java            # Operations shared by vectors and strings
 │       ├── TypeCoercion.java         # Type promotion/conversion
-│       ├── NumericOperations.java    # Numeric helpers
-│       ├── AstTreeBuilder.java       # AST construction helpers
-│       ├── FunctionCaller.java       # Function invocation helper
-│       └── PersistentHashMap.java    # Immutable map
+│       ├── AstTreeBuilder.java       # Child nodes, for tree views
+│       └── FunctionCaller.java       # Function invocation helper
 │
 ├── differential/                     # Differentiation
 ├── integral/                         # Numerical integration
@@ -241,11 +246,16 @@ Internally uses `Evaluator.newSimpleEvaluator()` with lazy initialization. The e
 - **Pipeline**: Text → Lexer → Parser → Evaluator → Result
 - **Lexer**: Two-stage tokenization (TokenScanner → TokenProcessor)
   - Conservative identifier splitting (only constants/functions, NOT units)
-- **Parser**: Recursive descent with precedence climbing
+- **Parser**: Recursive descent, with one precedence-climbing loop for the binary
+  operators driven by the precedence table in `SymbolRegistry`
   - Builds AST from tokens
   - 30+ node types (NodeVariable, NodeUnitRef, NodeBinary, NodeVector, etc.)
-- **Evaluator**: Context-aware evaluation with specialized handlers
+- **Evaluator**: Scope travels as a parameter, so nested calls and sessions do not
+  interfere
   - `VariableResolver`: Context-dependent resolution (variable → function → unit)
+- **Arithmetic**: One implementation, on `NodeConstant`, covering units, percentages,
+  exact rationals, strings and broadcasting. Operators and functions both call it, so
+  `100 + 10%` and `sum(100, 10%)` cannot disagree
 - **Operator System**: Extensible binary/unary operators with broadcasting
 - **Function System**: 100+ built-in functions organized by category
 - See `docs/parser/` for detailed architecture documentation
@@ -315,6 +325,29 @@ Tests mirror the main source structure:
 - Package tests: `differential/`, `unitconversion/`, `regression/`, etc.
 
 Use AssertJ for assertions (`assertThat(...).isEqualTo(...)`) rather than JUnit assertions.
+
+**The parser has a declarative spec suite** under `src/test/resources/engine`: JSON files
+holding one expression and its expected value or exception per case, run by
+`parser/spec/EngineSpecTest`. It is the contract for the language, and it is where a
+parser or evaluator change gets checked. The directories divide by concern:
+
+```
+language/   syntax and parsing        config/      one file per configuration flag
+values/     one file per value type   errors/      one file per exception type
+operators/  one file per operator     integration/ several features at once
+functions/  one file per category
+semantics/  scoping, laziness, exactness, units, broadcasting
+```
+
+`parser/spec/SpecIntegrityTest` enforces the structural rules (unique ids, a named
+exception on every error case, no expression asserted twice) and
+`parser/spec/SpecCoverageTest` fails when a function, alias, constant, operator or
+exception type is never exercised. Read `docs/parser/TESTING.md` before adding cases.
+
+**When fixing a parser defect, add the case to the file that owns the behaviour** and say
+in its `notes` what the wrong answer used to be. There is no separate regression
+directory: a defect is a statement about an operator, a function or a value type, so it
+belongs next to the cases it contradicts.
 
 ## Code Quality Standards & Refactoring Guidelines
 

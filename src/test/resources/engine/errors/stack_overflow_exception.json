@@ -1,0 +1,36 @@
+{
+    "category": "Errors: StackOverflowException",
+    "description": "Recursion deeper than the configured limit. The engine counts the depth itself, so runaway recursion comes back as an ordinary exception rather than exhausting the JVM stack and taking the caller down with it.",
+    "tests": [
+        {
+            "id": "deep_but_terminating_recursion",
+            "input": "countdown(n) := if(n <= 0, 0, countdown(n - 1)); countdown(500)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 50
+            },
+            "notes": "A recursion that would terminate is still stopped once it passes the limit"
+        },
+        {
+            "id": "mutual_recursion",
+            "input": "even(n) := odd(n); odd(n) := even(n); even(1)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 50
+            },
+            "notes": "Two functions calling each other are caught the same way"
+        },
+        {
+            "id": "unbounded_recursion",
+            "input": "loop(n) := loop(n + 1); loop(1)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 50
+            },
+            "notes": "A function with no base case stops at the configured depth"
+        }
+    ]
+}

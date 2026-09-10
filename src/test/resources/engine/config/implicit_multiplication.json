@@ -1,63 +1,96 @@
 {
-    "category": "Configuration - Implicit Multiplication",
-    "description": "Tests implicit multiplication when enabled and disabled",
+    "category": "Config: implicit multiplication",
+    "description": "With implicitMultiplication off, adjacency is no longer a product, so '2x' and '2(3+4)' stop meaning what they meant.",
     "tests": [
-        {
-            "id": "implicit_mult_enabled_001",
-            "input": "x := 5; 2x",
-            "expected": 10.0,
-            "expectedType": "NodeDouble",
-            "config": {
-                "implicitMultiplication": true
-            },
-            "notes": "2x works when implicit multiplication enabled"
-        },
         {
             "id": "implicit_mult_disabled_001",
             "input": "x := 5; 2x",
             "expectError": true,
+            "expectedErrorType": "ParseException",
             "config": {
                 "implicitMultiplication": false
             },
             "notes": "2x produces error when implicit multiplication disabled"
         },
         {
-            "id": "implicit_mult_enabled_002",
-            "input": "x := 3; y := 4; xy",
-            "expected": 12.0,
-            "expectedType": "NodeDouble",
-            "config": {
-                "implicitMultiplication": true
-            },
-            "notes": "xy works when implicit multiplication enabled"
-        },
-        {
             "id": "implicit_mult_disabled_002",
             "input": "x := 3; y := 4; xy",
             "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
             "config": {
                 "implicitMultiplication": false
             },
             "notes": "xy produces error when implicit multiplication disabled"
         },
         {
-            "id": "implicit_mult_enabled_paren_001",
-            "input": "2(3 + 4)",
-            "expected": 14.0,
-            "expectedType": "NodeDouble",
+            "id": "implicit_mult_disabled_const_001",
+            "input": "2pi",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
             "config": {
-                "implicitMultiplication": true
+                "implicitMultiplication": false
             },
-            "notes": "2(expression) works when implicit multiplication enabled"
+            "notes": "2pi produces error when implicit multiplication disabled"
+        },
+        {
+            "id": "implicit_mult_disabled_explicit_works_001",
+            "input": "x := 5; 2*x",
+            "expected": 10.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "implicitMultiplication": false
+            },
+            "notes": "Explicit multiplication 2*x still works when implicit disabled"
+        },
+        {
+            "id": "implicit_mult_disabled_explicit_works_002",
+            "input": "2 * (3 + 4)",
+            "expected": 14.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "implicitMultiplication": false
+            },
+            "notes": "Explicit multiplication 2*(expression) still works when implicit disabled"
         },
         {
             "id": "implicit_mult_disabled_paren_001",
             "input": "2(3 + 4)",
             "expectError": true,
+            "expectedErrorType": "TypeError",
             "config": {
                 "implicitMultiplication": false
             },
             "notes": "2(expression) produces error when implicit multiplication disabled"
+        },
+        {
+            "id": "implicit_mult_enabled_001",
+            "input": "x := 5; 2x",
+            "expected": 10.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "implicitMultiplication": true
+            },
+            "notes": "2x works when implicit multiplication enabled"
+        },
+        {
+            "id": "implicit_mult_enabled_002",
+            "input": "x := 3; y := 4; xy",
+            "expected": 12.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "implicitMultiplication": true
+            },
+            "notes": "xy works when implicit multiplication enabled"
+        },
+        {
+            "id": "implicit_mult_enabled_complex_001",
+            "input": "x := 2; y := 3; z := 4; xyz",
+            "expected": 24.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "implicitMultiplication": true
+            },
+            "notes": "Multiple variable implicit multiplication xyz works"
         },
         {
             "id": "implicit_mult_enabled_const_001",
@@ -70,45 +103,6 @@
             "notes": "2pi works when implicit multiplication enabled"
         },
         {
-            "id": "implicit_mult_disabled_const_001",
-            "input": "2pi",
-            "expectError": true,
-            "config": {
-                "implicitMultiplication": false
-            },
-            "notes": "2pi produces error when implicit multiplication disabled"
-        },
-        {
-            "id": "implicit_mult_disabled_explicit_works_001",
-            "input": "x := 5; 2*x",
-            "expected": 10.0,
-            "expectedType": "NodeDouble",
-            "config": {
-                "implicitMultiplication": false
-            },
-            "notes": "Explicit multiplication 2*x still works when implicit disabled"
-        },
-        {
-            "id": "implicit_mult_disabled_explicit_works_002",
-            "input": "2 * (3 + 4)",
-            "expected": 14.0,
-            "expectedType": "NodeDouble",
-            "config": {
-                "implicitMultiplication": false
-            },
-            "notes": "Explicit multiplication 2*(expression) still works when implicit disabled"
-        },
-        {
-            "id": "implicit_mult_enabled_complex_001",
-            "input": "x := 2; y := 3; z := 4; xyz",
-            "expected": 24.0,
-            "expectedType": "NodeDouble",
-            "config": {
-                "implicitMultiplication": true
-            },
-            "notes": "Multiple variable implicit multiplication xyz works"
-        },
-        {
             "id": "implicit_mult_enabled_function_001",
             "input": "x := pi/2; 2sin(x)",
             "expected": 2.0,
@@ -117,6 +111,16 @@
                 "implicitMultiplication": true
             },
             "notes": "Implicit multiplication with function call 2sin(x) works"
+        },
+        {
+            "id": "implicit_mult_enabled_paren_001",
+            "input": "2(3 + 4)",
+            "expected": 14.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "implicitMultiplication": true
+            },
+            "notes": "2(expression) works when implicit multiplication enabled"
         }
     ]
 }

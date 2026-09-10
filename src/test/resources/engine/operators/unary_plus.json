@@ -1,0 +1,34 @@
+{
+    "category": "Operator: + (unary plus)",
+    "description": "The prefix plus, which must leave both the value and its type alone.",
+    "tests": [
+        {
+            "id": "plus_002",
+            "input": "++5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Double unary plus"
+        },
+        {
+            "id": "plus_003",
+            "input": "+-5",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Unary plus then minus"
+        },
+        {
+            "id": "plus_004",
+            "input": "-+5",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Unary minus then plus"
+        },
+        {
+            "id": "unary_004",
+            "input": "+5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Unary plus (no-op)"
+        }
+    ]
+}

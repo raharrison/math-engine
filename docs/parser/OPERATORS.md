@@ -221,8 +221,22 @@ Same as PlusOperator but for subtraction.
 - Matrix * Matrix → Matrix (element-wise, NOT matrix multiply)
 - Scalar * Vector → Vector (broadcast)
 - Scalar * Matrix → Matrix (broadcast)
+- String * whole number → String (repetition)
 
 **Note:** Element-wise multiplication. Use `@` for matrix multiplication.
+
+**String repetition** takes a whole plain count. A fractional count is refused rather
+than truncated, because rounding it silently turned `"ab" * 2.5` into `"abab"` and
+`20% * "ab"` into the empty string.
+
+```java
+"ab"*3            → "ababab"
+        "ab"*0            → ""
+        "ab"*2.5          →TypeError(fractional count)
+"ab"*(4meters)   →
+
+TypeError(a count is a plain number)
+```
 
 #### DivideOperator (/)
 
@@ -236,6 +250,8 @@ Same as PlusOperator but for subtraction.
   ```
 - Vector / Vector → Vector (element-wise)
 - Vector / Scalar → Vector (broadcast)
+- Quantity / like quantity → Number (the labels cancel)
+- Number / Quantity → Quantity (the label rides along, so `1 / x` and `x ^ -1` agree)
 
 #### PowerOperator (^)
 
@@ -245,6 +261,19 @@ Same as PlusOperator but for subtraction.
 - Negative base with fractional exponent → Complex (currently error)
 - 0^0 → 1 (by convention)
 - Vector ^ Scalar → Vector (element-wise)
+- Quantity ^ Number → Quantity (the magnitude is raised, the label rides along)
+
+```java
+(2meters)^2      → 4
+
+meters
+        (4meters) ^0.5    → 2
+
+meters(and equals sqrt(4meters))
+        (4meters)^(2meters) →
+
+TypeError(two labels cannot merge)
+```
 
 **Type Promotion:**
 Always returns Double (except for integer powers of rationals).
@@ -272,20 +301,39 @@ Always returns Double (except for integer powers of rationals).
 
 #### OfOperator (of)
 
-**Purpose:** Percentage calculations
+**Purpose:** Taking a share of a quantity
 
 **Behavior:**
 
 ```java
-50% of 200  → 100
-25% of 80   → 20
+50%of 200          → 100
+        25%of 80           → 20
+        50%of 100meters   → 50
+
+meters(the unit survives)
+2of 3              → 6(exact,as 2*3is)
+        50%
+
+of {
+  2, 4
+}       → {1,2}(broadcasts)
 ```
 
-**Implementation:**
+**Implementation:** multiplication, with the percentage spent.
 
 ```java
-percent.doubleValue() * value.doubleValue()
+NodeConstant product = fraction.multiply(value);
+return product instanceof
+NodePercent percent
+        ?new
+
+NodeDouble(percent.getValue())   // a share is an amount, not another percentage
+        :product;
 ```
+
+Going through `NodeConstant.multiply` rather than through doubles of its own is what
+keeps `of` in step with `*`. When it had its own arithmetic it dropped units and lost
+exactness.
 
 #### MatrixMultiplyOperator (@)
 
@@ -576,7 +624,7 @@ public NodeConstant execute(NodeConstant left, NodeConstant right, OperatorConte
 
 ## Matrix Operations
 
-**File:** `operator/MatrixOperations.java`
+**File:** `util/MatrixOperations.java`
 
 **Utilities for matrix operations:**
 

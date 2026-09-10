@@ -1,0 +1,405 @@
+{
+    "category": "Semantics: name resolution",
+    "description": "How a bare identifier is resolved when it could be a variable, a function, a unit or a constant, and how each can shadow the others.",
+    "tests": [
+        {
+            "id": "builtin_shadow_001",
+            "input": "min := 5; min(10, 20)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows builtin 'min', CALL context uses builtin"
+        },
+        {
+            "id": "builtin_shadow_002",
+            "input": "max := 7; max(10, 20)",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows builtin 'max', CALL context uses builtin"
+        },
+        {
+            "id": "builtin_shadow_003",
+            "input": "abs := -99; abs",
+            "expected": -99,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows builtin 'abs', GENERAL context uses variable"
+        },
+        {
+            "id": "builtin_shadow_004",
+            "input": "abs := -99; abs(5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows builtin 'abs', CALL context uses builtin"
+        },
+        {
+            "id": "builtin_shadow_005",
+            "input": "sin := 42; sin",
+            "expected": 42,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows builtin 'sin', GENERAL context uses variable"
+        },
+        {
+            "id": "builtin_shadow_006",
+            "input": "sin := 42; sin(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Variable shadows builtin 'sin', CALL context uses builtin"
+        },
+        {
+            "id": "builtin_shadow_007",
+            "input": "sum := 999; sum(10, 20, 30)",
+            "expected": 60,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows builtin 'sum', CALL context uses builtin"
+        },
+        {
+            "id": "call_nonfunction_001",
+            "input": "x := 5; x(3)",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Calling non-function: implicit multiplication fallback"
+        },
+        {
+            "id": "const_shadow_001",
+            "input": "pi := 100; pi",
+            "expected": 100,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows constant pi, GENERAL uses variable"
+        },
+        {
+            "id": "const_shadow_002",
+            "input": "pi := 100; #pi",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Variable shadows constant pi, explicit # accesses constant"
+        },
+        {
+            "id": "const_shadow_003",
+            "input": "e := 10; e",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows constant e, GENERAL uses variable"
+        },
+        {
+            "id": "const_shadow_004",
+            "input": "e := 10; #e",
+            "expected": 2.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "Variable shadows constant e, explicit # accesses constant"
+        },
+        {
+            "id": "const_shadow_005",
+            "input": "tau := 99; tau",
+            "expected": 99,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows constant tau"
+        },
+        {
+            "id": "const_shadow_006",
+            "input": "tau := 99; #tau",
+            "expected": 6.283185307179586,
+            "expectedType": "NodeDouble",
+            "notes": "Explicit # accesses constant tau despite variable"
+        },
+        {
+            "id": "const_shadow_007",
+            "input": "phi := 50; $phi",
+            "expected": 50,
+            "expectedType": "NodeRational",
+            "notes": "Explicit $ accesses variable phi"
+        },
+        {
+            "id": "const_shadow_008",
+            "input": "phi := 50; #phi",
+            "expected": 1.618033988749895,
+            "expectedType": "NodeDouble",
+            "notes": "Explicit # accesses constant phi"
+        },
+        {
+            "id": "const_shadow_009",
+            "input": "pi := 100; pi * 2",
+            "expected": 200,
+            "expectedType": "NodeRational",
+            "notes": "Variable pi used in arithmetic expression"
+        },
+        {
+            "id": "const_shadow_010",
+            "input": "pi := 100; #pi * 2",
+            "expected": 6.283185307179586,
+            "expectedType": "NodeDouble",
+            "notes": "Explicit constant pi used in arithmetic"
+        },
+        {
+            "id": "const_shadow_011",
+            "input": "e := 50; $e + #e",
+            "expected": 52.71828182845905,
+            "expectedType": "NodeDouble",
+            "notes": "Mix of variable and constant in single expression"
+        },
+        {
+            "id": "const_shadow_012",
+            "input": "pi := 5; $pi + #pi",
+            "expected": 8.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Variable and constant both used in expression"
+        },
+        {
+            "id": "shadow_001_name_resolution",
+            "input": "c := 5; c",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Variable 'c' shadows unit (Coulomb)"
+        },
+        {
+            "id": "shadow_002",
+            "input": "f(c) := c * 2; f(10)",
+            "expected": 20.0,
+            "expectedType": "NodeRational",
+            "notes": "Parameter 'c' shadows unit in function definition"
+        },
+        {
+            "id": "shadow_003",
+            "input": "f(x) := x + 1; f(5)",
+            "expected": 6.0,
+            "expectedType": "NodeRational",
+            "notes": "Function name 'f' (Farad) used as function definition"
+        },
+        {
+            "id": "shadow_004",
+            "input": "m := 100; m",
+            "expected": 100.0,
+            "expectedType": "NodeRational",
+            "notes": "Variable 'm' shadows meter unit"
+        },
+        {
+            "id": "shadow_005",
+            "input": "s := 42; s",
+            "expected": 42.0,
+            "expectedType": "NodeRational",
+            "notes": "Variable 's' shadows second unit"
+        },
+        {
+            "id": "shadow_006",
+            "input": "func(a, b, c, x) := a*x^2 + b*x + c; func(1, 2, 3, 4)",
+            "expected": 27.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple unit-named parameters in function"
+        },
+        {
+            "id": "shadow_007",
+            "input": "f := 10; g := 20; f + g",
+            "expected": 30.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple unit-named variables"
+        },
+        {
+            "id": "shadow_008",
+            "input": "x := 5; f(x) := x^2; f(x)",
+            "expected": 25.0,
+            "expectedType": "NodeRational",
+            "notes": "Global x shadowed by parameter x in function"
+        },
+        {
+            "id": "shadow_010",
+            "input": "c := 3; f(c) := c * c; f(c)",
+            "expected": 9.0,
+            "expectedType": "NodeRational",
+            "notes": "Global c and parameter c, call with global c"
+        },
+        {
+            "id": "unit_context_001",
+            "input": "m := 10; 100m",
+            "expected": 1000,
+            "expectedType": "NodeRational",
+            "notes": "Without 'in': 100m is implicit multiplication (100 * m = 1000)"
+        },
+        {
+            "id": "unit_context_002",
+            "input": "m := 10; 100m in feet",
+            "expected": "328.0839895013123 feet",
+            "expectedType": "NodeUnit",
+            "notes": "With 'in': 100m treated as meter unit despite variable shadowing"
+        },
+        {
+            "id": "unit_context_003",
+            "input": "f := 10; 100f",
+            "expected": 1000,
+            "expectedType": "NodeRational",
+            "notes": "Without 'in': 100f is implicit multiplication (100 * f = 1000)"
+        },
+        {
+            "id": "unit_context_004",
+            "input": "f := 10; 100f in celsius",
+            "expected": "37.77777777777783 celsius",
+            "expectedType": "NodeUnit",
+            "notes": "With 'in': 100f treated as fahrenheit unit despite variable"
+        },
+        {
+            "id": "unit_context_005",
+            "input": "m := 10; 50m + m",
+            "expected": 510,
+            "expectedType": "NodeRational",
+            "notes": "Without 'in': both m are variables, (50 * m) + m = 510"
+        },
+        {
+            "id": "unit_context_006",
+            "input": "m := 10; m + 100m",
+            "expected": 1010,
+            "expectedType": "NodeRational",
+            "notes": "Without 'in': both m are variables, m + (100 * m) = 1010"
+        },
+        {
+            "id": "unit_context_007",
+            "input": "m := 10; 50m in feet",
+            "expected": "164.04199475065616 feet",
+            "expectedType": "NodeUnit",
+            "notes": "With 'in': m treated as meter unit for conversion"
+        },
+        {
+            "id": "unit_context_008",
+            "input": "100m in feet",
+            "expected": "328.0839895013123 feet",
+            "expectedType": "NodeUnit",
+            "notes": "Unit conversion: m treated as meter unit"
+        },
+        {
+            "id": "unit_context_009",
+            "input": "32fahrenheit in celsius",
+            "expected": "0.0 celsius",
+            "expectedType": "NodeUnit",
+            "notes": "Unit conversion: fahrenheit treated as unit"
+        },
+        {
+            "id": "unit_context_010",
+            "input": "5 km in meters",
+            "expected": "5000.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit conversion: km treated as kilometer unit"
+        },
+        {
+            "id": "unit_shadow_001",
+            "input": "meter := 999; meter",
+            "expected": 999,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows unit name in GENERAL context"
+        },
+        {
+            "id": "unit_shadow_002",
+            "input": "km := 42; km",
+            "expected": 42,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows unit abbreviation"
+        },
+        {
+            "id": "unit_shadow_003",
+            "input": "fahrenheit := 100; fahrenheit",
+            "expected": 100,
+            "expectedType": "NodeRational",
+            "notes": "Variable shadows temperature unit name"
+        },
+        {
+            "id": "unit_shadow_004",
+            "input": "m1 := 2; m1",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Variable takes precedence over unit (1 meter)"
+        },
+        {
+            "id": "user_func_shadow_001",
+            "input": "sum := 999; sum(a,b) := a + b; sum(10, 20)",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "User function shadows both variable and builtin, CALL uses user function"
+        },
+        {
+            "id": "user_func_shadow_002",
+            "input": "myFunc(x) := x * 3; myFunc := 100; myFunc(7)",
+            "expected": 21,
+            "expectedType": "NodeRational",
+            "notes": "User function persists after variable assignment"
+        },
+        {
+            "id": "user_func_shadow_003",
+            "input": "f(x) := x + 1; f := 100; f(5)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Function persists after variable assignment in separate namespace"
+        },
+        {
+            "id": "var_func_coexist_001",
+            "input": "f := 100; f(x) := x * 2; f",
+            "expected": 100,
+            "expectedType": "NodeRational",
+            "notes": "Variable and function coexist - GENERAL context accesses variable"
+        },
+        {
+            "id": "var_func_coexist_002",
+            "input": "f := 100; f(x) := x * 2; f(5)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Variable and function coexist - CALL context accesses function"
+        },
+        {
+            "id": "var_func_coexist_003",
+            "input": "x := 100; x(y) := y * 2; x",
+            "expected": 100,
+            "expectedType": "NodeRational",
+            "notes": "Function definition doesn't overwrite variable"
+        },
+        {
+            "id": "var_func_coexist_004",
+            "input": "x := 100; x(y) := y * 2; x(5)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Function works after variable defined"
+        },
+        {
+            "id": "var_func_coexist_005",
+            "input": "g(x) := x + 1; g := 42; g",
+            "expected": 42,
+            "expectedType": "NodeRational",
+            "notes": "Variable assignment doesn't overwrite function"
+        },
+        {
+            "id": "var_func_coexist_006",
+            "input": "g(x) := x + 1; g := 42; g(10)",
+            "expected": 11,
+            "expectedType": "NodeRational",
+            "notes": "Function persists after variable assignment"
+        },
+        {
+            "id": "var_func_coexist_007",
+            "input": "f := 5; f(x) := x * 2; f + 1",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Expression context uses variable, not function"
+        },
+        {
+            "id": "var_func_coexist_008",
+            "input": "f := 5; f(x) := x * 2; f(3) + 1",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "Call context uses function, then arithmetic"
+        },
+        {
+            "id": "var_func_coexist_009",
+            "input": "x := 5; y := 10; x(n) := n * 2; x + y",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Both variable and function exist, GENERAL uses variable"
+        },
+        {
+            "id": "var_func_coexist_010",
+            "input": "x := 5; y := 10; x(n) := n * 2; x(3)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Both variable and function exist, CALL uses function"
+        },
+        {
+            "id": "var_func_coexist_011",
+            "input": "sumrange := 10; sumrange + 5",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Variable as compound identifier with existing functions"
+        }
+    ]
+}

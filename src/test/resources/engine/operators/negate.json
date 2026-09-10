@@ -1,0 +1,142 @@
+{
+    "category": "Operator: - (negation)",
+    "description": "Prefix negation over every type that has a sign, and its interaction with exponentiation.",
+    "tests": [
+        {
+            "id": "matrix_016",
+            "input": "- [1, 2; 3, 4]",
+            "expected": [
+                [
+                    -1,
+                    -2
+                ],
+                [
+                    -3,
+                    -4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Unary negation on matrix"
+        },
+        {
+            "id": "matrix_unary_001",
+            "input": "-[[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    -1,
+                    -2
+                ],
+                [
+                    -3,
+                    -4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Negation of matrix"
+        },
+        {
+            "id": "matrix_unary_002",
+            "input": "+[[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Unary plus on matrix"
+        },
+        {
+            "id": "neg_002",
+            "input": "-0",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Unary minus on zero"
+        },
+        {
+            "id": "neg_005",
+            "input": "----5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Quadruple negation"
+        },
+        {
+            "id": "neg_007",
+            "input": "-(-5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Negation with parentheses"
+        },
+        {
+            "id": "neg_008",
+            "input": "-(5 + 3)",
+            "expected": -8,
+            "expectedType": "NodeRational",
+            "notes": "Negation of parenthesized expression"
+        },
+        {
+            "id": "unary_001",
+            "input": "-5",
+            "expected": -5,
+            "expectedType": "NodeRational",
+            "notes": "Unary minus on integer"
+        },
+        {
+            "id": "unary_005",
+            "input": "-2.5",
+            "expected": -2.5,
+            "expectedType": "NodeRational",
+            "notes": "Unary minus on double"
+        },
+        {
+            "id": "vector_017",
+            "input": "-{1, 2, 3}",
+            "expected": [
+                -1,
+                -2,
+                -3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unary negation on vector"
+        },
+        {
+            "id": "negate_boolean",
+            "input": "-true",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "Negating an exact value stays exact, where it once produced a double"
+        },
+        {
+            "id": "negate_boolean_agrees",
+            "input": "-true == 0 - true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The prefix and the subtraction spellings agree"
+        },
+        {
+            "id": "negate_boolean_type",
+            "input": "typeof(-true)",
+            "expected": "rational",
+            "expectedType": "NodeString",
+            "notes": "The result is a rational, as adding one to true already was"
+        },
+        {
+            "id": "negate_percent",
+            "input": "-(20%)",
+            "expected": "-20.0%",
+            "expectedType": "NodePercent",
+            "notes": "Minus twenty percent is still a percentage, not a plain -0.2"
+        },
+        {
+            "id": "negate_percent_type",
+            "input": "typeof(-(20%))",
+            "expected": "percent",
+            "expectedType": "NodeString",
+            "notes": "And reports itself as one"
+        }
+    ]
+}

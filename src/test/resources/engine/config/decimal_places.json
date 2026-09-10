@@ -1,7 +1,39 @@
 {
-    "category": "Configuration - Decimal Places",
-    "description": "Tests that decimalPlaces config doesn't affect calculation precision (formatting only)",
+    "category": "Config: decimal places",
+    "description": "decimalPlaces rounds formatted output only; the value carried through a calculation keeps full precision.",
     "tests": [
+        {
+            "id": "decimal_places_accumulation_001",
+            "input": "sum({0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1})",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "decimalPlaces": 0
+            },
+            "tolerance": 1e-10,
+            "notes": "Accumulation errors occur at machine precision, not decimalPlaces"
+        },
+        {
+            "id": "decimal_places_chain_calc_001",
+            "input": "x := pi; y := x * 2; y / 2",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "config": {
+                "decimalPlaces": 1
+            },
+            "notes": "Chained calculations use full precision internally"
+        },
+        {
+            "id": "decimal_places_chain_calc_002",
+            "input": "a := 1/3; b := a * 3; b",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "config": {
+                "forceDoubleArithmetic": true,
+                "decimalPlaces": 2
+            },
+            "notes": "Intermediate results stored at full precision"
+        },
         {
             "id": "decimal_places_full_precision_001",
             "input": "pi",
@@ -44,27 +76,6 @@
             "notes": "Trig functions calculated at full precision regardless of decimalPlaces"
         },
         {
-            "id": "decimal_places_chain_calc_001",
-            "input": "x := pi; y := x * 2; y / 2",
-            "expected": 3.141592653589793,
-            "expectedType": "NodeDouble",
-            "config": {
-                "decimalPlaces": 1
-            },
-            "notes": "Chained calculations use full precision internally"
-        },
-        {
-            "id": "decimal_places_chain_calc_002",
-            "input": "a := 1/3; b := a * 3; b",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
-            "config": {
-                "forceDoubleArithmetic": true,
-                "decimalPlaces": 2
-            },
-            "notes": "Intermediate results stored at full precision"
-        },
-        {
             "id": "decimal_places_vector_001",
             "input": "{pi, e, sqrt(2)}",
             "expected": [
@@ -77,17 +88,6 @@
                 "decimalPlaces": 3
             },
             "notes": "Vector elements stored at full precision"
-        },
-        {
-            "id": "decimal_places_accumulation_001",
-            "input": "sum({0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1})",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
-            "tolerance": 1e-10,
-            "config": {
-                "decimalPlaces": 0
-            },
-            "notes": "Accumulation errors occur at machine precision, not decimalPlaces"
         }
     ]
 }

@@ -1,0 +1,50 @@
+{
+    "category": "Errors: LexerException",
+    "description": "Input that cannot be turned into tokens at all: malformed numbers and dangling reference sigils.",
+    "tests": [
+        {
+            "id": "error_dollar_alone",
+            "input": "$",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "notes": "$ without identifier is syntax error"
+        },
+        {
+            "id": "error_hash_alone",
+            "input": "#",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "notes": "# without identifier is syntax error"
+        },
+        {
+            "id": "invalid_number_001",
+            "input": "1.2.3",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "notes": "Invalid number format"
+        },
+        {
+            "id": "single_ampersand",
+            "input": "5 & 3",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "expectedErrorMessage": "&&",
+            "notes": "A single ampersand is not the logical and, and the message says so"
+        },
+        {
+            "id": "unknown_character",
+            "input": "1 ~ 2",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "notes": "A character with no meaning in the language is rejected at the lexer"
+        },
+        {
+            "id": "unterminated_string",
+            "input": "\"unterminated",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "expectedErrorMessage": "Unterminated string",
+            "notes": "A string literal with no closing quote cannot be tokenised"
+        }
+    ]
+}

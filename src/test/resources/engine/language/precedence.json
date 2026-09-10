@@ -1,0 +1,380 @@
+{
+    "category": "Language: precedence",
+    "description": "Which operator binds tighter. Every case states the grouping it expects and the parse tree is checked against it.",
+    "tests": [
+        {
+            "id": "prec_002",
+            "input": "false && false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND before OR: (false && false) || true"
+        },
+        {
+            "id": "prec_003",
+            "input": "true || false && false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND before OR: true || (false && false)",
+            "evaluationOrder": "true || (false && false)"
+        },
+        {
+            "id": "prec_004",
+            "input": "2^2 < 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Exponentiation before comparison"
+        },
+        {
+            "id": "prec_004_precedence",
+            "input": "false || true && true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "AND before OR: false || (true && true)"
+        },
+        {
+            "id": "prec_005",
+            "input": "3 * 4 >= 12",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiplication before comparison"
+        },
+        {
+            "id": "prec_006",
+            "input": "not (true && false)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT on parenthesized expression"
+        },
+        {
+            "id": "prec_016",
+            "input": "5! + 1",
+            "expected": 121,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(5!) + 1",
+            "notes": "Factorial before addition"
+        },
+        {
+            "id": "prec_017",
+            "input": "2 * 3!",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "2 * (3!)",
+            "notes": "Factorial before multiplication"
+        },
+        {
+            "id": "prec_018",
+            "input": "50% of 100 + 50",
+            "expected": 100,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(50% of 100) + 50",
+            "notes": "'of' before addition"
+        },
+        {
+            "id": "prec_019",
+            "input": "5 > 3 && 2 < 4",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(5 > 3) && (2 < 4)",
+            "notes": "Comparison before logical AND"
+        },
+        {
+            "id": "prec_020",
+            "input": "true && false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(true && false) || true",
+            "notes": "AND before OR"
+        },
+        {
+            "id": "prec_021",
+            "input": "not true || false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(not true) || false",
+            "notes": "NOT before OR"
+        },
+        {
+            "id": "prec_022",
+            "input": "not true && true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(not true) && true",
+            "notes": "NOT before AND"
+        },
+        {
+            "id": "prec_023",
+            "input": "1 + 2 * 3^2 - 4 / 2",
+            "expected": 17,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "1 + (2 * (3^2)) - (4 / 2)",
+            "notes": "All arithmetic precedence levels"
+        },
+        {
+            "id": "prec_024",
+            "input": "(1 + 2) * (3 + 4)",
+            "expected": 21,
+            "expectedType": "NodeRational",
+            "notes": "Parentheses override precedence"
+        },
+        {
+            "id": "prec_025",
+            "input": "2 * (3 + 4 * (5 + 6))",
+            "expected": 94,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "2 * (3 + (4 * (5 + 6)))",
+            "notes": "Nested parentheses"
+        },
+        {
+            "id": "prec_026",
+            "input": "1000 * (1 + 0.05)^10",
+            "expected": 1628.894626777442,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "1000 * ((1 + 0.05)^10)",
+            "notes": "Power before multiplication with parentheses"
+        },
+        {
+            "id": "prec_027",
+            "input": "2 * (3)^2",
+            "expected": 18,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "2 * ((3)^2)",
+            "notes": "Power before multiplication with simple parentheses"
+        },
+        {
+            "id": "prec_additive_before_range",
+            "input": "1 + 2 .. 5",
+            "expected": [
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "evaluationOrder": "(1 + 2)..5",
+            "notes": "A range takes whole expressions as its bounds"
+        },
+        {
+            "id": "prec_and_before_xor",
+            "input": "true xor false && true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "true xor (false && true)",
+            "notes": "Conjunction binds tighter than exclusive disjunction"
+        },
+        {
+            "id": "prec_and_before_xor_left",
+            "input": "false && true xor true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(false && true) xor true",
+            "notes": "which holds whichever side the conjunction is on"
+        },
+        {
+            "id": "prec_assignment_is_loosest",
+            "input": "total := 4 * 5 + 2",
+            "expected": 22,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "total := ((4 * 5) + 2)",
+            "notes": "Assignment takes the whole expression on its right"
+        },
+        {
+            "id": "prec_factorial_before_negation",
+            "input": "-3!",
+            "expected": -6,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "-(3!)",
+            "notes": "The postfix factorial binds tighter than the prefix sign"
+        },
+        {
+            "id": "prec_mixed_additive_multiplicative",
+            "input": "2 + 3 * 4 - 5",
+            "expected": 9,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(2 + (3 * 4)) - 5",
+            "notes": "Multiplication binds tighter than either sign"
+        },
+        {
+            "id": "prec_modulo_before_addition",
+            "input": "7 mod 3 + 1",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(7 mod 3) + 1",
+            "notes": "Modulo is multiplicative, so it binds tighter than addition"
+        },
+        {
+            "id": "prec_modulo_with_multiply",
+            "input": "2 * 3 mod 4",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(2 * 3) mod 4",
+            "notes": "Modulo and multiplication share a level and group left to right"
+        },
+        {
+            "id": "prec_negative_exponent",
+            "input": "2 ^ -1",
+            "expected": "1/2",
+            "expectedType": "NodeRational",
+            "evaluationOrder": "2 ^ (-1)",
+            "notes": "A prefix sign is allowed directly after the power operator"
+        },
+        {
+            "id": "prec_not_before_equality",
+            "input": "not true == false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(not true) == false",
+            "notes": "Prefix not binds tighter than equality"
+        },
+        {
+            "id": "prec_of_before_divide",
+            "input": "50% of 200 / 2",
+            "expected": 50.0,
+            "expectedType": "NodeDouble",
+            "evaluationOrder": "(50% of 200) / 2",
+            "notes": "of shares the multiplicative level, so it groups left to right with division"
+        },
+        {
+            "id": "prec_power_before_modulo",
+            "input": "2 ^ 3 mod 5",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(2 ^ 3) mod 5",
+            "notes": "Exponentiation binds tighter than modulo"
+        },
+        {
+            "id": "prec_relational_before_equality",
+            "input": "1 < 2 == true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(1 < 2) == true",
+            "notes": "Ordering binds tighter than equality, so the comparison is what gets compared"
+        },
+        {
+            "id": "prec_two_products_one_sum",
+            "input": "2 * 3 + 4 * 5",
+            "expected": 26,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(2 * 3) + (4 * 5)",
+            "notes": "Both products are formed before they are added"
+        },
+        {
+            "id": "precedence_001",
+            "input": "2 + 3 * 4",
+            "expected": 14,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "2 + (3 * 4)",
+            "notes": "Multiplication before addition"
+        },
+        {
+            "id": "precedence_002",
+            "input": "2 * 3 + 4",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(2 * 3) + 4",
+            "notes": "Multiplication before addition"
+        },
+        {
+            "id": "precedence_003",
+            "input": "10 - 2 * 3",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "10 - (2 * 3)",
+            "notes": "Multiplication before subtraction"
+        },
+        {
+            "id": "precedence_004",
+            "input": "8 / 2 + 2",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(8 / 2) + 2",
+            "notes": "Division before addition"
+        },
+        {
+            "id": "precedence_005",
+            "input": "2 + 3 - 1",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(2 + 3) - 1",
+            "notes": "Left-to-right for same precedence"
+        },
+        {
+            "id": "precedence_006",
+            "input": "2 * 3^2",
+            "expected": 18,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "2 * (3^2)",
+            "notes": "Exponentiation before multiplication"
+        },
+        {
+            "id": "precedence_007",
+            "input": "2^3 * 4",
+            "expected": 32,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(2^3) * 4",
+            "notes": "Exponentiation before multiplication"
+        },
+        {
+            "id": "precedence_008",
+            "input": "2 + 3^2",
+            "expected": 11,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "2 + (3^2)",
+            "notes": "Exponentiation before addition"
+        },
+        {
+            "id": "precedence_009",
+            "input": "2^3 + 4",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(2^3) + 4",
+            "notes": "Exponentiation before addition"
+        },
+        {
+            "id": "precedence_010",
+            "input": "-2^2",
+            "expected": -4,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "-(2^2)",
+            "notes": "Exponentiation before unary minus"
+        },
+        {
+            "id": "precedence_011",
+            "input": "(-2)^2",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "(-2)^2",
+            "notes": "Parentheses override precedence"
+        },
+        {
+            "id": "precedence_012",
+            "input": "2 + 3 < 10",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(2 + 3) < 10",
+            "notes": "Arithmetic before comparison"
+        },
+        {
+            "id": "precedence_013",
+            "input": "5 * 2 > 8",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(5 * 2) > 8",
+            "notes": "Arithmetic before comparison"
+        },
+        {
+            "id": "precedence_014",
+            "input": "10 - 5 == 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "evaluationOrder": "(10 - 5) == 5",
+            "notes": "Arithmetic before equality"
+        },
+        {
+            "id": "precedence_015",
+            "input": "2 + 3 * 4^2",
+            "expected": 50,
+            "expectedType": "NodeRational",
+            "evaluationOrder": "2 + (3 * (4^2))",
+            "notes": "Multiple precedence levels"
+        }
+    ]
+}

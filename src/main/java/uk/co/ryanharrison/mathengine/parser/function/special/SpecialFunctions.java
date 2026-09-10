@@ -53,11 +53,10 @@ public final class SpecialFunctions {
             .inCategory(SPECIAL)
             .takingUnary()
             .implementedBy((arg, ctx) -> {
-                double d = ctx.toNumber(arg).doubleValue();
-                if (Math.floor(d) == d && d >= 0) {
-                    return new NodeRational(MathUtils.factorial((long) d));
-                }
-                return new NodeDouble(MathUtils.factorial(d));
+                double n = ctx.requireNonNegative(ctx.toDouble(arg));
+                return Math.floor(n) == n
+                        ? new NodeRational(MathUtils.factorial((long) n))
+                        : new NodeDouble(MathUtils.factorial(n));
             });
 
     /**
@@ -104,8 +103,8 @@ public final class SpecialFunctions {
             .inCategory(SPECIAL)
             .takingBinary()
             .implementedBy((n, k, ctx) -> {
-                double nVal = ctx.toNumber(n).doubleValue();
-                double kVal = ctx.toNumber(k).doubleValue();
+                double nVal = ctx.toDouble(n);
+                double kVal = ctx.toDouble(k);
                 double result = MathUtils.combination(nVal, kVal);
 
                 // Return as integer if possible
@@ -136,8 +135,8 @@ public final class SpecialFunctions {
             .inCategory(SPECIAL)
             .takingBinary()
             .implementedBy((min, max, ctx) -> {
-                int minVal = (int) ctx.toNumber(min).doubleValue();
-                int maxVal = (int) ctx.toNumber(max).doubleValue();
+                int minVal = (int) ctx.toDouble(min);
+                int maxVal = (int) ctx.toDouble(max);
                 return new NodeRational(minVal + (int) (Math.random() * (maxVal - minVal + 1)));
             });
 
@@ -151,8 +150,8 @@ public final class SpecialFunctions {
             .inCategory(SPECIAL)
             .takingBinary()
             .implementedBy((z, w, ctx) -> {
-                double zVal = ctx.toNumber(z).doubleValue();
-                double wVal = ctx.toNumber(w).doubleValue();
+                double zVal = ctx.toDouble(z);
+                double wVal = ctx.toDouble(w);
                 return new NodeDouble(Beta.beta(zVal, wVal));
             });
 
@@ -188,7 +187,7 @@ public final class SpecialFunctions {
             .withParams("x")
             .inCategory(SPECIAL)
             .takingUnary()
-            .implementedBy((arg, ctx) -> new NodeDouble(Gamma.digamma(ctx.toNumber(arg).doubleValue())));
+            .implementedBy((arg, ctx) -> new NodeDouble(Gamma.digamma(ctx.toDouble(arg))));
 
     /**
      * Gets all special functions.

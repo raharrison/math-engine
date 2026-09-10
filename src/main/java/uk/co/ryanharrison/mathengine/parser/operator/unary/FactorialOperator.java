@@ -1,24 +1,21 @@
 package uk.co.ryanharrison.mathengine.parser.operator.unary;
 
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.operator.UnaryOperator;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
+import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
+import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 import uk.co.ryanharrison.mathengine.utils.MathUtils;
 
 /**
- * Factorial operator (!).
- * <p>
- * Computes n! = n * (n-1) * (n-2) * ... * 1
- * <p>
- * Domain: Non-negative integers only.
+ * Factorial ({@code n!}), element-wise over collections. Integers give an exact
+ * result; other values go through the gamma function.
  */
 public final class FactorialOperator implements UnaryOperator {
 
-    /**
-     * Singleton instance
-     */
     public static final FactorialOperator INSTANCE = new FactorialOperator();
 
     private FactorialOperator() {
@@ -31,10 +28,14 @@ public final class FactorialOperator implements UnaryOperator {
 
     @Override
     public NodeConstant apply(NodeConstant operand, OperatorContext ctx) {
-        double d = ctx.toNumber(operand).doubleValue();
-        if (Math.floor(d) == d) {
-            return new NodeRational(MathUtils.factorial((long) d));
-        }
-        return new NodeDouble(MathUtils.factorial(d));
+        return BroadcastingEngine.applyUnary(operand, value -> {
+            double n = TypeCoercion.toDouble(value);
+            if (n < 0) {
+                throw new DomainException("Factorial is not defined for negative numbers: " + n);
+            }
+            return Math.floor(n) == n
+                    ? new NodeRational(MathUtils.factorial((long) n))
+                    : new NodeDouble(MathUtils.factorial(n));
+        });
     }
 }

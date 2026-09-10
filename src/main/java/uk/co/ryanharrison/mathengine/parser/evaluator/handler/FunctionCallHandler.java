@@ -3,7 +3,8 @@ package uk.co.ryanharrison.mathengine.parser.evaluator.handler;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
 import uk.co.ryanharrison.mathengine.parser.evaluator.*;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
-import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
+import uk.co.ryanharrison.mathengine.parser.function.LazyFunction;
+import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.operator.binary.MultiplyOperator;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
@@ -12,317 +13,189 @@ import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
- * Handles function call evaluation including built-in functions, user-defined functions,
- * lambdas, and implicit multiplication fallback.
- * <p>
- * Resolution order for function calls:
+ * Evaluates calls to built-in functions, user-defined functions and lambdas.
+ *
+ * <h2>Resolution order</h2>
  * <ol>
- *     <li>Special built-in functions with lazy evaluation (if)</li>
- *     <li>User-defined functions (takes priority over built-ins)</li>
- *     <li>Built-in functions from FunctionExecutor</li>
- *     <li>Variable lookup (if variable holds a function)</li>
- *     <li>Implicit multiplication fallback (if enabled)</li>
+ *     <li>User-defined functions, so users can shadow built-ins</li>
+ *     <li>Built-in functions</li>
+ *     <li>A variable holding a function value</li>
+ *     <li>Implicit multiplication, if enabled</li>
  * </ol>
  *
- * <h2>Lazy Evaluation:</h2>
- * The 'if' function uses lazy evaluation - only the selected branch is evaluated.
- * This prevents errors from evaluating unused branches with side effects.
+ * <h2>Scoping</h2>
+ * Lambdas capture their defining scope at creation (lexical); named functions
+ * resolve free variables at call time (dynamic).
  *
- * <h2>Lexical vs Dynamic Scoping:</h2>
- * <ul>
- *     <li>Lambda expressions use lexical scoping (capture context at definition)</li>
- *     <li>Regular functions use dynamic scoping (use context at call time)</li>
- * </ul>
+ * <h2>Lazy functions</h2>
+ * A {@link LazyFunction} receives its arguments unevaluated plus an evaluator, so it
+ * can choose what to evaluate. This is how {@code if} skips the untaken branch.
  */
 public final class FunctionCallHandler implements FunctionCaller {
 
     private final MathEngineConfig config;
     private final FunctionExecutor functionExecutor;
-    private final Function<Node, NodeConstant> evaluator;
-    private final Function<EvaluationContext, EvaluationContext> contextPusher;
-    private final BiConsumer<EvaluationContext, EvaluationContext> contextPopper;
+    private final NodeEvaluator evaluator;
 
-    /**
-     * Creates a new function call handler.
-     *
-     * @param config           the engine configuration
-     * @param functionExecutor the function executor for built-in functions
-     * @param evaluator        function to evaluate nodes
-     * @param contextPusher    function to push a new context and return the old one
-     * @param contextPopper    consumer to pop/restore context (new, old)
-     */
-    public FunctionCallHandler(
-            MathEngineConfig config,
-            FunctionExecutor functionExecutor,
-            Function<Node, NodeConstant> evaluator,
-            Function<EvaluationContext, EvaluationContext> contextPusher,
-            BiConsumer<EvaluationContext, EvaluationContext> contextPopper) {
+    public FunctionCallHandler(MathEngineConfig config, FunctionExecutor functionExecutor, NodeEvaluator evaluator) {
         this.config = config;
         this.functionExecutor = functionExecutor;
         this.evaluator = evaluator;
-        this.contextPusher = contextPusher;
-        this.contextPopper = contextPopper;
     }
-
-    // ==================== FunctionCaller Implementation ====================
 
     @Override
     public NodeConstant call(NodeFunction function, List<NodeConstant> args, EvaluationContext context) {
-        var nodeArgs = new ArrayList<Node>(args);
-        return evaluate(new NodeCall(function, nodeArgs), context);
+        return callUserFunction(function.getFunction(), new ArrayList<>(args), context);
     }
 
     /**
      * Evaluates a function call node.
      *
-     * @param call    the function call node
-     * @param context the evaluation context
-     * @return the result of the function call
      * @throws TypeError                  if the callee is not callable
      * @throws UndefinedVariableException if the function is not found
      */
     public NodeConstant evaluate(NodeCall call, EvaluationContext context) {
-        Node funcExpr = call.getFunction();
-
-        return switch (funcExpr) {
-            // Handle named function calls
+        return switch (call.getFunction()) {
             case NodeVariable variable -> evaluateNamedCall(variable.getName(), call.getArguments(), context);
 
-            // Handle inline lambda calls: (x -> x*2)(5)
-            case NodeLambda lambda -> {
-                NodeFunction funcValue = evaluateLambda(lambda, context);
-                yield callUserFunction(funcValue.getFunction(), call.getArguments(), context);
-            }
+            // Inline lambda call: (x -> x*2)(5)
+            case NodeLambda lambda -> callUserFunction(
+                    evaluateLambda(lambda, context).getFunction(), call.getArguments(), context);
 
-            // Handle already-evaluated function values
             case NodeFunction func -> callUserFunction(func.getFunction(), call.getArguments(), context);
 
-            // Evaluate the expression and try to call it
             default -> {
-                NodeConstant funcValue = evaluator.apply(funcExpr);
-                if (funcValue instanceof NodeFunction func) {
-                    yield callUserFunction(func.getFunction(), call.getArguments(), context);
-                }
-                // Fall back to implicit multiplication if enabled
-                yield tryImplicitMultiplication(funcValue, call.getArguments(), null, context);
+                NodeConstant funcValue = evaluator.evaluate(call.getFunction(), context);
+                yield funcValue instanceof NodeFunction func
+                        ? callUserFunction(func.getFunction(), call.getArguments(), context)
+                        : tryImplicitMultiplication(funcValue, call.getArguments(), null, context);
             }
         };
     }
 
-    /**
-     * Evaluates a named function call (function referenced by name).
-     */
     private NodeConstant evaluateNamedCall(String name, List<Node> arguments, EvaluationContext context) {
-        // Special case: 'if' function needs lazy evaluation
-        if ("if".equals(name)) {
-            return evaluateIfLazy(arguments);
-        }
-
-        // Check for user-defined function FIRST (takes priority over built-ins)
-        var userFuncOpt = context.resolveFunction(name);
-        if (userFuncOpt.isPresent()) {
+        var userFunc = context.resolveFunction(name);
+        if (userFunc.isPresent()) {
             if (!config.userDefinedFunctionsEnabled()) {
                 throw new EvaluationException("User-defined functions are disabled in current configuration");
             }
-            return callUserFunction(userFuncOpt.get(), arguments, context);
+            return callUserFunction(userFunc.get(), arguments, context);
         }
 
-        // Check for built-in function
         if (functionExecutor.hasFunction(name)) {
             return callBuiltinFunction(name, arguments, context);
         }
 
-        // Check if there's a value stored as a variable that might be a function
-        var varOpt = context.resolve(name);
-        if (varOpt.isPresent()) {
-            NodeConstant varValue = varOpt.get();
-            if (varValue instanceof NodeFunction func) {
-                return callUserFunction(func.getFunction(), arguments, context);
-            }
-            return tryImplicitMultiplication(varValue, arguments, name, context);
+        var variable = context.resolve(name);
+        if (variable.isPresent()) {
+            NodeConstant value = variable.get();
+            return value instanceof NodeFunction func
+                    ? callUserFunction(func.getFunction(), arguments, context)
+                    : tryImplicitMultiplication(value, arguments, name, context);
         }
 
-        // Try to split the function name into variable + function (implicit multiplication)
-        // e.g., "xsqrt(4)" -> x * sqrt(4)
+        // "xsqrt(4)" may mean x * sqrt(4)
         if (config.implicitMultiplication()) {
-            NodeConstant splitResult = trySplitFunctionCall(name, arguments, context);
-            if (splitResult != null) {
-                return splitResult;
+            NodeConstant split = trySplitFunctionCall(name, arguments, context);
+            if (split != null) {
+                return split;
             }
         }
 
-        throw new UndefinedVariableException("Function not found: " + name);
+        throw UndefinedVariableException.function(name);
     }
 
     /**
-     * Tries to split a function name into a variable prefix and a known function.
-     * For example, "xsqrt" becomes "x * sqrt".
-     *
-     * @param name      the function name to split
-     * @param arguments the function arguments
-     * @param context   the evaluation context
-     * @return the result of variable * function(arguments), or null if not possible
+     * Splits a call like {@code xsqrt(4)} into a variable prefix times a known function.
      */
     private NodeConstant trySplitFunctionCall(String name, List<Node> arguments, EvaluationContext context) {
-        // Try splitting at each position
         for (int i = 1; i < name.length(); i++) {
             String varPart = name.substring(0, i);
             String funcPart = name.substring(i);
 
-            // Check if varPart is a defined variable and funcPart is a known function
-            var varPartOpt = context.resolve(varPart);
-            if (varPartOpt.isPresent() && functionExecutor.hasFunction(funcPart)) {
-                NodeConstant varValue = varPartOpt.get();
+            var varValue = context.resolve(varPart);
+            if (varValue.isPresent() && functionExecutor.hasFunction(funcPart)) {
                 NodeConstant funcResult = callBuiltinFunction(funcPart, arguments, context);
-
-                if (TypeCoercion.isNumericOrCollection(varValue) && TypeCoercion.isNumericOrCollection(funcResult)) {
-                    OperatorContext opCtx = new OperatorContext(context, this);
-                    return MultiplyOperator.INSTANCE.apply(varValue, funcResult, opCtx);
+                if (TypeCoercion.isNumericOrCollection(varValue.get()) && TypeCoercion.isNumericOrCollection(funcResult)) {
+                    return MultiplyOperator.INSTANCE.apply(
+                            varValue.get(), funcResult, context.operatorContext(this));
                 }
             }
         }
-
         return null;
     }
 
-    /**
-     * Evaluates a lambda expression and wraps it as a first-class function value.
-     * Lambdas use lexical scoping - they capture a snapshot of the current context.
-     *
-     * @param lambda  the lambda node
-     * @param context the current evaluation context
-     * @return the function wrapper
-     */
+    /** Wraps a lambda as a value, capturing its defining scope for lexical scoping. */
     public NodeFunction evaluateLambda(NodeLambda lambda, EvaluationContext context) {
         if (!config.lambdasEnabled()) {
             throw new EvaluationException("Lambda expressions are disabled in current configuration");
         }
-
-        var functionDef = new FunctionDefinition(
-                "<lambda>",
-                lambda.getParameters(),
-                lambda.getBody(),
-                context.snapshot()  // Capture snapshot for lexical scoping
-        );
-        return new NodeFunction(functionDef);
+        return new NodeFunction(new FunctionDefinition(
+                "<lambda>", lambda.getParameters(), lambda.getBody(), context.snapshot()));
     }
 
-    /**
-     * Evaluates a function definition and stores it in the context.
-     *
-     * @param node    the function definition node
-     * @param context the evaluation context
-     * @return the function wrapper
-     */
+    /** Stores a named function definition in the current scope. */
     public NodeConstant evaluateFunctionDef(NodeFunctionDef node, EvaluationContext context) {
         if (!config.userDefinedFunctionsEnabled()) {
             throw new EvaluationException("User-defined functions are disabled in current configuration");
         }
-
-        var function = new FunctionDefinition(
-                node.getName(),
-                node.getParameters(),
-                node.getBody(),
-                null  // No closure - dynamic scoping for regular functions
-        );
-
+        var function = new FunctionDefinition(node.getName(), node.getParameters(), node.getBody(), null);
         context.defineFunction(node.getName(), function);
         return new NodeFunction(function);
     }
 
-    /**
-     * Calls a user-defined function with the given arguments.
-     */
     private NodeConstant callUserFunction(FunctionDefinition function, List<Node> argumentNodes, EvaluationContext context) {
         if (argumentNodes.size() != function.getArity()) {
-            throw new ArityException("Function '" + function.name() + "' expects " +
-                    function.getArity() + " argument(s), got " + argumentNodes.size());
+            throw new ArityException(function.name(), function.getArity(), argumentNodes.size());
         }
 
-        // Evaluate arguments eagerly
         var bindings = new HashMap<String, NodeConstant>();
         List<String> params = function.parameters();
         for (int i = 0; i < params.size(); i++) {
-            NodeConstant argValue = evaluator.apply(argumentNodes.get(i));
-            bindings.put(params.get(i), argValue);
+            bindings.put(params.get(i), evaluator.evaluate(argumentNodes.get(i), context));
         }
 
-        // Determine parent context based on scoping rules
-        EvaluationContext parentContext = function.hasLexicalScope()
-                ? function.closure()
-                : context;
+        EvaluationContext parent = function.hasLexicalScope() ? function.closure() : context;
+        EvaluationContext callScope = parent.withBindings(bindings);
 
-        // Create child context with parameter bindings
-        EvaluationContext childContext = parentContext.withBindings(bindings);
-        childContext.enterFunction(function.name());
-
+        callScope.enterFunction(function.name());
         try {
-            EvaluationContext oldContext = contextPusher.apply(childContext);
-            try {
-                return evaluator.apply(function.body());
-            } finally {
-                contextPopper.accept(childContext, oldContext);
-            }
+            return evaluator.evaluate(function.body(), callScope);
         } finally {
-            childContext.exitFunction();
+            callScope.exitFunction();
         }
     }
 
-    /**
-     * Calls a built-in function with the given arguments.
-     */
     private NodeConstant callBuiltinFunction(String name, List<Node> argumentNodes, EvaluationContext context) {
-        var arguments = new ArrayList<NodeConstant>();
+        MathFunction function = functionExecutor.lookup(name);
+
+        if (function instanceof LazyFunction lazy) {
+            return functionExecutor.executeLazy(lazy, argumentNodes, context, this,
+                    node -> evaluator.evaluate(node, context));
+        }
+
+        var arguments = new ArrayList<NodeConstant>(argumentNodes.size());
         for (Node argNode : argumentNodes) {
-            arguments.add(evaluator.apply(argNode));
+            arguments.add(evaluator.evaluate(argNode, context));
         }
-        return functionExecutor.execute(name, arguments, context, this);
+        return functionExecutor.execute(function, arguments, context, this);
     }
 
     /**
-     * Evaluates the 'if' function with lazy evaluation.
-     * Only the selected branch is evaluated.
+     * Interprets {@code 2(3)} as {@code 2 * 3} when implicit multiplication is enabled.
      */
-    private NodeConstant evaluateIfLazy(List<Node> argumentNodes) {
-        if (argumentNodes.size() != 3) {
-            throw new ArityException("Function 'if' expects 3 arguments, got " + argumentNodes.size());
-        }
-
-        NodeConstant conditionResult = evaluator.apply(argumentNodes.get(0));
-        boolean condition = TypeCoercion.toBoolean(conditionResult);
-
-        return condition
-                ? evaluator.apply(argumentNodes.get(1))
-                : evaluator.apply(argumentNodes.get(2));
-    }
-
-    /**
-     * Tries to interpret a "call" as implicit multiplication.
-     * <p>
-     * For example, 2(3) is interpreted as 2 * 3 if implicit multiplication is enabled.
-     *
-     * @param calleeValue the value being "called"
-     * @param args        the arguments
-     * @param calleeName  the name of the callee (for error messages)
-     * @param context     the evaluation context
-     * @return the result of implicit multiplication
-     * @throws TypeError if implicit multiplication is not applicable
-     */
-    private NodeConstant tryImplicitMultiplication(NodeConstant calleeValue, List<Node> args, String calleeName, EvaluationContext context) {
+    private NodeConstant tryImplicitMultiplication(NodeConstant callee, List<Node> args, String calleeName,
+                                                   EvaluationContext context) {
         if (config.implicitMultiplication() && args.size() == 1) {
-            NodeConstant argValue = evaluator.apply(args.getFirst());
-
-            if (TypeCoercion.isNumericOrCollection(calleeValue) && TypeCoercion.isNumericOrCollection(argValue)) {
-                var opCtx = new OperatorContext(context, this);
-                return MultiplyOperator.INSTANCE.apply(calleeValue, argValue, opCtx);
+            NodeConstant argValue = evaluator.evaluate(args.getFirst(), context);
+            if (TypeCoercion.isNumericOrCollection(callee) && TypeCoercion.isNumericOrCollection(argValue)) {
+                return MultiplyOperator.INSTANCE.apply(callee, argValue, context.operatorContext(this));
             }
         }
 
-        String calleeDesc = (calleeName != null) ? "'" + calleeName + "'" : calleeValue.typeName();
-        throw new TypeError("Cannot call " + calleeDesc + " (value is not a function)");
+        String description = calleeName != null ? "'" + calleeName + "'" : callee.typeName();
+        throw new TypeError("Cannot call " + description + " (value is not a function)");
     }
 }

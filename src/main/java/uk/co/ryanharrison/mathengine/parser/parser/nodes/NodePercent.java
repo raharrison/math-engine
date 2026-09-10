@@ -41,12 +41,12 @@ public final class NodePercent extends NodeNumber {
 
     @Override
     public NodeNumber negate() {
-        return new NodeDouble(-value);
+        return NodePercent.fromDecimal(-value);
     }
 
     @Override
     public NodeNumber abs() {
-        return new NodeDouble(Math.abs(value));
+        return NodePercent.fromDecimal(Math.abs(value));
     }
 
     @Override

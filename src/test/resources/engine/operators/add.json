@@ -1,0 +1,1056 @@
+{
+    "category": "Operator: + (addition)",
+    "description": "Addition across every operand type it accepts: rationals, doubles, percents, units, strings, booleans, vectors and matrices.",
+    "tests": [
+        {
+            "id": "add_001",
+            "input": "1 + 2",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Integer addition stays rational"
+        },
+        {
+            "id": "add_002",
+            "input": "0 + 0",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Zero addition identity"
+        },
+        {
+            "id": "add_003",
+            "input": "-5 + 5",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Additive inverse"
+        },
+        {
+            "id": "add_004",
+            "input": "1 + 2 + 3 + 4 + 5",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Multiple additions"
+        },
+        {
+            "id": "add_005",
+            "input": "2.5 + 3.5",
+            "expected": 6.0,
+            "expectedType": "NodeRational",
+            "notes": "Decimal addition"
+        },
+        {
+            "id": "add_006",
+            "input": "1e10 + 1e10",
+            "expected": 20000000000.0,
+            "expectedType": "NodeRational",
+            "notes": "Large number addition"
+        },
+        {
+            "id": "add_types_boolean_boolean",
+            "input": "(true) + (true)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Boolean adds a boolean"
+        },
+        {
+            "id": "add_types_boolean_double",
+            "input": "(true) + (2.5d)",
+            "expected": 3.5,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean adds a double"
+        },
+        {
+            "id": "add_types_boolean_matrix",
+            "input": "(true) + ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    2,
+                    3
+                ],
+                [
+                    4,
+                    5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Boolean adds a matrix"
+        },
+        {
+            "id": "add_types_boolean_percent",
+            "input": "(true) + (20%)",
+            "expected": 1.2,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean adds a percent"
+        },
+        {
+            "id": "add_types_boolean_range",
+            "input": "(true) + (1..2)",
+            "expected": [
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean adds a range"
+        },
+        {
+            "id": "add_types_boolean_rational",
+            "input": "(true) + (3)",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "Boolean adds a rational"
+        },
+        {
+            "id": "add_types_boolean_string",
+            "input": "(true) + (\"ab\")",
+            "expected": "trueab",
+            "expectedType": "NodeString",
+            "notes": "Boolean adds a string"
+        },
+        {
+            "id": "add_types_boolean_unit",
+            "input": "(true) + (4 meters)",
+            "expected": "5.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Boolean adds a unit"
+        },
+        {
+            "id": "add_types_boolean_vector",
+            "input": "(true) + ({1, 2})",
+            "expected": [
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean adds a vector"
+        },
+        {
+            "id": "add_types_double_boolean",
+            "input": "(2.5d) + (true)",
+            "expected": 3.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double adds a boolean"
+        },
+        {
+            "id": "add_types_double_double",
+            "input": "(2.5d) + (2.5d)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Double adds a double"
+        },
+        {
+            "id": "add_types_double_matrix",
+            "input": "(2.5d) + ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    3.5,
+                    4.5
+                ],
+                [
+                    5.5,
+                    6.5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Double adds a matrix"
+        },
+        {
+            "id": "add_types_double_percent",
+            "input": "(2.5d) + (20%)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Double adds a percent"
+        },
+        {
+            "id": "add_types_double_range",
+            "input": "(2.5d) + (1..2)",
+            "expected": [
+                3.5,
+                4.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double adds a range"
+        },
+        {
+            "id": "add_types_double_rational",
+            "input": "(2.5d) + (3)",
+            "expected": 5.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double adds a rational"
+        },
+        {
+            "id": "add_types_double_string",
+            "input": "(2.5d) + (\"ab\")",
+            "expected": "2.5ab",
+            "expectedType": "NodeString",
+            "notes": "Double adds a string"
+        },
+        {
+            "id": "add_types_double_unit",
+            "input": "(2.5d) + (4 meters)",
+            "expected": "6.5 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Double adds a unit"
+        },
+        {
+            "id": "add_types_double_vector",
+            "input": "(2.5d) + ({1, 2})",
+            "expected": [
+                3.5,
+                4.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double adds a vector"
+        },
+        {
+            "id": "add_types_matrix_boolean",
+            "input": "([1, 2; 3, 4]) + (true)",
+            "expected": [
+                [
+                    2,
+                    3
+                ],
+                [
+                    4,
+                    5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix adds a boolean"
+        },
+        {
+            "id": "add_types_matrix_double",
+            "input": "([1, 2; 3, 4]) + (2.5d)",
+            "expected": [
+                [
+                    3.5,
+                    4.5
+                ],
+                [
+                    5.5,
+                    6.5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix adds a double"
+        },
+        {
+            "id": "add_types_matrix_matrix",
+            "input": "([1, 2; 3, 4]) + ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix adds a matrix"
+        },
+        {
+            "id": "add_types_matrix_percent",
+            "input": "([1, 2; 3, 4]) + (20%)",
+            "expected": [
+                [
+                    1.2,
+                    2.4
+                ],
+                [
+                    3.6,
+                    4.8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix adds a percent"
+        },
+        {
+            "id": "add_types_matrix_range",
+            "input": "([1, 2; 3, 4]) + (1..2)",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    4,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix adds a range"
+        },
+        {
+            "id": "add_types_matrix_rational",
+            "input": "([1, 2; 3, 4]) + (3)",
+            "expected": [
+                [
+                    4,
+                    5
+                ],
+                [
+                    6,
+                    7
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix adds a rational"
+        },
+        {
+            "id": "add_types_matrix_string",
+            "input": "([1, 2; 3, 4]) + (\"ab\")",
+            "expected": [
+                [
+                    "1ab",
+                    "2ab"
+                ],
+                [
+                    "3ab",
+                    "4ab"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix adds a string"
+        },
+        {
+            "id": "add_types_matrix_unit",
+            "input": "([1, 2; 3, 4]) + (4 meters)",
+            "expected": [
+                [
+                    "5.0 meters",
+                    "6.0 meters"
+                ],
+                [
+                    "7.0 meters",
+                    "8.0 meters"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix adds a unit"
+        },
+        {
+            "id": "add_types_matrix_vector",
+            "input": "([1, 2; 3, 4]) + ({1, 2})",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    4,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix adds a vector"
+        },
+        {
+            "id": "add_types_percent_boolean",
+            "input": "(20%) + (true)",
+            "expected": 1.2,
+            "expectedType": "NodeDouble",
+            "notes": "Percent adds a boolean"
+        },
+        {
+            "id": "add_types_percent_double",
+            "input": "(20%) + (2.5d)",
+            "expected": 2.7,
+            "expectedType": "NodeDouble",
+            "notes": "Percent adds a double"
+        },
+        {
+            "id": "add_types_percent_matrix",
+            "input": "(20%) + ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1.2,
+                    2.2
+                ],
+                [
+                    3.2,
+                    4.2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Percent adds a matrix"
+        },
+        {
+            "id": "add_types_percent_percent",
+            "input": "(20%) + (20%)",
+            "expected": "40.0%",
+            "expectedType": "NodePercent",
+            "notes": "Percent adds a percent"
+        },
+        {
+            "id": "add_types_percent_range",
+            "input": "(20%) + (1..2)",
+            "expected": [
+                1.2,
+                2.2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent adds a range"
+        },
+        {
+            "id": "add_types_percent_rational",
+            "input": "(20%) + (3)",
+            "expected": 3.2,
+            "expectedType": "NodeDouble",
+            "notes": "Percent adds a rational"
+        },
+        {
+            "id": "add_types_percent_string",
+            "input": "(20%) + (\"ab\")",
+            "expected": "20.00%ab",
+            "expectedType": "NodeString",
+            "notes": "Percent adds a string"
+        },
+        {
+            "id": "add_types_percent_unit",
+            "input": "(20%) + (4 meters)",
+            "expected": "4.2 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Percent adds a unit"
+        },
+        {
+            "id": "add_types_percent_vector",
+            "input": "(20%) + ({1, 2})",
+            "expected": [
+                1.2,
+                2.2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent adds a vector"
+        },
+        {
+            "id": "add_types_range_boolean",
+            "input": "(1..2) + (true)",
+            "expected": [
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range adds a boolean"
+        },
+        {
+            "id": "add_types_range_double",
+            "input": "(1..2) + (2.5d)",
+            "expected": [
+                3.5,
+                4.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range adds a double"
+        },
+        {
+            "id": "add_types_range_matrix",
+            "input": "(1..2) + ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    4,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Range adds a matrix"
+        },
+        {
+            "id": "add_types_range_percent",
+            "input": "(1..2) + (20%)",
+            "expected": [
+                1.2,
+                2.4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range adds a percent"
+        },
+        {
+            "id": "add_types_range_range",
+            "input": "(1..2) + (1..2)",
+            "expected": [
+                2,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range adds a range"
+        },
+        {
+            "id": "add_types_range_rational",
+            "input": "(1..2) + (3)",
+            "expected": [
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range adds a rational"
+        },
+        {
+            "id": "add_types_range_string",
+            "input": "(1..2) + (\"ab\")",
+            "expected": [
+                "1ab",
+                "2ab"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range adds a string"
+        },
+        {
+            "id": "add_types_range_unit",
+            "input": "(1..2) + (4 meters)",
+            "expected": [
+                "5.0 meters",
+                "6.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range adds a unit"
+        },
+        {
+            "id": "add_types_range_vector",
+            "input": "(1..2) + ({1, 2})",
+            "expected": [
+                2,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range adds a vector"
+        },
+        {
+            "id": "add_types_rational_boolean",
+            "input": "(3) + (true)",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "Rational adds a boolean"
+        },
+        {
+            "id": "add_types_rational_double",
+            "input": "(3) + (2.5d)",
+            "expected": 5.5,
+            "expectedType": "NodeDouble",
+            "notes": "Rational adds a double"
+        },
+        {
+            "id": "add_types_rational_matrix",
+            "input": "(3) + ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    4,
+                    5
+                ],
+                [
+                    6,
+                    7
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Rational adds a matrix"
+        },
+        {
+            "id": "add_types_rational_percent",
+            "input": "(3) + (20%)",
+            "expected": 3.6,
+            "expectedType": "NodeDouble",
+            "notes": "Rational adds a percent"
+        },
+        {
+            "id": "add_types_rational_range",
+            "input": "(3) + (1..2)",
+            "expected": [
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational adds a range"
+        },
+        {
+            "id": "add_types_rational_rational",
+            "input": "(3) + (3)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Rational adds a rational"
+        },
+        {
+            "id": "add_types_rational_string",
+            "input": "(3) + (\"ab\")",
+            "expected": "3ab",
+            "expectedType": "NodeString",
+            "notes": "Rational adds a string"
+        },
+        {
+            "id": "add_types_rational_unit",
+            "input": "(3) + (4 meters)",
+            "expected": "7.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Rational adds a unit"
+        },
+        {
+            "id": "add_types_rational_vector",
+            "input": "(3) + ({1, 2})",
+            "expected": [
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational adds a vector"
+        },
+        {
+            "id": "add_types_string_boolean",
+            "input": "(\"ab\") + (true)",
+            "expected": "abtrue",
+            "expectedType": "NodeString",
+            "notes": "String adds a boolean"
+        },
+        {
+            "id": "add_types_string_double",
+            "input": "(\"ab\") + (2.5d)",
+            "expected": "ab2.5",
+            "expectedType": "NodeString",
+            "notes": "String adds a double"
+        },
+        {
+            "id": "add_types_string_matrix",
+            "input": "(\"ab\") + ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "ab1",
+                    "ab2"
+                ],
+                [
+                    "ab3",
+                    "ab4"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "String adds a matrix"
+        },
+        {
+            "id": "add_types_string_percent",
+            "input": "(\"ab\") + (20%)",
+            "expected": "ab20.00%",
+            "expectedType": "NodeString",
+            "notes": "String adds a percent"
+        },
+        {
+            "id": "add_types_string_range",
+            "input": "(\"ab\") + (1..2)",
+            "expected": [
+                "ab1",
+                "ab2"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "String adds a range"
+        },
+        {
+            "id": "add_types_string_rational",
+            "input": "(\"ab\") + (3)",
+            "expected": "ab3",
+            "expectedType": "NodeString",
+            "notes": "String adds a rational"
+        },
+        {
+            "id": "add_types_string_string",
+            "input": "(\"ab\") + (\"ab\")",
+            "expected": "abab",
+            "expectedType": "NodeString",
+            "notes": "String adds a string"
+        },
+        {
+            "id": "add_types_string_unit",
+            "input": "(\"ab\") + (4 meters)",
+            "expected": "ab4.0 meters",
+            "expectedType": "NodeString",
+            "notes": "String adds a unit"
+        },
+        {
+            "id": "add_types_string_vector",
+            "input": "(\"ab\") + ({1, 2})",
+            "expected": [
+                "ab1",
+                "ab2"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "String adds a vector"
+        },
+        {
+            "id": "add_types_unit_boolean",
+            "input": "(4 meters) + (true)",
+            "expected": "5.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit adds a boolean"
+        },
+        {
+            "id": "add_types_unit_double",
+            "input": "(4 meters) + (2.5d)",
+            "expected": "6.5 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit adds a double"
+        },
+        {
+            "id": "add_types_unit_matrix",
+            "input": "(4 meters) + ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "5.0 meters",
+                    "6.0 meters"
+                ],
+                [
+                    "7.0 meters",
+                    "8.0 meters"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Unit adds a matrix"
+        },
+        {
+            "id": "add_types_unit_percent",
+            "input": "(4 meters) + (20%)",
+            "expected": "4.2 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit adds a percent"
+        },
+        {
+            "id": "add_types_unit_range",
+            "input": "(4 meters) + (1..2)",
+            "expected": [
+                "5.0 meters",
+                "6.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit adds a range"
+        },
+        {
+            "id": "add_types_unit_rational",
+            "input": "(4 meters) + (3)",
+            "expected": "7.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit adds a rational"
+        },
+        {
+            "id": "add_types_unit_string",
+            "input": "(4 meters) + (\"ab\")",
+            "expected": "4.0 metersab",
+            "expectedType": "NodeString",
+            "notes": "Unit adds a string"
+        },
+        {
+            "id": "add_types_unit_unit",
+            "input": "(4 meters) + (4 meters)",
+            "expected": "8.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit adds a unit"
+        },
+        {
+            "id": "add_types_unit_vector",
+            "input": "(4 meters) + ({1, 2})",
+            "expected": [
+                "5.0 meters",
+                "6.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit adds a vector"
+        },
+        {
+            "id": "add_types_vector_boolean",
+            "input": "({1, 2}) + (true)",
+            "expected": [
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector adds a boolean"
+        },
+        {
+            "id": "add_types_vector_double",
+            "input": "({1, 2}) + (2.5d)",
+            "expected": [
+                3.5,
+                4.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector adds a double"
+        },
+        {
+            "id": "add_types_vector_matrix",
+            "input": "({1, 2}) + ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    4,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Vector adds a matrix"
+        },
+        {
+            "id": "add_types_vector_percent",
+            "input": "({1, 2}) + (20%)",
+            "expected": [
+                1.2,
+                2.4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector adds a percent"
+        },
+        {
+            "id": "add_types_vector_range",
+            "input": "({1, 2}) + (1..2)",
+            "expected": [
+                2,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector adds a range"
+        },
+        {
+            "id": "add_types_vector_rational",
+            "input": "({1, 2}) + (3)",
+            "expected": [
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector adds a rational"
+        },
+        {
+            "id": "add_types_vector_string",
+            "input": "({1, 2}) + (\"ab\")",
+            "expected": [
+                "1ab",
+                "2ab"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector adds a string"
+        },
+        {
+            "id": "add_types_vector_unit",
+            "input": "({1, 2}) + (4 meters)",
+            "expected": [
+                "5.0 meters",
+                "6.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector adds a unit"
+        },
+        {
+            "id": "add_types_vector_vector",
+            "input": "({1, 2}) + ({1, 2})",
+            "expected": [
+                2,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector adds a vector"
+        },
+        {
+            "id": "matrix_005",
+            "input": "[1, 2; 3, 4] + [5, 6; 7, 8]",
+            "expected": [
+                [
+                    6,
+                    8
+                ],
+                [
+                    10,
+                    12
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise matrix addition"
+        },
+        {
+            "id": "matrix_009",
+            "input": "[1, 2; 3, 4] + 5",
+            "expected": [
+                [
+                    6,
+                    7
+                ],
+                [
+                    8,
+                    9
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar addition (broadcast)"
+        },
+        {
+            "id": "matrix_018",
+            "input": "([1, 2; 3, 4] + [5, 6; 7, 8]) * 2",
+            "expected": [
+                [
+                    12,
+                    16
+                ],
+                [
+                    20,
+                    24
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Precedence: addition then scalar multiplication"
+        },
+        {
+            "id": "matrix_add_001",
+            "input": "[[1, 2], [3, 4]] + [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    6,
+                    8
+                ],
+                [
+                    10,
+                    12
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise matrix addition"
+        },
+        {
+            "id": "matrix_add_002",
+            "input": "[[1, 2], [3, 4]] + 10",
+            "expected": [
+                [
+                    11,
+                    12
+                ],
+                [
+                    13,
+                    14
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar addition to matrix"
+        },
+        {
+            "id": "matrix_add_003",
+            "input": "10 + [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    11,
+                    12
+                ],
+                [
+                    13,
+                    14
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar addition (reversed)"
+        },
+        {
+            "id": "vector_004",
+            "input": "{1, 2} + {3, 4}",
+            "expected": [
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise addition"
+        },
+        {
+            "id": "vector_010",
+            "input": "3 + {1, 2, 3}",
+            "expected": [
+                4,
+                5,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar addition (broadcast)"
+        },
+        {
+            "id": "vector_011",
+            "input": "{1, 2, 3} + 10",
+            "expected": [
+                11,
+                12,
+                13
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar addition (vector + scalar)"
+        },
+        {
+            "id": "vector_014",
+            "input": "{1} + {1, 2, 3}",
+            "expected": [
+                2,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single-element vector zero-pads: {1,0,0} + {1,2,3}"
+        },
+        {
+            "id": "vector_015",
+            "input": "{1, 2} + {1, 2, 3}",
+            "expected": [
+                2,
+                4,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Extend with zeros: {1,2,0} + {1,2,3}"
+        },
+        {
+            "id": "vector_016",
+            "input": "{1, 2, 3} + {1, 2}",
+            "expected": [
+                2,
+                4,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Extend shorter vector with zeros"
+        },
+        {
+            "id": "vector_019",
+            "input": "{1, 2, 3} + {4, 5, 6} + {7, 8, 9}",
+            "expected": [
+                12,
+                15,
+                18
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Multiple vector additions"
+        },
+        {
+            "id": "vector_020",
+            "input": "({1, 2} + {3, 4}) * 2",
+            "expected": [
+                8,
+                12
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Precedence: vector addition then scalar multiplication"
+        },
+        {
+            "id": "vector_add_001",
+            "input": "{1, 2, 3} + {4, 5, 6}",
+            "expected": [
+                5,
+                7,
+                9
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise addition"
+        },
+        {
+            "id": "vector_add_003",
+            "input": "10 + {1, 2, 3}",
+            "expected": [
+                11,
+                12,
+                13
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar addition (reversed)"
+        }
+    ]
+}

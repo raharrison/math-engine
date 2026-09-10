@@ -4,18 +4,13 @@ import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.operator.UnaryOperator;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 /**
- * Logical NOT operator (not, !).
- * <p>
- * Returns the logical negation of a boolean value.
- * Numbers are truthy if non-zero.
+ * Logical negation ({@code not}, {@code !}). Numbers count as true when non-zero.
  */
 public final class NotOperator implements UnaryOperator {
 
-    /**
-     * Singleton instance
-     */
     public static final NotOperator INSTANCE = new NotOperator();
 
     private NotOperator() {
@@ -28,7 +23,6 @@ public final class NotOperator implements UnaryOperator {
 
     @Override
     public NodeConstant apply(NodeConstant operand, OperatorContext ctx) {
-        boolean value = ctx.toBoolean(operand);
-        return NodeBoolean.of(!value);
+        return NodeBoolean.of(!TypeCoercion.toBoolean(operand));
     }
 }

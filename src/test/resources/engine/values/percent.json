@@ -1,0 +1,126 @@
+{
+    "category": "Value: percent",
+    "description": "The percentage type, which stays a percentage through scaling and becomes a plain number when measured against something.",
+    "tests": [
+        {
+            "id": "percent_001_percent",
+            "input": "50%",
+            "expected": 0.5,
+            "expectedType": "NodePercent",
+            "notes": "Basic percent literal: 50% = 0.5"
+        },
+        {
+            "id": "percent_005",
+            "input": "150%",
+            "expected": 1.5,
+            "expectedType": "NodePercent",
+            "notes": "Percent over 100: 150% = 1.5"
+        },
+        {
+            "id": "percent_010",
+            "input": "150% of 100",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent over 100: 150% of 100 = 150"
+        },
+        {
+            "id": "percent_012",
+            "input": "75% of 200",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "75% of 200 = 150"
+        },
+        {
+            "id": "percent_013",
+            "input": "50% + 0.5",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent + Double: 50% + 0.5 = 1.0"
+        },
+        {
+            "id": "percent_014",
+            "input": "25% * 4",
+            "expected": "100%",
+            "expectedType": "NodePercent",
+            "notes": "Percent * Rational: 25% * 4 = 100%"
+        },
+        {
+            "id": "percent_017",
+            "input": "50% * 2",
+            "expected": "100%",
+            "expectedType": "NodePercent",
+            "notes": "Percent * Integer: 50% * 2 = 100%"
+        },
+        {
+            "id": "percent_018",
+            "input": "100% / 2",
+            "expected": "50%",
+            "expectedType": "NodePercent",
+            "notes": "Percent / Integer: 100% / 2 = 50% or 0.5"
+        },
+        {
+            "id": "percent_019",
+            "input": "20% of 50",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "20% of 50 = 10"
+        },
+        {
+            "id": "percent_020",
+            "input": "5% of 1000",
+            "expected": 50.0,
+            "expectedType": "NodeDouble",
+            "notes": "5% of 1000 = 50"
+        },
+        {
+            "id": "percent_021",
+            "input": "200% of 50",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "200% of 50 = 100"
+        },
+        {
+            "id": "percent_022",
+            "input": "1% of 100",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "1% of 100 = 1"
+        },
+        {
+            "id": "percent_023",
+            "input": "50% of 200 + 50",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "Precedence: (50% of 200) + 50 = 100 + 50 = 150"
+        },
+        {
+            "id": "percent_024",
+            "input": "50% + 1",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Percent + Integer: 50% + 1 = 0.5 + 1 = 1.5"
+        },
+        {
+            "id": "percent_025",
+            "input": "1 + 50%",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Integer + Percent: 1 + 50% = 1 + 0.5 = 1.5"
+        },
+        {
+            "id": "abs_percent",
+            "input": "abs(0% - 20%)",
+            "expected": "20.0%",
+            "expectedType": "NodePercent",
+            "notes": "Magnitude keeps the percentage too"
+        },
+        {
+            "id": "percent_sqrt",
+            "input": "sqrt(4%)",
+            "expected": "20%",
+            "expectedType": "NodePercent",
+            "tolerance": 1e-12,
+            "notes": "A root works on the magnitude and the marker rides along, exactly as it does for a quantity"
+        }
+    ]
+}

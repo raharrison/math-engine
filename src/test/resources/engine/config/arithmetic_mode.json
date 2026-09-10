@@ -1,17 +1,7 @@
 {
-    "category": "Configuration - Arithmetic Mode",
-    "description": "Tests rational vs double arithmetic modes",
+    "category": "Config: arithmetic mode",
+    "description": "forceDoubleArithmetic turns off exact rational arithmetic, so every literal and every result becomes a double.",
     "tests": [
-        {
-            "id": "rational_exact_001",
-            "input": "1/3",
-            "expected": "1/3",
-            "expectedType": "NodeRational",
-            "config": {
-                "forceDoubleArithmetic": false
-            },
-            "notes": "1/3 stays as exact rational when forceDoubleArithmetic=false"
-        },
         {
             "id": "double_approx_001",
             "input": "1/3",
@@ -21,36 +11,6 @@
                 "forceDoubleArithmetic": true
             },
             "notes": "1/3 becomes double when forceDoubleArithmetic=true"
-        },
-        {
-            "id": "double_literal_001",
-            "input": "0.3",
-            "expected": 0.3,
-            "expectedType": "NodeDouble",
-            "config": {
-                "forceDoubleArithmetic": true
-            },
-            "notes": "0.3 stays as a double"
-        },
-        {
-            "id": "rational_literal_001",
-            "input": "0.5",
-            "expected": "1/2",
-            "expectedType": "NodeRational",
-            "config": {
-                "forceDoubleArithmetic": false
-            },
-            "notes": "0.5 converts to 1/2"
-        },
-        {
-            "id": "rational_exact_002",
-            "input": "2/3 + 1/3",
-            "expected": "1",
-            "expectedType": "NodeRational",
-            "config": {
-                "forceDoubleArithmetic": false
-            },
-            "notes": "Rational arithmetic stays exact: 2/3 + 1/3 = 1"
         },
         {
             "id": "double_approx_002",
@@ -63,16 +23,6 @@
             "notes": "Double arithmetic: 2/3 + 1/3 ≈ 1.0"
         },
         {
-            "id": "rational_exact_003",
-            "input": "1/2 + 1/4",
-            "expected": "3/4",
-            "expectedType": "NodeRational",
-            "config": {
-                "forceDoubleArithmetic": false
-            },
-            "notes": "Rational arithmetic: 1/2 + 1/4 = 3/4 (exact)"
-        },
-        {
             "id": "double_approx_003",
             "input": "1/2 + 1/4",
             "expected": 0.75,
@@ -81,16 +31,6 @@
                 "forceDoubleArithmetic": true
             },
             "notes": "Double arithmetic: 1/2 + 1/4 = 0.75"
-        },
-        {
-            "id": "rational_exact_004",
-            "input": "7/6 - 1/6",
-            "expected": "1",
-            "expectedType": "NodeRational",
-            "config": {
-                "forceDoubleArithmetic": false
-            },
-            "notes": "Rational subtraction: 7/6 - 1/6 = 1 (exact)"
         },
         {
             "id": "double_approx_004",
@@ -103,16 +43,6 @@
             "notes": "Double subtraction: 7/6 - 1/6 = 1.0"
         },
         {
-            "id": "rational_exact_005",
-            "input": "2/3 * 3/4",
-            "expected": "1/2",
-            "expectedType": "NodeRational",
-            "config": {
-                "forceDoubleArithmetic": false
-            },
-            "notes": "Rational multiplication: 2/3 * 3/4 = 1/2 (simplified)"
-        },
-        {
             "id": "double_approx_005",
             "input": "2/3 * 3/4",
             "expected": 0.5,
@@ -121,16 +51,6 @@
                 "forceDoubleArithmetic": true
             },
             "notes": "Double multiplication: 2/3 * 3/4 = 0.5"
-        },
-        {
-            "id": "rational_exact_006",
-            "input": "1/2 / 1/4",
-            "expected": "2",
-            "expectedType": "NodeRational",
-            "config": {
-                "forceDoubleArithmetic": false
-            },
-            "notes": "Rational division: 1/2 / 1/4 = 2 (exact)"
         },
         {
             "id": "double_approx_006",
@@ -143,6 +63,26 @@
             "notes": "Double division: 1/2 / 1/4 = 2.0"
         },
         {
+            "id": "double_complex_001",
+            "input": "(1/2 + 1/4) * (2/3)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "config": {
+                "forceDoubleArithmetic": true
+            },
+            "notes": "Complex expression with double arithmetic: (0.75) * (0.6667) = 0.5"
+        },
+        {
+            "id": "double_literal_001",
+            "input": "0.3",
+            "expected": 0.3,
+            "expectedType": "NodeDouble",
+            "config": {
+                "forceDoubleArithmetic": true
+            },
+            "notes": "0.3 stays as a double"
+        },
+        {
             "id": "rational_complex_001",
             "input": "(1/2 + 1/4) * (2/3)",
             "expected": "1/2",
@@ -153,14 +93,74 @@
             "notes": "Complex rational expression stays exact: (3/4) * (2/3) = 1/2"
         },
         {
-            "id": "double_complex_001",
-            "input": "(1/2 + 1/4) * (2/3)",
-            "expected": 0.5,
-            "expectedType": "NodeDouble",
+            "id": "rational_exact_001",
+            "input": "1/3",
+            "expected": "1/3",
+            "expectedType": "NodeRational",
             "config": {
-                "forceDoubleArithmetic": true
+                "forceDoubleArithmetic": false
             },
-            "notes": "Complex expression with double arithmetic: (0.75) * (0.6667) = 0.5"
+            "notes": "1/3 stays as exact rational when forceDoubleArithmetic=false"
+        },
+        {
+            "id": "rational_exact_002",
+            "input": "2/3 + 1/3",
+            "expected": "1",
+            "expectedType": "NodeRational",
+            "config": {
+                "forceDoubleArithmetic": false
+            },
+            "notes": "Rational arithmetic stays exact: 2/3 + 1/3 = 1"
+        },
+        {
+            "id": "rational_exact_003",
+            "input": "1/2 + 1/4",
+            "expected": "3/4",
+            "expectedType": "NodeRational",
+            "config": {
+                "forceDoubleArithmetic": false
+            },
+            "notes": "Rational arithmetic: 1/2 + 1/4 = 3/4 (exact)"
+        },
+        {
+            "id": "rational_exact_004",
+            "input": "7/6 - 1/6",
+            "expected": "1",
+            "expectedType": "NodeRational",
+            "config": {
+                "forceDoubleArithmetic": false
+            },
+            "notes": "Rational subtraction: 7/6 - 1/6 = 1 (exact)"
+        },
+        {
+            "id": "rational_exact_005",
+            "input": "2/3 * 3/4",
+            "expected": "1/2",
+            "expectedType": "NodeRational",
+            "config": {
+                "forceDoubleArithmetic": false
+            },
+            "notes": "Rational multiplication: 2/3 * 3/4 = 1/2 (simplified)"
+        },
+        {
+            "id": "rational_exact_006",
+            "input": "1/2 / 1/4",
+            "expected": "2",
+            "expectedType": "NodeRational",
+            "config": {
+                "forceDoubleArithmetic": false
+            },
+            "notes": "Rational division: 1/2 / 1/4 = 2 (exact)"
+        },
+        {
+            "id": "rational_literal_001",
+            "input": "0.5",
+            "expected": "1/2",
+            "expectedType": "NodeRational",
+            "config": {
+                "forceDoubleArithmetic": false
+            },
+            "notes": "0.5 converts to 1/2"
         }
     ]
 }

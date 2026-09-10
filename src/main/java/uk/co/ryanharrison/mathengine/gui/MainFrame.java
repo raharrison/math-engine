@@ -574,8 +574,7 @@ public final class MainFrame extends JFrame {
     }
 
     private List<Node> getNodeChildren(Node node) {
-        AstTreeBuilder builder = new AstTreeBuilder();
-        return node.accept(builder);
+        return AstTreeBuilder.childrenOf(node);
     }
 
     private void displayError(String expression, Exception e) {

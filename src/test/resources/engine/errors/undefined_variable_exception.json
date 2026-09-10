@@ -1,0 +1,123 @@
+{
+    "category": "Errors: UndefinedVariableException",
+    "description": "Names that resolve to nothing: variables, functions, units and constants that were never defined.",
+    "tests": [
+        {
+            "id": "err_eval_002",
+            "input": "undefined_var",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Reference to undefined variable"
+        },
+        {
+            "id": "err_eval_010",
+            "input": "undefined_func(5)",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Call to undefined function"
+        },
+        {
+            "id": "error_undefined_const",
+            "input": "#fakeconst",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Explicit constant reference fails for undefined constant"
+        },
+        {
+            "id": "error_undefined_unit",
+            "input": "@nonexistentunit",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Explicit unit reference fails for undefined unit"
+        },
+        {
+            "id": "error_undefined_var",
+            "input": "$undefined",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Explicit variable reference fails for undefined variable"
+        },
+        {
+            "id": "implicit_001",
+            "input": "2x",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "This test requires 'x' to be defined. Implicit multiplication: 2 * x"
+        },
+        {
+            "id": "invalid_function_001",
+            "input": "unknownfunc(5)",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Unknown function"
+        },
+        {
+            "id": "undefined_function_001",
+            "input": "undefinedFunc(5)",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Calling undefined function"
+        },
+        {
+            "id": "undefined_variable_001",
+            "input": "undefined_x + 5",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Undefined variable"
+        },
+        {
+            "id": "undefined_variable_001_undefined_variable_exception",
+            "input": "undefinedVar + 5",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Using undefined variable"
+        },
+        {
+            "id": "unknown_from_unit_001",
+            "input": "100 foobar in meters",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Unknown source unit"
+        },
+        {
+            "id": "unknown_to_unit_001",
+            "input": "100 meters in foobar",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Unknown target unit",
+            "expectedErrorMessage": "Unknown unit 'foobar'"
+        },
+        {
+            "id": "unknown_constant_message",
+            "input": "#notaconstant",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "expectedErrorMessage": "Undefined constant '#notaconstant'",
+            "notes": "An explicit constant reference says constant"
+        },
+        {
+            "id": "unknown_function_message",
+            "input": "nosuchfunction(5)",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "expectedErrorMessage": "Unknown function 'nosuchfunction'",
+            "notes": "A call to a name that is not a function says function"
+        },
+        {
+            "id": "unknown_unit_message",
+            "input": "@furlongs",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "expectedErrorMessage": "Unknown unit 'furlongs'",
+            "notes": "The message names the unit once, and the same way whether or not the '@' sigil was typed; it once nested one message inside another"
+        },
+        {
+            "id": "unknown_variable_message",
+            "input": "$notdefined",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "expectedErrorMessage": "Undefined variable '$notdefined'",
+            "notes": "An explicit variable reference says variable"
+        }
+    ]
+}

@@ -48,9 +48,7 @@ public final class TypedTernaryBuilder<A, B, C> {
      * @return the built MathFunction
      */
     public MathFunction implementedBy(TypedTernaryFunction<A, B, C> implementation) {
-        parent.validateMetadata();
-
-        return parent.createMathFunction(() -> (args, ctx) -> {
+        return parent.implementedByAggregate((args, ctx) -> {
             A arg1 = arg1Type.extract(args.get(0), ctx);
             B arg2 = arg2Type.extract(args.get(1), ctx);
             C arg3 = arg3Type.extract(args.get(2), ctx);

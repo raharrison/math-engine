@@ -1,6 +1,6 @@
 {
-    "category": "Complex Expressions",
-    "description": "Tests combining multiple features and operators",
+    "category": "Integration: complex expressions",
+    "description": "Long expressions combining several features at once, where the answer depends on precedence, coercion and evaluation order all agreeing.",
     "tests": [
         {
             "id": "complex_001",
@@ -10,11 +10,25 @@
             "notes": "Sum of squares using comprehension"
         },
         {
+            "id": "complex_001_complex_expressions",
+            "input": "1 + 2 * 3 + 4",
+            "expected": 11.0,
+            "expectedType": "NodeRational",
+            "notes": "Mixed addition and multiplication"
+        },
+        {
             "id": "complex_002",
             "input": "sum({x for x in 1..100 if x mod 2 == 0})",
             "expected": 2550,
             "expectedType": "NodeRational",
             "notes": "Sum of even numbers 1-100"
+        },
+        {
+            "id": "complex_002_complex_expressions",
+            "input": "2^3 + 4^2",
+            "expected": 24.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple exponentiations"
         },
         {
             "id": "complex_003",
@@ -48,15 +62,29 @@
             "id": "complex_007",
             "input": "v := {3, 1, 4, 1, 5, 9}; max(v) - min(v)",
             "expected": 8.0,
-            "expectedType": "NodeDouble",
+            "expectedType": "NodeRational",
             "notes": "Range calculation"
+        },
+        {
+            "id": "complex_007_complex_expressions",
+            "input": "(1 + 2) * (3 + 4) - (5 + 6)",
+            "expected": 10.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple parenthesized subexpressions"
         },
         {
             "id": "complex_008",
             "input": "m := [[1, 2], [3, 4]]; trace(m) + det(m)",
-            "expected": 3.0,
-            "expectedType": "NodeDouble",
+            "expected": 3,
+            "expectedType": "NodeRational",
             "notes": "Trace plus determinant"
+        },
+        {
+            "id": "complex_008_complex_expressions",
+            "input": "2 * 3 + 4 * 5 + 6 * 7",
+            "expected": 68.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple multiplications and additions"
         },
         {
             "id": "complex_009",
@@ -64,6 +92,13 @@
             "expected": 10.0,
             "expectedType": "NodeRational",
             "notes": "Variance numerator"
+        },
+        {
+            "id": "complex_009_complex_expressions",
+            "input": "100 - 50 + 25 - 12",
+            "expected": 63.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple subtractions and additions"
         },
         {
             "id": "complex_010",
@@ -80,11 +115,25 @@
             "notes": "Reduce with comprehension"
         },
         {
+            "id": "complex_011_complex_expressions",
+            "input": "-5 + 10",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Unary minus with addition"
+        },
+        {
             "id": "complex_012",
             "input": "sorted := sort({5, 2, 8, 1, 9}); sorted[0] + sorted[-1]",
             "expected": 10,
             "expectedType": "NodeRational",
             "notes": "Min + max via sort"
+        },
+        {
+            "id": "complex_012_complex_expressions",
+            "input": "-(5 + 10)",
+            "expected": -15.0,
+            "expectedType": "NodeRational",
+            "notes": "Negation of sum"
         },
         {
             "id": "complex_013",
@@ -122,11 +171,25 @@
             "notes": "Mixed numeric functions"
         },
         {
+            "id": "complex_017_complex_expressions",
+            "input": "5 % + 10 %",
+            "expected": "15%",
+            "expectedType": "NodePercent",
+            "notes": "Multiple percentages"
+        },
+        {
             "id": "complex_018",
             "input": "roundn(sin(pi/4) * 1000, 0) / 1000",
             "expected": 0.707,
             "expectedType": "NodeDouble",
             "notes": "Rounding sin result"
+        },
+        {
+            "id": "complex_018_complex_expressions",
+            "input": "100 + 50%",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "Number plus percentage"
         },
         {
             "id": "complex_019",
@@ -141,6 +204,87 @@
             "expected": true,
             "expectedType": "NodeBoolean",
             "notes": "Any prime check"
+        },
+        {
+            "id": "complex_020_complex_expressions",
+            "input": "ln(e^2)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Logarithm of exponential"
+        },
+        {
+            "id": "complex_021",
+            "input": "sqrt(16) + cbrt(27)",
+            "expected": 7.0,
+            "expectedType": "NodeDouble",
+            "notes": "Multiple root functions"
+        },
+        {
+            "id": "complex_022",
+            "input": "abs(-5) + abs(3)",
+            "expected": 8.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple absolute values"
+        },
+        {
+            "id": "complex_023",
+            "input": "min(5, 3) + max(10, 15)",
+            "expected": 18.0,
+            "expectedType": "NodeRational",
+            "notes": "Min and max in expression"
+        },
+        {
+            "id": "complex_024",
+            "input": "floor(3.7) + ceil(2.3)",
+            "expected": 6.0,
+            "expectedType": "NodeRational",
+            "notes": "Rounding functions"
+        },
+        {
+            "id": "complex_025",
+            "input": "if(5 > 3, 10, 20) + if(2 < 4, 30, 40)",
+            "expected": 40.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiple conditionals in expression"
+        },
+        {
+            "id": "complex_026",
+            "input": "{1, 2, 3} @ (x -> x^2) + {4, 5, 6}",
+            "expected": [
+                5,
+                9,
+                15
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector map with addition"
+        },
+        {
+            "id": "complex_027",
+            "input": "sum({1, 2, 3}) + product({2, 3, 4})",
+            "expected": 30.0,
+            "expectedType": "NodeRational",
+            "notes": "Sum and product in expression"
+        },
+        {
+            "id": "complex_028",
+            "input": "(5 > 3 && 2 < 4) || false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Complex boolean expression"
+        },
+        {
+            "id": "complex_029",
+            "input": "not (5 > 10) && (3 < 7)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT with AND"
+        },
+        {
+            "id": "complex_030",
+            "input": "x := 5; y := 10; z := x^2 + y^2; sqrt(z)",
+            "expected": 11.180339887498949,
+            "expectedType": "NodeDouble",
+            "notes": "Multi-statement complex calculation"
         }
     ]
 }

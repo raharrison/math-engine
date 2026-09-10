@@ -33,26 +33,23 @@ Vector  op Matrix  → Matrix (intelligent row/column broadcasting)
     - `{10} + {1,2,3,4}` → `{10,0,0,0} + {1,2,3,4}` → `{11,2,3,4}` (single-element vectors also zero-pad)
     - `[[1,2]] + [[1],[2],[3]]` → `[[1,2],[0,0],[0,0]] + [[1,0],[2,0],[3,0]]` → `[[2,2],[2,0],[3,0]]`
 - **Single-element broadcasting**: ONLY 1x1 matrices broadcast to any size (not vectors)
-- **Shared by operators and functions**: Both `OperatorContext` and `FunctionBuilder`/`FunctionContext` delegate to this engine
+- **Shared by operators and functions**: both reach it through `NodeConstant`
 - **Type preservation**: Maintains rational precision where possible
 
-### 2. OperatorContext (operator/OperatorContext.java)
+### 2. NodeArithmetic (parser/nodes/NodeArithmetic.java)
 
-Provides utility methods for operators:
+The single implementation of the type rules, reached through `NodeConstant.add()`
+and its siblings. It calls `BroadcastingEngine` itself when either side is a
+collection, so operators and functions do not need to.
 
-- `toNumber()`, `toBoolean()` - type coercion
-- `applyNumericBinary()` - handles rational vs double promotion
-- `applyAdditive()` - addition/subtraction with percent arithmetic support
-- `applyDoubleBinary()` - forces double result
-
-### 3. MatrixOperations (operator/MatrixOperations.java)
+### 3. MatrixOperations (util/MatrixOperations.java)
 
 Specialized matrix operations that DON'T use element-wise broadcasting:
 
 - `multiply(Matrix, Matrix)` - True matrix multiplication (A @ B)
 - `power(Matrix, int)` - Matrix exponentiation via squaring (A^n)
 - `dotProduct(Vector, Vector)` - Scalar dot product
-- `identityMatrix(int)` - Creates identity matrix
+- `identity(int)` - Creates identity matrix
 
 ## Operator Categories
 
@@ -71,17 +68,12 @@ Specialized matrix operations that DON'T use element-wise broadcasting:
 
 **Implementation pattern:**
 
+An arithmetic operator is a one-line delegation. Broadcasting, unit conversion,
+percentages and exact rationals are all handled by the value arithmetic.
+
 ```java
 public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-    return BroadcastingEngine.applyBinary(left, right, (l, r) -> {
-        // Special cases (e.g., percent arithmetic)
-        if (l instanceof NodePercent && r instanceof NodePercent) {
-            // handle percent-specific logic
-        }
-
-        // Default: use ctx.applyNumericBinary for type promotion
-        return ctx.applyNumericBinary(l, r, BigRational::add, Double::sum);
-    });
+  return left.add(right);
 }
 ```
 
@@ -115,38 +107,46 @@ public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext
 
 - `Matrix @ Matrix` → True matrix multiplication
 - `Vector @ Vector` → Dot product (scalar)
-- `Vector @ Function` → Map operation (not yet implemented)
+- `Vector @ Function` → Map operation
 
 ## Implementation Pattern
 
-All operators use `BroadcastingEngine.applyBinary()`:
+Arithmetic operators do not touch the engine directly. `NodeConstant.add()` and its
+siblings broadcast for them:
 
 ```java
 @Override
 public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-    return BroadcastingEngine.applyBinary(left, right, (l, r) ->
-        ctx.applyNumericBinary(l, r, BigRational::add, Double::sum)
-    );
+  return left.add(right);
 }
 ```
 
-Functions using `FunctionBuilder` get broadcasting automatically:
+An operator with its own scalar rule, such as `of`, calls the engine itself:
 
 ```java
-// Level 0: auto-broadcasts via FunctionBuilder
+return BroadcastingEngine.applyBinary(left, right, (fraction, value) ->
+        new
+
+NodeDouble(TypeCoercion.toDouble(fraction) *TypeCoercion.
+
+toDouble(value)));
+```
+
+Functions built with `FunctionBuilder` get broadcasting automatically:
+
+```java
+// Broadcast by the builder
 MathFunction exp = FunctionBuilder.named("exp")
                 .takingUnary()
                 .implementedByDouble(Math::exp);
 
-// Level 2: manual broadcasting via FunctionContext
+// Broadcast by the body, when it needs the context for each element
 MathFunction sin = FunctionBuilder.named("sin")
         .takingUnary()
         .noBroadcasting()
         .implementedBy((arg, ctx) ->
-                ctx.applyWithBroadcasting(arg, value -> Math.sin(ctx.toRadians(value))));
+                ctx.mapDouble(arg, value -> Math.sin(ctx.toRadians(value))));
 ```
-
-Broadcasting is handled automatically. Just define the scalar operation.
 
 ## Broadcasting Examples
 
@@ -181,8 +181,8 @@ Broadcasting is handled automatically. Just define the scalar operation.
 4. **Clarity**: Equality on containers returns scalar (structural comparison)
 5. **Performance**: Recursive dispatch is elegant but efficient
 6. **Extensibility**: New operators just define scalar operation, broadcasting is automatic
-7. **Shared Infrastructure**: Operators use `BroadcastingEngine` directly; functions use it via `FunctionBuilder` (auto) or
-   `FunctionContext.applyWithBroadcasting()` (manual)
+7. **Shared Infrastructure**: arithmetic reaches the engine through `NodeConstant`;
+   functions reach it through `FunctionBuilder` or `FunctionContext.mapDouble()`
 
 ## Summary
 

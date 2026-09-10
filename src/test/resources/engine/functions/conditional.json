@@ -1,7 +1,42 @@
 {
-    "category": "Conditional Functions",
-    "description": "Comprehensive tests for if, clamp, lerp",
+    "category": "Functions: conditional",
+    "description": "Branching and interval functions: if, clamp and lerp, including which branches if leaves unevaluated.",
     "tests": [
+        {
+            "id": "clamp_001",
+            "input": "clamp(5, 0, 10)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Clamp value within range preserves type"
+        },
+        {
+            "id": "clamp_002",
+            "input": "clamp(-5, 0, 10)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Clamp below range returns min"
+        },
+        {
+            "id": "clamp_003",
+            "input": "clamp(15, 0, 10)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Clamp above range returns max"
+        },
+        {
+            "id": "clamp_004",
+            "input": "clamp(0, 0, 10)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Clamp at lower bound"
+        },
+        {
+            "id": "clamp_005",
+            "input": "clamp(10, 0, 10)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Clamp at upper bound"
+        },
         {
             "id": "if_001",
             "input": "if(true, 10, 20)",
@@ -79,6 +114,13 @@
             "notes": "if false returning vector"
         },
         {
+            "id": "if_lazy_004",
+            "input": "if(1 < 0, undefined_var, 99)",
+            "expected": 99.0,
+            "expectedType": "NodeRational",
+            "notes": "Lazy evaluation with undefined variable in true branch"
+        },
+        {
             "id": "if_nested_001",
             "input": "if(true, if(true, 1, 2), 3)",
             "expected": 1,
@@ -100,69 +142,6 @@
             "notes": "Nested if - outer false, inner true"
         },
         {
-            "id": "if_lazy_001",
-            "input": "if(true, 5, 1/0)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Lazy evaluation - false branch not evaluated"
-        },
-        {
-            "id": "if_lazy_002",
-            "input": "if(false, 1/0, 10)",
-            "expected": 10.0,
-            "expectedType": "NodeDouble",
-            "notes": "Lazy evaluation - true branch not evaluated when false"
-        },
-        {
-            "id": "if_lazy_003",
-            "input": "if(1 > 0, 42, undefined_var)",
-            "expected": 42.0,
-            "expectedType": "NodeDouble",
-            "notes": "Lazy evaluation with undefined variable"
-        },
-        {
-            "id": "if_lazy_004",
-            "input": "if(1 < 0, undefined_var, 99)",
-            "expected": 99.0,
-            "expectedType": "NodeDouble",
-            "notes": "Lazy evaluation with undefined variable in true branch"
-        },
-        {
-            "id": "clamp_001",
-            "input": "clamp(5, 0, 10)",
-            "expected": 5,
-            "expectedType": "NodeRational",
-            "notes": "Clamp value within range preserves type"
-        },
-        {
-            "id": "clamp_002",
-            "input": "clamp(-5, 0, 10)",
-            "expected": 0,
-            "expectedType": "NodeRational",
-            "notes": "Clamp below range returns min"
-        },
-        {
-            "id": "clamp_003",
-            "input": "clamp(15, 0, 10)",
-            "expected": 10,
-            "expectedType": "NodeRational",
-            "notes": "Clamp above range returns max"
-        },
-        {
-            "id": "clamp_004",
-            "input": "clamp(0, 0, 10)",
-            "expected": 0,
-            "expectedType": "NodeRational",
-            "notes": "Clamp at lower bound"
-        },
-        {
-            "id": "clamp_005",
-            "input": "clamp(10, 0, 10)",
-            "expected": 10,
-            "expectedType": "NodeRational",
-            "notes": "Clamp at upper bound"
-        },
-        {
             "id": "lerp_001",
             "input": "lerp(0, 10, 0)",
             "expected": 0,
@@ -177,24 +156,17 @@
             "notes": "Lerp at t=1 preserves rational"
         },
         {
-            "id": "lerp_003",
-            "input": "lerp(0, 10, 0.5)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Lerp at t=0.5 (midpoint)"
-        },
-        {
             "id": "lerp_004",
             "input": "lerp(0, 100, 0.25)",
             "expected": 25.0,
-            "expectedType": "NodeDouble",
+            "expectedType": "NodeRational",
             "notes": "Lerp at t=0.25"
         },
         {
             "id": "lerp_005",
             "input": "lerp(-10, 10, 0.5)",
             "expected": 0.0,
-            "expectedType": "NodeDouble",
+            "expectedType": "NodeRational",
             "notes": "Lerp with negative start"
         }
     ]

@@ -28,6 +28,12 @@ public final class StandardUnaryOperators {
      * @return immutable map of token types to operators
      */
     public static Map<TokenType, UnaryOperator> all() {
+        return ALL;
+    }
+
+    private static final Map<TokenType, UnaryOperator> ALL = buildAll();
+
+    private static Map<TokenType, UnaryOperator> buildAll() {
         return Map.of(
                 TokenType.MINUS, NegateOperator.INSTANCE,
                 TokenType.PLUS, UnaryPlusOperator.INSTANCE,

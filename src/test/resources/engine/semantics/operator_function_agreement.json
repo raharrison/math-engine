@@ -1,0 +1,167 @@
+{
+    "category": "Semantics: operator and function agreement",
+    "description": "An operator and its function spelling must give the same answer. Every defect this suite was written for was a case where one of the two had its own arithmetic, so each pair is pinned here across the value types that reach it.",
+    "tests": [
+        {
+            "id": "abs_and_sign",
+            "input": "abs(-5) == (-5) * sign(-5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Magnitude and sign multiply back to the original value"
+        },
+        {
+            "id": "double_factorial_and_function",
+            "input": "6!! == doublefactorial(6)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "and so are the postfix double factorial and its function"
+        },
+        {
+            "id": "factorial_and_function",
+            "input": "5! == factorial(5)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The postfix factorial and the named function are one operation"
+        },
+        {
+            "id": "greater_than_and_max",
+            "input": "(7 > 3) == (max(3, 7) == 7)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "and max the other way round"
+        },
+        {
+            "id": "less_than_and_min",
+            "input": "(3 < 7) == (min(3, 7) == 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "min picks whichever side the ordering operator says is smaller"
+        },
+        {
+            "id": "negation_and_subtraction",
+            "input": "-7 == 0 - 7",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Prefix negation is subtraction from zero"
+        },
+        {
+            "id": "not_and_equality",
+            "input": "(not true) == (true == false)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negating a truth value agrees with comparing it against false"
+        },
+        {
+            "id": "percent_and_function",
+            "input": "25% == percent(25)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The postfix percent sign and the percent function build the same value"
+        },
+        {
+            "id": "plus_and_sum_doubles",
+            "input": "2.5d + 1.5d == sum(2.5d, 1.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "and on doubles"
+        },
+        {
+            "id": "plus_and_sum_integers",
+            "input": "1 + 2 == sum(1, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Addition and sum agree on exact integers"
+        },
+        {
+            "id": "plus_and_sum_units",
+            "input": "(3 meters) + (2 meters) == sum(3 meters, 2 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "and on quantities, which have to be converted first"
+        },
+        {
+            "id": "plus_of_two_vectors_broadcasts",
+            "input": "{1, 2} + {3, 4} == sum({1, 2}, {3, 4})",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "So this is the one pair that must not agree"
+        },
+        {
+            "id": "power_and_pow_double",
+            "input": "2.5d ^ 2 == pow(2.5d, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "and on an inexact base"
+        },
+        {
+            "id": "power_and_pow_exact",
+            "input": "2 ^ 3 == pow(2, 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The power operator and pow agree, exact result included"
+        },
+        {
+            "id": "sum_of_two_vectors_aggregates",
+            "input": "sum({1, 2}, {3, 4})",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Where the two deliberately differ: sum over several collections aggregates everything, while + lines them up element by element"
+        },
+        {
+            "id": "times_and_product_integers",
+            "input": "2 * 3 == product(2, 3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiplication and product agree on exact integers"
+        },
+        {
+            "id": "times_and_product_percent",
+            "input": "20% * 4 == product(20%, 4)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "and on percentages, which is where sum and plus once diverged"
+        },
+        {
+            "id": "times_and_product_units",
+            "input": "(3 meters) * 2 == product(3 meters, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "and on a quantity scaled by a plain number"
+        },
+        {
+            "id": "product_agrees_with_times",
+            "input": "product(100, 10%) == 100 * 10%",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The same has to hold for product and multiplication"
+        },
+        {
+            "id": "sum_agrees_with_plus",
+            "input": "sum(100, 10%) == 100 + 10%",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The function and the operator spelling cannot be allowed to differ"
+        },
+        {
+            "id": "sum_number_and_percent",
+            "input": "sum(100, 10%)",
+            "expected": 110.0,
+            "expectedType": "NodeDouble",
+            "notes": "Ten percent added to a hundred is a hundred and ten, whichever spelling is used; the aggregate once added a raw tenth"
+        },
+        {
+            "id": "sqrt_agrees_with_half_power",
+            "input": "sqrt(4 meters) == (4 meters) ^ 0.5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The function and the operator spelling of a square root cannot disagree about the label"
+        },
+        {
+            "id": "reciprocal_agrees_with_negative_power",
+            "input": "1 / (10 meters) == (10 meters) ^ (-1)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Dividing into a quantity and raising it to -1 are the same thing, which is why both keep the label"
+        }
+    ]
+}

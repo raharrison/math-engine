@@ -1,7 +1,196 @@
 {
-    "category": "Utility Functions",
-    "description": "Comprehensive tests for frac, mod, permutation, doublefactorial, inverselerp, remap, smoothstep, distance, distance3d, manhattan, approxeq, compare, compound, wrap, normalize, deg2rad, rad2deg",
+    "category": "Functions: utility",
+    "description": "Everything numeric that is not a named branch of mathematics: magnitude, sign, interpolation, distance, comparison and angle conversion.",
     "tests": [
+        {
+            "id": "abs_004",
+            "input": "abs(-3.14)",
+            "expected": 3.14,
+            "expectedType": "NodeRational",
+            "notes": "Absolute value of negative decimal"
+        },
+        {
+            "id": "approxeq_001",
+            "input": "approxeq(1.0, 1.0000000001)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Very close values"
+        },
+        {
+            "id": "approxeq_002",
+            "input": "approxeq(1.0, 1.1)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Not close enough"
+        },
+        {
+            "id": "approxeq_003",
+            "input": "approxeq(1.0, 1.1, 0.2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Close with custom tolerance"
+        },
+        {
+            "id": "builtin_math_022",
+            "input": "abs(5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Absolute value of positive"
+        },
+        {
+            "id": "builtin_math_023",
+            "input": "abs(-5)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Absolute value of negative"
+        },
+        {
+            "id": "builtin_math_024",
+            "input": "abs(0)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Absolute value of zero"
+        },
+        {
+            "id": "builtin_math_025",
+            "input": "sign(5)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Sign of positive"
+        },
+        {
+            "id": "builtin_math_026",
+            "input": "sign(-5)",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "Sign of negative"
+        },
+        {
+            "id": "builtin_math_027",
+            "input": "sign(0)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Sign of zero"
+        },
+        {
+            "id": "compare_001",
+            "input": "compare(5, 3)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "5 > 3"
+        },
+        {
+            "id": "compound_001",
+            "input": "compound(1000, 5, 1)",
+            "expected": 1050.0,
+            "expectedType": "NodeDouble",
+            "notes": "Simple interest 5% for 1 year"
+        },
+        {
+            "id": "compound_002",
+            "input": "compound(1000, 5, 2)",
+            "expected": 1102.5,
+            "expectedType": "NodeDouble",
+            "notes": "Compound 5% for 2 years"
+        },
+        {
+            "id": "copysign_001",
+            "input": "copysign(5, 1)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Positive magnitude with positive sign"
+        },
+        {
+            "id": "copysign_002",
+            "input": "copysign(5, -1)",
+            "expected": -5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Positive magnitude with negative sign"
+        },
+        {
+            "id": "copysign_003",
+            "input": "copysign(-5, 1)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Negative magnitude with positive sign"
+        },
+        {
+            "id": "deg2rad_001",
+            "input": "deg2rad(180)",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "180 degrees = pi radians"
+        },
+        {
+            "id": "deg2rad_002",
+            "input": "deg2rad(90)",
+            "expected": 1.5707963267948966,
+            "expectedType": "NodeDouble",
+            "notes": "90 degrees = pi/2"
+        },
+        {
+            "id": "deg2rad_003",
+            "input": "deg2rad(0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "0 degrees = 0 radians"
+        },
+        {
+            "id": "distance3d_001",
+            "input": "distance3d(0, 0, 0, 1, 2, 2)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "3D distance"
+        },
+        {
+            "id": "distance_001",
+            "input": "distance(0, 0, 3, 4)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "3-4-5 triangle distance"
+        },
+        {
+            "id": "distance_002",
+            "input": "distance(1, 1, 4, 5)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Distance between (1,1) and (4,5)"
+        },
+        {
+            "id": "distance_003",
+            "input": "distance(0, 0, 0, 0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Same point distance"
+        },
+        {
+            "id": "doublefactorial_001",
+            "input": "doublefactorial(5)",
+            "expected": 15.0,
+            "expectedType": "NodeDouble",
+            "notes": "5!! = 5*3*1 = 15"
+        },
+        {
+            "id": "doublefactorial_002",
+            "input": "doublefactorial(6)",
+            "expected": 48.0,
+            "expectedType": "NodeDouble",
+            "notes": "6!! = 6*4*2 = 48"
+        },
+        {
+            "id": "doublefactorial_003",
+            "input": "doublefactorial(1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "1!! = 1"
+        },
+        {
+            "id": "fmod_002",
+            "input": "fmod(-5.5, 2.0)",
+            "expected": -1.5,
+            "expectedType": "NodeRational",
+            "notes": "Negative dividend modulo"
+        },
         {
             "id": "frac_001",
             "input": "frac(3.7)",
@@ -31,67 +220,25 @@
             "notes": "Fractional part of negative"
         },
         {
-            "id": "mod_001",
-            "input": "7 mod 3",
-            "expected": 1.0,
+            "id": "hypot_001",
+            "input": "hypot(3, 4)",
+            "expected": 5.0,
             "expectedType": "NodeDouble",
-            "notes": "7 mod 3 = 1 (using operator)"
+            "notes": "3-4-5 right triangle"
         },
         {
-            "id": "mod_002",
-            "input": "10 mod 5",
-            "expected": 0.0,
+            "id": "hypot_002",
+            "input": "hypot(5, 12)",
+            "expected": 13.0,
             "expectedType": "NodeDouble",
-            "notes": "Divisible exactly (using operator)"
+            "notes": "5-12-13 right triangle"
         },
         {
-            "id": "mod_003",
-            "input": "-7 mod 3",
-            "expected": 2.0,
+            "id": "hypot_003",
+            "input": "hypot(1, 1)",
+            "expected": 1.4142135623730951,
             "expectedType": "NodeDouble",
-            "notes": "Negative modulo (floor, using operator)"
-        },
-        {
-            "id": "permutation_001",
-            "input": "permutation(5, 2)",
-            "expected": 20.0,
-            "expectedType": "NodeDouble",
-            "notes": "P(5,2) = 5*4 = 20"
-        },
-        {
-            "id": "permutation_002",
-            "input": "permutation(4, 4)",
-            "expected": 24.0,
-            "expectedType": "NodeDouble",
-            "notes": "P(4,4) = 4! = 24"
-        },
-        {
-            "id": "permutation_003",
-            "input": "permutation(10, 3)",
-            "expected": 720.0,
-            "expectedType": "NodeDouble",
-            "notes": "P(10,3) = 10*9*8"
-        },
-        {
-            "id": "doublefactorial_001",
-            "input": "doublefactorial(5)",
-            "expected": 15.0,
-            "expectedType": "NodeDouble",
-            "notes": "5!! = 5*3*1 = 15"
-        },
-        {
-            "id": "doublefactorial_002",
-            "input": "doublefactorial(6)",
-            "expected": 48.0,
-            "expectedType": "NodeDouble",
-            "notes": "6!! = 6*4*2 = 48"
-        },
-        {
-            "id": "doublefactorial_003",
-            "input": "doublefactorial(1)",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
-            "notes": "1!! = 1"
+            "notes": "Unit right triangle"
         },
         {
             "id": "inverselerp_001",
@@ -115,76 +262,6 @@
             "notes": "At start"
         },
         {
-            "id": "remap_001",
-            "input": "remap(5, 0, 10, 0, 100)",
-            "expected": 50.0,
-            "expectedType": "NodeDouble",
-            "notes": "Remap 5 from [0,10] to [0,100]"
-        },
-        {
-            "id": "remap_002",
-            "input": "remap(0, 0, 1, -1, 1)",
-            "expected": -1.0,
-            "expectedType": "NodeDouble",
-            "notes": "Remap to negative range"
-        },
-        {
-            "id": "remap_003",
-            "input": "remap(100, 0, 100, 0, 1)",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
-            "notes": "Remap 100 to 1"
-        },
-        {
-            "id": "smoothstep_001",
-            "input": "smoothstep(0, 1, 0.5)",
-            "expected": 0.5,
-            "expectedType": "NodeDouble",
-            "notes": "Smoothstep at midpoint"
-        },
-        {
-            "id": "smoothstep_002",
-            "input": "smoothstep(0, 1, 0)",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
-            "notes": "Smoothstep at edge0"
-        },
-        {
-            "id": "smoothstep_003",
-            "input": "smoothstep(0, 1, 1)",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
-            "notes": "Smoothstep at edge1"
-        },
-        {
-            "id": "distance_001",
-            "input": "distance(0, 0, 3, 4)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "3-4-5 triangle distance"
-        },
-        {
-            "id": "distance_002",
-            "input": "distance(1, 1, 4, 5)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Distance between (1,1) and (4,5)"
-        },
-        {
-            "id": "distance_003",
-            "input": "distance(0, 0, 0, 0)",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
-            "notes": "Same point distance"
-        },
-        {
-            "id": "distance3d_001",
-            "input": "distance3d(0, 0, 0, 1, 2, 2)",
-            "expected": 3.0,
-            "expectedType": "NodeDouble",
-            "notes": "3D distance"
-        },
-        {
             "id": "manhattan_001",
             "input": "manhattan(0, 0, 3, 4)",
             "expected": 7.0,
@@ -199,81 +276,18 @@
             "notes": "Manhattan between (1,1) and (4,5)"
         },
         {
-            "id": "approxeq_001",
-            "input": "approxeq(1.0, 1.0000000001)",
-            "expected": true,
-            "expectedType": "NodeBoolean",
-            "notes": "Very close values"
-        },
-        {
-            "id": "approxeq_002",
-            "input": "approxeq(1.0, 1.1)",
-            "expected": false,
-            "expectedType": "NodeBoolean",
-            "notes": "Not close enough"
-        },
-        {
-            "id": "approxeq_003",
-            "input": "approxeq(1.0, 1.1, 0.2)",
-            "expected": true,
-            "expectedType": "NodeBoolean",
-            "notes": "Close with custom tolerance"
-        },
-        {
-            "id": "compare_001",
-            "input": "compare(5, 3)",
-            "expected": 1,
+            "id": "mod_002",
+            "input": "10 mod 5",
+            "expected": 0.0,
             "expectedType": "NodeRational",
-            "notes": "5 > 3"
+            "notes": "Divisible exactly (using operator)"
         },
         {
-            "id": "compare_002",
-            "input": "compare(3, 5)",
-            "expected": -1,
+            "id": "mod_003",
+            "input": "-7 mod 3",
+            "expected": 2.0,
             "expectedType": "NodeRational",
-            "notes": "3 < 5"
-        },
-        {
-            "id": "compare_003",
-            "input": "compare(5, 5)",
-            "expected": 0,
-            "expectedType": "NodeRational",
-            "notes": "5 == 5"
-        },
-        {
-            "id": "compound_001",
-            "input": "compound(1000, 5, 1)",
-            "expected": 1050.0,
-            "expectedType": "NodeDouble",
-            "notes": "Simple interest 5% for 1 year"
-        },
-        {
-            "id": "compound_002",
-            "input": "compound(1000, 5, 2)",
-            "expected": 1102.5,
-            "expectedType": "NodeDouble",
-            "notes": "Compound 5% for 2 years"
-        },
-        {
-            "id": "wrap_001",
-            "input": "wrap(15, 0, 10)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Wrap 15 to [0,10)"
-        },
-        {
-            "id": "wrap_002",
-            "input": "wrap(-3, 0, 10)",
-            "expected": 7.0,
-            "expectedType": "NodeDouble",
-            "notes": "Wrap negative"
-        },
-        {
-            "id": "wrap_003",
-            "input": "wrap(5, 0, 10)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "Already in range"
+            "notes": "Negative modulo (floor, using operator)"
         },
         {
             "id": "normalize_001",
@@ -297,25 +311,25 @@
             "notes": "Normalize max"
         },
         {
-            "id": "deg2rad_001",
-            "input": "deg2rad(180)",
-            "expected": 3.141592653589793,
+            "id": "permutation_001",
+            "input": "permutation(5, 2)",
+            "expected": 20.0,
             "expectedType": "NodeDouble",
-            "notes": "180 degrees = pi radians"
+            "notes": "P(5,2) = 5*4 = 20"
         },
         {
-            "id": "deg2rad_002",
-            "input": "deg2rad(90)",
-            "expected": 1.5707963267948966,
+            "id": "permutation_002",
+            "input": "permutation(4, 4)",
+            "expected": 24.0,
             "expectedType": "NodeDouble",
-            "notes": "90 degrees = pi/2"
+            "notes": "P(4,4) = 4! = 24"
         },
         {
-            "id": "deg2rad_003",
-            "input": "deg2rad(0)",
-            "expected": 0.0,
+            "id": "permutation_003",
+            "input": "permutation(10, 3)",
+            "expected": 720.0,
             "expectedType": "NodeDouble",
-            "notes": "0 degrees = 0 radians"
+            "notes": "P(10,3) = 10*9*8"
         },
         {
             "id": "rad2deg_001",
@@ -337,6 +351,90 @@
             "expected": 0.0,
             "expectedType": "NodeDouble",
             "notes": "0 radians = 0 degrees"
+        },
+        {
+            "id": "remainder_001",
+            "input": "remainder(5.5, 2.0)",
+            "expected": -0.5,
+            "expectedType": "NodeDouble",
+            "notes": "IEEE remainder"
+        },
+        {
+            "id": "remap_001",
+            "input": "remap(5, 0, 10, 0, 100)",
+            "expected": 50.0,
+            "expectedType": "NodeDouble",
+            "notes": "Remap 5 from [0,10] to [0,100]"
+        },
+        {
+            "id": "remap_002",
+            "input": "remap(0, 0, 1, -1, 1)",
+            "expected": -1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Remap to negative range"
+        },
+        {
+            "id": "remap_003",
+            "input": "remap(100, 0, 100, 0, 1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Remap 100 to 1"
+        },
+        {
+            "id": "sign_004",
+            "input": "sign(100)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Sign of large positive"
+        },
+        {
+            "id": "sign_005",
+            "input": "sign(-100)",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "Sign of large negative"
+        },
+        {
+            "id": "smoothstep_001",
+            "input": "smoothstep(0, 1, 0.5)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Smoothstep at midpoint"
+        },
+        {
+            "id": "smoothstep_002",
+            "input": "smoothstep(0, 1, 0)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Smoothstep at edge0"
+        },
+        {
+            "id": "smoothstep_003",
+            "input": "smoothstep(0, 1, 1)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Smoothstep at edge1"
+        },
+        {
+            "id": "wrap_001",
+            "input": "wrap(15, 0, 10)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Wrap 15 to [0,10)"
+        },
+        {
+            "id": "wrap_002",
+            "input": "wrap(-3, 0, 10)",
+            "expected": 7.0,
+            "expectedType": "NodeDouble",
+            "notes": "Wrap negative"
+        },
+        {
+            "id": "wrap_003",
+            "input": "wrap(5, 0, 10)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Already in range"
         }
     ]
 }

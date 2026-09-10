@@ -1,0 +1,503 @@
+{
+    "category": "Value: matrix",
+    "description": "Matrix literals in both syntaxes, their shape, and the degenerate cases.",
+    "tests": [
+        {
+            "id": "const_026",
+            "input": "[[1]]",
+            "expected": [
+                [
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "1x1 matrix"
+        },
+        {
+            "id": "identity_matrix_mult_001",
+            "input": "[[1, 2], [3, 4]] @ identity(2)",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix @ identity = matrix"
+        },
+        {
+            "id": "mat_edge_002",
+            "input": "[[1]][0][0]",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Access element of 1x1 matrix"
+        },
+        {
+            "id": "mat_edge_004",
+            "input": "[[1, 2]]",
+            "expected": [
+                [
+                    1,
+                    2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "1x2 matrix (row vector)"
+        },
+        {
+            "id": "mat_edge_005",
+            "input": "[[1], [2]]",
+            "expected": [
+                [
+                    1
+                ],
+                [
+                    2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "2x1 matrix (column vector)"
+        },
+        {
+            "id": "mat_edge_006",
+            "input": "[[1, 0], [0, 1]]",
+            "expected": [
+                [
+                    1,
+                    0
+                ],
+                [
+                    0,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "2x2 identity matrix"
+        },
+        {
+            "id": "mat_edge_008",
+            "input": "det([[2, 0], [0, 3]])",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Determinant of diagonal matrix"
+        },
+        {
+            "id": "mat_edge_009",
+            "input": "[[1, 2, 3], [4, 5, 6]]",
+            "expected": [
+                [
+                    1,
+                    2,
+                    3
+                ],
+                [
+                    4,
+                    5,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "2x3 matrix"
+        },
+        {
+            "id": "mat_edge_010",
+            "input": "[[1, 2], [3, 4], [5, 6]]",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ],
+                [
+                    5,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "3x2 matrix"
+        },
+        {
+            "id": "mat_edge_012",
+            "input": "[[10, 20], [30, 40]] - [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    9,
+                    18
+                ],
+                [
+                    27,
+                    36
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix subtraction"
+        },
+        {
+            "id": "mat_edge_013",
+            "input": "[[1, 2], [3, 4]] * 2",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar multiplication of matrix"
+        },
+        {
+            "id": "mat_edge_017",
+            "input": "[[1, 2, 3], [4, 5, 6]] @ [[1], [2], [3]]",
+            "expected": [
+                [
+                    14
+                ],
+                [
+                    32
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplication 2x3 * 3x1"
+        },
+        {
+            "id": "mat_edge_022",
+            "input": "trace([[1, 2, 3], [4, 5, 6], [7, 8, 9]])",
+            "expected": 15.0,
+            "expectedType": "NodeRational",
+            "notes": "Trace of 3x3 matrix"
+        },
+        {
+            "id": "mat_edge_024",
+            "input": "[[1, 2], [3, 4]][0]",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Access row of matrix"
+        },
+        {
+            "id": "mat_edge_025",
+            "input": "[[1, 2], [3, 4]][1][1]",
+            "expected": 4.0,
+            "expectedType": "NodeRational",
+            "notes": "Access specific element"
+        },
+        {
+            "id": "matrix_001",
+            "input": "[1, 2; 3, 4]",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "2×2 matrix literal"
+        },
+        {
+            "id": "matrix_002",
+            "input": "[1]",
+            "expected": [
+                [
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "1×1 matrix"
+        },
+        {
+            "id": "matrix_003",
+            "input": "[1, 2, 3]",
+            "expected": [
+                [
+                    1,
+                    2,
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "1×3 matrix (row vector)"
+        },
+        {
+            "id": "matrix_004",
+            "input": "[1; 2; 3]",
+            "expected": [
+                [
+                    1
+                ],
+                [
+                    2
+                ],
+                [
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "3×1 matrix (column vector)"
+        },
+        {
+            "id": "matrix_create_001",
+            "input": "[[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Create 2x2 matrix literal"
+        },
+        {
+            "id": "matrix_create_002",
+            "input": "[[1, 2, 3], [4, 5, 6], [7, 8, 9]]",
+            "expected": [
+                [
+                    1,
+                    2,
+                    3
+                ],
+                [
+                    4,
+                    5,
+                    6
+                ],
+                [
+                    7,
+                    8,
+                    9
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Create 3x3 matrix"
+        },
+        {
+            "id": "matrix_create_003",
+            "input": "[[42]]",
+            "expected": [
+                [
+                    42
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Single element matrix"
+        },
+        {
+            "id": "matrix_create_004",
+            "input": "[[1, 2, 3]]",
+            "expected": [
+                [
+                    1,
+                    2,
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Row vector as matrix"
+        },
+        {
+            "id": "matrix_create_005",
+            "input": "[[1], [2], [3]]",
+            "expected": [
+                [
+                    1
+                ],
+                [
+                    2
+                ],
+                [
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Column vector as matrix"
+        },
+        {
+            "id": "matrix_create_006",
+            "input": "[[1.5, 2.5], [3.5, 4.5]]",
+            "expected": [
+                [
+                    1.5,
+                    2.5
+                ],
+                [
+                    3.5,
+                    4.5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix with decimals"
+        },
+        {
+            "id": "matrix_create_007",
+            "input": "[[]]",
+            "expected": [
+                []
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Empty row matrix"
+        },
+        {
+            "id": "matrix_create_008",
+            "input": "[[-1, -2], [-3, -4]]",
+            "expected": [
+                [
+                    -1,
+                    -2
+                ],
+                [
+                    -3,
+                    -4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix with negative values"
+        },
+        {
+            "id": "matrix_expr_001",
+            "input": "M := [[1, 2], [3, 4]]; M + M",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix variable"
+        },
+        {
+            "id": "matrix_expr_002",
+            "input": "M := [[1, 2], [3, 4]]; M[0][0] + M[1][1]",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Sum of diagonal elements"
+        },
+        {
+            "id": "matrix_expr_003",
+            "input": "A := [[1, 2]]; B := [[3], [4]]; A @ B",
+            "expected": [
+                [
+                    11
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Variables in matrix multiplication"
+        },
+        {
+            "id": "matrix_expr_004",
+            "input": "M := [[2, 0], [0, 2]]; M ^ 3",
+            "expected": [
+                [
+                    8,
+                    0
+                ],
+                [
+                    0,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Diagonal matrix cubed"
+        },
+        {
+            "id": "matrix_mixed_001",
+            "input": "[[1, 2], [3, 4]] + 2 * [[1, 1], [1, 1]]",
+            "expected": [
+                [
+                    3,
+                    4
+                ],
+                [
+                    5,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Mixed arithmetic operations"
+        },
+        {
+            "id": "matrix_nested_001",
+            "input": "[[1, 2], [3, 4]] + ([[5, 6], [7, 8]] * 2)",
+            "expected": [
+                [
+                    11,
+                    14
+                ],
+                [
+                    17,
+                    20
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Nested operations with parentheses"
+        },
+        {
+            "id": "zero_matrix_add_001",
+            "input": "[[1, 2], [3, 4]] + zeros(2)",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix + zero matrix = matrix"
+        },
+        {
+            "id": "zero_matrix_mult_001",
+            "input": "[[1, 2], [3, 4]] * zeros(2)",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise mult by zero matrix"
+        },
+        {
+            "id": "matrix_display",
+            "input": "str([1, 2; 3, 4])",
+            "expected": "[1, 2; 3, 4]",
+            "expectedType": "NodeString",
+            "notes": "One rendering, in the same syntax the parser accepts, where the formatter and toString once disagreed"
+        },
+        {
+            "id": "matrix_display_nested",
+            "input": "str([[1, 2], [3, 4]])",
+            "expected": "[1, 2; 3, 4]",
+            "expectedType": "NodeString",
+            "notes": "Both literal syntaxes give the same value, so they display the same"
+        }
+    ]
+}

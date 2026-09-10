@@ -1,12 +1,12 @@
 package uk.co.ryanharrison.mathengine.parser.function.vector;
 
-import uk.co.ryanharrison.mathengine.linearalgebra.Matrix;
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.function.ArgTypes;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.operator.MatrixOperations;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.util.MatrixOperations;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,8 +34,7 @@ public final class MatrixFunctions {
             .takingTyped(ArgTypes.matrix())
             .implementedBy((matrix, ctx) -> {
                 ctx.requireSquareMatrix(matrix);
-                Matrix m = ctx.toMatrix(matrix);
-                return new NodeDouble(m.determinant());
+                return MatrixOperations.determinant(matrix);
             });
 
     /**
@@ -49,13 +48,11 @@ public final class MatrixFunctions {
             .takingTyped(ArgTypes.matrix())
             .implementedBy((matrix, ctx) -> {
                 ctx.requireSquareMatrix(matrix);
-
-                double trace = 0;
-                Node[][] elements = matrix.getElements();
+                NodeConstant trace = new NodeRational(0);
                 for (int i = 0; i < matrix.getRows(); i++) {
-                    trace += ((NodeConstant) elements[i][i]).doubleValue();
+                    trace = trace.add((NodeConstant) matrix.getElement(i, i));
                 }
-                return new NodeDouble(trace);
+                return trace;
             });
 
     /**
@@ -115,9 +112,9 @@ public final class MatrixFunctions {
             .takingTyped(ArgTypes.integer())
             .implementedBy((n, _) -> {
                 if (n <= 0) {
-                    throw new IllegalArgumentException("identity: size must be positive, got: " + n);
+                    throw new DomainException("identity: size must be positive, got: " + n);
                 }
-                return MatrixOperations.identityMatrix(n);
+                return MatrixOperations.identity(n);
             });
 
     /**
@@ -138,7 +135,7 @@ public final class MatrixFunctions {
                         : rows;
 
                 if (rows <= 0 || cols <= 0) {
-                    throw new IllegalArgumentException("zeros: dimensions must be positive");
+                    throw new DomainException("zeros: dimensions must be positive");
                 }
 
                 Node[][] result = new Node[rows][cols];
@@ -235,9 +232,7 @@ public final class MatrixFunctions {
             .takingTyped(ArgTypes.matrix())
             .implementedBy((matrix, ctx) -> {
                 ctx.requireSquareMatrix(matrix);
-                Matrix m = ctx.toMatrix(matrix);
-                Matrix inverse = m.inverse();
-                return ctx.fromMatrix(inverse);
+                return MatrixOperations.inverse(matrix);
             });
 
     /**
@@ -249,56 +244,7 @@ public final class MatrixFunctions {
             .withParams("matrix")
             .inCategory(MathFunction.Category.MATRIX)
             .takingTyped(ArgTypes.matrix())
-            .implementedBy((nodeMatrix, ctx) -> {
-                // Convert to double array for rank calculation
-                int rows = nodeMatrix.getRows();
-                int cols = nodeMatrix.getCols();
-                Node[][] elements = nodeMatrix.getElements();
-                double[][] m = new double[rows][cols];
-
-                for (int i = 0; i < rows; i++) {
-                    for (int j = 0; j < cols; j++) {
-                        m[i][j] = ((NodeConstant) elements[i][j]).doubleValue();
-                    }
-                }
-
-                // Calculate rank using row reduction
-                int rank = 0;
-                boolean[] rowUsed = new boolean[rows];
-
-                for (int col = 0; col < cols; col++) {
-                    // Find pivot
-                    int pivot = -1;
-                    for (int row = 0; row < rows; row++) {
-                        if (!rowUsed[row] && Math.abs(m[row][col]) > 1e-10) {
-                            pivot = row;
-                            break;
-                        }
-                    }
-
-                    if (pivot == -1) continue;
-
-                    rowUsed[pivot] = true;
-                    rank++;
-
-                    // Eliminate
-                    double pivotVal = m[pivot][col];
-                    for (int j = col; j < cols; j++) {
-                        m[pivot][j] /= pivotVal;
-                    }
-
-                    for (int row = 0; row < rows; row++) {
-                        if (row != pivot && Math.abs(m[row][col]) > 1e-10) {
-                            double factor = m[row][col];
-                            for (int j = col; j < cols; j++) {
-                                m[row][j] -= factor * m[pivot][j];
-                            }
-                        }
-                    }
-                }
-
-                return new NodeRational(rank);
-            });
+            .implementedBy((matrix, ctx) -> new NodeRational(MatrixOperations.rank(matrix)));
 
     /**
      * Frobenius norm
@@ -345,7 +291,7 @@ public final class MatrixFunctions {
             .takingTyped(ArgTypes.matrix(), ArgTypes.integer())
             .implementedBy((matrix, rowIdx, ctx) -> {
                 if (rowIdx < 0 || rowIdx >= matrix.getRows()) {
-                    throw new IllegalArgumentException("row: index out of bounds");
+                    throw new DomainException("row: index out of bounds");
                 }
 
                 Node[][] elements = matrix.getElements();
@@ -366,7 +312,7 @@ public final class MatrixFunctions {
             .takingTyped(ArgTypes.matrix(), ArgTypes.integer())
             .implementedBy((matrix, colIdx, ctx) -> {
                 if (colIdx < 0 || colIdx >= matrix.getCols()) {
-                    throw new IllegalArgumentException("col: index out of bounds");
+                    throw new DomainException("col: index out of bounds");
                 }
 
                 Node[][] elements = matrix.getElements();
@@ -413,7 +359,7 @@ public final class MatrixFunctions {
                 }
 
                 if (values.size() != newRows * newCols) {
-                    throw new IllegalArgumentException("reshape: cannot reshape " + values.size() +
+                    throw new DomainException("reshape: cannot reshape " + values.size() +
                             " elements to " + newRows + "x" + newCols);
                 }
 
@@ -457,9 +403,7 @@ public final class MatrixFunctions {
                     si++;
                 }
 
-                NodeMatrix subMatrix = new NodeMatrix(sub);
-                Matrix m = ctx.toMatrix(subMatrix);
-                return new NodeDouble(m.determinant());
+                return MatrixOperations.determinant(new NodeMatrix(sub));
             });
 
     /**
@@ -476,10 +420,9 @@ public final class MatrixFunctions {
                 int row = ctx.requireInteger(args.get(1));
                 int col = ctx.requireInteger(args.get(2));
 
-                // Cofactor = (-1)^(i+j) * minor
-                double minor = MINOR.apply(args, ctx).doubleValue();
-                double sign = ((row + col) % 2 == 0) ? 1 : -1;
-                return new NodeDouble(sign * minor);
+                // Cofactor = (-1)^(i+j) * minor, kept in the element type so it stays exact
+                NodeConstant minor = MINOR.apply(args, ctx);
+                return (row + col) % 2 == 0 ? minor : minor.negate();
             });
 
     /**

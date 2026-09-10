@@ -25,8 +25,10 @@ import java.util.Map;
 /**
  * Main entry point for the Math Engine parser and evaluator.
  * <p>
- * MathEngine is an immutable, thread-safe facade for the parser system.
- * All configuration is provided via {@link MathEngineConfig}.
+ * An engine bundles an immutable {@link MathEngineConfig} with one mutable session
+ * scope holding user-defined variables and functions. Configuration is shared and
+ * safe to publish; a single engine instance is not safe for concurrent use, so give
+ * each thread its own.
  *
  * <h2>Quick Start:</h2>
  * <pre>{@code
@@ -102,7 +104,7 @@ public final class MathEngine {
         // Core components
         this.evaluator = new Evaluator(config, context, operatorExecutor, functionExecutor);
         this.lexer = new Lexer(
-                functionExecutor.getFunctionNames(),
+                functionExecutor.getCallableNames(),
                 unitRegistry,
                 constantRegistry,
                 config.keywordRegistry(),
@@ -240,14 +242,19 @@ public final class MathEngine {
     }
 
     /**
-     * Evaluates a mathematical expression and returns the result.
+     * Evaluates an already-parsed expression in the session scope.
      *
-     * @param node the parsed expression
-     * @return the result as a NodeConstant
-     * @throws MathEngineException if parsing or evaluation fails
+     * @throws MathEngineException if evaluation fails
      */
     public NodeConstant evaluate(Node node) {
         return evaluator.evaluate(node);
+    }
+
+    /**
+     * Evaluates an already-parsed expression in a specific scope.
+     */
+    NodeConstant evaluate(Node node, EvaluationContext scope) {
+        return evaluator.evaluate(node, scope);
     }
 
     // ==================== Variable/Function Definition ====================

@@ -104,7 +104,7 @@ matrix_row    := expression (',' expression)*
    - Semicolon syntax: [1, 2; 3, 4]  (traditional)
    - Nested syntax:    [[1, 2], [3, 4]]  (when each row is a vector/matrix)
    Both parse to the same NodeMatrix representation.
-   String output uses nested bracket format: [[1, 2], [3, 4]]
+   String output uses semicolon format: [1, 2; 3, 4]
 *)
 
 identifier    := letter (letter | digit | '_')*
@@ -493,7 +493,7 @@ cannot be redefined.
 
 **Length and Case:**
 
-- `strlen(string)` - String length
+- `len(string)` - String length (alias: `strlen`)
 - `upper(string)` - Convert to uppercase
 - `lower(string)` - Convert to lowercase
 
@@ -512,17 +512,17 @@ cannot be redefined.
 
 **Search:**
 
-- `strindexof(string, substr)` - Find first occurrence (-1 if not found)
+- `indexof(string, substr)` - Find first occurrence, -1 if absent (alias: `strindexof`)
 - `strlastindexof(string, substr)` - Find last occurrence
-- `strcontains(string, substr)` - Check if contains substring
+- `contains(string, substr)` - Check if contains substring (alias: `strcontains`)
 - `startswith(string, prefix)` - Check if starts with prefix
 - `endswith(string, suffix)` - Check if ends with suffix
 
 **Transformation:**
 
 - `replace(string, old, new)` - Replace all occurrences
-- `strreverse(string)` - Reverse string
-- `strrepeat(string, n)` - Repeat string n times
+- `reverse(string)` - Reverse string (alias: `strreverse`)
+- `repeat(string, n)` - Repeat string n times (alias: `strrepeat`)
 - `padleft(string, width, pad?)` - Pad to width on left (default pad: space)
 - `padright(string, width, pad?)` - Pad to width on right
 
@@ -781,7 +781,7 @@ All 150+ built-in functions are reserved identifiers (see "Built-In Functions" s
 - **Math:** `sin`, `cos`, `tan`, `abs`, `ln`, `log`, `exp`, `sqrt`, `pow`, `floor`, `ceil`, `round`, etc.
 - **Vector:** `sum`, `product`, `min`, `max`, `mean`, `median`, `sort`, `length`, `map`, `filter`, `reduce`, etc.
 - **Matrix:** `det`, `trace`, `transpose`, `inverse`, `identity`, `zeros`, `ones`, etc.
-- **String:** `strlen`, `upper`, `lower`, `trim`, `substring`, `replace`, `split`, `join`, etc.
+- **String:** `len`, `upper`, `lower`, `trim`, `substring`, `replace`, `split`, `join`, etc.
 - **Bitwise:** `bitand`, `bitor`, `bitxor`, `bitnot`, `lshift`, `rshift`, `popcount`, etc.
 - **Type:** `typeof`, `isnan`, `isinf`, `isint`, `int`, `float`, `bool`, etc.
 - **Statistical:** `variance`, `stddev`, `percentile`, `correlation`, `skewness`, etc.
@@ -1321,7 +1321,7 @@ reduce((a,b) -> a + b, {1,2,3,4,5}, 0)   → 15
 ### String Functions
 
 ```
-strlen("hello")                          → 5
+len("hello")                             → 5
 upper("hello")                           → "HELLO"
 substring("hello world", 6)              → "world"
 replace("hello world", "world", "there") → "hello there"

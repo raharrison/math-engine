@@ -5,6 +5,7 @@ import uk.co.ryanharrison.mathengine.parser.function.ArgTypes;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.util.Sequences;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -133,44 +134,34 @@ public final class VectorManipulationFunctions {
             });
 
     /**
-     * Find index of element
+     * First position of a value in a vector, or of a substring in a string.
      */
     public static final MathFunction INDEXOF = FunctionBuilder
             .named("indexof")
-            .alias("find")
-            .describedAs("Returns the first index of value in vector, or -1 if not found")
+            .alias("find", "strindexof", "strfind")
+            .describedAs("Returns the first index of value in a vector, or of a substring in a string, or -1 if absent")
             .withParams("vector", "value")
+            .withParams("str", "substr")
+            .withParams("str", "substr", "start")
             .inCategory(MathFunction.Category.VECTOR)
-            .takingTyped(ArgTypes.vector(), ArgTypes.number())
-            .implementedBy((vector, target, ctx) -> {
-                for (int i = 0; i < vector.size(); i++) {
-                    double val = ctx.toNumber((NodeConstant) vector.getElement(i)).doubleValue();
-                    if (val == target) {
-                        return new NodeRational(i);
-                    }
-                }
-                return new NodeRational(-1);
+            .takingBetween(2, 3)
+            .noBroadcasting()
+            .implementedByAggregate((args, ctx) -> {
+                int from = args.size() > 2 ? ctx.toInt(args.get(2)) : 0;
+                return new NodeRational(Sequences.indexOf(args.get(0), args.get(1), from));
             });
 
-    /**
-     * Check if vector contains element
-     */
+    /** Membership in a vector, or substring containment in a string. */
     public static final MathFunction CONTAINS = FunctionBuilder
             .named("contains")
-            .alias("includes")
-            .describedAs("Returns true if value appears in the vector")
+            .alias("includes", "strcontains")
+            .describedAs("Returns true if the value appears in the vector, or the substring appears in the string")
             .withParams("vector", "value")
+            .withParams("str", "substr")
             .inCategory(MathFunction.Category.VECTOR)
-            .takingTyped(ArgTypes.vector(), ArgTypes.number())
-            .implementedBy((vector, target, ctx) -> {
-                for (int i = 0; i < vector.size(); i++) {
-                    double val = ctx.toNumber((NodeConstant) vector.getElement(i)).doubleValue();
-                    if (val == target) {
-                        return new NodeBoolean(true);
-                    }
-                }
-                return new NodeBoolean(false);
-            });
+            .takingBinary()
+            .noBroadcasting()
+            .implementedBy((sequence, target, ctx) -> NodeBoolean.of(Sequences.contains(sequence, target)));
 
     // ==================== Transformation Functions ====================
 
@@ -189,7 +180,7 @@ public final class VectorManipulationFunctions {
                 List<Node> result = new ArrayList<>();
 
                 for (int i = 0; i < vector.size(); i++) {
-                    double val = ctx.toNumber((NodeConstant) vector.getElement(i)).doubleValue();
+                    double val = ctx.toDouble((NodeConstant) vector.getElement(i));
                     if (seen.add(val)) {
                         result.add(vector.getElement(i));
                     }
@@ -290,33 +281,14 @@ public final class VectorManipulationFunctions {
      */
     public static final MathFunction REPEAT = FunctionBuilder
             .named("repeat")
-            .alias("replicate")
-            .describedAs("Returns a new vector with the scalar or vector repeated n times")
-            .withParams("number", "n")
+            .alias("replicate", "strrepeat")
+            .describedAs("Returns the value repeated n times: a longer vector, or a longer string")
+            .withParams("value", "n")
             .withParams("vector", "n")
+            .withParams("str", "n")
             .inCategory(MathFunction.Category.VECTOR)
             .takingTyped(ArgTypes.any(), ArgTypes.integer())
-            .implementedBy((input, n, ctx) -> {
-                if (n < 0) n = 0;
-
-                List<Node> result = new ArrayList<>();
-
-                // Handle both scalar and vector inputs
-                if (input instanceof NodeVector vector) {
-                    for (int rep = 0; rep < n; rep++) {
-                        for (int i = 0; i < vector.size(); i++) {
-                            result.add(vector.getElement(i));
-                        }
-                    }
-                } else {
-                    // Scalar: repeat the value n times
-                    for (int rep = 0; rep < n; rep++) {
-                        result.add(input);
-                    }
-                }
-
-                return new NodeVector(result.toArray(Node[]::new));
-            });
+            .implementedBy((input, n, ctx) -> Sequences.repeat(input, n));
 
     // ==================== Predicate Functions ====================
 
@@ -332,7 +304,7 @@ public final class VectorManipulationFunctions {
             .implementedBy((vector, target, ctx) -> {
                 int count = 0;
                 for (int i = 0; i < vector.size(); i++) {
-                    double val = ctx.toNumber((NodeConstant) vector.getElement(i)).doubleValue();
+                    double val = ctx.toDouble((NodeConstant) vector.getElement(i));
                     if (val == target) count++;
                 }
                 return new NodeRational(count);
@@ -439,16 +411,16 @@ public final class VectorManipulationFunctions {
 
                 if (args.size() == 1) {
                     start = 0;
-                    end = ctx.toNumber(args.getFirst()).doubleValue();
+                    end = ctx.toDouble(args.getFirst());
                     step = 1;
                 } else if (args.size() == 2) {
-                    start = ctx.toNumber(args.get(0)).doubleValue();
-                    end = ctx.toNumber(args.get(1)).doubleValue();
+                    start = ctx.toDouble(args.get(0));
+                    end = ctx.toDouble(args.get(1));
                     step = 1;
                 } else {
-                    start = ctx.toNumber(args.get(0)).doubleValue();
-                    end = ctx.toNumber(args.get(1)).doubleValue();
-                    step = ctx.toNumber(args.get(2)).doubleValue();
+                    start = ctx.toDouble(args.get(0));
+                    end = ctx.toDouble(args.get(1));
+                    step = ctx.toDouble(args.get(2));
                 }
 
                 if (step == 0) {

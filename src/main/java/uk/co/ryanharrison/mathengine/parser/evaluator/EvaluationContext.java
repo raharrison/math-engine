@@ -2,43 +2,47 @@ package uk.co.ryanharrison.mathengine.parser.evaluator;
 
 import uk.co.ryanharrison.mathengine.core.AngleUnit;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
+import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
-import uk.co.ryanharrison.mathengine.parser.util.PersistentHashMap;
+import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Runtime evaluation context storing variables, user-defined functions, and scope chain.
+ * A single variable/function scope, linked to its parent to form a scope chain.
  * <p>
- * Configuration settings (angleUnit, forceDoubleArithmetic, etc.) are accessed from
- * the shared {@link MathEngineConfig} - not duplicated here.
- * <p>
- * Supports lexical scoping through parent contexts for function calls.
- * <p>
- * Uses {@link PersistentHashMap} for variables to enable efficient structural sharing
- * when creating child contexts or snapshots for closures.
+ * Configuration settings (angle unit, arithmetic mode, ...) live in the shared
+ * {@link MathEngineConfig} rather than being duplicated per scope.
  */
 public final class EvaluationContext {
 
     private final MathEngineConfig config;
-    private PersistentHashMap<String, NodeConstant> variables;
-    private final Map<String, FunctionDefinition> functions;
+    private final Map<String, NodeConstant> variables;
     private final EvaluationContext parent;
     private final RecursionTracker recursionTracker;
 
     /**
-     * Create a root context with config and recursion tracker.
+     * Created on first use. A call scope almost never defines a function, so leaving
+     * this null keeps the walk in {@link #resolveFunction} a pointer chase rather than
+     * a hash lookup per level, and saves a map per call.
      */
+    private Map<String, FunctionDefinition> functions;
+
+    /**
+     * Cached operator context; created on first use and reused for this scope.
+     */
+    private OperatorContext operatorContext;
+
     public EvaluationContext(MathEngineConfig config, RecursionTracker recursionTracker) {
-        this(config, PersistentHashMap.empty(), new HashMap<>(), null, recursionTracker);
+        this(config, new HashMap<>(), null, null, recursionTracker);
     }
 
     private EvaluationContext(
             MathEngineConfig config,
-            PersistentHashMap<String, NodeConstant> variables,
+            Map<String, NodeConstant> variables,
             Map<String, FunctionDefinition> functions,
             EvaluationContext parent,
             RecursionTracker recursionTracker) {
@@ -50,129 +54,94 @@ public final class EvaluationContext {
     }
 
     /**
-     * Create a child context with variable bindings (for function calls).
-     * Shares config and recursion tracker with this context.
-     * <p>
-     * Each child has its own independent persistent map containing only its local bindings.
-     * The EvaluationContext.parent chain is used for scope lookup, allowing assign()
-     * to properly update variables in their defining scope (important for closures).
+     * Creates a child scope holding the given bindings, with this context as its parent.
+     * Used for function calls, comprehension iterations and compiled-expression bindings.
      */
     public EvaluationContext withBindings(Map<String, NodeConstant> bindings) {
-        // Create independent map for child - don't chain persistent maps
-        // This ensures assign() can correctly find where variables are defined via ctx.parent
-        PersistentHashMap<String, NodeConstant> childVars = PersistentHashMap.from(bindings);
-        return new EvaluationContext(this.config, childVars, new HashMap<>(), this, this.recursionTracker);
+        return new EvaluationContext(config, new HashMap<>(bindings), null, this, recursionTracker);
     }
 
     /**
-     * Create a snapshot for closure capture - copies all variables from scope chain.
-     * Ensures lexical scoping works correctly even if original context is modified later.
+     * Flattens the whole scope chain into a detached root scope.
+     * Used to capture a lambda's defining environment for lexical scoping.
      */
     public EvaluationContext snapshot() {
         var allVariables = new HashMap<String, NodeConstant>();
-        collectVariables(allVariables);
-        PersistentHashMap<String, NodeConstant> snapshotVars = PersistentHashMap.from(allVariables);
-
-        var snapshotFunctions = new HashMap<String, FunctionDefinition>();
-        collectFunctions(snapshotFunctions);
-
-        return new EvaluationContext(this.config, snapshotVars, snapshotFunctions, null, this.recursionTracker);
+        var allFunctions = new HashMap<String, FunctionDefinition>();
+        collectInto(allVariables, allFunctions);
+        return new EvaluationContext(config, allVariables,
+                allFunctions.isEmpty() ? null : allFunctions, null, recursionTracker);
     }
 
-    private void collectVariables(Map<String, NodeConstant> target) {
+    private void collectInto(Map<String, NodeConstant> targetVars, Map<String, FunctionDefinition> targetFuncs) {
         if (parent != null) {
-            parent.collectVariables(target);
+            parent.collectInto(targetVars, targetFuncs);
         }
-        target.putAll(this.variables.toMap());
+        targetVars.putAll(variables);
+        if (functions != null) {
+            targetFuncs.putAll(functions);
+        }
     }
 
-    private void collectFunctions(Map<String, FunctionDefinition> target) {
-        if (parent != null) {
-            parent.collectFunctions(target);
-        }
-        target.putAll(this.functions);
-    }
+    // ==================== Variables ====================
 
-    // ==================== Variable Management ====================
-
-    /**
-     * Define a variable in this context (local scope).
-     * Creates a new layer in the persistent map.
-     */
+    /** Defines a variable in this scope, shadowing any parent binding. */
     public void define(String name, NodeConstant value) {
-        variables = variables.assoc(name, value);
+        variables.put(name, value);
     }
 
-    /**
-     * Remove a variable from this context (local scope).
-     * Creates a new layer that shadows the variable with removal.
-     */
+    /** Removes a variable from this scope. Parent bindings are unaffected. */
     public void removeVariable(String name) {
-        variables = variables.dissoc(name);
+        variables.remove(name);
     }
 
     /**
-     * Assign a value to a variable, updating where it exists in the scope chain.
-     * If not found anywhere, creates in current context.
-     * <p>
-     * This preserves closure semantics - closures can modify variables from
-     * their defining scope.
+     * Assigns a variable in the scope that already defines it, so closures can
+     * mutate variables from their defining scope. Defines locally if unknown.
      */
     public void assign(String name, NodeConstant value) {
-        EvaluationContext ctx = this;
-        while (ctx != null) {
+        for (EvaluationContext ctx = this; ctx != null; ctx = ctx.parent) {
             if (ctx.variables.containsKey(name)) {
-                ctx.variables = ctx.variables.assoc(name, value);
+                ctx.variables.put(name, value);
                 return;
             }
-            ctx = ctx.parent;
         }
-        // Not found anywhere, define in current scope
-        variables = variables.assoc(name, value);
+        variables.put(name, value);
     }
 
-    /**
-     * Resolve a variable by name, searching up the scope chain and constant registry.
-     *
-     * @param name the variable name to resolve
-     * @return the variable value, or empty if not found anywhere
-     */
+    /** Resolves a variable up the scope chain, falling back to the constant registry. */
     public Optional<NodeConstant> resolve(String name) {
-        if (variables.containsKey(name)) {
-            return Optional.of(variables.get(name));
-        }
-        if (parent != null) {
-            return parent.resolve(name);
+        for (EvaluationContext ctx = this; ctx != null; ctx = ctx.parent) {
+            NodeConstant value = ctx.variables.get(name);
+            if (value != null) {
+                return Optional.of(value);
+            }
         }
         return config.constantRegistry().getValue(name);
     }
 
-    // ==================== Function Management ====================
+    // ==================== User functions ====================
 
-    /**
-     * Define a user function in this context.
-     */
     public void defineFunction(String name, FunctionDefinition function) {
+        if (functions == null) {
+            functions = new HashMap<>();
+        }
         functions.put(name, function);
     }
 
-    /**
-     * Resolve a user function by name, searching up the scope chain.
-     *
-     * @param name the function name to resolve
-     * @return the function definition, or empty if not found
-     */
     public Optional<FunctionDefinition> resolveFunction(String name) {
-        if (functions.containsKey(name)) {
-            return Optional.of(functions.get(name));
-        }
-        if (parent != null) {
-            return parent.resolveFunction(name);
+        for (EvaluationContext ctx = this; ctx != null; ctx = ctx.parent) {
+            if (ctx.functions != null) {
+                FunctionDefinition function = ctx.functions.get(name);
+                if (function != null) {
+                    return Optional.of(function);
+                }
+            }
         }
         return Optional.empty();
     }
 
-    // ==================== Recursion Tracking ====================
+    // ==================== Recursion ====================
 
     public void enterFunction(String functionName) {
         recursionTracker.enterFunction(functionName);
@@ -182,7 +151,7 @@ public final class EvaluationContext {
         recursionTracker.exitFunction();
     }
 
-    // ==================== Config Accessors ====================
+    // ==================== Config ====================
 
     public Optional<NodeConstant> resolveConstant(String name) {
         return config.constantRegistry().getValue(name);
@@ -204,20 +173,26 @@ public final class EvaluationContext {
         return config.silentValidation();
     }
 
-    // ==================== Local State Accessors ====================
-
     /**
-     * Gets all variables visible in this context (including parent scopes).
-     * Returns an immutable snapshot.
+     * Returns the operator context for this scope, creating it on first use.
+     * The caller is fixed for the lifetime of an engine, so one instance per scope suffices.
      */
-    public Map<String, NodeConstant> getLocalVariables() {
-        return Map.copyOf(variables.toMap());
+    public OperatorContext operatorContext(FunctionCaller functionCaller) {
+        if (operatorContext == null) {
+            operatorContext = new OperatorContext(this, functionCaller);
+        }
+        return operatorContext;
     }
 
-    /**
-     * Gets functions defined in this context only (not parent scopes).
-     */
+    // ==================== Introspection ====================
+
+    /** Variables defined directly in this scope, excluding parents. */
+    public Map<String, NodeConstant> getLocalVariables() {
+        return Map.copyOf(variables);
+    }
+
+    /** Functions defined directly in this scope, excluding parents. */
     public Map<String, FunctionDefinition> getLocalFunctions() {
-        return Map.copyOf(functions);
+        return functions == null ? Map.of() : Map.copyOf(functions);
     }
 }

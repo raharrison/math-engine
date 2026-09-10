@@ -1,0 +1,78 @@
+{
+    "category": "Errors: ArityException",
+    "description": "Calls with too few or too many arguments, for built-in and user-defined functions alike.",
+    "tests": [
+        {
+            "id": "err_eval_007",
+            "input": "pow(2)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "Not enough arguments to pow function"
+        },
+        {
+            "id": "err_eval_008",
+            "input": "if(1, 2)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "If function requires exactly 3 arguments"
+        },
+        {
+            "id": "err_eval_009",
+            "input": "f(x) := x; f()",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "User function called with wrong number of arguments"
+        },
+        {
+            "id": "function_arity_001",
+            "input": "f := (x, y) -> x + y; f(5)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "Function expects 2 args, got 1"
+        },
+        {
+            "id": "function_arity_002",
+            "input": "f := (x) -> x * 2; f(1, 2, 3)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "Function expects 1 arg, got 3"
+        },
+        {
+            "id": "lambda_err_001",
+            "input": "f := (x -> x^2); f(1, 2)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "Lambda called with too many arguments"
+        },
+        {
+            "id": "lambda_err_002",
+            "input": "add := (a, b) -> a + b; add(5)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "Lambda called with too few arguments"
+        },
+        {
+            "id": "too_few_arguments",
+            "input": "gcd(1)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "expectedErrorMessage": "at least 2",
+            "notes": "gcd needs at least two numbers to compare"
+        },
+        {
+            "id": "too_many_arguments",
+            "input": "atan2(1, 2, 3)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "expectedErrorMessage": "at most",
+            "notes": "A fixed-arity function refuses a third argument"
+        },
+        {
+            "id": "user_function_wrong_arity",
+            "input": "f(x, y) := x + y; f(1)",
+            "expectError": true,
+            "expectedErrorType": "ArityException",
+            "notes": "A user-defined function is held to its parameter list too"
+        }
+    ]
+}

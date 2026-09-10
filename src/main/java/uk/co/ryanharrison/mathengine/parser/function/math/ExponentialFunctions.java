@@ -3,7 +3,6 @@ package uk.co.ryanharrison.mathengine.parser.function.math;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
-import uk.co.ryanharrison.mathengine.parser.util.NumericOperations;
 
 import java.util.List;
 
@@ -75,7 +74,7 @@ public final class ExponentialFunctions {
             .withParams("x")
             .inCategory(LOGARITHMIC)
             .takingUnary()
-            .implementedBy((arg, ctx) -> ctx.applyWithBroadcasting(arg, value -> Math.log(ctx.requirePositive(value))));
+            .implementedBy((arg, ctx) -> ctx.mapDouble(arg, value -> Math.log(ctx.requirePositive(value))));
 
     /**
      * Common logarithm (log10, base 10)
@@ -88,7 +87,7 @@ public final class ExponentialFunctions {
             .inCategory(LOGARITHMIC)
             .takingUnary()
             .implementedBy((arg, ctx) ->
-                    ctx.applyWithBroadcasting(arg, value -> Math.log10(ctx.requirePositive(value))));
+                    ctx.mapDouble(arg, value -> Math.log10(ctx.requirePositive(value))));
 
     private static final double LOG_2 = Math.log(2);
 
@@ -102,7 +101,7 @@ public final class ExponentialFunctions {
             .inCategory(LOGARITHMIC)
             .takingUnary()
             .implementedBy((arg, ctx) ->
-                    ctx.applyWithBroadcasting(arg, value -> Math.log(ctx.requirePositive(value)) / LOG_2));
+                    ctx.mapDouble(arg, value -> Math.log(ctx.requirePositive(value)) / LOG_2));
 
     /**
      * Logarithm with arbitrary base
@@ -115,8 +114,8 @@ public final class ExponentialFunctions {
             .takingBinary()
             .withBroadcasting()
             .implementedBy((first, second, ctx) -> {
-                double x = ctx.toNumber(first).doubleValue();
-                double base = ctx.toNumber(second).doubleValue();
+                double x = ctx.toDouble(first);
+                double base = ctx.toDouble(second);
                 double validX = ctx.requirePositive(x);
                 double validBase = ctx.requirePositive(base);
 
@@ -141,7 +140,7 @@ public final class ExponentialFunctions {
             .inCategory(LOGARITHMIC)
             .takingUnary()
             .implementedBy((arg, ctx) ->
-                    ctx.applyWithBroadcasting(arg, value -> Math.log1p(ctx.requireInRange(value, -0.999999999, Double.MAX_VALUE))));
+                    ctx.mapDouble(arg, value -> Math.log1p(ctx.requireInRange(value, -0.999999999, Double.MAX_VALUE))));
 
     // ==================== Power and Root Functions ====================
 
@@ -155,7 +154,7 @@ public final class ExponentialFunctions {
             .inCategory(EXPONENTIAL)
             .takingUnary()
             .implementedBy((arg, ctx) ->
-                    ctx.applyWithBroadcasting(arg, value -> Math.sqrt(ctx.requireNonNegative(value))));
+                    ctx.mapMagnitude(arg, value -> Math.sqrt(ctx.requireNonNegative(value))));
 
     /**
      * Cube root
@@ -166,7 +165,7 @@ public final class ExponentialFunctions {
             .withParams("x")
             .inCategory(EXPONENTIAL)
             .takingUnary()
-            .implementedByDouble(Math::cbrt);
+            .implementedByMagnitude(Math::cbrt);
 
     /**
      * nth root
@@ -179,8 +178,8 @@ public final class ExponentialFunctions {
             .takingBinary()
             .withBroadcasting()
             .implementedBy((first, second, ctx) -> {
-                double x = ctx.toNumber(first).doubleValue();
-                double n = ctx.toNumber(second).doubleValue();
+                double x = ctx.toDouble(first);
+                double n = ctx.toDouble(second);
                 // Prevent even roots of negative numbers
                 if (x < 0 && n == Math.floor(n) && !Double.isInfinite(n)) {
                     long nInt = (long) n;
@@ -205,7 +204,7 @@ public final class ExponentialFunctions {
             .inCategory(EXPONENTIAL)
             .takingBinary()
             .withBroadcasting()
-            .implementedBy((base, exp, ctx) -> NumericOperations.applyPower(base, exp, false));
+            .implementedBy((base, exp, ctx) -> base.power(exp));
 
     // ==================== All Functions ====================
 

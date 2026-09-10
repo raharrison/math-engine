@@ -1,0 +1,113 @@
+{
+    "category": "Functions: higher order",
+    "description": "Functions that take a function: map, filter and reduce over vectors and matrices.",
+    "tests": [
+        {
+            "id": "compose_001",
+            "input": "f := x -> x + 1; g := x -> x * 2; g(f(5))",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Function composition"
+        },
+        {
+            "id": "compose_002",
+            "input": "f := x -> x^2; g := x -> x + 1; f(g(3))",
+            "expected": 16,
+            "expectedType": "NodeRational",
+            "notes": "Square of (x+1)"
+        },
+        {
+            "id": "filter_001",
+            "input": "filter(x -> x > 3, {1, 2, 3, 4, 5})",
+            "expected": [
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Filter greater than 3"
+        },
+        {
+            "id": "filter_002",
+            "input": "filter(x -> x mod 2 == 0, 1..10)",
+            "expected": [
+                2,
+                4,
+                6,
+                8,
+                10
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Filter even numbers"
+        },
+        {
+            "id": "filter_003",
+            "input": "filter(x -> x mod 2 != 0, 1..10)",
+            "expected": [
+                1,
+                3,
+                5,
+                7,
+                9
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Filter odd numbers"
+        },
+        {
+            "id": "map_001",
+            "input": "map(x -> x * 2, {1, 2, 3})",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Map with lambda"
+        },
+        {
+            "id": "map_002",
+            "input": "map(x -> x^2, {1, 2, 3, 4})",
+            "expected": [
+                1,
+                4,
+                9,
+                16
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Map square"
+        },
+        {
+            "id": "map_003",
+            "input": "map(x -> x + 10, 1..5)",
+            "expected": [
+                11,
+                12,
+                13,
+                14,
+                15
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Map on range"
+        },
+        {
+            "id": "reduce_001",
+            "input": "reduce((acc, x) -> acc + x, {1, 2, 3, 4, 5}, 0)",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Reduce sum"
+        },
+        {
+            "id": "reduce_002",
+            "input": "reduce((acc, x) -> acc * x, {1, 2, 3, 4, 5}, 1)",
+            "expected": 120,
+            "expectedType": "NodeRational",
+            "notes": "Reduce product"
+        },
+        {
+            "id": "reduce_003",
+            "input": "reduce((a, b) -> if(a > b, a, b), {3, 1, 4, 1, 5, 9}, 0)",
+            "expected": 9,
+            "expectedType": "NodeRational",
+            "notes": "Reduce max"
+        }
+    ]
+}

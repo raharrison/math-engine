@@ -1,7 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
-import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,44 +74,7 @@ public final class NodeMatrix extends NodeConstant {
 
     @Override
     public double doubleValue() {
-        throw new UnsupportedOperationException("Cannot convert matrix to double");
-    }
-
-    // ==================== Universal Arithmetic ====================
-
-    @Override
-    public NodeConstant add(NodeConstant other) {
-        return BroadcastingEngine.applyBinary(this, other, NodeConstant::add);
-    }
-
-    @Override
-    public NodeConstant subtract(NodeConstant other) {
-        return BroadcastingEngine.applyBinary(this, other, NodeConstant::subtract);
-    }
-
-    @Override
-    public NodeConstant multiply(NodeConstant other) {
-        return BroadcastingEngine.applyBinary(this, other, NodeConstant::multiply);
-    }
-
-    @Override
-    public NodeConstant divide(NodeConstant other) {
-        return BroadcastingEngine.applyBinary(this, other, NodeConstant::divide);
-    }
-
-    @Override
-    public NodeConstant power(NodeConstant other) {
-        return BroadcastingEngine.applyBinary(this, other, NodeConstant::power);
-    }
-
-    @Override
-    public NodeConstant negate() {
-        return BroadcastingEngine.applyUnary(this, NodeConstant::negate);
-    }
-
-    @Override
-    public int compareTo(NodeConstant other) {
-        throw new TypeError("Cannot compare matrices with ordering operators");
+        throw new TypeError("Cannot use a matrix as a number");
     }
 
     @Override
@@ -120,17 +82,18 @@ public final class NodeMatrix extends NodeConstant {
         return "matrix";
     }
 
+    /**
+     * Semicolon syntax, matching both the literal syntax and {@code StringNodeFormatter}.
+     */
     @Override
     public String toString() {
         var sb = new StringBuilder("[");
         for (int i = 0; i < elements.length; i++) {
-            if (i > 0) sb.append(", ");
-            sb.append("[");
+            if (i > 0) sb.append("; ");
             for (int j = 0; j < elements[i].length; j++) {
                 if (j > 0) sb.append(", ");
                 sb.append(elements[i][j].toString());
             }
-            sb.append("]");
         }
         sb.append("]");
         return sb.toString();

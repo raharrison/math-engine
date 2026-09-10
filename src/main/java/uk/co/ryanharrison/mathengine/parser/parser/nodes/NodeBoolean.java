@@ -28,12 +28,12 @@ public final class NodeBoolean extends NodeNumber {
 
     @Override
     public NodeNumber negate() {
-        return new NodeDouble(value ? -1.0 : 0.0);
+        return new NodeRational(value ? -1 : 0);
     }
 
     @Override
     public NodeNumber abs() {
-        return new NodeDouble(value ? 1.0 : 0.0);
+        return new NodeRational(value ? 1 : 0);
     }
 
     /**

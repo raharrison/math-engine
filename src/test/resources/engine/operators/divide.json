@@ -1,0 +1,899 @@
+{
+    "category": "Operator: / (division)",
+    "description": "Division across every operand type, including the cases where a unit cancels and where exactness is lost.",
+    "tests": [
+        {
+            "id": "div_003",
+            "input": "0 / 5",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Zero divided by non-zero"
+        },
+        {
+            "id": "div_005",
+            "input": "-12 / 4",
+            "expected": -3,
+            "expectedType": "NodeRational",
+            "notes": "Negative dividend"
+        },
+        {
+            "id": "div_006",
+            "input": "12 / -4",
+            "expected": -3,
+            "expectedType": "NodeRational",
+            "notes": "Negative divisor"
+        },
+        {
+            "id": "div_007",
+            "input": "-12 / -4",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Both negative"
+        },
+        {
+            "id": "divide_types_boolean_boolean",
+            "input": "(true) / (true)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Boolean divides a boolean"
+        },
+        {
+            "id": "divide_types_boolean_double",
+            "input": "(true) / (2.5d)",
+            "expected": 0.4,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean divides a double"
+        },
+        {
+            "id": "divide_types_boolean_matrix",
+            "input": "(true) / ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    "1/2"
+                ],
+                [
+                    "1/3",
+                    "1/4"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Boolean divides a matrix"
+        },
+        {
+            "id": "divide_types_boolean_percent",
+            "input": "(true) / (20%)",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean divides a percent"
+        },
+        {
+            "id": "divide_types_boolean_range",
+            "input": "(true) / (1..2)",
+            "expected": [
+                1,
+                "1/2"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean divides a range"
+        },
+        {
+            "id": "divide_types_boolean_rational",
+            "input": "(true) / (3)",
+            "expected": "1/3",
+            "expectedType": "NodeRational",
+            "notes": "Boolean divides a rational"
+        },
+        {
+            "id": "divide_types_boolean_string",
+            "input": "(true) / (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Boolean divides a string is not defined"
+        },
+        {
+            "id": "divide_types_boolean_unit",
+            "input": "(true) / (4 meters)",
+            "expected": "0.25 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A boolean over a quantity divides the magnitude and keeps the label"
+        },
+        {
+            "id": "divide_types_boolean_vector",
+            "input": "(true) / ({1, 2})",
+            "expected": [
+                1,
+                "1/2"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean divides a vector"
+        },
+        {
+            "id": "divide_types_double_boolean",
+            "input": "(2.5d) / (true)",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double divides a boolean"
+        },
+        {
+            "id": "divide_types_double_double",
+            "input": "(2.5d) / (2.5d)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Double divides a double"
+        },
+        {
+            "id": "divide_types_double_matrix",
+            "input": "(2.5d) / ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    2.5,
+                    1.25
+                ],
+                [
+                    0.8333333333333334,
+                    0.625
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Double divides a matrix"
+        },
+        {
+            "id": "divide_types_double_percent",
+            "input": "(2.5d) / (20%)",
+            "expected": 12.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double divides a percent"
+        },
+        {
+            "id": "divide_types_double_range",
+            "input": "(2.5d) / (1..2)",
+            "expected": [
+                2.5,
+                1.25
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double divides a range"
+        },
+        {
+            "id": "divide_types_double_rational",
+            "input": "(2.5d) / (3)",
+            "expected": 0.8333333333333334,
+            "expectedType": "NodeDouble",
+            "notes": "Double divides a rational"
+        },
+        {
+            "id": "divide_types_double_string",
+            "input": "(2.5d) / (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Double divides a string is not defined"
+        },
+        {
+            "id": "divide_types_double_unit",
+            "input": "(2.5d) / (4 meters)",
+            "expected": "0.625 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A double over a quantity divides the magnitude and keeps the label"
+        },
+        {
+            "id": "divide_types_double_vector",
+            "input": "(2.5d) / ({1, 2})",
+            "expected": [
+                2.5,
+                1.25
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double divides a vector"
+        },
+        {
+            "id": "divide_types_matrix_boolean",
+            "input": "([1, 2; 3, 4]) / (true)",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix divides a boolean"
+        },
+        {
+            "id": "divide_types_matrix_double",
+            "input": "([1, 2; 3, 4]) / (2.5d)",
+            "expected": [
+                [
+                    0.4,
+                    0.8
+                ],
+                [
+                    1.2,
+                    1.6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix divides a double"
+        },
+        {
+            "id": "divide_types_matrix_matrix",
+            "input": "([1, 2; 3, 4]) / ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    1
+                ],
+                [
+                    1,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix divides a matrix"
+        },
+        {
+            "id": "divide_types_matrix_percent",
+            "input": "([1, 2; 3, 4]) / (20%)",
+            "expected": [
+                [
+                    5.0,
+                    10.0
+                ],
+                [
+                    15.0,
+                    20.0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix divides a percent"
+        },
+        {
+            "id": "divide_types_matrix_range",
+            "input": "([1, 2; 3, 4]) / (1..2)",
+            "expected": [
+                [
+                    1,
+                    1
+                ],
+                [
+                    3,
+                    2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix divides a range"
+        },
+        {
+            "id": "divide_types_matrix_rational",
+            "input": "([1, 2; 3, 4]) / (3)",
+            "expected": [
+                [
+                    "1/3",
+                    "2/3"
+                ],
+                [
+                    1,
+                    "4/3"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix divides a rational"
+        },
+        {
+            "id": "divide_types_matrix_string",
+            "input": "([1, 2; 3, 4]) / (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix divides a string is not defined"
+        },
+        {
+            "id": "divide_types_matrix_unit",
+            "input": "([1, 2; 3, 4]) / (4 meters)",
+            "expected": [
+                [
+                    0.25,
+                    0.5
+                ],
+                [
+                    0.75,
+                    1.0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix divides a unit"
+        },
+        {
+            "id": "divide_types_matrix_vector",
+            "input": "([1, 2; 3, 4]) / ({1, 2})",
+            "expected": [
+                [
+                    1,
+                    1
+                ],
+                [
+                    3,
+                    2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix divides a vector"
+        },
+        {
+            "id": "divide_types_percent_boolean",
+            "input": "(20%) / (true)",
+            "expected": "20.0%",
+            "expectedType": "NodePercent",
+            "notes": "Percent divides a boolean"
+        },
+        {
+            "id": "divide_types_percent_double",
+            "input": "(20%) / (2.5d)",
+            "expected": "8.0%",
+            "expectedType": "NodePercent",
+            "notes": "Percent divides a double"
+        },
+        {
+            "id": "divide_types_percent_matrix",
+            "input": "(20%) / ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "20.0%",
+                    "10.0%"
+                ],
+                [
+                    "6.666666666666667%",
+                    "5.0%"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Percent divides a matrix"
+        },
+        {
+            "id": "divide_types_percent_percent",
+            "input": "(20%) / (20%)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent divides a percent"
+        },
+        {
+            "id": "divide_types_percent_range",
+            "input": "(20%) / (1..2)",
+            "expected": [
+                "20.0%",
+                "10.0%"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent divides a range"
+        },
+        {
+            "id": "divide_types_percent_rational",
+            "input": "(20%) / (3)",
+            "expected": "6.666666666666667%",
+            "expectedType": "NodePercent",
+            "notes": "Percent divides a rational"
+        },
+        {
+            "id": "divide_types_percent_string",
+            "input": "(20%) / (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Percent divides a string is not defined"
+        },
+        {
+            "id": "divide_types_percent_unit",
+            "input": "(20%) / (4 meters)",
+            "expected": "0.05 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A percentage over a quantity divides the magnitude and keeps the label"
+        },
+        {
+            "id": "divide_types_percent_vector",
+            "input": "(20%) / ({1, 2})",
+            "expected": [
+                "20.0%",
+                "10.0%"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent divides a vector"
+        },
+        {
+            "id": "divide_types_range_boolean",
+            "input": "(1..2) / (true)",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range divides a boolean"
+        },
+        {
+            "id": "divide_types_range_double",
+            "input": "(1..2) / (2.5d)",
+            "expected": [
+                0.4,
+                0.8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range divides a double"
+        },
+        {
+            "id": "divide_types_range_matrix",
+            "input": "(1..2) / ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    1
+                ],
+                [
+                    "1/3",
+                    "1/2"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Range divides a matrix"
+        },
+        {
+            "id": "divide_types_range_percent",
+            "input": "(1..2) / (20%)",
+            "expected": [
+                5.0,
+                10.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range divides a percent"
+        },
+        {
+            "id": "divide_types_range_range",
+            "input": "(1..2) / (1..2)",
+            "expected": [
+                1,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range divides a range"
+        },
+        {
+            "id": "divide_types_range_rational",
+            "input": "(1..2) / (3)",
+            "expected": [
+                "1/3",
+                "2/3"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range divides a rational"
+        },
+        {
+            "id": "divide_types_range_string",
+            "input": "(1..2) / (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range divides a string is not defined"
+        },
+        {
+            "id": "divide_types_range_unit",
+            "input": "(1..2) / (4 meters)",
+            "expected": [
+                0.25,
+                0.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range divides a unit"
+        },
+        {
+            "id": "divide_types_range_vector",
+            "input": "(1..2) / ({1, 2})",
+            "expected": [
+                1,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range divides a vector"
+        },
+        {
+            "id": "divide_types_rational_boolean",
+            "input": "(3) / (true)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Rational divides a boolean"
+        },
+        {
+            "id": "divide_types_rational_double",
+            "input": "(3) / (2.5d)",
+            "expected": 1.2,
+            "expectedType": "NodeDouble",
+            "notes": "Rational divides a double"
+        },
+        {
+            "id": "divide_types_rational_matrix",
+            "input": "(3) / ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    3,
+                    "3/2"
+                ],
+                [
+                    1,
+                    "3/4"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Rational divides a matrix"
+        },
+        {
+            "id": "divide_types_rational_percent",
+            "input": "(3) / (20%)",
+            "expected": 15.0,
+            "expectedType": "NodeDouble",
+            "notes": "Rational divides a percent"
+        },
+        {
+            "id": "divide_types_rational_range",
+            "input": "(3) / (1..2)",
+            "expected": [
+                3,
+                "3/2"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational divides a range"
+        },
+        {
+            "id": "divide_types_rational_rational",
+            "input": "(3) / (3)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Rational divides a rational"
+        },
+        {
+            "id": "divide_types_rational_string",
+            "input": "(3) / (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Rational divides a string is not defined"
+        },
+        {
+            "id": "divide_types_rational_unit",
+            "input": "(3) / (4 meters)",
+            "expected": "0.75 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A bare number over a quantity keeps the label, so 1 / x and x ^ -1 agree"
+        },
+        {
+            "id": "divide_types_rational_vector",
+            "input": "(3) / ({1, 2})",
+            "expected": [
+                3,
+                "3/2"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational divides a vector"
+        },
+        {
+            "id": "divide_types_string_boolean",
+            "input": "(\"ab\") / (true)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String divides a boolean is not defined"
+        },
+        {
+            "id": "divide_types_string_double",
+            "input": "(\"ab\") / (2.5d)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String divides a double is not defined"
+        },
+        {
+            "id": "divide_types_string_matrix",
+            "input": "(\"ab\") / ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String divides a matrix is not defined"
+        },
+        {
+            "id": "divide_types_string_percent",
+            "input": "(\"ab\") / (20%)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String divides a percent is not defined"
+        },
+        {
+            "id": "divide_types_string_range",
+            "input": "(\"ab\") / (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String divides a range is not defined"
+        },
+        {
+            "id": "divide_types_string_rational",
+            "input": "(\"ab\") / (3)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String divides a rational is not defined"
+        },
+        {
+            "id": "divide_types_string_string",
+            "input": "(\"ab\") / (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String divides a string is not defined"
+        },
+        {
+            "id": "divide_types_string_unit",
+            "input": "(\"ab\") / (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String divides a unit is not defined"
+        },
+        {
+            "id": "divide_types_string_vector",
+            "input": "(\"ab\") / ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String divides a vector is not defined"
+        },
+        {
+            "id": "divide_types_unit_boolean",
+            "input": "(4 meters) / (true)",
+            "expected": "4.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit divides a boolean"
+        },
+        {
+            "id": "divide_types_unit_double",
+            "input": "(4 meters) / (2.5d)",
+            "expected": "1.6 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit divides a double"
+        },
+        {
+            "id": "divide_types_unit_matrix",
+            "input": "(4 meters) / ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "4.0 meters",
+                    "2.0 meters"
+                ],
+                [
+                    "1.3333333333333333 meters",
+                    "1.0 meter"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Unit divides a matrix"
+        },
+        {
+            "id": "divide_types_unit_percent",
+            "input": "(4 meters) / (20%)",
+            "expected": "20.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit divides a percent"
+        },
+        {
+            "id": "divide_types_unit_range",
+            "input": "(4 meters) / (1..2)",
+            "expected": [
+                "4.0 meters",
+                "2.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit divides a range"
+        },
+        {
+            "id": "divide_types_unit_rational",
+            "input": "(4 meters) / (3)",
+            "expected": "1.3333333333333333 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit divides a rational"
+        },
+        {
+            "id": "divide_types_unit_string",
+            "input": "(4 meters) / (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit divides a string is not defined"
+        },
+        {
+            "id": "divide_types_unit_unit",
+            "input": "(4 meters) / (4 meters)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Unit divides a unit"
+        },
+        {
+            "id": "divide_types_unit_vector",
+            "input": "(4 meters) / ({1, 2})",
+            "expected": [
+                "4.0 meters",
+                "2.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit divides a vector"
+        },
+        {
+            "id": "divide_types_vector_boolean",
+            "input": "({1, 2}) / (true)",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector divides a boolean"
+        },
+        {
+            "id": "divide_types_vector_double",
+            "input": "({1, 2}) / (2.5d)",
+            "expected": [
+                0.4,
+                0.8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector divides a double"
+        },
+        {
+            "id": "divide_types_vector_matrix",
+            "input": "({1, 2}) / ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    1
+                ],
+                [
+                    "1/3",
+                    "1/2"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Vector divides a matrix"
+        },
+        {
+            "id": "divide_types_vector_percent",
+            "input": "({1, 2}) / (20%)",
+            "expected": [
+                5.0,
+                10.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector divides a percent"
+        },
+        {
+            "id": "divide_types_vector_range",
+            "input": "({1, 2}) / (1..2)",
+            "expected": [
+                1,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector divides a range"
+        },
+        {
+            "id": "divide_types_vector_rational",
+            "input": "({1, 2}) / (3)",
+            "expected": [
+                "1/3",
+                "2/3"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector divides a rational"
+        },
+        {
+            "id": "divide_types_vector_string",
+            "input": "({1, 2}) / (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector divides a string is not defined"
+        },
+        {
+            "id": "divide_types_vector_unit",
+            "input": "({1, 2}) / (4 meters)",
+            "expected": [
+                0.25,
+                0.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector divides a unit"
+        },
+        {
+            "id": "divide_types_vector_vector",
+            "input": "({1, 2}) / ({1, 2})",
+            "expected": [
+                1,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector divides a vector"
+        },
+        {
+            "id": "matrix_010",
+            "input": "[10, 20; 30, 40] / 10",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar division"
+        },
+        {
+            "id": "matrix_div_001",
+            "input": "[[10, 20], [30, 40]] / [[2, 4], [5, 8]]",
+            "expected": [
+                [
+                    5,
+                    5
+                ],
+                [
+                    6,
+                    5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise division"
+        },
+        {
+            "id": "matrix_div_002",
+            "input": "[[10, 20], [30, 40]] / 10",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar division"
+        },
+        {
+            "id": "vector_007",
+            "input": "{6, 8} / {2, 4}",
+            "expected": [
+                3,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise division"
+        },
+        {
+            "id": "vector_013",
+            "input": "{1, 2, 3} / 2",
+            "expected": [
+                0.5,
+                1.0,
+                1.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar division"
+        },
+        {
+            "id": "vector_div_001",
+            "input": "{10, 20, 30} / {2, 4, 5}",
+            "expected": [
+                5,
+                5,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise division"
+        },
+        {
+            "id": "vector_div_002",
+            "input": "{10, 20, 30} / 10",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar division"
+        }
+    ]
+}

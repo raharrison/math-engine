@@ -1,0 +1,36 @@
+{
+    "category": "Errors: EvaluationException",
+    "description": "Failures during evaluation that are not a type, domain, arity or name problem, including disabled features and empty aggregates.",
+    "tests": [
+        {
+            "id": "subscript_before_the_start",
+            "input": "{1, 2, 3}[-4]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "A negative index counts from the end, so -4 runs off the front of a three-element vector",
+            "expectedErrorMessage": "out of bounds: -4"
+        },
+        {
+            "id": "subscript_outofbounds_001",
+            "input": "{1, 2, 3}[10]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Vector subscript out of bounds"
+        },
+        {
+            "id": "subscript_outofbounds_002",
+            "input": "{1, 2, 3}[-10]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Negative vector subscript out of bounds"
+        },
+        {
+            "id": "subscript_past_the_end",
+            "input": "{1, 2, 3}[5]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "expectedErrorMessage": "out of bounds",
+            "notes": "An index beyond the last element"
+        }
+    ]
+}

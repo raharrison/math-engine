@@ -563,6 +563,16 @@ public final class TokenScanner {
     // ==================== Identifier Scanning ====================
 
     /**
+     * Reports an over-long identifier, abbreviating it only when there is something to
+     * abbreviate. Cutting blindly at twenty characters used to fail on a short name that
+     * was still over a short configured limit.
+     */
+    private String tooLongMessage(String text) {
+        String shown = text.length() > 20 ? text.substring(0, 20) + "..." : text;
+        return "Identifier '" + shown + "' exceeds maximum allowed length of " + maxIdentifierLength;
+    }
+
+    /**
      * Scans an identifier (keyword, variable, function name).
      */
     private void scanIdentifier() {
@@ -572,7 +582,7 @@ public final class TokenScanner {
 
         // Validate identifier length against configuration limit
         if (text.length() > maxIdentifierLength) {
-            throw scanner.error("Identifier '" + text.substring(0, 20) + "...' exceeds maximum allowed length of " + maxIdentifierLength);
+            throw scanner.error(tooLongMessage(text));
         }
 
         // Don't classify here - just emit as IDENTIFIER
@@ -593,7 +603,7 @@ public final class TokenScanner {
 
         // Validate identifier length
         if (text.length() > maxIdentifierLength) {
-            throw scanner.error("Identifier '" + text.substring(0, 20) + "...' exceeds maximum allowed length of " + maxIdentifierLength);
+            throw scanner.error(tooLongMessage(text));
         }
 
         return text;

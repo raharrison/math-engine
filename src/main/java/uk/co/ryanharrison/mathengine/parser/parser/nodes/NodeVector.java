@@ -1,19 +1,17 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
-import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Node representing a one-dimensional vector (array) of values.
- * Vectors support element-wise operations and can contain any type of node.
+ * A one-dimensional vector. Arithmetic broadcasts element-wise; see {@link NodeArithmetic}.
  */
 public final class NodeVector extends NodeConstant {
 
-    private Node[] elements;
+    private final Node[] elements;
 
     public NodeVector(Node[] elements) {
         this.elements = elements.clone();
@@ -47,31 +45,11 @@ public final class NodeVector extends NodeConstant {
 
     @Override
     public double doubleValue() {
-        throw new UnsupportedOperationException("Cannot convert vector to double");
+        throw new TypeError("Cannot use a vector as a number");
     }
 
     /**
-     * Pad this vector to the specified size by adding zero elements.
-     * Modifies this vector in place.
-     */
-    public void padToSize(int newSize) {
-        if (newSize <= elements.length) {
-            return;
-        }
-
-        var newElements = new Node[newSize];
-        System.arraycopy(elements, 0, newElements, 0, elements.length);
-
-        // Fill remaining with zero
-        for (int i = elements.length; i < newSize; i++) {
-            newElements[i] = new NodeRational(0, 1);
-        }
-
-        elements = newElements;
-    }
-
-    /**
-     * Convert to a list for iteration.
+     * The elements as values, for iteration.
      */
     public List<NodeConstant> toList() {
         var list = new ArrayList<NodeConstant>(elements.length);
@@ -83,43 +61,6 @@ public final class NodeVector extends NodeConstant {
             }
         }
         return list;
-    }
-
-    // ==================== Universal Arithmetic ====================
-
-    @Override
-    public NodeConstant add(NodeConstant other) {
-        return BroadcastingEngine.applyBinary(this, other, NodeConstant::add);
-    }
-
-    @Override
-    public NodeConstant subtract(NodeConstant other) {
-        return BroadcastingEngine.applyBinary(this, other, NodeConstant::subtract);
-    }
-
-    @Override
-    public NodeConstant multiply(NodeConstant other) {
-        return BroadcastingEngine.applyBinary(this, other, NodeConstant::multiply);
-    }
-
-    @Override
-    public NodeConstant divide(NodeConstant other) {
-        return BroadcastingEngine.applyBinary(this, other, NodeConstant::divide);
-    }
-
-    @Override
-    public NodeConstant power(NodeConstant other) {
-        return BroadcastingEngine.applyBinary(this, other, NodeConstant::power);
-    }
-
-    @Override
-    public NodeConstant negate() {
-        return BroadcastingEngine.applyUnary(this, NodeConstant::negate);
-    }
-
-    @Override
-    public int compareTo(NodeConstant other) {
-        throw new TypeError("Cannot compare vectors with ordering operators");
     }
 
     @Override

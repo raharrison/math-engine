@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.function.math;
 
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
@@ -32,7 +33,7 @@ public final class UtilityFunctions {
             .withParams("x")
             .inCategory(UTILITY)
             .takingUnary()
-            .implementedByDouble(MathUtils::fPart);
+            .implementedByMagnitude(MathUtils::fPart);
 
     // ==================== Combinatorial Functions ====================
 
@@ -47,8 +48,8 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBinary()
             .implementedBy((n, r, ctx) -> {
-                double nVal = ctx.toNumber(n).doubleValue();
-                double rVal = ctx.toNumber(r).doubleValue();
+                double nVal = ctx.toDouble(n);
+                double rVal = ctx.toDouble(r);
                 if (rVal < 0 || rVal > nVal) {
                     return new NodeDouble(0);
                 }
@@ -80,11 +81,11 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
-                double start = ctx.toNumber(args.get(0)).doubleValue();
-                double end = ctx.toNumber(args.get(1)).doubleValue();
-                double value = ctx.toNumber(args.get(2)).doubleValue();
+                double start = ctx.toDouble(args.get(0));
+                double end = ctx.toDouble(args.get(1));
+                double value = ctx.toDouble(args.get(2));
                 if (start == end) {
-                    throw new IllegalArgumentException("inverselerp: start and end cannot be equal");
+                    throw new DomainException("inverselerp: start and end cannot be equal");
                 }
                 return new NodeDouble((value - start) / (end - start));
             });
@@ -99,13 +100,13 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(5, 5)
             .implementedByAggregate((args, ctx) -> {
-                double value = ctx.toNumber(args.get(0)).doubleValue();
-                double fromMin = ctx.toNumber(args.get(1)).doubleValue();
-                double fromMax = ctx.toNumber(args.get(2)).doubleValue();
-                double toMin = ctx.toNumber(args.get(3)).doubleValue();
-                double toMax = ctx.toNumber(args.get(4)).doubleValue();
+                double value = ctx.toDouble(args.get(0));
+                double fromMin = ctx.toDouble(args.get(1));
+                double fromMax = ctx.toDouble(args.get(2));
+                double toMin = ctx.toDouble(args.get(3));
+                double toMax = ctx.toDouble(args.get(4));
                 if (fromMin == fromMax) {
-                    throw new IllegalArgumentException("map: source range cannot have zero width");
+                    throw new DomainException("map: source range cannot have zero width");
                 }
                 double t = (value - fromMin) / (fromMax - fromMin);
                 return new NodeDouble(toMin + t * (toMax - toMin));
@@ -121,9 +122,9 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
-                double edge0 = ctx.toNumber(args.get(0)).doubleValue();
-                double edge1 = ctx.toNumber(args.get(1)).doubleValue();
-                double x = ctx.toNumber(args.get(2)).doubleValue();
+                double edge0 = ctx.toDouble(args.get(0));
+                double edge1 = ctx.toDouble(args.get(1));
+                double x = ctx.toDouble(args.get(2));
                 double t = (x - edge0) / (edge1 - edge0);
                 t = Math.max(0, Math.min(1, t));
                 return new NodeDouble(t * t * (3 - 2 * t));
@@ -142,10 +143,10 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(4, 4)
             .implementedByAggregate((args, ctx) -> {
-                double x1 = ctx.toNumber(args.get(0)).doubleValue();
-                double y1 = ctx.toNumber(args.get(1)).doubleValue();
-                double x2 = ctx.toNumber(args.get(2)).doubleValue();
-                double y2 = ctx.toNumber(args.get(3)).doubleValue();
+                double x1 = ctx.toDouble(args.get(0));
+                double y1 = ctx.toDouble(args.get(1));
+                double x2 = ctx.toDouble(args.get(2));
+                double y2 = ctx.toDouble(args.get(3));
                 return new NodeDouble(Math.hypot(x2 - x1, y2 - y1));
             });
 
@@ -160,12 +161,12 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(6, 6)
             .implementedByAggregate((args, ctx) -> {
-                double x1 = ctx.toNumber(args.get(0)).doubleValue();
-                double y1 = ctx.toNumber(args.get(1)).doubleValue();
-                double z1 = ctx.toNumber(args.get(2)).doubleValue();
-                double x2 = ctx.toNumber(args.get(3)).doubleValue();
-                double y2 = ctx.toNumber(args.get(4)).doubleValue();
-                double z2 = ctx.toNumber(args.get(5)).doubleValue();
+                double x1 = ctx.toDouble(args.get(0));
+                double y1 = ctx.toDouble(args.get(1));
+                double z1 = ctx.toDouble(args.get(2));
+                double x2 = ctx.toDouble(args.get(3));
+                double y2 = ctx.toDouble(args.get(4));
+                double z2 = ctx.toDouble(args.get(5));
                 double dx = x2 - x1, dy = y2 - y1, dz = z2 - z1;
                 return new NodeDouble(Math.sqrt(dx * dx + dy * dy + dz * dz));
             });
@@ -180,10 +181,10 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(4, 4)
             .implementedByAggregate((args, ctx) -> {
-                double x1 = ctx.toNumber(args.get(0)).doubleValue();
-                double y1 = ctx.toNumber(args.get(1)).doubleValue();
-                double x2 = ctx.toNumber(args.get(2)).doubleValue();
-                double y2 = ctx.toNumber(args.get(3)).doubleValue();
+                double x1 = ctx.toDouble(args.get(0));
+                double y1 = ctx.toDouble(args.get(1));
+                double x2 = ctx.toDouble(args.get(2));
+                double y2 = ctx.toDouble(args.get(3));
                 return new NodeDouble(Math.abs(x2 - x1) + Math.abs(y2 - y1));
             });
 
@@ -201,9 +202,9 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(2, 3)
             .implementedByAggregate((args, ctx) -> {
-                double a = ctx.toNumber(args.get(0)).doubleValue();
-                double b = ctx.toNumber(args.get(1)).doubleValue();
-                double tolerance = args.size() > 2 ? ctx.toNumber(args.get(2)).doubleValue() : 1e-9;
+                double a = ctx.toDouble(args.get(0));
+                double b = ctx.toDouble(args.get(1));
+                double tolerance = args.size() > 2 ? ctx.toDouble(args.get(2)) : 1e-9;
                 return new NodeBoolean(Math.abs(a - b) <= Math.abs(tolerance));
             });
 
@@ -235,10 +236,10 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(3, 4)
             .implementedByAggregate((args, ctx) -> {
-                double principal = ctx.toNumber(args.get(0)).doubleValue();
-                double rate = ctx.toNumber(args.get(1)).doubleValue();
-                double time = ctx.toNumber(args.get(2)).doubleValue();
-                double n = args.size() > 3 ? ctx.toNumber(args.get(3)).doubleValue() : 1;
+                double principal = ctx.toDouble(args.get(0));
+                double rate = ctx.toDouble(args.get(1));
+                double time = ctx.toDouble(args.get(2));
+                double n = args.size() > 3 ? ctx.toDouble(args.get(3)) : 1;
                 return new NodeDouble(principal * Math.pow(1 + rate / (100 * n), n * time));
             });
 
@@ -254,11 +255,11 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
-                double value = ctx.toNumber(args.get(0)).doubleValue();
-                double min = ctx.toNumber(args.get(1)).doubleValue();
-                double max = ctx.toNumber(args.get(2)).doubleValue();
+                double value = ctx.toDouble(args.get(0));
+                double min = ctx.toDouble(args.get(1));
+                double max = ctx.toDouble(args.get(2));
                 if (min >= max) {
-                    throw new IllegalArgumentException("wrap: min must be less than max");
+                    throw new DomainException("wrap: min must be less than max");
                 }
                 double range = max - min;
                 return new NodeDouble(((value - min) % range + range) % range + min);
@@ -274,11 +275,11 @@ public final class UtilityFunctions {
             .inCategory(UTILITY)
             .takingBetween(3, 3)
             .implementedByAggregate((args, ctx) -> {
-                double value = ctx.toNumber(args.get(0)).doubleValue();
-                double min = ctx.toNumber(args.get(1)).doubleValue();
-                double max = ctx.toNumber(args.get(2)).doubleValue();
+                double value = ctx.toDouble(args.get(0));
+                double min = ctx.toDouble(args.get(1));
+                double max = ctx.toDouble(args.get(2));
                 if (min == max) {
-                    throw new IllegalArgumentException("normalize: min and max cannot be equal");
+                    throw new DomainException("normalize: min and max cannot be equal");
                 }
                 return new NodeDouble((value - min) / (max - min));
             });

@@ -1,0 +1,555 @@
+{
+    "category": "Semantics: units",
+    "description": "Physical quantities under every operation, not only conversion: arithmetic, ordering, aggregation and rounding all have to convert first.",
+    "tests": [
+        {
+            "id": "comparison_with_units_002",
+            "input": "100 mm in cm == 10",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit conversion in equality (mm to cm avoids precision issues)"
+        },
+        {
+            "id": "comparison_with_units_003",
+            "input": "1000 mm == 1 meters",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Direct equality of different units (auto-convert behind scenes)"
+        },
+        {
+            "id": "comparison_with_units_004",
+            "input": "100 cm == 1000 mm",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Direct equality of different units in same family"
+        },
+        {
+            "id": "comparison_with_units_005",
+            "input": "1 km == 1000 m",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Kilometer to meter equality"
+        },
+        {
+            "id": "complex_expr_001_units",
+            "input": "(5 + 3) * 2 meters in centimeters",
+            "expected": "1600.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Complex expression with unit"
+        },
+        {
+            "id": "expression_with_conversion_001",
+            "input": "(100 + 50) meters in centimeters",
+            "expected": "15000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Expression result converted to unit"
+        },
+        {
+            "id": "expression_with_conversion_002",
+            "input": "2 * 50 meters in kilometers",
+            "expected": "0.1 kilometers",
+            "expectedType": "NodeUnit",
+            "notes": "Arithmetic before unit conversion"
+        },
+        {
+            "id": "function_result_001",
+            "input": "sqrt(100) meters in centimeters",
+            "expected": "1000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Function result as unit value"
+        },
+        {
+            "id": "unit_arithmetic_001",
+            "input": "100 meters + 50 meters",
+            "expected": "150.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Adding same units"
+        },
+        {
+            "id": "unit_arithmetic_002",
+            "input": "200 meters - 50 meters",
+            "expected": "150.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Subtracting same units"
+        },
+        {
+            "id": "unit_arithmetic_003",
+            "input": "10 meters * 2",
+            "expected": "20.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Scaling a unit value"
+        },
+        {
+            "id": "unit_arithmetic_004",
+            "input": "100 meters / 2",
+            "expected": "50.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Dividing a unit value"
+        },
+        {
+            "id": "unit_literal_singular_001",
+            "input": "1 meter",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Singular form when value is exactly 1.0"
+        },
+        {
+            "id": "unit_literal_singular_002",
+            "input": "1 foot",
+            "expected": "1.0 foot",
+            "expectedType": "NodeUnit",
+            "notes": "Singular irregular form when value is exactly 1.0"
+        },
+        {
+            "id": "unit_mixed_arithmetic_001",
+            "input": "1000 meters + 500 centimeters in meters",
+            "expected": "1005.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Add different units (auto-convert to first)"
+        },
+        {
+            "id": "units_arithmetic_chain_001",
+            "input": "100 meters + 50 meters - 25 meters",
+            "expected": "125.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Chain arithmetic with units"
+        },
+        {
+            "id": "units_arithmetic_chain_002",
+            "input": "10 meters * 2 / 5",
+            "expected": "4.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Multiply and divide unit value"
+        },
+        {
+            "id": "units_assignment_001",
+            "input": "distance := 100 meters in centimeters; distance",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Assign converted value"
+        },
+        {
+            "id": "units_assignment_002",
+            "input": "temp := 100 celsius in fahrenheit; temp - 32",
+            "expected": "180.0 fahrenheit",
+            "expectedType": "NodeUnit",
+            "notes": "Arithmetic on assigned unit"
+        },
+        {
+            "id": "units_comparison_001",
+            "input": "1000 mm in m == 1",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Compare converted units (avoids floating point issues)"
+        },
+        {
+            "id": "units_comparison_002",
+            "input": "1 kilometer in meters > 999",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than comparison"
+        },
+        {
+            "id": "units_comparison_003",
+            "input": "500 cm == 5 m",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Direct equality of different units (auto-convert)"
+        },
+        {
+            "id": "units_comparison_004",
+            "input": "2000 grams == 2 kg",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Direct equality of mass units"
+        },
+        {
+            "id": "units_comprehension_001",
+            "input": "{x meters in centimeters for x in {10, 20, 30}}",
+            "expected": [
+                1000.0,
+                2000.0,
+                3000.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Comprehension with unit conversion"
+        },
+        {
+            "id": "units_conditional_001",
+            "input": "if(100 meters in centimeters > 5000, 1, 0)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Conditional with unit conversion"
+        },
+        {
+            "id": "units_conditional_002",
+            "input": "temp := 25 celsius; if(temp in fahrenheit > 70, \"hot\", \"cold\")",
+            "expected": "hot",
+            "expectedType": "NodeString",
+            "notes": "Temperature-based conditional"
+        },
+        {
+            "id": "units_convert_vector",
+            "input": "{1 km, 500 meters} in meters",
+            "expected": [
+                "1000.0 meters",
+                "500.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A conversion spreads over a collection of mixed units"
+        },
+        {
+            "id": "units_equality_mixed",
+            "input": "(1 km) == (1000 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Equality converts first, so the same length written two ways is equal"
+        },
+        {
+            "id": "units_expression_001",
+            "input": "(50 + 50) meters + (100 - 50) meters",
+            "expected": "150.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Expressions with units"
+        },
+        {
+            "id": "units_filter_001",
+            "input": "filter(x -> x meters in centimeters > 1500, {10, 20, 30})",
+            "expected": [
+                20,
+                30
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Filter based on converted unit value"
+        },
+        {
+            "id": "units_function_result_001",
+            "input": "abs(-100) meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Function result as unit value"
+        },
+        {
+            "id": "units_in_matrix_001",
+            "input": "[[1, 2], [3, 4]] kilometers in meters",
+            "expected": [
+                [
+                    1000.0,
+                    2000.0
+                ],
+                [
+                    3000.0,
+                    4000.0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix with unit conversion (broadcast)"
+        },
+        {
+            "id": "units_in_vector_001",
+            "input": "{1, 2, 3} kilometers in meters",
+            "expected": [
+                1000.0,
+                2000.0,
+                3000.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector with unit conversion (broadcast)"
+        },
+        {
+            "id": "units_magnitude",
+            "input": "abs(-5 meters)",
+            "expected": "5.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "and the magnitude, which is where a dropped unit would be easy to miss"
+        },
+        {
+            "id": "units_map_001",
+            "input": "map(x -> x meters in centimeters, {10, 20, 30})",
+            "expected": [
+                1000.0,
+                2000.0,
+                3000.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Map function with unit conversions"
+        },
+        {
+            "id": "units_max_mixed",
+            "input": "max({1 km, 900 meters, 1100 meters})",
+            "expected": "1100.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "The largest element keeps the unit it was written in"
+        },
+        {
+            "id": "units_mean_001",
+            "input": "mean({100, 200, 300} meters) in kilometers",
+            "expected": "0.2 kilometers",
+            "expectedType": "NodeUnit",
+            "notes": "Mean of units then convert"
+        },
+        {
+            "id": "units_mean_mixed",
+            "input": "mean({1 km, 1000 meters})",
+            "expected": "1.0 kilometer",
+            "expectedType": "NodeUnit",
+            "notes": "The mean of the same length written two ways is that length"
+        },
+        {
+            "id": "units_mixed_temp_001",
+            "input": "max({0, 100} celsius in fahrenheit)",
+            "expected": "212.0 fahrenheit",
+            "expectedType": "NodeUnit",
+            "notes": "Max of converted temperatures"
+        },
+        {
+            "id": "units_mixed_temp_002",
+            "input": "min({312, 212} fahrenheit in celsius)",
+            "expected": "100.0 celsius",
+            "expectedType": "NodeUnit",
+            "notes": "Min of converted temperatures"
+        },
+        {
+            "id": "units_modulo_like",
+            "input": "(10 meters) mod (3 meters)",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Two lengths divide into one another without changing dimension"
+        },
+        {
+            "id": "units_modulo_mixed",
+            "input": "(1 km) mod (400 meters)",
+            "expected": "0.2 kilometers",
+            "expectedType": "NodeUnit",
+            "tolerance": 1e-09,
+            "notes": "Modulo between two lengths converts and keeps the left unit"
+        },
+        {
+            "id": "units_modulo_scalar_km",
+            "input": "(2.5 km) mod 1",
+            "expected": "0.5 kilometers",
+            "expectedType": "NodeUnit",
+            "notes": "A scalar divisor is read in the quantity's own unit"
+        },
+        {
+            "id": "units_ordering_mixed",
+            "input": "(1 km) >= (1000 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "and ordering agrees with it at the boundary"
+        },
+        {
+            "id": "units_percent_001",
+            "input": "50% of 100 meters",
+            "expected": "50.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Percentage of unit value"
+        },
+        {
+            "id": "units_power_one",
+            "input": "(10 meters) ^ 1",
+            "expected": "10.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "The first power leaves a quantity alone, unit included"
+        },
+        {
+            "id": "units_range_001",
+            "input": "{x meters in centimeters for x in 1..5}",
+            "expected": [
+                100.0,
+                200.0,
+                300.0,
+                400.0,
+                500.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range with unit conversion"
+        },
+        {
+            "id": "units_reciprocal_001",
+            "input": "1 / (10 meters)",
+            "expected": "0.1 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A reciprocal keeps the label, so that 1 / x and x ^ -1 cannot disagree"
+        },
+        {
+            "id": "units_rounding_ceil",
+            "input": "ceil(2.1 meters)",
+            "expected": "3.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "and the ceiling"
+        },
+        {
+            "id": "units_rounding_floor",
+            "input": "floor(2.7 meters)",
+            "expected": "2.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "and so does taking the floor"
+        },
+        {
+            "id": "units_rounding_round",
+            "input": "round(2 meters)",
+            "expected": "2.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Rounding a quantity keeps its unit"
+        },
+        {
+            "id": "units_sort_mixed",
+            "input": "sort({1 km, 500 meters, 2000 meters})",
+            "expected": [
+                "500.0 meters",
+                "1.0 kilometer",
+                "2000.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Sorting orders by the converted magnitude, not by the number as written"
+        },
+        {
+            "id": "units_sqrt_001",
+            "input": "sqrt(100 meters)",
+            "expected": "10.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A root of a quantity keeps the label, as the operators do"
+        },
+        {
+            "id": "units_sum_001",
+            "input": "sum({100, 200, 300} meters)",
+            "expected": "600.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Sum of unit values"
+        },
+        {
+            "id": "units_sum_mixed",
+            "input": "sum({1 km, 500 meters, 250 meters})",
+            "expected": "1.75 kilometers",
+            "expectedType": "NodeUnit",
+            "notes": "Aggregating over mixed units converts to the first one before adding"
+        },
+        {
+            "id": "units_typeof_001",
+            "input": "typeof(100 meters)",
+            "expected": "unit",
+            "expectedType": "NodeString",
+            "notes": "Type of unit value"
+        },
+        {
+            "id": "units_with_lambdas_001",
+            "input": "f := x -> x meters in centimeters; f(100)",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Lambda with unit conversion"
+        },
+        {
+            "id": "units_with_variables_001",
+            "input": "distance := 100 meters; distance in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Variable storing unit value"
+        },
+        {
+            "id": "units_with_variables_002",
+            "input": "d := 100; d meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Variable as numeric value with unit"
+        },
+        {
+            "id": "variable_with_unit_001",
+            "input": "x := 100; x meters in centimeters",
+            "expected": "10000.0 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "Variable value with unit conversion"
+        },
+        {
+            "id": "comparison_mixed_units",
+            "input": "(1 km) > (500 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The operator spelling of the same comparison has to agree"
+        },
+        {
+            "id": "max_km_vs_meters",
+            "input": "max(1 km, 500 meters)",
+            "expected": "1.0 kilometer",
+            "expectedType": "NodeUnit",
+            "notes": "The larger length keeps the unit it was written in"
+        },
+        {
+            "id": "min_argument_order",
+            "input": "min(500 meters, 1 km)",
+            "expected": "500.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Swapping the arguments cannot change which one is smaller"
+        },
+        {
+            "id": "min_km_vs_meters",
+            "input": "min(1 km, 500 meters)",
+            "expected": "500.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "500 metres is the smaller length however each side is written; ordering once compared the bare magnitudes"
+        },
+        {
+            "id": "sort_mixed_units",
+            "input": "sort({1 km, 500 meters})",
+            "expected": [
+                "500.0 meters",
+                "1.0 kilometer"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Sorting converts to compare but leaves each element in its own unit"
+        },
+        {
+            "id": "units_cbrt_keeps_unit",
+            "input": "cbrt(8 meters)",
+            "expected": "2.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A cube root keeps the label, because every root works on the magnitude alone"
+        },
+        {
+            "id": "units_frac_keeps_unit",
+            "input": "frac(2.6 meters)",
+            "expected": "0.6 meters",
+            "expectedType": "NodeUnit",
+            "tolerance": 1e-12,
+            "notes": "A fractional part is still a length, so it keeps the label like floor and round"
+        },
+        {
+            "id": "units_hypot_keeps_unit",
+            "input": "hypot(3 meters, 4 meters)",
+            "expected": "5.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Two lengths give a length, as they do under addition"
+        },
+        {
+            "id": "units_hypot_converts",
+            "input": "hypot(3 meters, 400 cm)",
+            "expected": "5.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "The second quantity is converted into the first's unit before the two meet"
+        },
+        {
+            "id": "units_sqrt_broadcasts",
+            "input": "sqrt({4 meters, 9 meters})",
+            "expected": [
+                "2.0 meters",
+                "3.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Broadcasting reaches each element, and each element keeps its own label"
+        },
+        {
+            "id": "units_log_is_plain",
+            "input": "log(100 meters)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "A logarithm answers a pure number by its nature, so this is where a label is dropped rather than carried"
+        },
+        {
+            "id": "units_sign_is_plain",
+            "input": "sign(-3 meters)",
+            "expected": -1,
+            "expectedType": "NodeRational",
+            "notes": "A sign is a pure number too, so it comes back without a label"
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.function.special;
 
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
@@ -151,7 +152,7 @@ public final class TypeFunctions {
             .inCategory(TYPE)
             .takingUnary()
             .implementedBy((arg, ctx) -> {
-                double val = ctx.toNumber(arg).doubleValue();
+                double val = ctx.toDouble(arg);
                 return new NodeRational((long) (val < 0 ? Math.ceil(val) : Math.floor(val)));
             });
 
@@ -165,7 +166,7 @@ public final class TypeFunctions {
             .withParams("x")
             .inCategory(TYPE)
             .takingUnary()
-            .implementedBy((arg, ctx) -> new NodeDouble(ctx.toNumber(arg).doubleValue()));
+            .implementedBy((arg, ctx) -> new NodeDouble(ctx.toDouble(arg)));
 
     /**
      * Convert to boolean
@@ -193,7 +194,7 @@ public final class TypeFunctions {
                 NodeVector outerVector = ctx.requireVector(arg);
 
                 if (outerVector.size() == 0) {
-                    throw new IllegalArgumentException("tomatrix requires non-empty vector");
+                    throw new DomainException("tomatrix requires non-empty vector");
                 }
 
                 // Convert vector of vectors to matrix
@@ -202,13 +203,13 @@ public final class TypeFunctions {
 
                 for (int i = 0; i < rows.length; i++) {
                     if (!(rows[i] instanceof NodeVector rowVector)) {
-                        throw new IllegalArgumentException("tomatrix requires a vector of vectors, but element " + i + " is not a vector");
+                        throw new DomainException("tomatrix requires a vector of vectors, but element " + i + " is not a vector");
                     }
                     matrixElements[i] = rowVector.getElements();
 
                     // Validate all rows have the same length
                     if (i > 0 && matrixElements[i].length != matrixElements[0].length) {
-                        throw new IllegalArgumentException("tomatrix requires all rows to have the same length, but row 0 has " +
+                        throw new DomainException("tomatrix requires all rows to have the same length, but row 0 has " +
                                 matrixElements[0].length + " elements and row " + i + " has " + matrixElements[i].length + " elements");
                     }
                 }

@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleUnaryOperator;
-import java.util.function.Supplier;
 
 /**
  * Fluent builder for creating {@link MathFunction} definitions with minimal boilerplate.
@@ -28,7 +27,7 @@ import java.util.function.Supplier;
  *     .named("sqrt")
  *     .takingUnary()
  *     .implementedBy((arg, ctx) -> {
- *         double value = ctx.toNumber(arg).doubleValue();
+ *         double value = ctx.toDouble(arg);
  *         ctx.requireNonNegative(value);
  *         return new NodeDouble(Math.sqrt(value));
  *     });
@@ -160,17 +159,32 @@ public final class FunctionBuilder {
      */
     public MathFunction implementedByDouble(DoubleUnaryOperator op) {
         validateUnaryArity();
-        validateMetadata();
 
-        return createMathFunction(() -> (args, ctx) -> {
+        return implementedByAggregate((args, ctx) -> {
             // Safe: arity validated by FunctionExecutor before calling apply()
             NodeConstant arg = args.getFirst();
             if (supportsBroadcasting) {
-                return ctx.applyWithBroadcasting(arg, op);
+                return ctx.mapDouble(arg, op);
             } else {
-                double value = ctx.toNumber(arg).doubleValue();
+                double value = ctx.toDouble(arg);
                 return new NodeDouble(op.applyAsDouble(value));
             }
+        });
+    }
+
+    /**
+     * Creates a unary function from a double operation whose answer is the same kind of
+     * thing as its argument, so a quantity or a percentage keeps its marker.
+     * <p>
+     * Use {@link #implementedByDouble(DoubleUnaryOperator)} for the transforms whose
+     * answer is a pure number, such as a logarithm or a trigonometric ratio.
+     */
+    public MathFunction implementedByMagnitude(DoubleUnaryOperator op) {
+        validateUnaryArity();
+
+        return implementedByAggregate((args, ctx) -> {
+            // Safe: arity validated by FunctionExecutor before calling apply()
+            return ctx.mapMagnitude(args.getFirst(), op);
         });
     }
 
@@ -186,10 +200,9 @@ public final class FunctionBuilder {
      */
     public MathFunction implementedBy(UnaryFunction fn) {
         validateUnaryArity();
-        validateMetadata();
 
         // Safe: arity validated by FunctionExecutor before calling apply()
-        return createMathFunction(() -> (args, ctx) -> {
+        return implementedByAggregate((args, ctx) -> {
             if (supportsBroadcasting) {
                 return BroadcastingEngine.applyUnary(args.getFirst(), v -> fn.apply(v, ctx));
             }
@@ -207,11 +220,10 @@ public final class FunctionBuilder {
      */
     public MathFunction implementedByDouble(DoubleBinaryOperator op) {
         validateBinaryArity();
-        validateMetadata();
 
         BinaryFunction fn = (first, second, ctx) -> {
-            double a = ctx.toNumber(first).doubleValue();
-            double b = ctx.toNumber(second).doubleValue();
+            double a = ctx.toDouble(first);
+            double b = ctx.toDouble(second);
             return new NodeDouble(op.applyAsDouble(a, b));
         };
 
@@ -225,12 +237,11 @@ public final class FunctionBuilder {
      */
     public MathFunction implementedBy(BinaryFunction fn) {
         validateBinaryArity();
-        validateMetadata();
         return createBroadcastingBinaryFunction(fn);
     }
 
     private MathFunction createBroadcastingBinaryFunction(BinaryFunction fn) {
-        return createMathFunction(() -> (args, ctx) -> {
+        return implementedByAggregate((args, ctx) -> {
             // Safe: arity validated by FunctionExecutor before calling apply()
             if (supportsBroadcasting) {
                 return BroadcastingEngine.applyBinary(args.get(0), args.get(1),
@@ -239,16 +250,6 @@ public final class FunctionBuilder {
                 return fn.apply(args.get(0), args.get(1), ctx);
             }
         });
-    }
-
-    // ==================== Implementation - Aggregate ====================
-
-    /**
-     * Creates a variadic or multi-arity function.
-     */
-    public MathFunction implementedByAggregate(AggregateFunction fn) {
-        validateMetadata();
-        return createMathFunction(() -> fn);
     }
 
     // ==================== Typed Parameter Builders ====================
@@ -302,74 +303,39 @@ public final class FunctionBuilder {
         return new TypedTernaryBuilder<>(this, arg1Type, arg2Type, arg3Type);
     }
 
-    // ==================== MathFunction Factory ====================
+    // ==================== Assembly ====================
 
-    MathFunction createMathFunction(Supplier<AggregateFunction> fnSupplier) {
-        final String finalName = this.name;
-        final String finalDescription = this.description != null ? this.description : this.name + " function";
-        final MathFunction.Category finalCategory = this.category;
-        final List<String> finalAliases = List.copyOf(this.aliases);
-        final List<List<String>> finalParamSets = List.copyOf(this.parameterSets);
-        final int finalMinArity = this.minArity;
-        final int finalMaxArity = this.maxArity;
-        final boolean finalSupportsBroadcasting = this.supportsBroadcasting;
-        final AggregateFunction finalFn = fnSupplier.get();
-
-        return new MathFunction() {
-            @Override
-            public String name() {
-                return finalName;
-            }
-
-            @Override
-            public List<String> aliases() {
-                return finalAliases;
-            }
-
-            @Override
-            public String description() {
-                return finalDescription;
-            }
-
-            @Override
-            public List<List<String>> parameterSets() {
-                return finalParamSets;
-            }
-
-            @Override
-            public int minArity() {
-                return finalMinArity;
-            }
-
-            @Override
-            public int maxArity() {
-                return finalMaxArity;
-            }
-
-            @Override
-            public MathFunction.Category category() {
-                return finalCategory;
-            }
-
-            @Override
-            public boolean supportsVectorBroadcasting() {
-                return finalSupportsBroadcasting;
-            }
-
-            @Override
-            public NodeConstant apply(List<NodeConstant> args, FunctionContext ctx) {
-                return finalFn.apply(args, ctx);
-            }
-        };
+    /**
+     * Creates a function whose arguments are evaluated before the body runs.
+     */
+    public MathFunction implementedByAggregate(AggregateFunction fn) {
+        return BuiltinFunction.eager(metadata(), fn);
     }
 
-    // ==================== Validation ====================
+    /**
+     * Creates a function that receives unevaluated argument nodes plus an evaluator,
+     * so it can skip arguments it does not need. See {@link LazyFunction}.
+     */
+    public MathFunction implementedByLazy(LazyFunction.Body fn) {
+        return BuiltinFunction.lazy(metadata(), fn);
+    }
 
-    void validateMetadata() {
+    BuiltinFunction.Metadata metadata() {
         if (name == null || name.isBlank()) {
             throw new IllegalStateException("Function name is required");
         }
+        return new BuiltinFunction.Metadata(
+                name,
+                List.copyOf(aliases),
+                description != null ? description : name + " function",
+                List.copyOf(parameterSets),
+                category,
+                minArity,
+                maxArity,
+                supportsBroadcasting);
     }
+
+    // ==================== Validation ====================
 
     private void validateUnaryArity() {
         if (minArity != 1 || maxArity != 1) {

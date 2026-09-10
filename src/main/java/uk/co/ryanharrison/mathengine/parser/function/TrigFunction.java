@@ -49,9 +49,9 @@ public final class TrigFunction {
                 .withParams("x")
                 .inCategory(MathFunction.Category.TRIGONOMETRIC)
                 .takingUnary()
-                .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
+                .noBroadcasting() // broadcasts internally via ctx.mapDouble()
                 .implementedBy((arg, ctx) ->
-                        ctx.applyWithBroadcasting(arg, value ->
+                        ctx.mapDouble(arg, value ->
                                 fn.applyAsDouble(ctx.toRadians(value))));
     }
 
@@ -73,9 +73,9 @@ public final class TrigFunction {
                 .withParams("x")
                 .inCategory(MathFunction.Category.TRIGONOMETRIC)
                 .takingUnary()
-                .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
+                .noBroadcasting() // broadcasts internally via ctx.mapDouble()
                 .implementedBy((arg, ctx) ->
-                        ctx.applyWithBroadcasting(arg, value ->
+                        ctx.mapDouble(arg, value ->
                                 ctx.fromRadians(fn.applyAsDouble(value))));
     }
 }

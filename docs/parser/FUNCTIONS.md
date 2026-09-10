@@ -141,7 +141,7 @@ MathFunction det = FunctionBuilder
     .takingTyped(ArgTypes.matrix())
     .implementedBy((matrix, ctx) -> {
         ctx.requireSquareMatrix(matrix);
-        return new NodeDouble(ctx.toMatrix(matrix).determinant());
+        return MatrixOperations.determinant(matrix);
     });
 
 // Binary typed
@@ -203,25 +203,17 @@ MathFunction sin = FunctionBuilder
     .takingUnary()
     .noBroadcasting()  // broadcasts internally
     .implementedBy((arg, ctx) ->
-        ctx.applyWithBroadcasting(arg, value ->
+            ctx.mapDouble(arg, value ->
             Math.sin(ctx.toRadians(value))));
 
-// Binary with broadcasting
+// Binary with broadcasting. Exactness, units and percentages are the
+// value arithmetic's job, so the body stays a delegation.
 MathFunction pow = FunctionBuilder
     .named("pow")
     .describedAs("Power function")
     .inCategory(EXPONENTIAL)
     .takingBinary()
-    .implementedBy((base, exp, ctx) -> {
-        double baseVal = ctx.toNumber(base).doubleValue();
-        double expVal = ctx.toNumber(exp).doubleValue();
-        if (base instanceof NodeRational baseRat) {
-            if (expVal == Math.floor(expVal) && !Double.isInfinite(expVal)) {
-                return new NodeRational(baseRat.getValue().pow((int) expVal));
-            }
-        }
-        return new NodeDouble(Math.pow(baseVal, expVal));
-    });
+        .implementedBy((base, exp, ctx) -> base.power(exp));
 ```
 
 ### Level 3: Aggregate (`implementedByAggregate`)
@@ -258,7 +250,7 @@ MathFunction atan = TrigFunction.inverse("atan", "Arctangent", Math::atan);
 ```
 
 Internally these use `FunctionBuilder` with `noBroadcasting()` and broadcast manually via
-`FunctionContext.applyWithBroadcasting()`.
+`FunctionContext.mapDouble()`.
 
 ---
 
@@ -271,10 +263,13 @@ Provides utilities to function implementations. Every context knows its function
 ### Error Reporting
 
 ```java
-// Creates IllegalArgumentException with function name prepended
+// Creates a DomainException with the function name prepended
 throw ctx.error("requires positive value, got: " + value);
 // -> "sqrt: requires positive value, got: -1.0"
 ```
+
+Under `silentValidation`, a `DomainException` becomes NaN instead of propagating.
+Nothing else is swallowed, so a genuine bug inside a function still surfaces.
 
 ### Domain Validation
 
@@ -289,6 +284,7 @@ ctx.requireInRange(value, min, max); // min <= value <= max
 
 ```java
 NodeNumber num = ctx.toNumber(node);     // any numeric -> NodeNumber
+double d = ctx.toDouble(node);           // any numeric -> double
 boolean b = ctx.toBoolean(node);         // numeric -> truthy/falsy
 int i = ctx.requireInteger(node);        // validates no fractional part
 long l = ctx.requireLong(node);          // validates no fractional part
@@ -306,12 +302,44 @@ double angle = ctx.fromRadians(rad);  // radians -> context unit
 
 ### Broadcasting
 
-```java
-// Apply double operation with broadcasting over vectors/matrices
-ctx.applyWithBroadcasting(arg, Math::sqrt);
+Two element-wise helpers, and choosing between them is the whole decision about what your
+function does to a quantity or a percentage.
 
-// Apply with type preservation (rationals stay rational)
-ctx.applyWithTypePreservation(arg, BigRational::negate, x -> -x);
+```java
+// The answer is a pure number, so a unit or a percentage marker is dropped.
+// This is what a logarithm, an exponential or a trigonometric ratio wants.
+ctx.mapDouble(arg, Math::log);
+
+// The answer is the same kind of thing as the argument, so the marker rides along:
+// sqrt(100 meters) is 10 meters and sqrt(4%) is 20%.
+ctx.
+
+mapMagnitude(arg, Math::sqrt);
+
+// The two-argument form takes the marker from whichever side carries one, the left
+// first, and converts the right into the left's unit before the two meet.
+ctx.
+
+mapMagnitude(x, y, Math::hypot);
+```
+
+`FunctionBuilder` has the same pair as one-liners: `implementedByDouble` for a pure
+number and `implementedByMagnitude` for a marker-preserving transform.
+
+When you want to keep exactness as well as the marker, use the operations on the value
+itself. They preserve units, percentages and exact rationals, and broadcast:
+
+```java
+arg.negate();
+arg.
+
+floor();
+arg.
+
+abs();
+left.
+
+multiply(right);
 ```
 
 ### Collection Operations
@@ -322,10 +350,15 @@ List<NodeConstant> flat = ctx.flattenArguments(args);
 double[] values = ctx.flattenToDoubles(args);
 double[] arr = ctx.toDoubleArray(vector);
 
-// Matrix conversions
+// Matrix conversions, for reaching the linearalgebra package
 Matrix m = ctx.toMatrix(nodeMatrix);
 NodeMatrix nm = ctx.fromMatrix(matrix);
 ```
+
+These conversions read every element as a `double`, so anything that goes through them
+comes back inexact. Where the operation can be written in terms of `NodeConstant`
+arithmetic, write it that way instead: `MatrixOperations` does, which is why the
+determinant of an integer matrix is an exact integer rather than -1.0000000000000004.
 
 ### Function Calling
 
@@ -546,7 +579,7 @@ typeof(x)        // Get type name
 upper(s)         // Uppercase
 lower(s)         // Lowercase
 trim(s)          // Strip whitespace
-strlen(s)        // String length
+len(s)           // Element or character count
 substring(s,i,j) // Substring
 ```
 
@@ -649,12 +682,14 @@ sqrt([[4,9]])     -> [[2,3]]    (matrix - auto-broadcast)
 ### Manual Broadcasting (Level 2 with `noBroadcasting()`)
 
 Functions that need pre-processing before broadcasting (e.g., angle conversion) disable
-automatic broadcasting and use `FunctionContext.applyWithBroadcasting()`:
+automatic broadcasting and use `FunctionContext.mapDouble()`:
 
 ```java
 .noBroadcasting()
 .implementedBy((arg, ctx) ->
-    ctx.applyWithBroadcasting(arg, value ->
+        ctx.
+
+mapDouble(arg, value ->
         Math.sin(ctx.toRadians(value))));
 ```
 

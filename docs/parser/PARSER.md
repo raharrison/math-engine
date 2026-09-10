@@ -159,45 +159,55 @@ ParseException error(Token token, String message)  // Create exception with cont
 
 **Responsibility:** Parse expressions with correct precedence and associativity
 
-**Complete Precedence Chain** (lowest to highest):
+**Structure:**
 
 ```
-1.  parseExpression()      → Entry point
-2.  parseAssignment()      → x := 5, f(x) := expr
-3.  parseLambda()          → x -> expr
-4.  parseLogicalOr()       → ||, or
-5.  parseLogicalXor()      → xor
-6.  parseLogicalAnd()      → &&, and
-7.  parseEquality()        → ==, !=
-8.  parseRange()           → ..
-9.  parseRelational()      → <, >, <=, >=
-10. parseAdditive()        → +, -
-11. parseMultiplicative()  → *, /, mod, of, @
-12. parseUnary()           → -, +, not
-13. parsePower()           → ^ (right-associative)
-14. parsePostfix()         → !, !!, %, unit conversions
-15. parseCallAndSubscript() → (), []
-16. parsePrimary()         → literals, identifiers, groups
+parseExpression()        → Entry point
+parseAssignment()        → x := 5, f(x) := expr
+parseLambda()            → x -> expr
+parseBinary(precedence)  → every binary operator, by precedence climbing
+parseUnary()             → -, +, not
+parsePower()             → ^ (right-associative)
+parsePostfix()           → !, !!, %
+parseCallAndSubscript()  → (), []
+parsePrimary()           → literals, identifiers, groups
 ```
 
-**Design Pattern:**
+Assignment and lambda come first because they need lookahead and backtracking.
+Everything from logical OR down to multiplication is handled by a single
+precedence-climbing loop, `parseBinary`, which reads its precedences from
+`SymbolRegistry`. Unary and tighter are separate methods, because each has a shape
+that a precedence number cannot describe.
 
-Each precedence level:
+**Precedence table** (loosest to tightest):
 
-1. Parses the next higher precedence level
-2. Loops while finding operators at current level
-3. Builds left-associative tree (except for power and unary)
+| Precedence | Operators                                       |
+|------------|-------------------------------------------------|
+| 2          | `\|\|`, `or`                                    |
+| 3          | `xor`                                           |
+| 4          | `&&`, `and`                                     |
+| 5          | `==`, `!=`                                      |
+| 6          | `<`, `>`, `<=`, `>=`                            |
+| 7          | `..` (range)                                    |
+| 8          | `+`, `-`                                        |
+| 9          | `in`, `to`, `as` (unit conversion)              |
+| 10         | `*`, `/`, `mod`, `of`, `@`                      |
+| 11         | `^` (right-associative, parsed by `parsePower`) |
 
-**Example:**
+Two levels are not plain infix operators, so `parseBinary` handles them inline: a
+range may carry a `step`, and a unit conversion takes a unit name rather than an
+expression.
+
+**Example:** the loop, reduced to its shape.
 
 ```java
-private Node parseAdditive() {
-    Node left = parseMultiplicative();  // Parse higher precedence first
+private Node parseBinary(int minPrecedence) {
+   Node left = parseUnary();
 
-    while (stream.match(TokenType.PLUS, TokenType.MINUS)) {
-        Token op = stream.previous();
-        Node right = parseMultiplicative();  // Parse right side
-        left = new NodeBinary(op, left, right);  // Build tree
+   while (infixPrecedence() >= minPrecedence) {
+      int precedence = infixPrecedence();
+      Token operator = stream.advance();
+      left = new NodeBinary(operator, left, parseBinary(precedence + 1));
     }
 
     return left;
@@ -396,7 +406,7 @@ restorePosition(savepoint);
 
         return
 
-parseLogicalOr();
+parseBinary(LOWEST_BINARY_PRECEDENCE);
 ```
 
 **Why Check at This Level?**
@@ -408,140 +418,55 @@ x ->x +1       // Body is full expression
 x ->y ->x +y  // Nested lambdas (currying)
 ```
 
-### Levels 4-7: Logical Operators
+### Binary Operators: parseBinary()
 
-**Methods:** `parseLogicalOr()`, `parseLogicalXor()`, `parseLogicalAnd()`
+**Method:** `parseBinary(int minPrecedence)`
 
-**Operators:**
-
-- OR: `||`, `or`
-- XOR: `xor`
-- AND: `&&`, `and`
-
-**Pattern (Left-Associative):**
+One loop covers logical OR through multiplication. It parses an operand, then keeps
+consuming operators whose precedence is at least `minPrecedence`, parsing each right
+operand at `precedence + 1` so that equal precedences group to the left.
 
 ```java
-private Node parseLogicalAnd() {
-    Node left = parseEquality();
+private Node parseBinary(int minPrecedence) {
+   Node left = parseUnary();
 
-    while (stream.match(TokenType.AND) ||
-            stream.checkKeyword("and") && stream.match(TokenType.KEYWORD)) {
-        Token op = stream.previous();
-        Node right = parseEquality();
-        left = new NodeBinary(op, left, right);
-    }
-
-    return left;
+   while (true) {
+      int precedence = infixPrecedence();
+      if (precedence < minPrecedence) {
+         return left;
+      }
+      if (precedence == UNIT_CONVERSION_PRECEDENCE) {
+         left = parseUnitConversion(left);
+      } else if (stream.check(TokenType.RANGE)) {
+         left = parseRangeTail(left, precedence);
+      } else {
+         Token operator = stream.advance();
+         left = new NodeBinary(operator, left, parseBinary(precedence + 1));
+      }
+   }
 }
 ```
 
-**Why Two Checks for 'and'?**
-
-Keywords are tokenized as KEYWORD, but operator is identified by lexeme:
-
-- `stream.checkKeyword("and")` - verifies it's the "and" keyword
-- `stream.match(TokenType.KEYWORD)` - consumes the token
-
-### Level 8: Equality
-
-**Method:** `parseEquality()`
-
-**Operators:** `==`, `!=`
-
 **Examples:**
 
 ```
-x == 5           → Binary(==, Variable(x), Rational(5))
-x != y           → Binary(!=, Variable(x), Variable(y))
-a == b == c      → Binary(==, Binary(==, a, b), c)  [left-associative]
+2 + 3 * 4        → Binary(+, 2, Binary(*, 3, 4))
+10 - 5 - 2       → Binary(-, Binary(-, 10, 5), 2)      [left-associative]
+a == b == c      → Binary(==, Binary(==, a, b), c)     [left-associative]
+20 / 4 / 2       → Binary(/, Binary(/, 20, 4), 2)
+A @ B            → Binary(@, A, B)                     [matrix multiplication]
+50% of 100       → Binary(of, Percent(50), 100)
 ```
 
-### Level 9: Range
+**Ranges:** `1..10`, `1..10 step 2`, `-10..-5`. The bounds are parsed one level
+tighter than the range itself, which is why the leading minus in `-10..-5` binds to
+the number rather than to the range.
 
-**Method:** `parseRange()`
-
-**Operators:** `..`, `.. step`
-
-**Syntax:**
-
-- Simple range: `1..10`
-- With step: `1..10 step 2`
-- Negative: `-10..-5`
-
-**Implementation:**
-
-```java
-private Node parseRange() {
-    Node left = parseRelational();
-
-    if (stream.match(TokenType.RANGE)) {  // RANGE = ".."
-        Node end = parseRelational();  // Same level to support negative ranges
-        Node step = null;
-
-        if (stream.checkKeyword("step")) {
-            stream.advance();
-            step = parseUnary();  // Parse step at unary level
-        }
-
-        return new NodeRangeExpression(left, end, step);
-    }
-
-    return left;
-}
-```
-
-**Why Parse End at Same Level?**
-
-To support negative ranges: `-10..-5`
-
-- First `-10` is parsed as unary minus at higher level
-- Then `..` is matched
-- Then `-5` must be parsed (needs unary minus support)
-
-### Level 10: Relational
-
-**Method:** `parseRelational()`
-
-**Operators:** `<`, `>`, `<=`, `>=`
-
-**Examples:**
-
-```
-x < 5            → Binary(<, Variable(x), Rational(5))
-2 + 3 < 10       → Binary(<, Binary(+, ...), Rational(10))
-```
-
-### Level 11: Additive
-
-**Method:** `parseAdditive()`
-
-**Operators:** `+`, `-`
-
-**Left-Associative:**
-
-```
-10 - 5 - 2  →  Binary(-, Binary(-, 10, 5), 2)  =  (10 - 5) - 2  =  3
-```
-
-### Level 12: Multiplicative
-
-**Method:** `parseMultiplicative()`
-
-**Operators:** `*`, `/`, `@` (matrix multiply), `mod`, `of`
-
-**Examples:**
-
-```
-20 / 4 / 2       → Binary(/, Binary(/, 20, 4), 2)  =  2.5
-2 * 3 mod 5      → Binary(mod, Binary(*, 2, 3), 5)
-50 of 100        → Binary(of, 50, 100)  =  50% of 100
-```
-
-**Matrix Multiply:**
-
-```
-A @ B            → Binary(@, A, B)  [special matrix multiplication]
-```
+**Unit conversion:** `5 km in miles`, and the `to` and `as` spellings. It binds
+tighter than addition and looser than multiplication, so `2 * 3 km in miles`
+converts the product. When the left side is `number * identifier`, as in
+`50m in feet`, the identifier is pinned to a unit so a same-named variable does not
+take priority.
 
 ### Level 13: Unary
 
@@ -1678,26 +1603,25 @@ match(COMMA));
         }
 ```
 
-### 4. Calling Wrong Precedence Level
+### 4. Parsing the Right Operand at the Wrong Level
 
-**Problem:** Breaking precedence chain
+**Problem:** getting associativity backwards.
 
-**Wrong:**
+**Wrong:** parsing the right operand at the same precedence makes the operator
+right-associative, so `10 - 5 - 2` becomes `10 - (5 - 2)`, which is 7.
 
 ```java
-private Node parseAdditive() {
-    Node left = parsePrimary();  // Skipped multiplicative and unary!
-    // ...
-}
+left =new
+
+NodeBinary(operator, left, parseBinary(precedence));
 ```
 
-**Correct:**
+**Correct:** parse it one level tighter, so equal precedences group to the left.
 
 ```java
-private Node parseAdditive() {
-    Node left = parseMultiplicative();  // Call next higher level
-    // ...
-}
+left =new
+
+NodeBinary(operator, left, parseBinary(precedence+1));
 ```
 
 ### 5. Not Handling Empty Collections
@@ -1909,26 +1833,42 @@ void testChainedSubscripts() {
 
 ### Adding a New Binary Operator
 
-1. **Add TokenType** (if needed): Already exists for most operators
-2. **Update Lexer**: Ensure token is generated
-3. **Choose Precedence Level**: Add to appropriate `parse*()` method
-4. **Implement Operator**: In operator package (not parser's job)
+The parser itself needs no change. Register the symbol with a precedence, then
+register the behaviour:
 
-**Example: Adding modulo (`mod`) operator at multiplicative level:**
+1. **Add a `TokenType`** for the operator.
+2. **Describe it in `SymbolRegistry`**: its input symbol or keyword, its display
+   forms, its precedence, and `isBinaryOperator(true)`. `parseBinary` picks it up
+   from there.
+3. **Register the behaviour** in `StandardBinaryOperators`, or pass your own map to
+   `MathEngineConfig.binaryOperators()`.
 
 ```java
-private Node parseMultiplicative() {
-    Node left = parseUnary();
+metadata.put(TokenType.IMPLIES, SymbolMetadata.builder()
+        .
 
-    while (stream.match(MULTIPLY, DIVIDE, AT, MOD) ||  // Add MOD
-            stream.checkKeyword("mod") && stream.match(KEYWORD)) {
-        Token op = stream.previous();
-        Node right = parseUnary();
-        left = new NodeBinary(op, left, right);
-    }
+tokenType(TokenType.IMPLIES)
+        .
 
-    return left;
-}
+inputSymbol("=>")
+        .
+
+displayName("implication")
+        .
+
+stringFormat("=>")
+        .
+
+asciiMathFormat("=>")
+        .
+
+precedence(2)
+        .
+
+isBinaryOperator(true)
+        .
+
+build());
 ```
 
 ### Adding a New Unary Operator

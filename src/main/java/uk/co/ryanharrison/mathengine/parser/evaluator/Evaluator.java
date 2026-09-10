@@ -6,421 +6,243 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.handler.FunctionCallHandle
 import uk.co.ryanharrison.mathengine.parser.evaluator.handler.SubscriptHandler;
 import uk.co.ryanharrison.mathengine.parser.evaluator.handler.VariableResolver;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
-import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
-import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorExecutor;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 /**
- * Evaluates an Abstract Syntax Tree (AST) to produce a result.
+ * Evaluates an Abstract Syntax Tree to produce a value.
  * <p>
- * The evaluator coordinates evaluation by delegating to specialized handlers:
- * <ul>
- *     <li>{@link VariableResolver} - variable resolution and implicit multiplication</li>
- *     <li>{@link SubscriptHandler} - vector and matrix indexing/slicing</li>
- *     <li>{@link FunctionCallHandler} - function calls (built-in, user-defined, lambda)</li>
- *     <li>{@link ComprehensionHandler} - list comprehension evaluation</li>
- * </ul>
- * <p>
- * Operators are executed via the {@link OperatorExecutor} and built-in functions
- * via the {@link FunctionExecutor}.
+ * Evaluation is a pure function of (node, scope): the scope travels as an argument,
+ * so a single evaluator can serve nested calls and independent sessions.
+ * Specialised concerns are delegated to {@link VariableResolver},
+ * {@link SubscriptHandler}, {@link FunctionCallHandler} and {@link ComprehensionHandler}.
  *
- * <h2>Features:</h2>
- * <ul>
- *     <li>Exact rational arithmetic by default (configurable)</li>
- *     <li>Type promotion (Rational → Double when necessary)</li>
- *     <li>Boolean and comparison operations</li>
- *     <li>Variable storage and retrieval</li>
- *     <li>User-defined functions with dynamic scoping</li>
- *     <li>Lambda expressions with lexical scoping</li>
- *     <li>Short-circuit evaluation for logical operators</li>
- *     <li>Lazy evaluation for conditional (if) function</li>
- *     <li>Feature toggles via configuration</li>
- * </ul>
- *
- * <h2>Usage Example:</h2>
- * <pre>{@code
- * // Preferred: Use MathEngine which handles all setup
- * MathEngine engine = MathEngine.create();
- * NodeConstant result = engine.evaluate("2 + 3 * 4");
- * }</pre>
- *
- * @see MathEngineConfig
  * @see uk.co.ryanharrison.mathengine.parser.MathEngine
  */
 public final class Evaluator {
 
     private final MathEngineConfig config;
-    private EvaluationContext context;
+    private final EvaluationContext rootContext;
     private final OperatorExecutor operatorExecutor;
 
-    // Handlers for different evaluation concerns
     private final VariableResolver variableResolver;
     private final SubscriptHandler subscriptHandler;
     private final FunctionCallHandler functionCallHandler;
     private final ComprehensionHandler comprehensionHandler;
 
-    /**
-     * Creates a new evaluator with the given configuration, context, and executors.
-     * <p>
-     * This is the preferred constructor. The executors should be pre-configured
-     * with all required operators and functions.
-     *
-     * @param config           the engine configuration
-     * @param context          the evaluation context for variables and settings
-     * @param operatorExecutor the executor for operators (pre-configured)
-     * @param functionExecutor the executor for built-in functions (pre-configured)
-     */
-    public Evaluator(MathEngineConfig config, EvaluationContext context,
+    public Evaluator(MathEngineConfig config, EvaluationContext rootContext,
                      OperatorExecutor operatorExecutor, FunctionExecutor functionExecutor) {
         this.config = config;
-        this.context = context;
+        this.rootContext = rootContext;
         this.operatorExecutor = operatorExecutor;
 
-        // Initialize handlers with callbacks to this evaluator
         this.variableResolver = new VariableResolver(config);
         this.subscriptHandler = new SubscriptHandler(config, this::evaluate);
-        this.functionCallHandler = new FunctionCallHandler(
-                config,
-                functionExecutor,
-                this::evaluate,
-                this::pushContext,
-                this::popContext
-        );
-        this.comprehensionHandler = new ComprehensionHandler(
-                config,
-                this::evaluate,
-                this::pushContext,
-                this::popContext
-        );
+        this.functionCallHandler = new FunctionCallHandler(config, functionExecutor, this::evaluate);
+        this.comprehensionHandler = new ComprehensionHandler(config, this::evaluate);
     }
 
     /**
-     * Gets the current evaluation context.
-     *
-     * @return the evaluation context
+     * The scope used by {@link #evaluate(Node)}.
      */
     public EvaluationContext getContext() {
-        return context;
+        return rootContext;
     }
 
-    // ==================== Context Management ====================
-
-    /**
-     * Temporarily set a new context for evaluation (used for function calls).
-     * Returns the previous context so it can be restored.
-     */
-    private EvaluationContext pushContext(EvaluationContext newContext) {
-        EvaluationContext old = this.context;
-        this.context = newContext;
-        return old;
+    /** Evaluates a node in the root scope. */
+    public NodeConstant evaluate(Node node) {
+        return evaluate(node, rootContext);
     }
 
     /**
-     * Restore the previous context.
-     */
-    private void popContext(EvaluationContext newContext, EvaluationContext oldContext) {
-        this.context = oldContext;
-    }
-
-    // ==================== Main Evaluation Entry Point ====================
-
-    /**
-     * Evaluates a node and returns its constant value.
+     * Evaluates a node in the given scope.
      *
-     * @param node the AST node to evaluate
-     * @return the evaluated constant value
      * @throws EvaluationException if evaluation fails
      */
-    public NodeConstant evaluate(Node node) {
+    public NodeConstant evaluate(Node node, EvaluationContext context) {
         return switch (node) {
-            // === NodeConstant subclasses that need special handling ===
-
-            // NodeLambda needs to be converted to NodeFunction
+            // Constants that still need work before they are values
             case NodeLambda lambda -> functionCallHandler.evaluateLambda(lambda, context);
-
-            // NodeRange needs to be converted to NodeVector
             case NodeRange range -> range.toVector();
-
-            // NodeVector needs its elements evaluated
-            case NodeVector vector -> evaluateVectorElements(vector);
-
-            // NodeMatrix needs its elements evaluated
-            case NodeMatrix matrix -> evaluateMatrixElements(matrix);
-
-            // Other NodeConstant subclasses can be returned directly
+            case NodeVector vector -> evaluateVectorElements(vector, context);
+            case NodeMatrix matrix -> evaluateMatrixElements(matrix, context);
             case NodeConstant constant -> constant;
 
-            // === NodeExpression subclasses ===
-
-            case NodeVariable variable -> {
-                var opCtx = new OperatorContext(context, functionCallHandler);
-                yield variableResolver.resolve(variable, ResolutionContext.GENERAL, opCtx);
-            }
-
-            // Explicit references (@unit, $var, #const)
+            // Expressions
+            case NodeVariable variable -> variableResolver.resolve(
+                    variable, ResolutionContext.GENERAL, context.operatorContext(functionCallHandler));
             case NodeUnitRef unitRef -> variableResolver.resolveUnitRef(unitRef.getUnitName(), context);
             case NodeVarRef varRef -> variableResolver.resolveVarRef(varRef.getVarName(), context);
             case NodeConstRef constRef -> variableResolver.resolveConstRef(constRef.getConstName(), context);
-
-            // Binary and unary operations
-            case NodeBinary binary -> evaluateBinary(binary);
-            case NodeUnary unary -> evaluateUnary(unary);
-
-            // Assignment
-            case NodeAssignment assignment -> evaluateAssignment(assignment);
-
-            // Subscript/indexing
-            case NodeSubscript subscript -> subscriptHandler.evaluate(subscript);
-
-            // Range expression (1..10)
-            case NodeRangeExpression rangeExpr -> evaluateRangeExpression(rangeExpr);
-
-            // Function definition
+            case NodeBinary binary -> evaluateBinary(binary, context);
+            case NodeUnary unary -> evaluateUnary(unary, context);
+            case NodeAssignment assignment -> evaluateAssignment(assignment, context);
+            case NodeSubscript subscript -> subscriptHandler.evaluate(subscript, context);
+            case NodeRangeExpression rangeExpr -> evaluateRangeExpression(rangeExpr, context);
             case NodeFunctionDef funcDef -> functionCallHandler.evaluateFunctionDef(funcDef, context);
-
-            // Function call
             case NodeCall call -> functionCallHandler.evaluate(call, context);
-
-            // Sequence of statements
-            case NodeSequence sequence -> evaluateSequence(sequence);
-
-            // List comprehension
+            case NodeSequence sequence -> evaluateSequence(sequence, context);
             case NodeComprehension comprehension -> comprehensionHandler.evaluate(comprehension, context);
-
-            // Unit conversion (100 meters in feet)
-            case NodeUnitConversion unitConversion -> evaluateUnitConversion(unitConversion);
+            case NodeUnitConversion unitConversion -> evaluateUnitConversion(unitConversion, context);
         };
     }
 
-    // ==================== Vector Evaluation ====================
+    // ==================== Collections ====================
 
-    /**
-     * Evaluates a vector by evaluating all its elements.
-     */
-    private NodeConstant evaluateVectorElements(NodeVector vector) {
+    private NodeConstant evaluateVectorElements(NodeVector vector, EvaluationContext context) {
         if (!config.vectorsEnabled()) {
             throw new EvaluationException("Vectors are disabled in current configuration");
         }
-
-        Node[] elements = vector.getElements();
-
-        // Validate vector size against configuration limit
-        if (elements.length > config.maxVectorSize()) {
-            throw new EvaluationException("Vector size " + elements.length +
+        if (vector.size() > config.maxVectorSize()) {
+            throw new EvaluationException("Vector size " + vector.size() +
                     " exceeds maximum allowed size of " + config.maxVectorSize());
         }
 
-        var evaluated = new Node[elements.length];
-
-        for (int i = 0; i < elements.length; i++) {
-            Node element = elements[i];
-            if (element instanceof NodeConstant && !(element instanceof NodeVector)) {
-                evaluated[i] = element;
-            } else {
-                evaluated[i] = evaluate(element);
-            }
+        var evaluated = new Node[vector.size()];
+        for (int i = 0; i < evaluated.length; i++) {
+            evaluated[i] = evaluateElement(vector.getElement(i), context);
         }
-
         return new NodeVector(evaluated);
     }
 
-    /**
-     * Evaluates a matrix by evaluating all its elements.
-     */
-    private NodeConstant evaluateMatrixElements(NodeMatrix matrix) {
+    private NodeConstant evaluateMatrixElements(NodeMatrix matrix, EvaluationContext context) {
         if (!config.matricesEnabled()) {
             throw new EvaluationException("Matrices are disabled in current configuration");
         }
-        Node[][] elements = matrix.getElements();
-
-        // Validate matrix dimensions against configuration limits
-        int rows = elements.length;
-        int cols = rows > 0 ? elements[0].length : 0;
-        if (rows > config.maxMatrixDimension()) {
-            throw new EvaluationException("Matrix row count " + rows +
-                    " exceeds maximum allowed dimension of " + config.maxMatrixDimension());
-        }
-        if (cols > config.maxMatrixDimension()) {
-            throw new EvaluationException("Matrix column count " + cols +
-                    " exceeds maximum allowed dimension of " + config.maxMatrixDimension());
+        int rows = matrix.getRows();
+        int cols = matrix.getCols();
+        if (rows > config.maxMatrixDimension() || cols > config.maxMatrixDimension()) {
+            throw new EvaluationException("Matrix dimensions " + rows + "x" + cols +
+                    " exceed maximum allowed dimension of " + config.maxMatrixDimension());
         }
 
-        var evaluated = new Node[elements.length][];
-
-        for (int i = 0; i < elements.length; i++) {
-            evaluated[i] = new Node[elements[i].length];
-            for (int j = 0; j < elements[i].length; j++) {
-                Node element = elements[i][j];
-                if (element instanceof NodeConstant && !(element instanceof NodeVector) && !(element instanceof NodeMatrix)) {
-                    evaluated[i][j] = element;
-                } else {
-                    evaluated[i][j] = evaluate(element);
-                }
+        var evaluated = new Node[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                evaluated[i][j] = evaluateElement(matrix.getElement(i, j), context);
             }
         }
-
         return new NodeMatrix(evaluated);
     }
 
-    // ==================== Binary Operations ====================
+    /**
+     * Nested collections still need evaluating; other constants are already values.
+     */
+    private Node evaluateElement(Node element, EvaluationContext context) {
+        boolean isValue = element instanceof NodeConstant
+                && !(element instanceof NodeVector)
+                && !(element instanceof NodeMatrix);
+        return isValue ? element : evaluate(element, context);
+    }
+
+    // ==================== Operators ====================
 
     /**
-     * Evaluates a binary operation.
-     * <p>
-     * Uses lazy evaluation for the right operand, allowing the operator executor
-     * to implement short-circuit evaluation when needed (e.g., for && and ||).
+     * The right operand stays lazy so short-circuiting operators can skip it.
      */
-    private NodeConstant evaluateBinary(NodeBinary node) {
-        TokenType opType = node.getOperator().type();
-        NodeConstant left = evaluate(node.getLeft());
-
-        var opCtx = new OperatorContext(context, functionCallHandler);
+    private NodeConstant evaluateBinary(NodeBinary node, EvaluationContext context) {
+        NodeConstant left = evaluate(node.getLeft(), context);
         return operatorExecutor.executeBinary(
-                opType,
+                node.getOperator().type(),
                 left,
-                () -> evaluate(node.getRight()),
-                opCtx
-        );
+                () -> evaluate(node.getRight(), context),
+                context.operatorContext(functionCallHandler));
     }
 
-    // ==================== Unary Operations ====================
-
-    /**
-     * Evaluates a unary operation.
-     */
-    private NodeConstant evaluateUnary(NodeUnary node) {
-        TokenType opType = node.getOperator().type();
-        NodeConstant operand = evaluate(node.getOperand());
-        var opCtx = new OperatorContext(context, functionCallHandler);
-        return operatorExecutor.executeUnary(opType, operand, opCtx);
+    private NodeConstant evaluateUnary(NodeUnary node, EvaluationContext context) {
+        NodeConstant operand = evaluate(node.getOperand(), context);
+        return operatorExecutor.executeUnary(
+                node.getOperator().type(), operand, context.operatorContext(functionCallHandler));
     }
 
-    // ==================== Assignment ====================
+    // ==================== Statements ====================
 
-    /**
-     * Evaluates an assignment.
-     */
-    private NodeConstant evaluateAssignment(NodeAssignment node) {
+    private NodeConstant evaluateAssignment(NodeAssignment node, EvaluationContext context) {
         if (!config.userDefinedVariablesEnabled()) {
             throw new EvaluationException("User-defined variables are disabled in current configuration");
         }
-        NodeConstant value = evaluate(node.getValue());
+        NodeConstant value = evaluate(node.getValue(), context);
         context.assign(node.getIdentifier(), value);
         return value;
     }
 
-    // ==================== Range Expression ====================
-
-    /**
-     * Evaluates a range expression by evaluating its components and creating a NodeRange.
-     */
-    private NodeConstant evaluateRangeExpression(NodeRangeExpression node) {
-        NodeConstant startVal = evaluate(node.getStart());
-        NodeConstant endVal = evaluate(node.getEnd());
-        NodeConstant stepVal = node.hasStep() ? evaluate(node.getStep()) : null;
-
-        if (!TypeCoercion.isNumeric(startVal)) {
-            throw new TypeError("Range start must be a number, got: " + startVal.typeName());
+    private NodeConstant evaluateSequence(NodeSequence node, EvaluationContext context) {
+        NodeConstant result = null;
+        for (Node statement : node.getStatements()) {
+            result = evaluate(statement, context);
         }
-        if (!TypeCoercion.isNumeric(endVal)) {
-            throw new TypeError("Range end must be a number, got: " + endVal.typeName());
+        if (result == null) {
+            throw new EvaluationException("Empty statement sequence has no value");
         }
-        if (stepVal != null && !TypeCoercion.isNumeric(stepVal)) {
-            throw new TypeError("Range step must be a number, got: " + stepVal.typeName());
-        }
+        return result;
+    }
 
-        NodeRange range = new NodeRange(
-                TypeCoercion.toNumber(startVal),
-                TypeCoercion.toNumber(endVal),
-                stepVal != null ? TypeCoercion.toNumber(stepVal) : null
-        );
+    private NodeConstant evaluateRangeExpression(NodeRangeExpression node, EvaluationContext context) {
+        NodeNumber start = rangeBound(node.getStart(), "start", context);
+        NodeNumber end = rangeBound(node.getEnd(), "end", context);
+        NodeNumber step = node.hasStep() ? rangeBound(node.getStep(), "step", context) : null;
 
-        // Validate estimated range size before expanding
+        NodeRange range = new NodeRange(start, end, step);
         long estimatedSize = range.estimateSize();
         if (estimatedSize > config.maxVectorSize()) {
             throw new EvaluationException("Range would produce " + estimatedSize +
                     " elements, exceeding maximum allowed size of " + config.maxVectorSize());
         }
-
         return range.toVector();
     }
 
-    // ==================== Unit Conversion Evaluation ====================
+    private NodeNumber rangeBound(Node node, String description, EvaluationContext context) {
+        NodeConstant value = evaluate(node, context);
+        if (!TypeCoercion.isNumeric(value)) {
+            throw new TypeError("Range " + description + " must be a number, got: " + value.typeName());
+        }
+        return TypeCoercion.toNumber(value);
+    }
+
+    // ==================== Unit conversion ====================
 
     /**
-     * Evaluates a unit conversion expression.
-     * <p>
-     * Examples: 100 meters in feet, 25 celsius to fahrenheit
-     * </p>
-     * <p>
-     * The value can be a number, vector, or matrix. Broadcasting applies:
-     * {100, 200} meters in feet → {328.084, 656.168} feet
-     * </p>
+     * Converts a value to a target unit, broadcasting over vectors and matrices.
      */
-    private NodeConstant evaluateUnitConversion(NodeUnitConversion node) {
+    private NodeConstant evaluateUnitConversion(NodeUnitConversion node, EvaluationContext context) {
         if (!config.unitsEnabled()) {
             throw new EvaluationException("Unit conversions are disabled in current configuration");
         }
 
-        NodeConstant value = evaluate(node.getValue());
-        String targetUnitName = node.getTargetUnit();
-
-        // Get the target unit from the registry
-        var targetUnit = context.resolveUnit(targetUnitName)
-                .orElseThrow(() -> new TypeError("Unknown target unit: " + targetUnitName));
-
-        // If value is already a NodeUnit, perform conversion
-        if (value instanceof NodeUnit unitValue) {
-            return unitValue.convertTo(targetUnit);
-        }
-
-        // If value is a plain number, create a NodeUnit with the target unit
-        if (TypeCoercion.isNumeric(value)) {
-            return NodeUnit.of(value.doubleValue(), targetUnit);
-        }
-
-        // If value is a vector, broadcast unit conversion over elements
-        if (value instanceof NodeVector vector) {
-            Node[] elements = vector.getElements();
-            Node[] converted = new Node[elements.length];
-            for (int i = 0; i < elements.length; i++) {
-                var elemConversion = new NodeUnitConversion(elements[i], targetUnitName);
-                converted[i] = evaluateUnitConversion(elemConversion);
-            }
-            return new NodeVector(converted);
-        }
-
-        // If value is a matrix, broadcast unit conversion over elements
-        if (value instanceof NodeMatrix matrix) {
-            Node[][] rows = matrix.getElements();
-            Node[][] converted = new Node[rows.length][];
-            for (int i = 0; i < rows.length; i++) {
-                converted[i] = new Node[rows[i].length];
-                for (int j = 0; j < rows[i].length; j++) {
-                    var elemConversion = new NodeUnitConversion(rows[i][j], targetUnitName);
-                    converted[i][j] = evaluateUnitConversion(elemConversion);
-                }
-            }
-            return new NodeMatrix(converted);
-        }
-
-        throw new TypeError("Cannot apply unit conversion to: " + value.typeName());
+        String targetName = node.getTargetUnit();
+        // A name that is not a unit is the same failure as '@name', so it reads the same way
+        UnitDefinition target = context.resolveUnit(targetName)
+                .orElseThrow(() -> UndefinedVariableException.unit(targetName));
+        return convertTo(evaluate(node.getValue(), context), target);
     }
 
-    // ==================== Sequence Evaluation ====================
-
-    /**
-     * Evaluates a sequence of statements, returning the last result.
-     */
-    private NodeConstant evaluateSequence(NodeSequence node) {
-        NodeConstant result = null;
-
-        for (Node statement : node.getStatements()) {
-            result = evaluate(statement);
-        }
-
-        return result;
+    private NodeConstant convertTo(NodeConstant value, UnitDefinition target) {
+        return switch (value) {
+            case NodeUnit unit -> unit.convertTo(target);
+            case NodeVector vector -> {
+                var converted = new Node[vector.size()];
+                for (int i = 0; i < converted.length; i++) {
+                    converted[i] = convertTo((NodeConstant) vector.getElement(i), target);
+                }
+                yield new NodeVector(converted);
+            }
+            case NodeMatrix matrix -> {
+                var converted = new Node[matrix.getRows()][matrix.getCols()];
+                for (int i = 0; i < matrix.getRows(); i++) {
+                    for (int j = 0; j < matrix.getCols(); j++) {
+                        converted[i][j] = convertTo((NodeConstant) matrix.getElement(i, j), target);
+                    }
+                }
+                yield new NodeMatrix(converted);
+            }
+            default -> {
+                if (!TypeCoercion.isNumeric(value)) {
+                    throw new TypeError("Cannot apply unit conversion to: " + value.typeName());
+                }
+                yield NodeUnit.of(value.doubleValue(), target);
+            }
+        };
     }
 }

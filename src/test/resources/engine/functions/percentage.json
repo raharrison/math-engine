@@ -1,7 +1,42 @@
 {
-    "category": "Percentage Functions",
-    "description": "Comprehensive tests for percent, topercent, percentvalue, percentof, whatpercent, percentchange, addpercent, subtractpercent, reversepercent, ratiotopercent, percenttoratio, percentpoints, ispercent",
+    "category": "Functions: percentage",
+    "description": "The percentage vocabulary: converting to and from percentages, and the markup, discount and change calculations built on them.",
     "tests": [
+        {
+            "id": "addpercent_001",
+            "input": "addpercent(100, 20%)",
+            "expected": 120.0,
+            "expectedType": "NodeDouble",
+            "notes": "100 + 20% = 120"
+        },
+        {
+            "id": "addpercent_002",
+            "input": "addpercent(50, 10%)",
+            "expected": 55.0,
+            "expectedType": "NodeDouble",
+            "notes": "50 + 10% = 55"
+        },
+        {
+            "id": "addpercent_003",
+            "input": "addpercent(100, 100%)",
+            "expected": 200.0,
+            "expectedType": "NodeDouble",
+            "notes": "100 + 100% = 200"
+        },
+        {
+            "id": "ispercent_001",
+            "input": "ispercent(50%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "50% is a percent"
+        },
+        {
+            "id": "ispercent_002",
+            "input": "ispercent(0.5)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "0.5 is not a percent type"
+        },
         {
             "id": "percent_001",
             "input": "percent(50)",
@@ -24,81 +59,18 @@
             "notes": "Create 0%"
         },
         {
-            "id": "topercent_001",
-            "input": "topercent(50%)",
-            "expected": 0.5,
+            "id": "percent_arithmetic_002",
+            "input": "100 - 10%",
+            "expected": 90.0,
             "expectedType": "NodeDouble",
-            "notes": "50% as decimal"
+            "notes": "Percent arithmetic with -"
         },
         {
-            "id": "topercent_002",
-            "input": "topercent(100%)",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
-            "notes": "100% as decimal"
-        },
-        {
-            "id": "topercent_003",
-            "input": "topercent(25%)",
-            "expected": 0.25,
-            "expectedType": "NodeDouble",
-            "notes": "25% as decimal"
-        },
-        {
-            "id": "percentvalue_001",
-            "input": "percentvalue(50%)",
-            "expected": 50.0,
-            "expectedType": "NodeDouble",
-            "notes": "Get 50 from 50%"
-        },
-        {
-            "id": "percentvalue_002",
-            "input": "percentvalue(0.5)",
-            "expected": 50.0,
-            "expectedType": "NodeDouble",
-            "notes": "0.5 as 50%"
-        },
-        {
-            "id": "percentof_001",
-            "input": "percentof(20%, 100)",
-            "expected": 20.0,
-            "expectedType": "NodeDouble",
-            "notes": "20% of 100"
-        },
-        {
-            "id": "percentof_002",
-            "input": "percentof(50%, 200)",
+            "id": "percent_arithmetic_003",
+            "input": "50% of 200",
             "expected": 100.0,
             "expectedType": "NodeDouble",
-            "notes": "50% of 200"
-        },
-        {
-            "id": "percentof_003",
-            "input": "percentof(10%, 50)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
-            "notes": "10% of 50"
-        },
-        {
-            "id": "whatpercent_001",
-            "input": "whatpercent(20, 100)",
-            "expected": "20%",
-            "expectedType": "NodePercent",
-            "notes": "20 is 20% of 100"
-        },
-        {
-            "id": "whatpercent_002",
-            "input": "whatpercent(50, 200)",
-            "expected": "25%",
-            "expectedType": "NodePercent",
-            "notes": "50 is 25% of 200"
-        },
-        {
-            "id": "whatpercent_003",
-            "input": "whatpercent(75, 100)",
-            "expected": "75%",
-            "expectedType": "NodePercent",
-            "notes": "75 is 75% of 100"
+            "notes": "Percent of syntax — percent is double-valued so result is double"
         },
         {
             "id": "percentchange_001",
@@ -122,60 +94,67 @@
             "notes": "100% increase (doubled)"
         },
         {
-            "id": "addpercent_001",
-            "input": "addpercent(100, 20%)",
-            "expected": 120.0,
+            "id": "percentof_001",
+            "input": "percentof(20%, 100)",
+            "expected": 20.0,
             "expectedType": "NodeDouble",
-            "notes": "100 + 20% = 120"
+            "notes": "20% of 100"
         },
         {
-            "id": "addpercent_002",
-            "input": "addpercent(50, 10%)",
-            "expected": 55.0,
+            "id": "percentof_002",
+            "input": "percentof(50%, 200)",
+            "expected": 100.0,
             "expectedType": "NodeDouble",
-            "notes": "50 + 10% = 55"
+            "notes": "50% of 200"
         },
         {
-            "id": "addpercent_003",
-            "input": "addpercent(100, 100%)",
-            "expected": 200.0,
+            "id": "percentof_003",
+            "input": "percentof(10%, 50)",
+            "expected": 5.0,
             "expectedType": "NodeDouble",
-            "notes": "100 + 100% = 200"
+            "notes": "10% of 50"
         },
         {
-            "id": "subtractpercent_001",
-            "input": "subtractpercent(100, 20%)",
-            "expected": 80.0,
+            "id": "percentpoints_001",
+            "input": "percentpoints(30%, 50%)",
+            "expected": 20.0,
             "expectedType": "NodeDouble",
-            "notes": "100 - 20% = 80"
+            "notes": "Difference of 20 percentage points"
         },
         {
-            "id": "subtractpercent_002",
-            "input": "subtractpercent(50, 10%)",
-            "expected": 45.0,
+            "id": "percentpoints_002",
+            "input": "percentpoints(50%, 30%)",
+            "expected": -20.0,
             "expectedType": "NodeDouble",
-            "notes": "50 - 10% = 45"
+            "notes": "Negative difference"
         },
         {
-            "id": "subtractpercent_003",
-            "input": "subtractpercent(100, 50%)",
+            "id": "percenttoratio_001",
+            "input": "percenttoratio(20%)",
+            "expected": 1.2,
+            "expectedType": "NodeDouble",
+            "notes": "20% increase = 1.2 ratio"
+        },
+        {
+            "id": "percenttoratio_002",
+            "input": "percenttoratio(-20%)",
+            "expected": 0.8,
+            "expectedType": "NodeDouble",
+            "notes": "20% decrease = 0.8 ratio"
+        },
+        {
+            "id": "percentvalue_001",
+            "input": "percentvalue(50%)",
             "expected": 50.0,
             "expectedType": "NodeDouble",
-            "notes": "100 - 50% = 50"
+            "notes": "Get 50 from 50%"
         },
         {
-            "id": "reversepercent_001",
-            "input": "reversepercent(120, 20%)",
-            "expected": 100.0,
+            "id": "percentvalue_002",
+            "input": "percentvalue(0.5)",
+            "expected": 50.0,
             "expectedType": "NodeDouble",
-            "notes": "Original before 20% markup"
-        },
-        {
-            "id": "reversepercent_002",
-            "input": "reversepercent(110, 10%)",
-            "expected": 100.0,
-            "expectedType": "NodeDouble",
-            "notes": "Original before 10% markup"
+            "notes": "0.5 as 50%"
         },
         {
             "id": "ratiotopercent_001",
@@ -199,67 +178,81 @@
             "notes": "2x ratio = 100% increase"
         },
         {
-            "id": "percenttoratio_001",
-            "input": "percenttoratio(20%)",
-            "expected": 1.2,
-            "expectedType": "NodeDouble",
-            "notes": "20% increase = 1.2 ratio"
-        },
-        {
-            "id": "percenttoratio_002",
-            "input": "percenttoratio(-20%)",
-            "expected": 0.8,
-            "expectedType": "NodeDouble",
-            "notes": "20% decrease = 0.8 ratio"
-        },
-        {
-            "id": "percentpoints_001",
-            "input": "percentpoints(30%, 50%)",
-            "expected": 20.0,
-            "expectedType": "NodeDouble",
-            "notes": "Difference of 20 percentage points"
-        },
-        {
-            "id": "percentpoints_002",
-            "input": "percentpoints(50%, 30%)",
-            "expected": -20.0,
-            "expectedType": "NodeDouble",
-            "notes": "Negative difference"
-        },
-        {
-            "id": "ispercent_001",
-            "input": "ispercent(50%)",
-            "expected": true,
-            "expectedType": "NodeBoolean",
-            "notes": "50% is a percent"
-        },
-        {
-            "id": "ispercent_002",
-            "input": "ispercent(0.5)",
-            "expected": false,
-            "expectedType": "NodeBoolean",
-            "notes": "0.5 is not a percent type"
-        },
-        {
-            "id": "percent_arithmetic_001",
-            "input": "100 + 10%",
-            "expected": 110.0,
-            "expectedType": "NodeDouble",
-            "notes": "Percent arithmetic with +"
-        },
-        {
-            "id": "percent_arithmetic_002",
-            "input": "100 - 10%",
-            "expected": 90.0,
-            "expectedType": "NodeDouble",
-            "notes": "Percent arithmetic with -"
-        },
-        {
-            "id": "percent_arithmetic_003",
-            "input": "50% of 200",
+            "id": "reversepercent_001",
+            "input": "reversepercent(120, 20%)",
             "expected": 100.0,
             "expectedType": "NodeDouble",
-            "notes": "Percent of syntax — percent is double-valued so result is double"
+            "notes": "Original before 20% markup"
+        },
+        {
+            "id": "reversepercent_002",
+            "input": "reversepercent(110, 10%)",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "Original before 10% markup"
+        },
+        {
+            "id": "subtractpercent_001",
+            "input": "subtractpercent(100, 20%)",
+            "expected": 80.0,
+            "expectedType": "NodeDouble",
+            "notes": "100 - 20% = 80"
+        },
+        {
+            "id": "subtractpercent_002",
+            "input": "subtractpercent(50, 10%)",
+            "expected": 45.0,
+            "expectedType": "NodeDouble",
+            "notes": "50 - 10% = 45"
+        },
+        {
+            "id": "subtractpercent_003",
+            "input": "subtractpercent(100, 50%)",
+            "expected": 50.0,
+            "expectedType": "NodeDouble",
+            "notes": "100 - 50% = 50"
+        },
+        {
+            "id": "topercent_001",
+            "input": "topercent(50%)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "50% as decimal"
+        },
+        {
+            "id": "topercent_002",
+            "input": "topercent(100%)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "100% as decimal"
+        },
+        {
+            "id": "topercent_003",
+            "input": "topercent(25%)",
+            "expected": 0.25,
+            "expectedType": "NodeDouble",
+            "notes": "25% as decimal"
+        },
+        {
+            "id": "whatpercent_001",
+            "input": "whatpercent(20, 100)",
+            "expected": "20%",
+            "expectedType": "NodePercent",
+            "notes": "20 is 20% of 100"
+        },
+        {
+            "id": "whatpercent_002",
+            "input": "whatpercent(50, 200)",
+            "expected": "25%",
+            "expectedType": "NodePercent",
+            "notes": "50 is 25% of 200"
+        },
+        {
+            "id": "whatpercent_003",
+            "input": "whatpercent(75, 100)",
+            "expected": "75%",
+            "expectedType": "NodePercent",
+            "notes": "75 is 75% of 100"
         }
     ]
 }

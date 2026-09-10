@@ -1,0 +1,286 @@
+{
+    "category": "Value: constants",
+    "description": "Every built-in constant, its value and the type it comes back as.",
+    "tests": [
+        {
+            "id": "const_001",
+            "input": "pi",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Pi constant"
+        },
+        {
+            "id": "const_002",
+            "input": "e",
+            "expected": 2.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "Euler's number constant"
+        },
+        {
+            "id": "const_003",
+            "input": "true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean true constant"
+        },
+        {
+            "id": "const_004",
+            "input": "false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean false constant"
+        },
+        {
+            "id": "const_005",
+            "input": "pi * 2",
+            "expected": 6.283185307179586,
+            "expectedType": "NodeDouble",
+            "notes": "Using pi in expression"
+        },
+        {
+            "id": "const_006",
+            "input": "e^2",
+            "expected": 7.38905609893065,
+            "expectedType": "NodeDouble",
+            "notes": "Using e in exponentiation"
+        },
+        {
+            "id": "const_007",
+            "input": "sin(pi / 2)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Pi in trigonometric function"
+        },
+        {
+            "id": "e_002",
+            "input": "e ^ 1",
+            "expected": 2.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "e to the 1"
+        },
+        {
+            "id": "euler_001",
+            "input": "euler",
+            "expected": 2.718281828459045,
+            "expectedType": "NodeDouble",
+            "notes": "Euler alias for e"
+        },
+        {
+            "id": "goldenratio_001",
+            "input": "goldenratio",
+            "expected": 1.618033988749895,
+            "expectedType": "NodeDouble",
+            "notes": "'goldenratio' is the long spelling of phi"
+        },
+        {
+            "id": "goldenratio_002",
+            "input": "goldenratio == phi",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The two spellings name the same constant"
+        },
+        {
+            "id": "inf_001",
+            "input": "inf",
+            "expected": "Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Infinity alias"
+        },
+        {
+            "id": "infinity_001",
+            "input": "infinity",
+            "expected": "Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Positive infinity"
+        },
+        {
+            "id": "infinity_002",
+            "input": "isinf(infinity)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The infinity constant really is infinite; it once formatted as 9223372036854775807"
+        },
+        {
+            "id": "infinity_003",
+            "input": "-infinity",
+            "expected": "-Infinity",
+            "expectedType": "NodeDouble",
+            "notes": "Negating infinity gives negative infinity, not the smallest long"
+        },
+        {
+            "id": "nan_001",
+            "input": "nan",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "'nan' is the not-a-number value"
+        },
+        {
+            "id": "nan_002",
+            "input": "isnan(nan)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NaN is recognised as such rather than treated as an ordinary double"
+        },
+        {
+            "id": "nan_003",
+            "input": "nan == nan",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "NaN equals nothing, itself included"
+        },
+        {
+            "id": "phi_001",
+            "input": "phi",
+            "expected": 1.618033988749895,
+            "expectedType": "NodeDouble",
+            "notes": "Golden ratio"
+        },
+        {
+            "id": "phi_002",
+            "input": "phi ^ 2 - phi",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Golden ratio identity: phi^2 - phi = 1"
+        },
+        {
+            "id": "pi_002",
+            "input": "2 * pi",
+            "expected": 6.283185307179586,
+            "expectedType": "NodeDouble",
+            "notes": "2 * pi"
+        },
+        {
+            "id": "pi_003",
+            "input": "pi / 2",
+            "expected": 1.5707963267948966,
+            "expectedType": "NodeDouble",
+            "notes": "pi / 2"
+        },
+        {
+            "id": "tau_001",
+            "input": "tau",
+            "expected": 6.283185307179586,
+            "expectedType": "NodeDouble",
+            "notes": "Tau = 2*pi"
+        },
+        {
+            "id": "tau_002",
+            "input": "tau / 2",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Tau / 2 = pi"
+        },
+        {
+            "id": "word_billion",
+            "input": "billion",
+            "expected": 1000000000,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'billion' is the exact integer 1000000000"
+        },
+        {
+            "id": "word_constants_arithmetic",
+            "input": "two * hundred + ten",
+            "expected": 210,
+            "expectedType": "NodeRational",
+            "notes": "Word constants take part in exact arithmetic like any other number"
+        },
+        {
+            "id": "word_eight",
+            "input": "eight",
+            "expected": 8,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'eight' is the exact integer 8"
+        },
+        {
+            "id": "word_five",
+            "input": "five",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'five' is the exact integer 5"
+        },
+        {
+            "id": "word_four",
+            "input": "four",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'four' is the exact integer 4"
+        },
+        {
+            "id": "word_hundred",
+            "input": "hundred",
+            "expected": 100,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'hundred' is the exact integer 100"
+        },
+        {
+            "id": "word_million",
+            "input": "million",
+            "expected": 1000000,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'million' is the exact integer 1000000"
+        },
+        {
+            "id": "word_nine",
+            "input": "nine",
+            "expected": 9,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'nine' is the exact integer 9"
+        },
+        {
+            "id": "word_one",
+            "input": "one",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'one' is the exact integer 1"
+        },
+        {
+            "id": "word_seven",
+            "input": "seven",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'seven' is the exact integer 7"
+        },
+        {
+            "id": "word_six",
+            "input": "six",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'six' is the exact integer 6"
+        },
+        {
+            "id": "word_ten",
+            "input": "ten",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'ten' is the exact integer 10"
+        },
+        {
+            "id": "word_thousand",
+            "input": "thousand",
+            "expected": 1000,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'thousand' is the exact integer 1000"
+        },
+        {
+            "id": "word_three",
+            "input": "three",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'three' is the exact integer 3"
+        },
+        {
+            "id": "word_two",
+            "input": "two",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'two' is the exact integer 2"
+        },
+        {
+            "id": "word_zero",
+            "input": "zero",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "The word constant 'zero' is the exact integer 0"
+        }
+    ]
+}

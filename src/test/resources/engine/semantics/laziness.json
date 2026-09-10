@@ -1,0 +1,146 @@
+{
+    "category": "Semantics: laziness",
+    "description": "Constructs that must not evaluate a branch they do not need: if, && and ||.",
+    "tests": [
+        {
+            "id": "and_evaluates_right_when_needed",
+            "input": "true && undefinedname",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "A true left side means the right side really is evaluated"
+        },
+        {
+            "id": "and_word_short_circuits",
+            "input": "false and undefinedname",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "The word spelling of and short circuits like the symbol"
+        },
+        {
+            "id": "if_condition_from_comparison",
+            "input": "if(1 > 0, \"yes\", undefinedname)",
+            "expected": "yes",
+            "expectedType": "NodeString",
+            "notes": "The condition itself is evaluated, whatever the branches do"
+        },
+        {
+            "id": "if_nested_lazy",
+            "input": "if(true, if(true, 1, undefinedname), undefinedname)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Laziness holds all the way down a nest of conditions"
+        },
+        {
+            "id": "if_skips_dead_else",
+            "input": "if(true, 1, undefinedname)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "and the same for the other branch"
+        },
+        {
+            "id": "if_skips_dead_then",
+            "input": "if(false, undefinedname, 2)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "A name that does not resolve proves the branch was never evaluated"
+        },
+        {
+            "id": "lazy_001",
+            "input": "if(true, 5, 1/0)",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "If should not evaluate false branch (which would error)"
+        },
+        {
+            "id": "lazy_002",
+            "input": "if(false, 1/0, 10)",
+            "expected": 10.0,
+            "expectedType": "NodeRational",
+            "notes": "If should not evaluate true branch when condition is false"
+        },
+        {
+            "id": "lazy_003",
+            "input": "if(1 > 0, 42, undefined_var)",
+            "expected": 42.0,
+            "expectedType": "NodeRational",
+            "notes": "If should not evaluate false branch with undefined variable"
+        },
+        {
+            "id": "or_evaluates_right_when_needed",
+            "input": "false || undefinedname",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "and a false left side does the same for or"
+        },
+        {
+            "id": "or_word_short_circuits",
+            "input": "true or undefinedname",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "and so does the word spelling of or"
+        },
+        {
+            "id": "short_001",
+            "input": "false && (1/0 > 0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND short-circuits when left is false"
+        },
+        {
+            "id": "short_002",
+            "input": "true || (1/0 > 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR short-circuits when left is true"
+        },
+        {
+            "id": "short_003",
+            "input": "(5 > 10) && undefined_var",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "AND doesn't evaluate right when left is false"
+        },
+        {
+            "id": "short_004",
+            "input": "(5 < 10) || undefined_var",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR doesn't evaluate right when left is true"
+        },
+        {
+            "id": "short_005",
+            "input": "0 && (1/0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Numeric 0 is falsy, short-circuits AND"
+        },
+        {
+            "id": "short_006",
+            "input": "1 || (1/0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Numeric 1 is truthy, short-circuits OR"
+        },
+        {
+            "id": "short_007",
+            "input": "true && false && (1/0 > 0)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple AND operators short-circuit"
+        },
+        {
+            "id": "short_008",
+            "input": "false || false || true || (1/0 > 0)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple OR operators short-circuit"
+        },
+        {
+            "id": "xor_is_not_lazy",
+            "input": "false xor undefinedname",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "xor cannot short circuit, because both sides decide the answer"
+        }
+    ]
+}

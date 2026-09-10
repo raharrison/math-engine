@@ -413,23 +413,23 @@ All exceptions include:
 
 **Location:** `src/test/java/uk/co/ryanharrison/mathengine/parser/`
 
-**Test Classes:**
+**Unit tests:**
 
-- `MathEngineTest.java` - End-to-end integration tests
-- `lexer/LexerTest.java` - Tokenization tests
-- `parser/ParserTest.java` - Parsing tests
+- `MathEngineTest.java` - the engine's own API: factories, session, reconfiguration
+- `CompiledExpressionTest.java` - repeated evaluation and scope isolation
+- `lexer/LexerTest.java` - tokenization
+- `parser/ParserTest.java` - AST construction
+- `parser/nodes/*` - the arithmetic type rules
 
-**JSON Test Framework:**
+**The spec suite** is the end-to-end contract for the language, written as JSON under
+`src/test/resources/engine` and run by `spec/EngineSpecTest`:
 
-- `JsonTestLoader.java` - Loads test suites from JSON
-- `JsonTestSuite.java` - Test suite container
-- `JsonTestCase.java` - Individual test case
-- `TestConfig.java` - Test configuration
+- `spec/SpecLoader`, `SpecCase`, `SpecSuite`, `SpecConfig` - the file format
+- `spec/SpecCaseRunner`, `SpecValueAssertions`, `SpecExceptions` - running one case
+- `spec/SpecIntegrityTest` - structural rules the files must obey
+- `spec/SpecCoverageTest` - fails when the engine grows a name no case exercises
 
-**Test Resources:**
-
-- JSON test files organized by feature (when implemented)
-- Location: `src/test/resources/`
+See `docs/parser/TESTING.md` for the file format and for where a new case belongs.
 
 ---
 

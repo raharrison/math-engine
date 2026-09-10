@@ -1,0 +1,143 @@
+{
+    "category": "Operator: @ (matrix multiplication)",
+    "description": "True matrix multiplication and the vector dot product, as distinct from the element-wise '*'.",
+    "tests": [
+        {
+            "id": "matrix_011",
+            "input": "[1, 2; 3, 4] @ [5, 6; 7, 8]",
+            "expected": [
+                [
+                    19,
+                    22
+                ],
+                [
+                    43,
+                    50
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "True matrix multiplication (dot product)"
+        },
+        {
+            "id": "matrix_012",
+            "input": "[1, 2, 3; 4, 5, 6] @ [7, 8; 9, 10; 11, 12]",
+            "expected": [
+                [
+                    58,
+                    64
+                ],
+                [
+                    139,
+                    154
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplication (2×3) @ (3×2) = (2×2)"
+        },
+        {
+            "id": "matrix_013",
+            "input": "[1, 0; 0, 1] @ [5, 6; 7, 8]",
+            "expected": [
+                [
+                    5,
+                    6
+                ],
+                [
+                    7,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Identity matrix multiplication"
+        },
+        {
+            "id": "matrix_014",
+            "input": "[2, 0; 0, 2] @ [1, 2; 3, 4]",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar matrix multiplication (via @ operator)"
+        },
+        {
+            "id": "matrix_at_001",
+            "input": "[[1,2],[3,4]] @ [[5,6],[7,8]]",
+            "expected": [
+                [
+                    19,
+                    22
+                ],
+                [
+                    43,
+                    50
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "@ operator for matrix multiplication still works"
+        },
+        {
+            "id": "matrix_at_002",
+            "input": "A := [[1,2],[3,4]]; B := [[5,6],[7,8]]; A @ B",
+            "expected": [
+                [
+                    19,
+                    22
+                ],
+                [
+                    43,
+                    50
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplication with variables"
+        },
+        {
+            "id": "matrix_matmul_002",
+            "input": "[[1, 2, 3]] @ [[4], [5], [6]]",
+            "expected": [
+                [
+                    32
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Row vector @ column vector = 1x1 matrix"
+        },
+        {
+            "id": "matrix_matmul_003",
+            "input": "[[1, 0], [0, 1]] @ [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    5,
+                    6
+                ],
+                [
+                    7,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Identity @ matrix = matrix"
+        },
+        {
+            "id": "vector_dot_001",
+            "input": "sum({1, 2, 3} * {4, 5, 6})",
+            "expected": 32,
+            "expectedType": "NodeRational",
+            "notes": "Dot product via sum of element-wise multiplication"
+        },
+        {
+            "id": "vector_dot_002",
+            "input": "sum({1, 0, 0} * {0, 1, 0})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Orthogonal vectors dot product"
+        }
+    ]
+}

@@ -1,0 +1,139 @@
+{
+    "category": "Functions: logarithmic",
+    "description": "Logarithms in every base, and the identities that tie them to the exponentials.",
+    "tests": [
+        {
+            "id": "builtin_math_004",
+            "input": "ln(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Natural logarithm of 1"
+        },
+        {
+            "id": "builtin_math_005",
+            "input": "ln(euler)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Natural logarithm of e"
+        },
+        {
+            "id": "builtin_math_006",
+            "input": "log(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm of 1"
+        },
+        {
+            "id": "builtin_math_008",
+            "input": "log(100)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm of 100"
+        },
+        {
+            "id": "identity_001_logarithmic",
+            "input": "ln(exp(5))",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "ln(e^5) = 5"
+        },
+        {
+            "id": "identity_002_logarithmic",
+            "input": "exp(ln(5))",
+            "expected": 5.0,
+            "expectedType": "NodeDouble",
+            "notes": "e^ln(5) = 5"
+        },
+        {
+            "id": "log2_001",
+            "input": "log2(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "log2(1) = 0"
+        },
+        {
+            "id": "log2_002",
+            "input": "log2(2)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "log2(2) = 1"
+        },
+        {
+            "id": "log2_003",
+            "input": "log2(8)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "log2(8) = 3"
+        },
+        {
+            "id": "log2_004",
+            "input": "log2(1024)",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "log2(1024) = 10"
+        },
+        {
+            "id": "log_004",
+            "input": "log(1000)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "log10(1000) = 3"
+        },
+        {
+            "id": "logn_001",
+            "input": "logn(8, 2)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "log base 2 of 8 = 3"
+        },
+        {
+            "id": "logn_002",
+            "input": "logn(27, 3)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "log base 3 of 27 = 3"
+        },
+        {
+            "id": "logn_003",
+            "input": "logn(100, 10)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "log base 10 of 100 = 2"
+        },
+        {
+            "id": "new_006",
+            "input": "log10(100)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm: log10(100) = 2"
+        },
+        {
+            "id": "new_007",
+            "input": "log10(1000)",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm: log10(1000) = 3"
+        },
+        {
+            "id": "new_008",
+            "input": "log10(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm: log10(1) = 0"
+        },
+        {
+            "id": "new_009",
+            "input": "log10(10)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Base-10 logarithm: log10(10) = 1"
+        },
+        {
+            "id": "new_010",
+            "input": "log(10)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "log is an alias for log10"
+        }
+    ]
+}

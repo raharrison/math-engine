@@ -47,9 +47,9 @@ public final class TrigonometricFunctions {
             .withParams("x")
             .inCategory(MathFunction.Category.TRIGONOMETRIC)
             .takingUnary()
-            .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
+            .noBroadcasting() // broadcasts internally via ctx.mapDouble()
             .implementedBy((arg, ctx) ->
-                    ctx.applyWithBroadcasting(arg, value -> {
+                    ctx.mapDouble(arg, value -> {
                         return ctx.fromRadians(Math.asin(ctx.requireInRange(value, -1.0, 1.0)));
                     }));
 
@@ -62,9 +62,9 @@ public final class TrigonometricFunctions {
             .withParams("x")
             .inCategory(MathFunction.Category.TRIGONOMETRIC)
             .takingUnary()
-            .noBroadcasting() // broadcasts internally via ctx.applyWithBroadcasting()
+            .noBroadcasting() // broadcasts internally via ctx.mapDouble()
             .implementedBy((arg, ctx) ->
-                    ctx.applyWithBroadcasting(arg, value -> {
+                    ctx.mapDouble(arg, value -> {
                         return ctx.fromRadians(Math.acos(ctx.requireInRange(value, -1.0, 1.0)));
                     }));
 
@@ -83,8 +83,8 @@ public final class TrigonometricFunctions {
             .inCategory(MathFunction.Category.TRIGONOMETRIC)
             .takingBinary()
             .implementedBy((y, x, ctx) -> {
-                double yVal = ctx.toNumber(y).doubleValue();
-                double xVal = ctx.toNumber(x).doubleValue();
+                double yVal = ctx.toDouble(y);
+                double xVal = ctx.toDouble(x);
                 double radians = Math.atan2(yVal, xVal);
                 return new NodeDouble(ctx.fromRadians(radians));
             });

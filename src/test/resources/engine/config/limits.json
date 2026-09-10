@@ -1,0 +1,229 @@
+{
+    "category": "Config: limits",
+    "description": "Each configured maximum, exercised just under and just over: recursion depth, expression depth, vector size, matrix dimension and identifier length.",
+    "tests": [
+        {
+            "id": "expression_depth_just_over",
+            "input": "((((((((((((1 + 1))))))))))))",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "config": {
+                "maxExpressionDepth": 10
+            },
+            "notes": "Twelve do not"
+        },
+        {
+            "id": "expression_depth_just_under",
+            "input": "((((1 + 1))))",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxExpressionDepth": 10
+            },
+            "notes": "Four levels of nesting fit inside a limit of ten"
+        },
+        {
+            "id": "identifier_length_just_over",
+            "input": "abcdefghij := 1",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "config": {
+                "maxIdentifierLength": 5
+            },
+            "notes": "A ten-character one does not"
+        },
+        {
+            "id": "identifier_length_just_under",
+            "input": "abcde := 1; abcde",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxIdentifierLength": 5
+            },
+            "notes": "A five-character name fits inside a limit of five"
+        },
+        {
+            "id": "matrix_dimension_just_over",
+            "input": "[1, 2, 3; 4, 5, 6; 7, 8, 9]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "config": {
+                "maxMatrixDimension": 2
+            },
+            "notes": "A three by three does not"
+        },
+        {
+            "id": "matrix_dimension_just_under",
+            "input": "[1, 2; 3, 4]",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "config": {
+                "maxMatrixDimension": 2
+            },
+            "notes": "A two by two matrix fits inside a limit of two"
+        },
+        {
+            "id": "range_respects_vector_size",
+            "input": "1..10",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "config": {
+                "maxVectorSize": 3
+            },
+            "notes": "A range is held to the same limit, before it is materialised"
+        },
+        {
+            "id": "recursion_deep_allowed_001",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(100)",
+            "expected": 9.332621544394415e+157,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxRecursionDepth": 1000
+            },
+            "notes": "Deep recursion allowed with higher limit"
+        },
+        {
+            "id": "recursion_exceeds_limit_001",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(200)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 100
+            },
+            "notes": "Recursion exceeds maxRecursionDepth=100"
+        },
+        {
+            "id": "recursion_fib_001",
+            "input": "fib(n) := if(n <= 2, 1, fib(n-1) + fib(n-2)); fib(10)",
+            "expected": 55.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxRecursionDepth": 1000
+            },
+            "notes": "Fibonacci recursion with default limit"
+        },
+        {
+            "id": "recursion_fib_limited_001",
+            "input": "fib(n) := if(n <= 2, 1, fib(n-1) + fib(n-2)); fib(15)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 10
+            },
+            "notes": "Fibonacci exceeds limit - depth of 15 > limit of 10"
+        },
+        {
+            "id": "recursion_just_over_limit",
+            "input": "countdown(n) := if(n <= 0, 0, countdown(n - 1)); countdown(20)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 10
+            },
+            "notes": "Twenty do not, and the engine says so rather than exhausting the JVM stack"
+        },
+        {
+            "id": "recursion_just_under_limit",
+            "input": "countdown(n) := if(n <= 0, 0, countdown(n - 1)); countdown(9)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxRecursionDepth": 10
+            },
+            "notes": "Nine nested calls fit inside a limit of ten"
+        },
+        {
+            "id": "recursion_limited_001",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(5)",
+            "expected": 120.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxRecursionDepth": 100
+            },
+            "notes": "User-defined recursive function within limit"
+        },
+        {
+            "id": "recursion_limited_002",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(10)",
+            "expected": 3628800.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxRecursionDepth": 100
+            },
+            "notes": "Deeper recursion still within limit"
+        },
+        {
+            "id": "recursion_nested_001",
+            "input": "sum_range(start, end) := if(start > end, 0, start + sum_range(start + 1, end)); sum_range(1, 10)",
+            "expected": 55.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxRecursionDepth": 100
+            },
+            "notes": "Tail-recursive sum within limit"
+        },
+        {
+            "id": "recursion_nested_exceeds_001",
+            "input": "sum_range(start, end) := if(start > end, 0, start + sum_range(start + 1, end)); sum_range(1, 200)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 100
+            },
+            "notes": "Tail-recursive sum exceeds limit"
+        },
+        {
+            "id": "recursion_normal_001",
+            "input": "factorial(5)",
+            "expected": 120.0,
+            "expectedType": "NodeRational",
+            "config": {
+                "maxRecursionDepth": 1000
+            },
+            "notes": "Normal recursion with default limit"
+        },
+        {
+            "id": "recursion_shallow_limit_001",
+            "input": "fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(20)",
+            "expectError": true,
+            "expectedErrorType": "StackOverflowException",
+            "config": {
+                "maxRecursionDepth": 10
+            },
+            "notes": "Even modest recursion fails with very low limit"
+        },
+        {
+            "id": "vector_size_just_over",
+            "input": "{1, 2, 3, 4}",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "config": {
+                "maxVectorSize": 3
+            },
+            "notes": "Four do not"
+        },
+        {
+            "id": "vector_size_just_under",
+            "input": "{1, 2, 3}",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "config": {
+                "maxVectorSize": 3
+            },
+            "notes": "Three elements fit inside a limit of three"
+        }
+    ]
+}

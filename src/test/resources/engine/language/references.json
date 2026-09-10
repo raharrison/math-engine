@@ -1,0 +1,118 @@
+{
+    "category": "Language: references",
+    "description": "The explicit sigils that bypass name resolution: '@unit', '$variable' and '#constant'.",
+    "tests": [
+        {
+            "id": "explicit_const_001",
+            "input": "pi := 100; x := #pi; x",
+            "expected": 3.141592653589793,
+            "expectedType": "NodeDouble",
+            "notes": "Explicit # accesses immutable constant registry"
+        },
+        {
+            "id": "explicit_const_002",
+            "input": "pi := 10; e := 5; sqrt(#pi^2 + #e^2)",
+            "expected": 4.154354402313313,
+            "expectedType": "NodeDouble",
+            "notes": "Explicit constants in complex expression"
+        },
+        {
+            "id": "explicit_mix_001",
+            "input": "x := 5; y := 10; $x + $y",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Multiple explicit variable references"
+        },
+        {
+            "id": "explicit_mix_002",
+            "input": "x := 2; y := 3; f(n) := n^2; f($x) + f($y)",
+            "expected": 13,
+            "expectedType": "NodeRational",
+            "notes": "Explicit variables as function arguments"
+        },
+        {
+            "id": "explicit_unit_001",
+            "input": "@meter",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Explicit @unit forces unit interpretation"
+        },
+        {
+            "id": "explicit_unit_002",
+            "input": "100 @meter",
+            "expected": "100.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Number multiplied by explicit unit reference"
+        },
+        {
+            "id": "explicit_unit_003",
+            "input": "100 @meter in feet",
+            "expected": "328.0839895013123 feet",
+            "expectedType": "NodeUnit",
+            "notes": "Explicit unit reference in conversion expression"
+        },
+        {
+            "id": "explicit_unit_004",
+            "input": "@fahrenheit in celsius",
+            "expected": "-17.22222222222217 celsius",
+            "expectedType": "NodeUnit",
+            "notes": "Unit conversion starting with explicit unit reference"
+        },
+        {
+            "id": "explicit_unit_005",
+            "input": "32 @fahrenheit in @celsius",
+            "expected": "0.0 celsius",
+            "expectedType": "NodeUnit",
+            "notes": "Both source and target as explicit unit references"
+        },
+        {
+            "id": "explicit_unit_006",
+            "input": "m := 5; 100 @m in feet",
+            "expected": "328.0839895013123 feet",
+            "expectedType": "NodeUnit",
+            "notes": "Explicit @ forces meter unit despite variable shadowing"
+        },
+        {
+            "id": "explicit_unit_007",
+            "input": "m := 999; (50 @meter + 50 @meter) in feet",
+            "expected": "328.0839895013123 feet",
+            "expectedType": "NodeUnit",
+            "notes": "Unit arithmetic with explicit references and variable shadowing"
+        },
+        {
+            "id": "explicit_unit_008",
+            "input": "5 @\"km/h\" in @mph",
+            "expected": "3.1068584466714393 miles_per_hour",
+            "expectedType": "NodeUnit",
+            "notes": "Unit arithmetic with quoted explicit reference"
+        },
+        {
+            "id": "explicit_unit_009",
+            "input": "5 mph in @\"km/h\"",
+            "expected": "8.046713562629149 kilometers_per_hour",
+            "expectedType": "NodeUnit",
+            "notes": "Unit arithmetic with quoted explicit reference"
+        },
+        {
+            "id": "explicit_var_001",
+            "input": "m := 5; $m + 10",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Explicit $ forces variable interpretation"
+        },
+        {
+            "id": "explicit_var_002",
+            "input": "pi := 100; $pi",
+            "expected": 100,
+            "expectedType": "NodeRational",
+            "notes": "Explicit $ forces variable despite constant name"
+        },
+        {
+            "id": "explicit_var_003",
+            "input": "f := 5; f(x) := x^2; $f",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Explicit $ gets variable even when function exists"
+        }
+    ]
+}

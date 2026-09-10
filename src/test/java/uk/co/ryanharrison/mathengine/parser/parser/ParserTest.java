@@ -28,7 +28,7 @@ class ParserTest {
     void setUp() {
         // Create registries from default config
         MathEngineConfig config = MathEngineConfig.defaults();
-        Set<String> functionNames = FunctionExecutor.of(config.functions()).getFunctionNames();
+        Set<String> functionNames = FunctionExecutor.of(config.functions()).getCallableNames();
         UnitRegistry unitRegistry = config.unitRegistry();
         ConstantRegistry constantRegistry = config.constantRegistry();
         KeywordRegistry keywordRegistry = config.keywordRegistry();

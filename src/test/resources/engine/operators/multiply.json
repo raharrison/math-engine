@@ -1,0 +1,1031 @@
+{
+    "category": "Operator: * (multiplication)",
+    "description": "Multiplication across every operand type, including string repetition and element-wise collection products.",
+    "tests": [
+        {
+            "id": "matrix_007",
+            "input": "[1, 2; 3, 4] * 2",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar multiplication"
+        },
+        {
+            "id": "matrix_008",
+            "input": "2 * [1, 2; 3, 4]",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar multiplication (reversed)"
+        },
+        {
+            "id": "matrix_015",
+            "input": "[1, 2; 3, 4] * [2, 3; 4, 5]",
+            "expected": [
+                [
+                    2,
+                    6
+                ],
+                [
+                    12,
+                    20
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise multiplication (Hadamard), NOT matrix multiply"
+        },
+        {
+            "id": "matrix_elementwise_001",
+            "input": "[[1, 2], [3, 4]] * [[5, 6], [7, 8]]",
+            "expected": [
+                [
+                    5,
+                    12
+                ],
+                [
+                    21,
+                    32
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Element-wise multiplication with *"
+        },
+        {
+            "id": "matrix_mult_003",
+            "input": "3 * [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    3,
+                    6
+                ],
+                [
+                    9,
+                    12
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar multiplication (reversed)"
+        },
+        {
+            "id": "matrix_scalar_001",
+            "input": "2 * [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    2,
+                    4
+                ],
+                [
+                    6,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Scalar multiplication"
+        },
+        {
+            "id": "mul_002",
+            "input": "0 * 1000",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Multiplication by zero"
+        },
+        {
+            "id": "mul_003",
+            "input": "1 * 42",
+            "expected": 42,
+            "expectedType": "NodeRational",
+            "notes": "Multiplicative identity"
+        },
+        {
+            "id": "mul_004",
+            "input": "-3 * 4",
+            "expected": -12,
+            "expectedType": "NodeRational",
+            "notes": "Negative times positive"
+        },
+        {
+            "id": "mul_005",
+            "input": "-3 * -4",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "Negative times negative"
+        },
+        {
+            "id": "mul_007",
+            "input": "2.5 * 4",
+            "expected": 10.0,
+            "expectedType": "NodeRational",
+            "notes": "Decimal multiplication"
+        },
+        {
+            "id": "multiply_types_boolean_boolean",
+            "input": "(true) * (true)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Boolean multiplies a boolean"
+        },
+        {
+            "id": "multiply_types_boolean_double",
+            "input": "(true) * (2.5d)",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean multiplies a double"
+        },
+        {
+            "id": "multiply_types_boolean_matrix",
+            "input": "(true) * ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Boolean multiplies a matrix"
+        },
+        {
+            "id": "multiply_types_boolean_percent",
+            "input": "(true) * (20%)",
+            "expected": "20.0%",
+            "expectedType": "NodePercent",
+            "notes": "Boolean multiplies a percent"
+        },
+        {
+            "id": "multiply_types_boolean_range",
+            "input": "(true) * (1..2)",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean multiplies a range"
+        },
+        {
+            "id": "multiply_types_boolean_rational",
+            "input": "(true) * (3)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Boolean multiplies a rational"
+        },
+        {
+            "id": "multiply_types_boolean_string",
+            "input": "(true) * (\"ab\")",
+            "expected": "ab",
+            "expectedType": "NodeString",
+            "notes": "Boolean multiplies a string"
+        },
+        {
+            "id": "multiply_types_boolean_unit",
+            "input": "(true) * (4 meters)",
+            "expected": "4.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Boolean multiplies a unit"
+        },
+        {
+            "id": "multiply_types_boolean_vector",
+            "input": "(true) * ({1, 2})",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean multiplies a vector"
+        },
+        {
+            "id": "multiply_types_double_boolean",
+            "input": "(2.5d) * (true)",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double multiplies a boolean"
+        },
+        {
+            "id": "multiply_types_double_double",
+            "input": "(2.5d) * (2.5d)",
+            "expected": 6.25,
+            "expectedType": "NodeDouble",
+            "notes": "Double multiplies a double"
+        },
+        {
+            "id": "multiply_types_double_matrix",
+            "input": "(2.5d) * ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    2.5,
+                    5.0
+                ],
+                [
+                    7.5,
+                    10.0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Double multiplies a matrix"
+        },
+        {
+            "id": "multiply_types_double_percent",
+            "input": "(2.5d) * (20%)",
+            "expected": "50.0%",
+            "expectedType": "NodePercent",
+            "notes": "Double multiplies a percent"
+        },
+        {
+            "id": "multiply_types_double_range",
+            "input": "(2.5d) * (1..2)",
+            "expected": [
+                2.5,
+                5.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double multiplies a range"
+        },
+        {
+            "id": "multiply_types_double_rational",
+            "input": "(2.5d) * (3)",
+            "expected": 7.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double multiplies a rational"
+        },
+        {
+            "id": "multiply_types_double_string",
+            "input": "(2.5d) * (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Double multiplies a string is not defined"
+        },
+        {
+            "id": "multiply_types_double_unit",
+            "input": "(2.5d) * (4 meters)",
+            "expected": "10.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Double multiplies a unit"
+        },
+        {
+            "id": "multiply_types_double_vector",
+            "input": "(2.5d) * ({1, 2})",
+            "expected": [
+                2.5,
+                5.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double multiplies a vector"
+        },
+        {
+            "id": "multiply_types_matrix_boolean",
+            "input": "([1, 2; 3, 4]) * (true)",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplies a boolean"
+        },
+        {
+            "id": "multiply_types_matrix_double",
+            "input": "([1, 2; 3, 4]) * (2.5d)",
+            "expected": [
+                [
+                    2.5,
+                    5.0
+                ],
+                [
+                    7.5,
+                    10.0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplies a double"
+        },
+        {
+            "id": "multiply_types_matrix_matrix",
+            "input": "([1, 2; 3, 4]) * ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    4
+                ],
+                [
+                    9,
+                    16
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplies a matrix"
+        },
+        {
+            "id": "multiply_types_matrix_percent",
+            "input": "([1, 2; 3, 4]) * (20%)",
+            "expected": [
+                [
+                    "20.0%",
+                    "40.0%"
+                ],
+                [
+                    "60.00000000000001%",
+                    "80.0%"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplies a percent"
+        },
+        {
+            "id": "multiply_types_matrix_range",
+            "input": "([1, 2; 3, 4]) * (1..2)",
+            "expected": [
+                [
+                    1,
+                    4
+                ],
+                [
+                    3,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplies a range"
+        },
+        {
+            "id": "multiply_types_matrix_rational",
+            "input": "([1, 2; 3, 4]) * (3)",
+            "expected": [
+                [
+                    3,
+                    6
+                ],
+                [
+                    9,
+                    12
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplies a rational"
+        },
+        {
+            "id": "multiply_types_matrix_string",
+            "input": "([1, 2; 3, 4]) * (\"ab\")",
+            "expected": [
+                [
+                    "ab",
+                    "abab"
+                ],
+                [
+                    "ababab",
+                    "abababab"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplies a string"
+        },
+        {
+            "id": "multiply_types_matrix_unit",
+            "input": "([1, 2; 3, 4]) * (4 meters)",
+            "expected": [
+                [
+                    "4.0 meters",
+                    "8.0 meters"
+                ],
+                [
+                    "12.0 meters",
+                    "16.0 meters"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplies a unit"
+        },
+        {
+            "id": "multiply_types_matrix_vector",
+            "input": "([1, 2; 3, 4]) * ({1, 2})",
+            "expected": [
+                [
+                    1,
+                    4
+                ],
+                [
+                    3,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix multiplies a vector"
+        },
+        {
+            "id": "multiply_types_percent_boolean",
+            "input": "(20%) * (true)",
+            "expected": "20.0%",
+            "expectedType": "NodePercent",
+            "notes": "Percent multiplies a boolean"
+        },
+        {
+            "id": "multiply_types_percent_double",
+            "input": "(20%) * (2.5d)",
+            "expected": "50.0%",
+            "expectedType": "NodePercent",
+            "notes": "Percent multiplies a double"
+        },
+        {
+            "id": "multiply_types_percent_matrix",
+            "input": "(20%) * ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "20.0%",
+                    "40.0%"
+                ],
+                [
+                    "60.00000000000001%",
+                    "80.0%"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Percent multiplies a matrix"
+        },
+        {
+            "id": "multiply_types_percent_percent",
+            "input": "(20%) * (20%)",
+            "expected": "4.000000000000001%",
+            "expectedType": "NodePercent",
+            "notes": "Percent multiplies a percent"
+        },
+        {
+            "id": "multiply_types_percent_range",
+            "input": "(20%) * (1..2)",
+            "expected": [
+                "20.0%",
+                "40.0%"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent multiplies a range"
+        },
+        {
+            "id": "multiply_types_percent_rational",
+            "input": "(20%) * (3)",
+            "expected": "60.00000000000001%",
+            "expectedType": "NodePercent",
+            "notes": "Percent multiplies a rational"
+        },
+        {
+            "id": "multiply_types_percent_string",
+            "input": "(20%) * (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Percent multiplies a string is not defined"
+        },
+        {
+            "id": "multiply_types_percent_unit",
+            "input": "(20%) * (4 meters)",
+            "expected": "0.8 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Percent multiplies a unit"
+        },
+        {
+            "id": "multiply_types_percent_vector",
+            "input": "(20%) * ({1, 2})",
+            "expected": [
+                "20.0%",
+                "40.0%"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent multiplies a vector"
+        },
+        {
+            "id": "multiply_types_range_boolean",
+            "input": "(1..2) * (true)",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range multiplies a boolean"
+        },
+        {
+            "id": "multiply_types_range_double",
+            "input": "(1..2) * (2.5d)",
+            "expected": [
+                2.5,
+                5.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range multiplies a double"
+        },
+        {
+            "id": "multiply_types_range_matrix",
+            "input": "(1..2) * ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    4
+                ],
+                [
+                    3,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Range multiplies a matrix"
+        },
+        {
+            "id": "multiply_types_range_percent",
+            "input": "(1..2) * (20%)",
+            "expected": [
+                "20.0%",
+                "40.0%"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range multiplies a percent"
+        },
+        {
+            "id": "multiply_types_range_range",
+            "input": "(1..2) * (1..2)",
+            "expected": [
+                1,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range multiplies a range"
+        },
+        {
+            "id": "multiply_types_range_rational",
+            "input": "(1..2) * (3)",
+            "expected": [
+                3,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range multiplies a rational"
+        },
+        {
+            "id": "multiply_types_range_string",
+            "input": "(1..2) * (\"ab\")",
+            "expected": [
+                "ab",
+                "abab"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range multiplies a string"
+        },
+        {
+            "id": "multiply_types_range_unit",
+            "input": "(1..2) * (4 meters)",
+            "expected": [
+                "4.0 meters",
+                "8.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range multiplies a unit"
+        },
+        {
+            "id": "multiply_types_range_vector",
+            "input": "(1..2) * ({1, 2})",
+            "expected": [
+                1,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range multiplies a vector"
+        },
+        {
+            "id": "multiply_types_rational_boolean",
+            "input": "(3) * (true)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Rational multiplies a boolean"
+        },
+        {
+            "id": "multiply_types_rational_double",
+            "input": "(3) * (2.5d)",
+            "expected": 7.5,
+            "expectedType": "NodeDouble",
+            "notes": "Rational multiplies a double"
+        },
+        {
+            "id": "multiply_types_rational_matrix",
+            "input": "(3) * ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    3,
+                    6
+                ],
+                [
+                    9,
+                    12
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Rational multiplies a matrix"
+        },
+        {
+            "id": "multiply_types_rational_percent",
+            "input": "(3) * (20%)",
+            "expected": "60.00000000000001%",
+            "expectedType": "NodePercent",
+            "notes": "Rational multiplies a percent"
+        },
+        {
+            "id": "multiply_types_rational_range",
+            "input": "(3) * (1..2)",
+            "expected": [
+                3,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational multiplies a range"
+        },
+        {
+            "id": "multiply_types_rational_rational",
+            "input": "(3) * (3)",
+            "expected": 9,
+            "expectedType": "NodeRational",
+            "notes": "Rational multiplies a rational"
+        },
+        {
+            "id": "multiply_types_rational_string",
+            "input": "(3) * (\"ab\")",
+            "expected": "ababab",
+            "expectedType": "NodeString",
+            "notes": "Rational multiplies a string"
+        },
+        {
+            "id": "multiply_types_rational_unit",
+            "input": "(3) * (4 meters)",
+            "expected": "12.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Rational multiplies a unit"
+        },
+        {
+            "id": "multiply_types_rational_vector",
+            "input": "(3) * ({1, 2})",
+            "expected": [
+                3,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational multiplies a vector"
+        },
+        {
+            "id": "multiply_types_string_boolean",
+            "input": "(\"ab\") * (true)",
+            "expected": "ab",
+            "expectedType": "NodeString",
+            "notes": "String multiplies a boolean"
+        },
+        {
+            "id": "multiply_types_string_double",
+            "input": "(\"ab\") * (2.5d)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String multiplies a double is not defined"
+        },
+        {
+            "id": "multiply_types_string_matrix",
+            "input": "(\"ab\") * ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "ab",
+                    "abab"
+                ],
+                [
+                    "ababab",
+                    "abababab"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "String multiplies a matrix"
+        },
+        {
+            "id": "multiply_types_string_percent",
+            "input": "(\"ab\") * (20%)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String multiplies a percent is not defined"
+        },
+        {
+            "id": "multiply_types_string_range",
+            "input": "(\"ab\") * (1..2)",
+            "expected": [
+                "ab",
+                "abab"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "String multiplies a range"
+        },
+        {
+            "id": "multiply_types_string_rational",
+            "input": "(\"ab\") * (3)",
+            "expected": "ababab",
+            "expectedType": "NodeString",
+            "notes": "String multiplies a rational"
+        },
+        {
+            "id": "multiply_types_string_string",
+            "input": "(\"ab\") * (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String multiplies a string is not defined"
+        },
+        {
+            "id": "multiply_types_string_unit",
+            "input": "(\"ab\") * (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String multiplies a unit is not defined"
+        },
+        {
+            "id": "multiply_types_string_vector",
+            "input": "(\"ab\") * ({1, 2})",
+            "expected": [
+                "ab",
+                "abab"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "String multiplies a vector"
+        },
+        {
+            "id": "multiply_types_unit_boolean",
+            "input": "(4 meters) * (true)",
+            "expected": "4.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit multiplies a boolean"
+        },
+        {
+            "id": "multiply_types_unit_double",
+            "input": "(4 meters) * (2.5d)",
+            "expected": "10.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit multiplies a double"
+        },
+        {
+            "id": "multiply_types_unit_matrix",
+            "input": "(4 meters) * ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "4.0 meters",
+                    "8.0 meters"
+                ],
+                [
+                    "12.0 meters",
+                    "16.0 meters"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Unit multiplies a matrix"
+        },
+        {
+            "id": "multiply_types_unit_percent",
+            "input": "(4 meters) * (20%)",
+            "expected": "0.8 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit multiplies a percent"
+        },
+        {
+            "id": "multiply_types_unit_range",
+            "input": "(4 meters) * (1..2)",
+            "expected": [
+                "4.0 meters",
+                "8.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit multiplies a range"
+        },
+        {
+            "id": "multiply_types_unit_rational",
+            "input": "(4 meters) * (3)",
+            "expected": "12.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit multiplies a rational"
+        },
+        {
+            "id": "multiply_types_unit_string",
+            "input": "(4 meters) * (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit multiplies a string is not defined"
+        },
+        {
+            "id": "multiply_types_unit_unit",
+            "input": "(4 meters) * (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit multiplies a unit is not defined"
+        },
+        {
+            "id": "multiply_types_unit_vector",
+            "input": "(4 meters) * ({1, 2})",
+            "expected": [
+                "4.0 meters",
+                "8.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit multiplies a vector"
+        },
+        {
+            "id": "multiply_types_vector_boolean",
+            "input": "({1, 2}) * (true)",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector multiplies a boolean"
+        },
+        {
+            "id": "multiply_types_vector_double",
+            "input": "({1, 2}) * (2.5d)",
+            "expected": [
+                2.5,
+                5.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector multiplies a double"
+        },
+        {
+            "id": "multiply_types_vector_matrix",
+            "input": "({1, 2}) * ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    4
+                ],
+                [
+                    3,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Vector multiplies a matrix"
+        },
+        {
+            "id": "multiply_types_vector_percent",
+            "input": "({1, 2}) * (20%)",
+            "expected": [
+                "20.0%",
+                "40.0%"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector multiplies a percent"
+        },
+        {
+            "id": "multiply_types_vector_range",
+            "input": "({1, 2}) * (1..2)",
+            "expected": [
+                1,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector multiplies a range"
+        },
+        {
+            "id": "multiply_types_vector_rational",
+            "input": "({1, 2}) * (3)",
+            "expected": [
+                3,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector multiplies a rational"
+        },
+        {
+            "id": "multiply_types_vector_string",
+            "input": "({1, 2}) * (\"ab\")",
+            "expected": [
+                "ab",
+                "abab"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector multiplies a string"
+        },
+        {
+            "id": "multiply_types_vector_unit",
+            "input": "({1, 2}) * (4 meters)",
+            "expected": [
+                "4.0 meters",
+                "8.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector multiplies a unit"
+        },
+        {
+            "id": "multiply_types_vector_vector",
+            "input": "({1, 2}) * ({1, 2})",
+            "expected": [
+                1,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector multiplies a vector"
+        },
+        {
+            "id": "vector_006",
+            "input": "{1, 2} * {3, 4}",
+            "expected": [
+                3,
+                8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise multiplication (Hadamard product)"
+        },
+        {
+            "id": "vector_008",
+            "input": "{1, 2, 3} * 2",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar multiplication (vector * scalar)"
+        },
+        {
+            "id": "vector_009",
+            "input": "2 * {1, 2, 3}",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar multiplication (scalar * vector)"
+        },
+        {
+            "id": "vector_mult_001",
+            "input": "{1, 2, 3} * {4, 5, 6}",
+            "expected": [
+                4,
+                10,
+                18
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise multiplication"
+        },
+        {
+            "id": "vector_mult_003",
+            "input": "3 * {1, 2, 3}",
+            "expected": [
+                3,
+                6,
+                9
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Scalar multiplication (reversed)"
+        },
+        {
+            "id": "fractional_count",
+            "input": "\"ab\" * 2.5",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "expectedErrorMessage": "fractional",
+            "notes": "A fractional count is refused rather than rounded down to 'abab'"
+        },
+        {
+            "id": "percent_count",
+            "input": "20% * \"ab\"",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "A percentage is a fractional count, so it fails the same way rather than repeating zero times"
+        },
+        {
+            "id": "quantity_count",
+            "input": "(4 meters) * \"ab\"",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Repeating a string four metres times means nothing"
+        },
+        {
+            "id": "whole_count",
+            "input": "\"ab\" * 4",
+            "expected": "abababab",
+            "expectedType": "NodeString",
+            "notes": "A whole count still works"
+        },
+        {
+            "id": "unit_times_unit",
+            "input": "(4 meters) * (2 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Two labels cannot merge into a name the engine has, so multiplying quantities is refused"
+        }
+    ]
+}

@@ -1,0 +1,622 @@
+{
+    "category": "Operator: != (inequality)",
+    "description": "The complement of equality, held to the same type rules.",
+    "tests": [
+        {
+            "id": "matrix_neq_001",
+            "input": "[[1, 2], [3, 4]] != [[5, 6], [7, 8]]",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix not equal"
+        },
+        {
+            "id": "neq_001",
+            "input": "5 != 5",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Inequality: equal values"
+        },
+        {
+            "id": "neq_002",
+            "input": "5 != 6",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Inequality: unequal values"
+        },
+        {
+            "id": "neq_003",
+            "input": "0 != 1",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Zero not equal to one"
+        },
+        {
+            "id": "neq_004",
+            "input": "-5 != 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Negative not equal to positive"
+        },
+        {
+            "id": "not_equal_types_boolean_boolean",
+            "input": "(true) != (true)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean compares a boolean"
+        },
+        {
+            "id": "not_equal_types_boolean_double",
+            "input": "(true) != (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean compares a double"
+        },
+        {
+            "id": "not_equal_types_boolean_matrix",
+            "input": "(true) != ([1, 2; 3, 4])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean compares a matrix"
+        },
+        {
+            "id": "not_equal_types_boolean_percent",
+            "input": "(true) != (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean compares a percent"
+        },
+        {
+            "id": "not_equal_types_boolean_range",
+            "input": "(true) != (1..2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean compares a range"
+        },
+        {
+            "id": "not_equal_types_boolean_rational",
+            "input": "(true) != (3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean compares a rational"
+        },
+        {
+            "id": "not_equal_types_boolean_string",
+            "input": "(true) != (\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean compares a string"
+        },
+        {
+            "id": "not_equal_types_boolean_unit",
+            "input": "(true) != (4 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean compares a unit"
+        },
+        {
+            "id": "not_equal_types_boolean_vector",
+            "input": "(true) != ({1, 2})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean compares a vector"
+        },
+        {
+            "id": "not_equal_types_double_boolean",
+            "input": "(2.5d) != (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double compares a boolean"
+        },
+        {
+            "id": "not_equal_types_double_double",
+            "input": "(2.5d) != (2.5d)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Double compares a double"
+        },
+        {
+            "id": "not_equal_types_double_matrix",
+            "input": "(2.5d) != ([1, 2; 3, 4])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double compares a matrix"
+        },
+        {
+            "id": "not_equal_types_double_percent",
+            "input": "(2.5d) != (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double compares a percent"
+        },
+        {
+            "id": "not_equal_types_double_range",
+            "input": "(2.5d) != (1..2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double compares a range"
+        },
+        {
+            "id": "not_equal_types_double_rational",
+            "input": "(2.5d) != (3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double compares a rational"
+        },
+        {
+            "id": "not_equal_types_double_string",
+            "input": "(2.5d) != (\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double compares a string"
+        },
+        {
+            "id": "not_equal_types_double_unit",
+            "input": "(2.5d) != (4 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double compares a unit"
+        },
+        {
+            "id": "not_equal_types_double_vector",
+            "input": "(2.5d) != ({1, 2})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double compares a vector"
+        },
+        {
+            "id": "not_equal_types_matrix_boolean",
+            "input": "([1, 2; 3, 4]) != (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix compares a boolean"
+        },
+        {
+            "id": "not_equal_types_matrix_double",
+            "input": "([1, 2; 3, 4]) != (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix compares a double"
+        },
+        {
+            "id": "not_equal_types_matrix_matrix",
+            "input": "([1, 2; 3, 4]) != ([1, 2; 3, 4])",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix compares a matrix"
+        },
+        {
+            "id": "not_equal_types_matrix_percent",
+            "input": "([1, 2; 3, 4]) != (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix compares a percent"
+        },
+        {
+            "id": "not_equal_types_matrix_range",
+            "input": "([1, 2; 3, 4]) != (1..2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix compares a range"
+        },
+        {
+            "id": "not_equal_types_matrix_rational",
+            "input": "([1, 2; 3, 4]) != (3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix compares a rational"
+        },
+        {
+            "id": "not_equal_types_matrix_string",
+            "input": "([1, 2; 3, 4]) != (\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix compares a string"
+        },
+        {
+            "id": "not_equal_types_matrix_unit",
+            "input": "([1, 2; 3, 4]) != (4 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix compares a unit"
+        },
+        {
+            "id": "not_equal_types_matrix_vector",
+            "input": "([1, 2; 3, 4]) != ({1, 2})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Matrix compares a vector"
+        },
+        {
+            "id": "not_equal_types_percent_boolean",
+            "input": "(20%) != (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent compares a boolean"
+        },
+        {
+            "id": "not_equal_types_percent_double",
+            "input": "(20%) != (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent compares a double"
+        },
+        {
+            "id": "not_equal_types_percent_matrix",
+            "input": "(20%) != ([1, 2; 3, 4])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent compares a matrix"
+        },
+        {
+            "id": "not_equal_types_percent_percent",
+            "input": "(20%) != (20%)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent compares a percent"
+        },
+        {
+            "id": "not_equal_types_percent_range",
+            "input": "(20%) != (1..2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent compares a range"
+        },
+        {
+            "id": "not_equal_types_percent_rational",
+            "input": "(20%) != (3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent compares a rational"
+        },
+        {
+            "id": "not_equal_types_percent_string",
+            "input": "(20%) != (\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent compares a string"
+        },
+        {
+            "id": "not_equal_types_percent_unit",
+            "input": "(20%) != (4 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent compares a unit"
+        },
+        {
+            "id": "not_equal_types_percent_vector",
+            "input": "(20%) != ({1, 2})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent compares a vector"
+        },
+        {
+            "id": "not_equal_types_range_boolean",
+            "input": "(1..2) != (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Range compares a boolean"
+        },
+        {
+            "id": "not_equal_types_range_double",
+            "input": "(1..2) != (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Range compares a double"
+        },
+        {
+            "id": "not_equal_types_range_matrix",
+            "input": "(1..2) != ([1, 2; 3, 4])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Range compares a matrix"
+        },
+        {
+            "id": "not_equal_types_range_percent",
+            "input": "(1..2) != (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Range compares a percent"
+        },
+        {
+            "id": "not_equal_types_range_range",
+            "input": "(1..2) != (1..2)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Range compares a range"
+        },
+        {
+            "id": "not_equal_types_range_rational",
+            "input": "(1..2) != (3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Range compares a rational"
+        },
+        {
+            "id": "not_equal_types_range_string",
+            "input": "(1..2) != (\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Range compares a string"
+        },
+        {
+            "id": "not_equal_types_range_unit",
+            "input": "(1..2) != (4 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Range compares a unit"
+        },
+        {
+            "id": "not_equal_types_range_vector",
+            "input": "(1..2) != ({1, 2})",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Range compares a vector"
+        },
+        {
+            "id": "not_equal_types_rational_boolean",
+            "input": "(3) != (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational compares a boolean"
+        },
+        {
+            "id": "not_equal_types_rational_double",
+            "input": "(3) != (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational compares a double"
+        },
+        {
+            "id": "not_equal_types_rational_matrix",
+            "input": "(3) != ([1, 2; 3, 4])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational compares a matrix"
+        },
+        {
+            "id": "not_equal_types_rational_percent",
+            "input": "(3) != (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational compares a percent"
+        },
+        {
+            "id": "not_equal_types_rational_range",
+            "input": "(3) != (1..2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational compares a range"
+        },
+        {
+            "id": "not_equal_types_rational_rational",
+            "input": "(3) != (3)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational compares a rational"
+        },
+        {
+            "id": "not_equal_types_rational_string",
+            "input": "(3) != (\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational compares a string"
+        },
+        {
+            "id": "not_equal_types_rational_unit",
+            "input": "(3) != (4 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational compares a unit"
+        },
+        {
+            "id": "not_equal_types_rational_vector",
+            "input": "(3) != ({1, 2})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational compares a vector"
+        },
+        {
+            "id": "not_equal_types_string_boolean",
+            "input": "(\"ab\") != (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String compares a boolean"
+        },
+        {
+            "id": "not_equal_types_string_double",
+            "input": "(\"ab\") != (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String compares a double"
+        },
+        {
+            "id": "not_equal_types_string_matrix",
+            "input": "(\"ab\") != ([1, 2; 3, 4])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String compares a matrix"
+        },
+        {
+            "id": "not_equal_types_string_percent",
+            "input": "(\"ab\") != (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String compares a percent"
+        },
+        {
+            "id": "not_equal_types_string_range",
+            "input": "(\"ab\") != (1..2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String compares a range"
+        },
+        {
+            "id": "not_equal_types_string_rational",
+            "input": "(\"ab\") != (3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String compares a rational"
+        },
+        {
+            "id": "not_equal_types_string_string",
+            "input": "(\"ab\") != (\"ab\")",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "String compares a string"
+        },
+        {
+            "id": "not_equal_types_string_unit",
+            "input": "(\"ab\") != (4 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String compares a unit"
+        },
+        {
+            "id": "not_equal_types_string_vector",
+            "input": "(\"ab\") != ({1, 2})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String compares a vector"
+        },
+        {
+            "id": "not_equal_types_unit_boolean",
+            "input": "(4 meters) != (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit compares a boolean"
+        },
+        {
+            "id": "not_equal_types_unit_double",
+            "input": "(4 meters) != (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit compares a double"
+        },
+        {
+            "id": "not_equal_types_unit_matrix",
+            "input": "(4 meters) != ([1, 2; 3, 4])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit compares a matrix"
+        },
+        {
+            "id": "not_equal_types_unit_percent",
+            "input": "(4 meters) != (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit compares a percent"
+        },
+        {
+            "id": "not_equal_types_unit_range",
+            "input": "(4 meters) != (1..2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit compares a range"
+        },
+        {
+            "id": "not_equal_types_unit_rational",
+            "input": "(4 meters) != (3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit compares a rational"
+        },
+        {
+            "id": "not_equal_types_unit_string",
+            "input": "(4 meters) != (\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit compares a string"
+        },
+        {
+            "id": "not_equal_types_unit_unit",
+            "input": "(4 meters) != (4 meters)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit compares a unit"
+        },
+        {
+            "id": "not_equal_types_unit_vector",
+            "input": "(4 meters) != ({1, 2})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit compares a vector"
+        },
+        {
+            "id": "not_equal_types_vector_boolean",
+            "input": "({1, 2}) != (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector compares a boolean"
+        },
+        {
+            "id": "not_equal_types_vector_double",
+            "input": "({1, 2}) != (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector compares a double"
+        },
+        {
+            "id": "not_equal_types_vector_matrix",
+            "input": "({1, 2}) != ([1, 2; 3, 4])",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector compares a matrix"
+        },
+        {
+            "id": "not_equal_types_vector_percent",
+            "input": "({1, 2}) != (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector compares a percent"
+        },
+        {
+            "id": "not_equal_types_vector_range",
+            "input": "({1, 2}) != (1..2)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector compares a range"
+        },
+        {
+            "id": "not_equal_types_vector_rational",
+            "input": "({1, 2}) != (3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector compares a rational"
+        },
+        {
+            "id": "not_equal_types_vector_string",
+            "input": "({1, 2}) != (\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector compares a string"
+        },
+        {
+            "id": "not_equal_types_vector_unit",
+            "input": "({1, 2}) != (4 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector compares a unit"
+        },
+        {
+            "id": "not_equal_types_vector_vector",
+            "input": "({1, 2}) != ({1, 2})",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector compares a vector"
+        },
+        {
+            "id": "vector_neq_001",
+            "input": "{1, 2, 3} != {4, 5, 6}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Vector not equal"
+        },
+        {
+            "id": "vector_neq_002",
+            "input": "{5, 5, 5} != {5, 5, 5}",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Identical vectors are equal"
+        }
+    ]
+}

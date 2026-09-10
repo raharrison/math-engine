@@ -181,12 +181,13 @@ class SymbolRegistryTest {
             "RANGE, 7",
             "PLUS, 8",
             "MINUS, 8",
-            "MULTIPLY, 9",
-            "DIVIDE, 9",
-            "MOD, 9",
-            "OF, 9",
-            "AT, 9",
-            "POWER, 10"
+            // 9 is reserved for unit conversion, which is a keyword rather than a symbol
+            "MULTIPLY, 10",
+            "DIVIDE, 10",
+            "MOD, 10",
+            "OF, 10",
+            "AT, 10",
+            "POWER, 11"
     })
     void getPrecedenceReturnsCorrectValue(TokenType type, int expectedPrecedence) {
         int precedence = registry.getPrecedence(type);

@@ -1,0 +1,48 @@
+{
+    "category": "Operator: % (percent)",
+    "description": "The postfix percent sign, which makes a percentage rather than dividing by a hundred straight away.",
+    "tests": [
+        {
+            "id": "pct_004",
+            "input": "0%",
+            "expected": 0.0,
+            "expectedType": "NodePercent",
+            "notes": "Zero percent"
+        },
+        {
+            "id": "pct_006",
+            "input": "1%",
+            "expected": 0.01,
+            "expectedType": "NodePercent",
+            "notes": "One percent"
+        },
+        {
+            "id": "pct_009",
+            "input": "50% + 50%",
+            "expected": "100%",
+            "expectedType": "NodePercent",
+            "notes": "Percent + Percent returns NodePercent"
+        },
+        {
+            "id": "pct_010",
+            "input": "100% - 25%",
+            "expected": "75%",
+            "expectedType": "NodePercent",
+            "notes": "Percent - Percent returns NodePercent"
+        },
+        {
+            "id": "unary_015",
+            "input": "100%",
+            "expected": 1.0,
+            "expectedType": "NodePercent",
+            "notes": "Percent literal: 100% = 1.0"
+        },
+        {
+            "id": "unary_016",
+            "input": "25%",
+            "expected": 0.25,
+            "expectedType": "NodePercent",
+            "notes": "Percent literal: 25% = 0.25"
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+{
+    "category": "Operator: !! (double factorial)",
+    "description": "The postfix double factorial, over even, odd and degenerate arguments.",
+    "tests": [
+        {
+            "id": "dfact_003",
+            "input": "0!!",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial of 0"
+        },
+        {
+            "id": "dfact_004",
+            "input": "1!!",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial of 1"
+        },
+        {
+            "id": "dfact_005",
+            "input": "7!!",
+            "expected": 105,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial: 7!! = 7 * 5 * 3 * 1"
+        },
+        {
+            "id": "dfact_006",
+            "input": "8!!",
+            "expected": 384,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial: 8!! = 8 * 6 * 4 * 2"
+        },
+        {
+            "id": "unary_012",
+            "input": "5!!",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial: 5!! = 5 * 3 * 1"
+        },
+        {
+            "id": "unary_013",
+            "input": "6!!",
+            "expected": 48,
+            "expectedType": "NodeRational",
+            "notes": "Double factorial: 6!! = 6 * 4 * 2"
+        }
+    ]
+}

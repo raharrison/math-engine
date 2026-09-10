@@ -113,7 +113,7 @@ public final class SymbolRegistry {
                 .displayName("multiplication")
                 .stringFormat("*")
                 .asciiMathFormat("*")
-                .precedence(9)
+                .precedence(10)
                 .isBinaryOperator(true)
                 .build());
 
@@ -123,7 +123,7 @@ public final class SymbolRegistry {
                 .displayName("division")
                 .stringFormat("/")
                 .asciiMathFormat("/")
-                .precedence(9)
+                .precedence(10)
                 .isBinaryOperator(true)
                 .build());
 
@@ -133,7 +133,7 @@ public final class SymbolRegistry {
                 .displayName("exponentiation")
                 .stringFormat("^")
                 .asciiMathFormat("^")
-                .precedence(10)
+                .precedence(11)
                 .isBinaryOperator(true)
                 .build());
 
@@ -143,7 +143,7 @@ public final class SymbolRegistry {
                 .displayName("modulo")
                 .stringFormat("%")
                 .asciiMathFormat("mod")
-                .precedence(9)
+                .precedence(10)
                 .isKeyword(true)
                 .isBinaryOperator(true)
                 .build());
@@ -247,7 +247,7 @@ public final class SymbolRegistry {
                 .displayName("of operator")
                 .stringFormat("of")
                 .asciiMathFormat("\"of\"")
-                .precedence(9)
+                .precedence(10)
                 .isKeyword(true)
                 .isBinaryOperator(true)
                 .build());
@@ -258,7 +258,7 @@ public final class SymbolRegistry {
                 .displayName("at operator")
                 .stringFormat("@")
                 .asciiMathFormat("@")
-                .precedence(9)
+                .precedence(10)
                 .isBinaryOperator(true)
                 .build());
 

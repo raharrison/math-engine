@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.function.special;
 
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.function.ArgTypes;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
@@ -138,8 +139,8 @@ public final class NumberTheoryFunctions {
             .inCategory(NUMBER_THEORY)
             .takingTyped(ArgTypes.longInt(), ArgTypes.longInt(), ArgTypes.longInt())
             .implementedBy((base, exp, mod, ctx) -> {
-                if (mod <= 0) throw new IllegalArgumentException("modpow: modulus must be positive");
-                if (exp < 0) throw new IllegalArgumentException("modpow: exponent must be non-negative");
+                if (mod <= 0) throw new DomainException("modpow: modulus must be positive");
+                if (exp < 0) throw new DomainException("modpow: exponent must be non-negative");
                 long result = 1;
                 long b = base % mod;
                 long e = exp;

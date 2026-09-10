@@ -1,0 +1,836 @@
+{
+    "category": "Operator: mod (modulo)",
+    "description": "Floor modulo, so the result takes the sign of the divisor, across every operand type.",
+    "tests": [
+        {
+            "id": "mod_001",
+            "input": "7 mod 3",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Modulo preserves rational for integer inputs"
+        },
+        {
+            "id": "mod_003_modulo",
+            "input": "15 mod 4",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Modulo with remainder"
+        },
+        {
+            "id": "mod_005",
+            "input": "7 mod -3",
+            "expected": -2,
+            "expectedType": "NodeRational",
+            "notes": "Floor modulo with negative divisor"
+        },
+        {
+            "id": "mod_006",
+            "input": "0 mod 5",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Zero modulo anything"
+        },
+        {
+            "id": "mod_zero_001",
+            "input": "5 mod 0",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "Modulo by zero"
+        },
+        {
+            "id": "mod_zero_001_modulo",
+            "input": "10 mod 0",
+            "expected": "NaN",
+            "expectedType": "NodeDouble",
+            "notes": "Modulo by zero produces NaN"
+        },
+        {
+            "id": "modulo_types_boolean_boolean",
+            "input": "(true) mod (true)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Boolean takes the modulo of a boolean"
+        },
+        {
+            "id": "modulo_types_boolean_double",
+            "input": "(true) mod (2.5d)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean takes the modulo of a double"
+        },
+        {
+            "id": "modulo_types_boolean_matrix",
+            "input": "(true) mod ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Boolean takes the modulo of a matrix"
+        },
+        {
+            "id": "modulo_types_boolean_percent",
+            "input": "(true) mod (20%)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean takes the modulo of a percent"
+        },
+        {
+            "id": "modulo_types_boolean_range",
+            "input": "(true) mod (1..2)",
+            "expected": [
+                0,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean takes the modulo of a range"
+        },
+        {
+            "id": "modulo_types_boolean_rational",
+            "input": "(true) mod (3)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Boolean takes the modulo of a rational"
+        },
+        {
+            "id": "modulo_types_boolean_string",
+            "input": "(true) mod (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Boolean takes the modulo of a string is not defined"
+        },
+        {
+            "id": "modulo_types_boolean_unit",
+            "input": "(true) mod (4 meters)",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "A boolean modulo a quantity keeps the label"
+        },
+        {
+            "id": "modulo_types_boolean_vector",
+            "input": "(true) mod ({1, 2})",
+            "expected": [
+                0,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean takes the modulo of a vector"
+        },
+        {
+            "id": "modulo_types_double_boolean",
+            "input": "(2.5d) mod (true)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double takes the modulo of a boolean"
+        },
+        {
+            "id": "modulo_types_double_double",
+            "input": "(2.5d) mod (2.5d)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Double takes the modulo of a double"
+        },
+        {
+            "id": "modulo_types_double_matrix",
+            "input": "(2.5d) mod ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0.5,
+                    0.5
+                ],
+                [
+                    2.5,
+                    2.5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Double takes the modulo of a matrix"
+        },
+        {
+            "id": "modulo_types_double_percent",
+            "input": "(2.5d) mod (20%)",
+            "expected": 0.09999999999999964,
+            "expectedType": "NodeDouble",
+            "notes": "Double takes the modulo of a percent"
+        },
+        {
+            "id": "modulo_types_double_range",
+            "input": "(2.5d) mod (1..2)",
+            "expected": [
+                0.5,
+                0.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double takes the modulo of a range"
+        },
+        {
+            "id": "modulo_types_double_rational",
+            "input": "(2.5d) mod (3)",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double takes the modulo of a rational"
+        },
+        {
+            "id": "modulo_types_double_string",
+            "input": "(2.5d) mod (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Double takes the modulo of a string is not defined"
+        },
+        {
+            "id": "modulo_types_double_unit",
+            "input": "(2.5d) mod (4 meters)",
+            "expected": "2.5 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A double modulo a quantity keeps the label"
+        },
+        {
+            "id": "modulo_types_double_vector",
+            "input": "(2.5d) mod ({1, 2})",
+            "expected": [
+                0.5,
+                0.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double takes the modulo of a vector"
+        },
+        {
+            "id": "modulo_types_matrix_boolean",
+            "input": "([1, 2; 3, 4]) mod (true)",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix takes the modulo of a boolean"
+        },
+        {
+            "id": "modulo_types_matrix_double",
+            "input": "([1, 2; 3, 4]) mod (2.5d)",
+            "expected": [
+                [
+                    1.0,
+                    2.0
+                ],
+                [
+                    0.5,
+                    1.5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix takes the modulo of a double"
+        },
+        {
+            "id": "modulo_types_matrix_matrix",
+            "input": "([1, 2; 3, 4]) mod ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix takes the modulo of a matrix"
+        },
+        {
+            "id": "modulo_types_matrix_percent",
+            "input": "([1, 2; 3, 4]) mod (20%)",
+            "expected": [
+                [
+                    0.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    0.0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix takes the modulo of a percent"
+        },
+        {
+            "id": "modulo_types_matrix_range",
+            "input": "([1, 2; 3, 4]) mod (1..2)",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix takes the modulo of a range"
+        },
+        {
+            "id": "modulo_types_matrix_rational",
+            "input": "([1, 2; 3, 4]) mod (3)",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    0,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix takes the modulo of a rational"
+        },
+        {
+            "id": "modulo_types_matrix_string",
+            "input": "([1, 2; 3, 4]) mod (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix takes the modulo of a string is not defined"
+        },
+        {
+            "id": "modulo_types_matrix_unit",
+            "input": "([1, 2; 3, 4]) mod (4 meters)",
+            "expected": [
+                [
+                    "1.0 meter",
+                    "2.0 meters"
+                ],
+                [
+                    "3.0 meters",
+                    "0.0 meters"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "A matrix modulo a quantity broadcasts, and every element keeps the label"
+        },
+        {
+            "id": "modulo_types_matrix_vector",
+            "input": "([1, 2; 3, 4]) mod ({1, 2})",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix takes the modulo of a vector"
+        },
+        {
+            "id": "modulo_types_percent_boolean",
+            "input": "(20%) mod (true)",
+            "expected": 0.2,
+            "expectedType": "NodeDouble",
+            "notes": "Percent takes the modulo of a boolean"
+        },
+        {
+            "id": "modulo_types_percent_double",
+            "input": "(20%) mod (2.5d)",
+            "expected": 0.2,
+            "expectedType": "NodeDouble",
+            "notes": "Percent takes the modulo of a double"
+        },
+        {
+            "id": "modulo_types_percent_matrix",
+            "input": "(20%) mod ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0.2,
+                    0.2
+                ],
+                [
+                    0.2,
+                    0.2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Percent takes the modulo of a matrix"
+        },
+        {
+            "id": "modulo_types_percent_percent",
+            "input": "(20%) mod (20%)",
+            "expected": "0.0%",
+            "expectedType": "NodePercent",
+            "notes": "Percent takes the modulo of a percent"
+        },
+        {
+            "id": "modulo_types_percent_range",
+            "input": "(20%) mod (1..2)",
+            "expected": [
+                0.2,
+                0.2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent takes the modulo of a range"
+        },
+        {
+            "id": "modulo_types_percent_rational",
+            "input": "(20%) mod (3)",
+            "expected": 0.2,
+            "expectedType": "NodeDouble",
+            "notes": "Percent takes the modulo of a rational"
+        },
+        {
+            "id": "modulo_types_percent_string",
+            "input": "(20%) mod (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Percent takes the modulo of a string is not defined"
+        },
+        {
+            "id": "modulo_types_percent_unit",
+            "input": "(20%) mod (4 meters)",
+            "expected": "0.2 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A percentage modulo a quantity keeps the label"
+        },
+        {
+            "id": "modulo_types_percent_vector",
+            "input": "(20%) mod ({1, 2})",
+            "expected": [
+                0.2,
+                0.2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent takes the modulo of a vector"
+        },
+        {
+            "id": "modulo_types_range_boolean",
+            "input": "(1..2) mod (true)",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range takes the modulo of a boolean"
+        },
+        {
+            "id": "modulo_types_range_double",
+            "input": "(1..2) mod (2.5d)",
+            "expected": [
+                1.0,
+                2.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range takes the modulo of a double"
+        },
+        {
+            "id": "modulo_types_range_matrix",
+            "input": "(1..2) mod ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    1,
+                    2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Range takes the modulo of a matrix"
+        },
+        {
+            "id": "modulo_types_range_percent",
+            "input": "(1..2) mod (20%)",
+            "expected": [
+                0.0,
+                0.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range takes the modulo of a percent"
+        },
+        {
+            "id": "modulo_types_range_range",
+            "input": "(1..2) mod (1..2)",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range takes the modulo of a range"
+        },
+        {
+            "id": "modulo_types_range_rational",
+            "input": "(1..2) mod (3)",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range takes the modulo of a rational"
+        },
+        {
+            "id": "modulo_types_range_string",
+            "input": "(1..2) mod (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range takes the modulo of a string is not defined"
+        },
+        {
+            "id": "modulo_types_range_unit",
+            "input": "(1..2) mod (4 meters)",
+            "expected": [
+                "1.0 meter",
+                "2.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A range modulo a quantity broadcasts over its members"
+        },
+        {
+            "id": "modulo_types_range_vector",
+            "input": "(1..2) mod ({1, 2})",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range takes the modulo of a vector"
+        },
+        {
+            "id": "modulo_types_rational_boolean",
+            "input": "(3) mod (true)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Rational takes the modulo of a boolean"
+        },
+        {
+            "id": "modulo_types_rational_double",
+            "input": "(3) mod (2.5d)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "Rational takes the modulo of a double"
+        },
+        {
+            "id": "modulo_types_rational_matrix",
+            "input": "(3) mod ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    0,
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Rational takes the modulo of a matrix"
+        },
+        {
+            "id": "modulo_types_rational_percent",
+            "input": "(3) mod (20%)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "Rational takes the modulo of a percent"
+        },
+        {
+            "id": "modulo_types_rational_range",
+            "input": "(3) mod (1..2)",
+            "expected": [
+                0,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational takes the modulo of a range"
+        },
+        {
+            "id": "modulo_types_rational_rational",
+            "input": "(3) mod (3)",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Rational takes the modulo of a rational"
+        },
+        {
+            "id": "modulo_types_rational_string",
+            "input": "(3) mod (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Rational takes the modulo of a string is not defined"
+        },
+        {
+            "id": "modulo_types_rational_unit",
+            "input": "(3) mod (4 meters)",
+            "expected": "3.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Three modulo four metres is three metres, since three is read in metres"
+        },
+        {
+            "id": "modulo_types_rational_vector",
+            "input": "(3) mod ({1, 2})",
+            "expected": [
+                0,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational takes the modulo of a vector"
+        },
+        {
+            "id": "modulo_types_string_boolean",
+            "input": "(\"ab\") mod (true)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String takes the modulo of a boolean is not defined"
+        },
+        {
+            "id": "modulo_types_string_double",
+            "input": "(\"ab\") mod (2.5d)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String takes the modulo of a double is not defined"
+        },
+        {
+            "id": "modulo_types_string_matrix",
+            "input": "(\"ab\") mod ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String takes the modulo of a matrix is not defined"
+        },
+        {
+            "id": "modulo_types_string_percent",
+            "input": "(\"ab\") mod (20%)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String takes the modulo of a percent is not defined"
+        },
+        {
+            "id": "modulo_types_string_range",
+            "input": "(\"ab\") mod (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String takes the modulo of a range is not defined"
+        },
+        {
+            "id": "modulo_types_string_rational",
+            "input": "(\"ab\") mod (3)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String takes the modulo of a rational is not defined"
+        },
+        {
+            "id": "modulo_types_string_string",
+            "input": "(\"ab\") mod (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String takes the modulo of a string is not defined"
+        },
+        {
+            "id": "modulo_types_string_unit",
+            "input": "(\"ab\") mod (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String takes the modulo of a unit is not defined"
+        },
+        {
+            "id": "modulo_types_string_vector",
+            "input": "(\"ab\") mod ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String takes the modulo of a vector is not defined"
+        },
+        {
+            "id": "modulo_types_unit_boolean",
+            "input": "(4 meters) mod (true)",
+            "expected": "0.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit takes the modulo of a boolean"
+        },
+        {
+            "id": "modulo_types_unit_double",
+            "input": "(4 meters) mod (2.5d)",
+            "expected": "1.5 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit takes the modulo of a double"
+        },
+        {
+            "id": "modulo_types_unit_matrix",
+            "input": "(4 meters) mod ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "0.0 meters",
+                    "0.0 meters"
+                ],
+                [
+                    "1.0 meter",
+                    "0.0 meters"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Unit takes the modulo of a matrix"
+        },
+        {
+            "id": "modulo_types_unit_percent",
+            "input": "(4 meters) mod (20%)",
+            "expected": "0.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit takes the modulo of a percent"
+        },
+        {
+            "id": "modulo_types_unit_range",
+            "input": "(4 meters) mod (1..2)",
+            "expected": [
+                "0.0 meters",
+                "0.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit takes the modulo of a range"
+        },
+        {
+            "id": "modulo_types_unit_rational",
+            "input": "(4 meters) mod (3)",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Unit takes the modulo of a rational"
+        },
+        {
+            "id": "modulo_types_unit_string",
+            "input": "(4 meters) mod (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit takes the modulo of a string is not defined"
+        },
+        {
+            "id": "modulo_types_unit_unit",
+            "input": "(4 meters) mod (4 meters)",
+            "expected": "0.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit takes the modulo of a unit"
+        },
+        {
+            "id": "modulo_types_unit_vector",
+            "input": "(4 meters) mod ({1, 2})",
+            "expected": [
+                "0.0 meters",
+                "0.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Unit takes the modulo of a vector"
+        },
+        {
+            "id": "modulo_types_vector_boolean",
+            "input": "({1, 2}) mod (true)",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector takes the modulo of a boolean"
+        },
+        {
+            "id": "modulo_types_vector_double",
+            "input": "({1, 2}) mod (2.5d)",
+            "expected": [
+                1.0,
+                2.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector takes the modulo of a double"
+        },
+        {
+            "id": "modulo_types_vector_matrix",
+            "input": "({1, 2}) mod ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    1,
+                    2
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Vector takes the modulo of a matrix"
+        },
+        {
+            "id": "modulo_types_vector_percent",
+            "input": "({1, 2}) mod (20%)",
+            "expected": [
+                0.0,
+                0.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector takes the modulo of a percent"
+        },
+        {
+            "id": "modulo_types_vector_range",
+            "input": "({1, 2}) mod (1..2)",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector takes the modulo of a range"
+        },
+        {
+            "id": "modulo_types_vector_rational",
+            "input": "({1, 2}) mod (3)",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector takes the modulo of a rational"
+        },
+        {
+            "id": "modulo_types_vector_string",
+            "input": "({1, 2}) mod (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector takes the modulo of a string is not defined"
+        },
+        {
+            "id": "modulo_types_vector_unit",
+            "input": "({1, 2}) mod (4 meters)",
+            "expected": [
+                "1.0 meter",
+                "2.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A vector modulo a quantity broadcasts over its elements"
+        },
+        {
+            "id": "modulo_types_vector_vector",
+            "input": "({1, 2}) mod ({1, 2})",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector takes the modulo of a vector"
+        },
+        {
+            "id": "modulo_keeps_unit",
+            "input": "(10 meters) mod 3",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "Ten metres modulo three is one metre, not a bare one: a scalar leaves the label in place"
+        },
+        {
+            "id": "modulo_keeps_unit_type",
+            "input": "typeof((10 meters) mod 3)",
+            "expected": "unit",
+            "expectedType": "NodeString",
+            "notes": "The result is still a quantity, so it can be converted and compared"
+        }
+    ]
+}

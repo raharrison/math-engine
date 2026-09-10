@@ -25,6 +25,8 @@ import java.util.*;
  */
 public final class UnitRegistry {
 
+    private static final UnitRegistry STANDARD = buildDefaults();
+
     private final Map<String, UnitDefinition> units;
     private final List<UnitDefinition> allUnits;
 
@@ -66,11 +68,18 @@ public final class UnitRegistry {
     }
 
     /**
+     * The standard registry. Immutable, so every engine shares one instance.
+     */
+    public static UnitRegistry withDefaults() {
+        return STANDARD;
+    }
+
+    /**
      * Creates a registry with standard unit definitions.
      *
      * @return registry with default units
      */
-    public static UnitRegistry withDefaults() {
+    private static UnitRegistry buildDefaults() {
         return builder()
                 .addAll(lengthUnits())
                 .addAll(massUnits())

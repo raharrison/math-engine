@@ -1,0 +1,947 @@
+{
+    "category": "Operator: ^ (exponentiation)",
+    "description": "Exponentiation across every operand type, including where an exact result is kept and where it is not.",
+    "tests": [
+        {
+            "id": "matrix_power_001",
+            "input": "[[1, 1], [1, 0]] ^ 2",
+            "expected": [
+                [
+                    2,
+                    1
+                ],
+                [
+                    1,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix power (Fibonacci matrix squared)"
+        },
+        {
+            "id": "matrix_power_001_power",
+            "input": "[[2, 3], [4, 5]] ^ 2",
+            "expected": [
+                [
+                    16,
+                    21
+                ],
+                [
+                    28,
+                    37
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix power (A^2 = A @ A)"
+        },
+        {
+            "id": "matrix_power_002",
+            "input": "[[1, 1], [1, 0]] ^ 5",
+            "expected": [
+                [
+                    8,
+                    5
+                ],
+                [
+                    5,
+                    3
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Fibonacci matrix to 5th power"
+        },
+        {
+            "id": "matrix_power_003",
+            "input": "[[2, 0], [0, 3]] ^ 0",
+            "expected": [
+                [
+                    1,
+                    0
+                ],
+                [
+                    0,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix to power 0 gives identity"
+        },
+        {
+            "id": "matrix_power_nonint_001",
+            "input": "[[1, 2], [3, 4]] ^ 2.5",
+            "expected": [
+                [
+                    1,
+                    5.656854249492381
+                ],
+                [
+                    15.588457268119896,
+                    32
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix power with non-integer: element-wise power (broadcasts)"
+        },
+        {
+            "id": "pow_001",
+            "input": "2^3",
+            "expected": 8,
+            "expectedType": "NodeRational",
+            "notes": "Integer power"
+        },
+        {
+            "id": "pow_002",
+            "input": "2^0",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Anything to the power 0"
+        },
+        {
+            "id": "pow_003",
+            "input": "0^5",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Zero to positive power"
+        },
+        {
+            "id": "pow_004",
+            "input": "2^-1",
+            "expected": 0.5,
+            "expectedType": "NodeRational",
+            "notes": "Negative exponent"
+        },
+        {
+            "id": "pow_005",
+            "input": "4^0.5",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Fractional exponent (square root)"
+        },
+        {
+            "id": "pow_006",
+            "input": "8^(1/3)",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Cube root via exponent"
+        },
+        {
+            "id": "pow_010",
+            "input": "(-2)^3",
+            "expected": -8,
+            "expectedType": "NodeRational",
+            "notes": "Negative base cubed"
+        },
+        {
+            "id": "power_types_boolean_boolean",
+            "input": "(true) ^ (true)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Boolean raises a boolean"
+        },
+        {
+            "id": "power_types_boolean_double",
+            "input": "(true) ^ (2.5d)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean raises a double"
+        },
+        {
+            "id": "power_types_boolean_matrix",
+            "input": "(true) ^ ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    1
+                ],
+                [
+                    1,
+                    1
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Boolean raises a matrix"
+        },
+        {
+            "id": "power_types_boolean_percent",
+            "input": "(true) ^ (20%)",
+            "expected": 1.0,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean raises a percent"
+        },
+        {
+            "id": "power_types_boolean_range",
+            "input": "(true) ^ (1..2)",
+            "expected": [
+                1,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean raises a range"
+        },
+        {
+            "id": "power_types_boolean_rational",
+            "input": "(true) ^ (3)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Boolean raises a rational"
+        },
+        {
+            "id": "power_types_boolean_string",
+            "input": "(true) ^ (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Boolean raises a string is not defined"
+        },
+        {
+            "id": "power_types_boolean_unit",
+            "input": "(true) ^ (4 meters)",
+            "expected": "1.0 meter",
+            "expectedType": "NodeUnit",
+            "notes": "A boolean raised to a quantity keeps the label"
+        },
+        {
+            "id": "power_types_boolean_vector",
+            "input": "(true) ^ ({1, 2})",
+            "expected": [
+                1,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Boolean raises a vector"
+        },
+        {
+            "id": "power_types_double_boolean",
+            "input": "(2.5d) ^ (true)",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Double raises a boolean"
+        },
+        {
+            "id": "power_types_double_double",
+            "input": "(2.5d) ^ (2.5d)",
+            "expected": 9.882117688026186,
+            "expectedType": "NodeDouble",
+            "notes": "Double raises a double"
+        },
+        {
+            "id": "power_types_double_matrix",
+            "input": "(2.5d) ^ ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    2.5,
+                    6.25
+                ],
+                [
+                    15.625,
+                    39.0625
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Double raises a matrix"
+        },
+        {
+            "id": "power_types_double_percent",
+            "input": "(2.5d) ^ (20%)",
+            "expected": 1.2011244339814313,
+            "expectedType": "NodeDouble",
+            "notes": "Double raises a percent"
+        },
+        {
+            "id": "power_types_double_range",
+            "input": "(2.5d) ^ (1..2)",
+            "expected": [
+                2.5,
+                6.25
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double raises a range"
+        },
+        {
+            "id": "power_types_double_rational",
+            "input": "(2.5d) ^ (3)",
+            "expected": 15.625,
+            "expectedType": "NodeDouble",
+            "notes": "Double raises a rational"
+        },
+        {
+            "id": "power_types_double_string",
+            "input": "(2.5d) ^ (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Double raises a string is not defined"
+        },
+        {
+            "id": "power_types_double_unit",
+            "input": "(2.5d) ^ (4 meters)",
+            "expected": "39.0625 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A double raised to a quantity keeps the label"
+        },
+        {
+            "id": "power_types_double_vector",
+            "input": "(2.5d) ^ ({1, 2})",
+            "expected": [
+                2.5,
+                6.25
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double raises a vector"
+        },
+        {
+            "id": "power_types_matrix_boolean",
+            "input": "([1, 2; 3, 4]) ^ (true)",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix raises a boolean"
+        },
+        {
+            "id": "power_types_matrix_double",
+            "input": "([1, 2; 3, 4]) ^ (2.5d)",
+            "expected": [
+                [
+                    1.0,
+                    5.656854249492381
+                ],
+                [
+                    15.588457268119896,
+                    32.0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix raises a double"
+        },
+        {
+            "id": "power_types_matrix_matrix",
+            "input": "([1, 2; 3, 4]) ^ ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    4
+                ],
+                [
+                    27,
+                    256
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix raises a matrix"
+        },
+        {
+            "id": "power_types_matrix_percent",
+            "input": "([1, 2; 3, 4]) ^ (20%)",
+            "expected": [
+                [
+                    1.0,
+                    1.148698354997035
+                ],
+                [
+                    1.2457309396155174,
+                    1.3195079107728942
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix raises a percent"
+        },
+        {
+            "id": "power_types_matrix_range",
+            "input": "([1, 2; 3, 4]) ^ (1..2)",
+            "expected": [
+                [
+                    1,
+                    4
+                ],
+                [
+                    3,
+                    16
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix raises a range"
+        },
+        {
+            "id": "power_types_matrix_rational",
+            "input": "([1, 2; 3, 4]) ^ (3)",
+            "expected": [
+                [
+                    37,
+                    54
+                ],
+                [
+                    81,
+                    118
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix raises a rational"
+        },
+        {
+            "id": "power_types_matrix_string",
+            "input": "([1, 2; 3, 4]) ^ (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix raises a string is not defined"
+        },
+        {
+            "id": "power_types_matrix_unit",
+            "input": "([1, 2; 3, 4]) ^ (4 meters)",
+            "expected": [
+                [
+                    "1.0 meter",
+                    "16.0 meters"
+                ],
+                [
+                    "81.0 meters",
+                    "256.0 meters"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "A matrix raised to a quantity broadcasts element-wise"
+        },
+        {
+            "id": "power_types_matrix_vector",
+            "input": "([1, 2; 3, 4]) ^ ({1, 2})",
+            "expected": [
+                [
+                    1,
+                    4
+                ],
+                [
+                    3,
+                    16
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Matrix raises a vector"
+        },
+        {
+            "id": "power_types_percent_boolean",
+            "input": "(20%) ^ (true)",
+            "expected": "20.0%",
+            "expectedType": "NodePercent",
+            "notes": "Percent raises a boolean"
+        },
+        {
+            "id": "power_types_percent_double",
+            "input": "(20%) ^ (2.5d)",
+            "expected": "1.788854381999832%",
+            "expectedType": "NodePercent",
+            "notes": "Percent raises a double"
+        },
+        {
+            "id": "power_types_percent_matrix",
+            "input": "(20%) ^ ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "20.0%",
+                    "4.000000000000001%"
+                ],
+                [
+                    "0.8000000000000002%",
+                    "0.16000000000000003%"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Percent raises a matrix"
+        },
+        {
+            "id": "power_types_percent_percent",
+            "input": "(20%) ^ (20%)",
+            "expected": "72.47796636776955%",
+            "expectedType": "NodePercent",
+            "notes": "Percent raises a percent"
+        },
+        {
+            "id": "power_types_percent_range",
+            "input": "(20%) ^ (1..2)",
+            "expected": [
+                "20.0%",
+                "4.000000000000001%"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent raises a range"
+        },
+        {
+            "id": "power_types_percent_rational",
+            "input": "(20%) ^ (3)",
+            "expected": "0.8000000000000002%",
+            "expectedType": "NodePercent",
+            "notes": "Percent raises a rational"
+        },
+        {
+            "id": "power_types_percent_string",
+            "input": "(20%) ^ (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Percent raises a string is not defined"
+        },
+        {
+            "id": "power_types_percent_unit",
+            "input": "(20%) ^ (4 meters)",
+            "expected": "0.0016 meters",
+            "expectedType": "NodeUnit",
+            "tolerance": 1e-12,
+            "notes": "A percentage raised to a quantity keeps the quantity's label"
+        },
+        {
+            "id": "power_types_percent_vector",
+            "input": "(20%) ^ ({1, 2})",
+            "expected": [
+                "20.0%",
+                "4.000000000000001%"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent raises a vector"
+        },
+        {
+            "id": "power_types_range_boolean",
+            "input": "(1..2) ^ (true)",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range raises a boolean"
+        },
+        {
+            "id": "power_types_range_double",
+            "input": "(1..2) ^ (2.5d)",
+            "expected": [
+                1.0,
+                5.656854249492381
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range raises a double"
+        },
+        {
+            "id": "power_types_range_matrix",
+            "input": "(1..2) ^ ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    4
+                ],
+                [
+                    1,
+                    16
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Range raises a matrix"
+        },
+        {
+            "id": "power_types_range_percent",
+            "input": "(1..2) ^ (20%)",
+            "expected": [
+                1.0,
+                1.148698354997035
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range raises a percent"
+        },
+        {
+            "id": "power_types_range_range",
+            "input": "(1..2) ^ (1..2)",
+            "expected": [
+                1,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range raises a range"
+        },
+        {
+            "id": "power_types_range_rational",
+            "input": "(1..2) ^ (3)",
+            "expected": [
+                1,
+                8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range raises a rational"
+        },
+        {
+            "id": "power_types_range_string",
+            "input": "(1..2) ^ (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range raises a string is not defined"
+        },
+        {
+            "id": "power_types_range_unit",
+            "input": "(1..2) ^ (4 meters)",
+            "expected": [
+                "1.0 meter",
+                "16.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A range raised to a quantity broadcasts over its members"
+        },
+        {
+            "id": "power_types_range_vector",
+            "input": "(1..2) ^ ({1, 2})",
+            "expected": [
+                1,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Range raises a vector"
+        },
+        {
+            "id": "power_types_rational_boolean",
+            "input": "(3) ^ (true)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Rational raises a boolean"
+        },
+        {
+            "id": "power_types_rational_double",
+            "input": "(3) ^ (2.5d)",
+            "expected": 15.588457268119896,
+            "expectedType": "NodeDouble",
+            "notes": "Rational raises a double"
+        },
+        {
+            "id": "power_types_rational_matrix",
+            "input": "(3) ^ ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    3,
+                    9
+                ],
+                [
+                    27,
+                    81
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Rational raises a matrix"
+        },
+        {
+            "id": "power_types_rational_percent",
+            "input": "(3) ^ (20%)",
+            "expected": 1.2457309396155174,
+            "expectedType": "NodeDouble",
+            "notes": "Rational raises a percent"
+        },
+        {
+            "id": "power_types_rational_range",
+            "input": "(3) ^ (1..2)",
+            "expected": [
+                3,
+                9
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational raises a range"
+        },
+        {
+            "id": "power_types_rational_rational",
+            "input": "(3) ^ (3)",
+            "expected": 27,
+            "expectedType": "NodeRational",
+            "notes": "Rational raises a rational"
+        },
+        {
+            "id": "power_types_rational_string",
+            "input": "(3) ^ (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Rational raises a string is not defined"
+        },
+        {
+            "id": "power_types_rational_unit",
+            "input": "(3) ^ (4 meters)",
+            "expected": "81.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A bare number raised to a quantity keeps the label"
+        },
+        {
+            "id": "power_types_rational_vector",
+            "input": "(3) ^ ({1, 2})",
+            "expected": [
+                3,
+                9
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational raises a vector"
+        },
+        {
+            "id": "power_types_string_boolean",
+            "input": "(\"ab\") ^ (true)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String raises a boolean is not defined"
+        },
+        {
+            "id": "power_types_string_double",
+            "input": "(\"ab\") ^ (2.5d)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String raises a double is not defined"
+        },
+        {
+            "id": "power_types_string_matrix",
+            "input": "(\"ab\") ^ ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String raises a matrix is not defined"
+        },
+        {
+            "id": "power_types_string_percent",
+            "input": "(\"ab\") ^ (20%)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String raises a percent is not defined"
+        },
+        {
+            "id": "power_types_string_range",
+            "input": "(\"ab\") ^ (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String raises a range is not defined"
+        },
+        {
+            "id": "power_types_string_rational",
+            "input": "(\"ab\") ^ (3)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String raises a rational is not defined"
+        },
+        {
+            "id": "power_types_string_string",
+            "input": "(\"ab\") ^ (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String raises a string is not defined"
+        },
+        {
+            "id": "power_types_string_unit",
+            "input": "(\"ab\") ^ (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String raises a unit is not defined"
+        },
+        {
+            "id": "power_types_string_vector",
+            "input": "(\"ab\") ^ ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String raises a vector is not defined"
+        },
+        {
+            "id": "power_types_unit_boolean",
+            "input": "(4 meters) ^ (true)",
+            "expected": "4.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Unit raises a boolean"
+        },
+        {
+            "id": "power_types_unit_double",
+            "input": "(4 meters) ^ (2.5d)",
+            "expected": "32.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "A quantity raised to a double power keeps the label"
+        },
+        {
+            "id": "power_types_unit_matrix",
+            "input": "(4 meters) ^ ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    "4.0 meters",
+                    "16.0 meters"
+                ],
+                [
+                    "64.0 meters",
+                    "256.0 meters"
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "A matrix of exponents broadcasts, and every element keeps the label"
+        },
+        {
+            "id": "power_types_unit_percent",
+            "input": "(4 meters) ^ (20%)",
+            "expected": "1.3195079107728942 meters",
+            "expectedType": "NodeUnit",
+            "tolerance": 1e-12,
+            "notes": "A percentage exponent is its decimal, so this is a fifth root"
+        },
+        {
+            "id": "power_types_unit_range",
+            "input": "(4 meters) ^ (1..2)",
+            "expected": [
+                "4.0 meters",
+                "16.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A range of exponents broadcasts over its members"
+        },
+        {
+            "id": "power_types_unit_rational",
+            "input": "(4 meters) ^ (3)",
+            "expected": "64.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Four metres cubed is sixty-four metres: the magnitude is cubed, the label rides"
+        },
+        {
+            "id": "power_types_unit_string",
+            "input": "(4 meters) ^ (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit raises a string is not defined"
+        },
+        {
+            "id": "power_types_unit_unit",
+            "input": "(4 meters) ^ (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit raises a unit is not defined"
+        },
+        {
+            "id": "power_types_unit_vector",
+            "input": "(4 meters) ^ ({1, 2})",
+            "expected": [
+                "4.0 meters",
+                "16.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A vector of exponents broadcasts over its elements"
+        },
+        {
+            "id": "power_types_vector_boolean",
+            "input": "({1, 2}) ^ (true)",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector raises a boolean"
+        },
+        {
+            "id": "power_types_vector_double",
+            "input": "({1, 2}) ^ (2.5d)",
+            "expected": [
+                1.0,
+                5.656854249492381
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector raises a double"
+        },
+        {
+            "id": "power_types_vector_matrix",
+            "input": "({1, 2}) ^ ([1, 2; 3, 4])",
+            "expected": [
+                [
+                    1,
+                    4
+                ],
+                [
+                    1,
+                    16
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Vector raises a matrix"
+        },
+        {
+            "id": "power_types_vector_percent",
+            "input": "({1, 2}) ^ (20%)",
+            "expected": [
+                1.0,
+                1.148698354997035
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector raises a percent"
+        },
+        {
+            "id": "power_types_vector_range",
+            "input": "({1, 2}) ^ (1..2)",
+            "expected": [
+                1,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector raises a range"
+        },
+        {
+            "id": "power_types_vector_rational",
+            "input": "({1, 2}) ^ (3)",
+            "expected": [
+                1,
+                8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector raises a rational"
+        },
+        {
+            "id": "power_types_vector_string",
+            "input": "({1, 2}) ^ (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector raises a string is not defined"
+        },
+        {
+            "id": "power_types_vector_unit",
+            "input": "({1, 2}) ^ (4 meters)",
+            "expected": [
+                "1.0 meter",
+                "16.0 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A vector raised to a quantity broadcasts over its elements"
+        },
+        {
+            "id": "power_types_vector_vector",
+            "input": "({1, 2}) ^ ({1, 2})",
+            "expected": [
+                1,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector raises a vector"
+        },
+        {
+            "id": "vector_018",
+            "input": "{2, 3, 4} ^ 2",
+            "expected": [
+                4.0,
+                9.0,
+                16.0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise power (promotes to double)"
+        },
+        {
+            "id": "vector_power_002",
+            "input": "{4, 9, 16} ^ 0.5",
+            "expected": [
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector square root"
+        },
+        {
+            "id": "unit_first_power",
+            "input": "(7 feet) ^ 1",
+            "expected": "7.0 feet",
+            "expectedType": "NodeUnit",
+            "notes": "The first power leaves the magnitude alone as well as the label"
+        },
+        {
+            "id": "unit_squared",
+            "input": "(10 meters) ^ 2",
+            "expected": "100.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Squaring works on the magnitude and the label rides along; a label is not a claim about dimension"
+        }
+    ]
+}

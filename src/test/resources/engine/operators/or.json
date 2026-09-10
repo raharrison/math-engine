@@ -1,0 +1,55 @@
+{
+    "category": "Operator: || (logical or)",
+    "description": "Disjunction, the coercion of numbers to truth values, and where it short circuits.",
+    "tests": [
+        {
+            "id": "cmp_003",
+            "input": "5 < 3 || 2 < 4",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Comparison before OR"
+        },
+        {
+            "id": "or_001",
+            "input": "true || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: both true"
+        },
+        {
+            "id": "or_002",
+            "input": "true || false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: one true"
+        },
+        {
+            "id": "or_003",
+            "input": "false || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: one true (reversed)"
+        },
+        {
+            "id": "or_004",
+            "input": "false || false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "OR: both false"
+        },
+        {
+            "id": "or_006",
+            "input": "false || false || false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Multiple OR: all false"
+        },
+        {
+            "id": "paren_001_or",
+            "input": "(true && false) || true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Parentheses with logical operators"
+        }
+    ]
+}

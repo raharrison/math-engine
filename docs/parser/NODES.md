@@ -259,16 +259,57 @@ NodeUnit converted = distance.convertTo(feet);  // ~328.084 feet
 
 **Unit Arithmetic:**
 
+Two quantities of the same kind are converted to the left operand's unit before the
+operation, so how each side is written never changes the answer. Quantities of different
+kinds cannot be combined at all.
+
 ```java
 5 meters + 3 meters       →  NodeUnit(8, meters)
+5 meters + 10 feet        →  NodeUnit(8.048, meters)   // converted, then added
 100 meters in feet        →  NodeUnit(328.084, feet)
-5 meters + 10 feet        →  ERROR (unit mismatch)
+10 meters mod 3 meters    →  NodeUnit(1, meters)
+5 meters + 3 kilograms    →  TypeError (length and mass)
 ```
 
-**Dimensionless Result:**
+**The label rides the magnitude:**
+
+A quantity here is a magnitude wearing a label, not a dimensioned value in the physics
+sense. When a plain number meets a quantity, the arithmetic happens on the magnitude and
+the label survives it, whichever side the label was on. The scalar is read in the
+quantity's own unit.
 
 ```java
-10 meters / 5 meters      →  NodeDouble(2.0)  // Units cancel
+10 meters * 2             →  NodeUnit(20, meters)
+10 meters mod 3           →  NodeUnit(1, meters)
+2 meters ^ 2              →  NodeUnit(4, meters)
+1 / (10 meters)           →  NodeUnit(0.1, meters)
+sqrt(100 meters)          →  NodeUnit(10, meters)
+```
+
+This is a deliberate choice of usefulness over dimensional bookkeeping. The engine can
+name a metre but not a square metre, so the alternative would be to refuse every one of
+these, which turns ordinary calculator expressions into errors. A label is a label, not a
+claim about dimension, and it is the same rule NodePercent follows.
+
+**Where a label is not carried:**
+
+Two cases, and only two. A label cancels when a quantity meets a like quantity under
+division, and two labels are never merged, because the engine has no name for the product.
+
+```java
+10 meters / 5 meters      →  NodeDouble(2.0)    // the labels cancel
+4 meters * 2 meters       →  TypeError          // no name for a square metre
+4 meters ^ 2 meters       →  TypeError          // same reason
+```
+
+A function whose answer is a pure number by its own nature returns one, rather than
+carrying the label into a place it means nothing.
+
+```java
+log(100 meters)           →  NodeDouble(2.0)
+sin(90 degrees)           →  NodeDouble(...)
+sign(-3 meters)           →  NodeRational(-1)
+(1 km) > (500 meters)     →  NodeBoolean(true)
 ```
 
 ---
@@ -973,56 +1014,29 @@ Evaluate each statement in order, return result of last statement.
 
 ---
 
-## NodeVisitor Pattern
+## Traversing the tree
 
-**Purpose:** Traverse and transform AST without modifying node classes
-
-**Interface:**
+`Node` is a sealed hierarchy, so a pattern switch over it is checked for
+exhaustiveness at compile time. That is how the evaluator and both formatters
+walk the tree; there is no visitor interface.
 
 ```java
-interface NodeVisitor<T> {
-    T visit(NodeDouble node);
-    T visit(NodeRational node);
-    T visit(NodeBinary node);
-    T visit(NodeUnary node);
-    // ... one method per node type
+String describe(Node node) {
+    return switch (node) {
+        case NodeBinary binary -> "(" + describe(binary.getLeft())
+                + " " + binary.getOperator().lexeme()
+                + " " + describe(binary.getRight()) + ")";
+        case NodeConstant constant -> constant.toString();
+        default -> node.typeName();
+    };
 }
 ```
 
-**Node Method:**
+Adding a node type makes every exhaustive switch fail to compile until it is
+handled, which is the behaviour a visitor was there to provide.
 
-```java
-interface Node {
-    <T> T accept(NodeVisitor<T> visitor);
-}
-
-// Implementation in each node class:
-class NodeBinary extends Node {
-    public <T> T accept(NodeVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
-}
-```
-
-**Example Visitor:**
-
-```java
-class ASTToString implements NodeVisitor<String> {
-    @Override
-    public String visit(NodeDouble node) {
-        return String.valueOf(node.doubleValue());
-    }
-
-    @Override
-    public String visit(NodeBinary node) {
-        return "(" + node.getLeft().accept(this) +
-               " " + node.getOperator().getLexeme() +
-               " " + node.getRight().accept(this) + ")";
-    }
-
-    // ... other visits
-}
-```
+To list a node's children without writing the switch yourself, use
+`AstTreeBuilder.childrenOf(node)`.
 
 ---
 

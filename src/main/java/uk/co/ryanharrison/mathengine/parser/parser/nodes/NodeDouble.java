@@ -31,9 +31,15 @@ public final class NodeDouble extends NodeNumber {
         return new NodeDouble(Math.abs(value));
     }
 
+    /**
+     * Whole numbers print without a decimal point, but only where a long can hold them.
+     */
     @Override
     public String toString() {
-        return (value == Math.floor(value))
+        if (Double.isNaN(value) || Double.isInfinite(value)) {
+            return String.valueOf(value);
+        }
+        return (value == Math.floor(value) && Math.abs(value) < 1e15)
                 ? String.valueOf((long) value)
                 : String.valueOf(value);
     }

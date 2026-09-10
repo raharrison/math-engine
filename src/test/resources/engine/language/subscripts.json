@@ -1,0 +1,479 @@
+{
+    "category": "Language: subscripts",
+    "description": "Indexing and slicing vectors and matrices, including negative indices and open ended slices.",
+    "tests": [
+        {
+            "id": "chain_access_001",
+            "input": "v := {{1, 2, 3}, {4, 5, 6}}; v[0][2]",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Chained access on variable"
+        },
+        {
+            "id": "matrix_access_001",
+            "input": "[[10, 20], [30, 40]][0]",
+            "expected": [
+                10,
+                20
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Access first row"
+        },
+        {
+            "id": "matrix_access_002",
+            "input": "[[10, 20], [30, 40]][1]",
+            "expected": [
+                30,
+                40
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Access second row"
+        },
+        {
+            "id": "matrix_access_003",
+            "input": "[[10, 20], [30, 40]][-1]",
+            "expected": [
+                30,
+                40
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Negative index from end"
+        },
+        {
+            "id": "matrix_access_004",
+            "input": "[[10, 20], [30, 40]][0][0]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Access element via double subscript"
+        },
+        {
+            "id": "matrix_access_005",
+            "input": "[[10, 20], [30, 40]][1][1]",
+            "expected": 40,
+            "expectedType": "NodeRational",
+            "notes": "Access last element"
+        },
+        {
+            "id": "matrix_access_006",
+            "input": "[[10, 20, 30], [40, 50, 60]][0][2]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Access element in 2x3 matrix"
+        },
+        {
+            "id": "nested_access_001",
+            "input": "{{1, 2}, {3, 4}}[0][1]",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Nested vector access"
+        },
+        {
+            "id": "nested_access_002",
+            "input": "{{1, 2}, {3, 4}}[1][0]",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Nested second element access"
+        },
+        {
+            "id": "range_access_001",
+            "input": "(1..10)[0]",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Access first element of range"
+        },
+        {
+            "id": "range_access_002",
+            "input": "(1..10)[4]",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Access 5th element of range"
+        },
+        {
+            "id": "slice_basic_002",
+            "input": "{1, 2, 3, 4, 5}[0:3]",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from start"
+        },
+        {
+            "id": "slice_negative_001",
+            "input": "{1, 2, 3, 4, 5}[-3:]",
+            "expected": [
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from negative index"
+        },
+        {
+            "id": "slice_negative_002",
+            "input": "{1, 2, 3, 4, 5}[:-2]",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice to negative index"
+        },
+        {
+            "id": "slice_open_002",
+            "input": "{1, 2, 3, 4, 5}[2:]",
+            "expected": [
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice with open end"
+        },
+        {
+            "id": "subscript_001",
+            "input": "{10, 20, 30}[0]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "First element (0-indexed)"
+        },
+        {
+            "id": "subscript_004",
+            "input": "{10, 20, 30, 40, 50}[-1]",
+            "expected": 50,
+            "expectedType": "NodeRational",
+            "notes": "Last element (negative index)"
+        },
+        {
+            "id": "subscript_005",
+            "input": "{10, 20, 30, 40, 50}[-2]",
+            "expected": 40,
+            "expectedType": "NodeRational",
+            "notes": "Second from last"
+        },
+        {
+            "id": "subscript_006",
+            "input": "{10, 20, 30, 40, 50}[1:3]",
+            "expected": [
+                20,
+                30
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice (inclusive:exclusive)"
+        },
+        {
+            "id": "subscript_007",
+            "input": "{10, 20, 30, 40, 50}[:3]",
+            "expected": [
+                10,
+                20,
+                30
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from start"
+        },
+        {
+            "id": "subscript_008",
+            "input": "{10, 20, 30, 40, 50}[2:]",
+            "expected": [
+                30,
+                40,
+                50
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice to end"
+        },
+        {
+            "id": "subscript_009",
+            "input": "{10, 20, 30, 40, 50}[:]",
+            "expected": [
+                10,
+                20,
+                30,
+                40,
+                50
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Full copy via slice"
+        },
+        {
+            "id": "subscript_010",
+            "input": "{10, 20, 30, 40, 50}[1:4]",
+            "expected": [
+                20,
+                30,
+                40
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice middle portion"
+        },
+        {
+            "id": "subscript_011",
+            "input": "[1, 2, 3; 4, 5, 6; 7, 8, 9][0, 0]",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Matrix element (0,0)"
+        },
+        {
+            "id": "subscript_012",
+            "input": "[1, 2, 3; 4, 5, 6; 7, 8, 9][1, 2]",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Matrix element (1,2)"
+        },
+        {
+            "id": "subscript_013",
+            "input": "[1, 2, 3; 4, 5, 6; 7, 8, 9][2, 1]",
+            "expected": 8,
+            "expectedType": "NodeRational",
+            "notes": "Matrix element (2,1)"
+        },
+        {
+            "id": "subscript_014",
+            "input": "[1, 2, 3; 4, 5, 6; 7, 8, 9][0, :]",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Matrix row 0"
+        },
+        {
+            "id": "subscript_015",
+            "input": "[1, 2, 3; 4, 5, 6; 7, 8, 9][:, 1]",
+            "expected": [
+                2,
+                5,
+                8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Matrix column 1"
+        },
+        {
+            "id": "subscript_016",
+            "input": "[1, 2, 3; 4, 5, 6; 7, 8, 9][0:2, 1:3]",
+            "expected": [
+                [
+                    2,
+                    3
+                ],
+                [
+                    5,
+                    6
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Sub-matrix slice"
+        },
+        {
+            "id": "subscript_017",
+            "input": "[1, 2, 3; 4, 5, 6; 7, 8, 9][1:, :]",
+            "expected": [
+                [
+                    4,
+                    5,
+                    6
+                ],
+                [
+                    7,
+                    8,
+                    9
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Bottom two rows"
+        },
+        {
+            "id": "subscript_018",
+            "input": "[1, 2, 3; 4, 5, 6; 7, 8, 9][:, :2]",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    4,
+                    5
+                ],
+                [
+                    7,
+                    8
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "First two columns"
+        },
+        {
+            "id": "subscript_019",
+            "input": "{10, 20, 30}[0] + {10, 20, 30}[1]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Subscript in expression"
+        },
+        {
+            "id": "subscript_020",
+            "input": "{10, 20, 30}[1:3] * 2",
+            "expected": [
+                40,
+                60
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice result in arithmetic"
+        },
+        {
+            "id": "subscript_021",
+            "input": "[1, 2; 3, 4][0]",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Matrix single index returns row"
+        },
+        {
+            "id": "subscript_022",
+            "input": "(1..10)[2:5]",
+            "expected": [
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice a range (parentheses required for precedence)"
+        },
+        {
+            "id": "subscript_expr_001",
+            "input": "v := {10, 20, 30}; v[0]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Access via variable"
+        },
+        {
+            "id": "subscript_expr_002",
+            "input": "v := {10, 20, 30}; i := 1; v[i]",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Index from variable"
+        },
+        {
+            "id": "subscript_expr_003",
+            "input": "v := {10, 20, 30}; v[1 + 1]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Computed index"
+        },
+        {
+            "id": "subscript_matrix_001",
+            "input": "[[1, 2, 3], [4, 5, 6]][0][0]",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Matrix [0][0]"
+        },
+        {
+            "id": "subscript_matrix_002",
+            "input": "[[1, 2, 3], [4, 5, 6]][0][2]",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Matrix [0][2]"
+        },
+        {
+            "id": "subscript_matrix_003",
+            "input": "[[1, 2, 3], [4, 5, 6]][1][1]",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Matrix [1][1]"
+        },
+        {
+            "id": "subscript_matrix_004",
+            "input": "[[1, 2], [3, 4], [5, 6]][2][0]",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "3x2 matrix access"
+        },
+        {
+            "id": "subscript_negative_001",
+            "input": "{10, 20, 30}[-1]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Negative index -1 (last)"
+        },
+        {
+            "id": "subscript_negative_003",
+            "input": "{10, 20, 30}[-3]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Negative index -3 (first)"
+        },
+        {
+            "id": "subscript_range_003",
+            "input": "(1..10)[-1]",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Range negative index"
+        },
+        {
+            "id": "subscript_vector_002",
+            "input": "{10, 20, 30}[1]",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Vector index 1"
+        },
+        {
+            "id": "vector_access_002",
+            "input": "{10, 20, 30}[2]",
+            "expected": 30,
+            "expectedType": "NodeRational",
+            "notes": "Access last element"
+        },
+        {
+            "id": "vector_access_004",
+            "input": "{10, 20, 30}[-2]",
+            "expected": 20,
+            "expectedType": "NodeRational",
+            "notes": "Negative index second from end"
+        },
+        {
+            "id": "vector_slice_001",
+            "input": "{1, 2, 3, 4, 5}[1:4]",
+            "expected": [
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from index 1 to 4"
+        },
+        {
+            "id": "last_element_still_works",
+            "input": "{10, 20, 30, 40}[-1]",
+            "expected": 40,
+            "expectedType": "NodeRational",
+            "notes": "Minus one is still the last element, which is what the double translation broke"
+        },
+        {
+            "id": "matrix_last_element",
+            "input": "[1, 2; 3, 4][-1, -1]",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "Both subscripts of a matrix count from the end independently"
+        },
+        {
+            "id": "matrix_row_past_the_front",
+            "input": "[1, 2; 3, 4][-3]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Matrix rows had the same double translation"
+        },
+        {
+            "id": "one_past_the_front",
+            "input": "{10, 20, 30}[-4]",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "expectedErrorMessage": "out of bounds: -4",
+            "notes": "One further back is out of range, where a doubled translation once wrapped it round to the last element"
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.function.special;
 
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
@@ -35,7 +36,7 @@ public final class PercentageFunctions {
             .takingUnary()
             .noBroadcasting()
             .implementedBy((arg, ctx) -> {
-                double value = ctx.toNumber(arg).doubleValue();
+                double value = ctx.toDouble(arg);
                 return new NodePercent(value);  // NodePercent constructor divides by 100
             });
 
@@ -69,7 +70,7 @@ public final class PercentageFunctions {
                 if (arg instanceof NodePercent pct) {
                     return new NodeDouble(pct.getPercentValue());
                 }
-                return new NodeDouble(ctx.toNumber(arg).doubleValue() * 100);
+                return new NodeDouble(ctx.toDouble(arg) * 100);
             });
 
     // ==================== Percentage Calculations ====================
@@ -87,7 +88,7 @@ public final class PercentageFunctions {
             .noBroadcasting()
             .implementedBy((first, second, ctx) -> {
                 double percent = ctx.toPercentDecimal(first);
-                double value = ctx.toNumber(second).doubleValue();
+                double value = ctx.toDouble(second);
                 return new NodeDouble(percent * value);
             });
 
@@ -103,10 +104,10 @@ public final class PercentageFunctions {
             .takingBinary()
             .noBroadcasting()
             .implementedBy((first, second, ctx) -> {
-                double part = ctx.toNumber(first).doubleValue();
-                double whole = ctx.toNumber(second).doubleValue();
+                double part = ctx.toDouble(first);
+                double whole = ctx.toDouble(second);
                 if (whole == 0) {
-                    throw new IllegalArgumentException("whatpercent: division by zero");
+                    throw new DomainException("whatpercent: division by zero");
                 }
                 return new NodePercent((part / whole) * 100);
             });
@@ -123,10 +124,10 @@ public final class PercentageFunctions {
             .takingBinary()
             .noBroadcasting()
             .implementedBy((first, second, ctx) -> {
-                double oldValue = ctx.toNumber(first).doubleValue();
-                double newValue = ctx.toNumber(second).doubleValue();
+                double oldValue = ctx.toDouble(first);
+                double newValue = ctx.toDouble(second);
                 if (oldValue == 0) {
-                    throw new IllegalArgumentException("percentchange: old value cannot be zero");
+                    throw new DomainException("percentchange: old value cannot be zero");
                 }
                 double change = ((newValue - oldValue) / oldValue) * 100;
                 return new NodePercent(change);
@@ -144,7 +145,7 @@ public final class PercentageFunctions {
             .takingBinary()
             .noBroadcasting()
             .implementedBy((first, second, ctx) -> {
-                double value = ctx.toNumber(first).doubleValue();
+                double value = ctx.toDouble(first);
                 double percent = ctx.toPercentDecimal(second);
                 return new NodeDouble(value * (1 + percent));
             });
@@ -161,7 +162,7 @@ public final class PercentageFunctions {
             .takingBinary()
             .noBroadcasting()
             .implementedBy((first, second, ctx) -> {
-                double value = ctx.toNumber(first).doubleValue();
+                double value = ctx.toDouble(first);
                 double percent = ctx.toPercentDecimal(second);
                 return new NodeDouble(value * (1 - percent));
             });
@@ -180,10 +181,10 @@ public final class PercentageFunctions {
             .takingBinary()
             .noBroadcasting()
             .implementedBy((first, second, ctx) -> {
-                double current = ctx.toNumber(first).doubleValue();
+                double current = ctx.toDouble(first);
                 double percent = ctx.toPercentDecimal(second);
                 if (percent == -1) {
-                    throw new IllegalArgumentException("reversepercent: cannot reverse 100% decrease");
+                    throw new DomainException("reversepercent: cannot reverse 100% decrease");
                 }
                 return new NodeDouble(current / (1 + percent));
             });
@@ -200,7 +201,7 @@ public final class PercentageFunctions {
             .takingUnary()
             .noBroadcasting()
             .implementedBy((arg, ctx) -> {
-                double ratio = ctx.toNumber(arg).doubleValue();
+                double ratio = ctx.toDouble(arg);
                 return new NodePercent((ratio - 1) * 100);
             });
 

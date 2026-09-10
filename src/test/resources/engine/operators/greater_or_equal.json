@@ -1,0 +1,601 @@
+{
+    "category": "Operator: >= (greater than or equal)",
+    "description": "Ordering with equality across numbers, strings and units.",
+    "tests": [
+        {
+            "id": "greater_or_equal_types_boolean_boolean",
+            "input": "(true) >= (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean orders a boolean"
+        },
+        {
+            "id": "greater_or_equal_types_boolean_double",
+            "input": "(true) >= (2.5d)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean orders a double"
+        },
+        {
+            "id": "greater_or_equal_types_boolean_matrix",
+            "input": "(true) >= ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Boolean orders a matrix is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_boolean_percent",
+            "input": "(true) >= (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean orders a percent"
+        },
+        {
+            "id": "greater_or_equal_types_boolean_range",
+            "input": "(true) >= (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Boolean orders a range is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_boolean_rational",
+            "input": "(true) >= (3)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean orders a rational"
+        },
+        {
+            "id": "greater_or_equal_types_boolean_string",
+            "input": "(true) >= (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Boolean orders a string is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_boolean_unit",
+            "input": "(true) >= (4 meters)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Boolean orders a unit"
+        },
+        {
+            "id": "greater_or_equal_types_boolean_vector",
+            "input": "(true) >= ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Boolean orders a vector is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_double_boolean",
+            "input": "(2.5d) >= (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double orders a boolean"
+        },
+        {
+            "id": "greater_or_equal_types_double_double",
+            "input": "(2.5d) >= (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double orders a double"
+        },
+        {
+            "id": "greater_or_equal_types_double_matrix",
+            "input": "(2.5d) >= ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Double orders a matrix is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_double_percent",
+            "input": "(2.5d) >= (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Double orders a percent"
+        },
+        {
+            "id": "greater_or_equal_types_double_range",
+            "input": "(2.5d) >= (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Double orders a range is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_double_rational",
+            "input": "(2.5d) >= (3)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Double orders a rational"
+        },
+        {
+            "id": "greater_or_equal_types_double_string",
+            "input": "(2.5d) >= (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Double orders a string is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_double_unit",
+            "input": "(2.5d) >= (4 meters)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Double orders a unit"
+        },
+        {
+            "id": "greater_or_equal_types_double_vector",
+            "input": "(2.5d) >= ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Double orders a vector is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_matrix_boolean",
+            "input": "([1, 2; 3, 4]) >= (true)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix orders a boolean is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_matrix_double",
+            "input": "([1, 2; 3, 4]) >= (2.5d)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix orders a double is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_matrix_matrix",
+            "input": "([1, 2; 3, 4]) >= ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix orders a matrix is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_matrix_percent",
+            "input": "([1, 2; 3, 4]) >= (20%)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix orders a percent is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_matrix_range",
+            "input": "([1, 2; 3, 4]) >= (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix orders a range is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_matrix_rational",
+            "input": "([1, 2; 3, 4]) >= (3)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix orders a rational is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_matrix_string",
+            "input": "([1, 2; 3, 4]) >= (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix orders a string is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_matrix_unit",
+            "input": "([1, 2; 3, 4]) >= (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix orders a unit is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_matrix_vector",
+            "input": "([1, 2; 3, 4]) >= ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix orders a vector is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_percent_boolean",
+            "input": "(20%) >= (true)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent orders a boolean"
+        },
+        {
+            "id": "greater_or_equal_types_percent_double",
+            "input": "(20%) >= (2.5d)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent orders a double"
+        },
+        {
+            "id": "greater_or_equal_types_percent_matrix",
+            "input": "(20%) >= ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Percent orders a matrix is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_percent_percent",
+            "input": "(20%) >= (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent orders a percent"
+        },
+        {
+            "id": "greater_or_equal_types_percent_range",
+            "input": "(20%) >= (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Percent orders a range is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_percent_rational",
+            "input": "(20%) >= (3)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent orders a rational"
+        },
+        {
+            "id": "greater_or_equal_types_percent_string",
+            "input": "(20%) >= (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Percent orders a string is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_percent_unit",
+            "input": "(20%) >= (4 meters)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Percent orders a unit"
+        },
+        {
+            "id": "greater_or_equal_types_percent_vector",
+            "input": "(20%) >= ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Percent orders a vector is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_range_boolean",
+            "input": "(1..2) >= (true)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range orders a boolean is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_range_double",
+            "input": "(1..2) >= (2.5d)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range orders a double is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_range_matrix",
+            "input": "(1..2) >= ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range orders a matrix is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_range_percent",
+            "input": "(1..2) >= (20%)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range orders a percent is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_range_range",
+            "input": "(1..2) >= (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range orders a range is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_range_rational",
+            "input": "(1..2) >= (3)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range orders a rational is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_range_string",
+            "input": "(1..2) >= (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range orders a string is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_range_unit",
+            "input": "(1..2) >= (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range orders a unit is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_range_vector",
+            "input": "(1..2) >= ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Range orders a vector is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_rational_boolean",
+            "input": "(3) >= (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational orders a boolean"
+        },
+        {
+            "id": "greater_or_equal_types_rational_double",
+            "input": "(3) >= (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational orders a double"
+        },
+        {
+            "id": "greater_or_equal_types_rational_matrix",
+            "input": "(3) >= ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Rational orders a matrix is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_rational_percent",
+            "input": "(3) >= (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational orders a percent"
+        },
+        {
+            "id": "greater_or_equal_types_rational_range",
+            "input": "(3) >= (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Rational orders a range is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_rational_rational",
+            "input": "(3) >= (3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational orders a rational"
+        },
+        {
+            "id": "greater_or_equal_types_rational_string",
+            "input": "(3) >= (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Rational orders a string is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_rational_unit",
+            "input": "(3) >= (4 meters)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational orders a unit"
+        },
+        {
+            "id": "greater_or_equal_types_rational_vector",
+            "input": "(3) >= ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Rational orders a vector is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_string_boolean",
+            "input": "(\"ab\") >= (true)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String orders a boolean is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_string_double",
+            "input": "(\"ab\") >= (2.5d)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String orders a double is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_string_matrix",
+            "input": "(\"ab\") >= ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String orders a matrix is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_string_percent",
+            "input": "(\"ab\") >= (20%)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String orders a percent is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_string_range",
+            "input": "(\"ab\") >= (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String orders a range is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_string_rational",
+            "input": "(\"ab\") >= (3)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String orders a rational is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_string_string",
+            "input": "(\"ab\") >= (\"ab\")",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String orders a string"
+        },
+        {
+            "id": "greater_or_equal_types_string_unit",
+            "input": "(\"ab\") >= (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String orders a unit is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_string_vector",
+            "input": "(\"ab\") >= ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "String orders a vector is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_unit_boolean",
+            "input": "(4 meters) >= (true)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit orders a boolean"
+        },
+        {
+            "id": "greater_or_equal_types_unit_double",
+            "input": "(4 meters) >= (2.5d)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit orders a double"
+        },
+        {
+            "id": "greater_or_equal_types_unit_matrix",
+            "input": "(4 meters) >= ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit orders a matrix is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_unit_percent",
+            "input": "(4 meters) >= (20%)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit orders a percent"
+        },
+        {
+            "id": "greater_or_equal_types_unit_range",
+            "input": "(4 meters) >= (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit orders a range is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_unit_rational",
+            "input": "(4 meters) >= (3)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit orders a rational"
+        },
+        {
+            "id": "greater_or_equal_types_unit_string",
+            "input": "(4 meters) >= (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit orders a string is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_unit_unit",
+            "input": "(4 meters) >= (4 meters)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Unit orders a unit"
+        },
+        {
+            "id": "greater_or_equal_types_unit_vector",
+            "input": "(4 meters) >= ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Unit orders a vector is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_vector_boolean",
+            "input": "({1, 2}) >= (true)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector orders a boolean is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_vector_double",
+            "input": "({1, 2}) >= (2.5d)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector orders a double is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_vector_matrix",
+            "input": "({1, 2}) >= ([1, 2; 3, 4])",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector orders a matrix is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_vector_percent",
+            "input": "({1, 2}) >= (20%)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector orders a percent is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_vector_range",
+            "input": "({1, 2}) >= (1..2)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector orders a range is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_vector_rational",
+            "input": "({1, 2}) >= (3)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector orders a rational is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_vector_string",
+            "input": "({1, 2}) >= (\"ab\")",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector orders a string is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_vector_unit",
+            "input": "({1, 2}) >= (4 meters)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector orders a unit is not defined"
+        },
+        {
+            "id": "greater_or_equal_types_vector_vector",
+            "input": "({1, 2}) >= ({1, 2})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Vector orders a vector is not defined"
+        },
+        {
+            "id": "gte_001",
+            "input": "5 >= 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than or equal: equal values"
+        },
+        {
+            "id": "gte_002",
+            "input": "6 >= 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than or equal: greater value"
+        },
+        {
+            "id": "gte_003",
+            "input": "5 >= 6",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Greater than or equal: less value"
+        },
+        {
+            "id": "gte_004",
+            "input": "0 >= -1",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Zero greater than or equal to negative"
+        }
+    ]
+}

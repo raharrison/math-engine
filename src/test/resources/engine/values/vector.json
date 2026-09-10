@@ -1,0 +1,269 @@
+{
+    "category": "Value: vector",
+    "description": "Vector literals, their size, nesting and the degenerate cases.",
+    "tests": [
+        {
+            "id": "const_023",
+            "input": "{1}",
+            "expected": [
+                1
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single element vector"
+        },
+        {
+            "id": "empty_vector_001",
+            "input": "{}",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Empty vector literal"
+        },
+        {
+            "id": "empty_vector_arithmetic_001",
+            "input": "{} + {}",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "Empty + empty = empty"
+        },
+        {
+            "id": "empty_vector_equality_001",
+            "input": "{} == {}",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Empty vectors are equal"
+        },
+        {
+            "id": "single_element_matrix_broadcast_001",
+            "input": "[[5]] + [[1, 2], [3, 4]]",
+            "expected": [
+                [
+                    6,
+                    7
+                ],
+                [
+                    8,
+                    9
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "1x1 matrix broadcasts to 2x2"
+        },
+        {
+            "id": "vec_edge_004",
+            "input": "{1}[0]",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Index single-element vector"
+        },
+        {
+            "id": "vec_edge_005",
+            "input": "{1}[-1]",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Negative index on single-element vector"
+        },
+        {
+            "id": "vec_edge_006",
+            "input": "{5, 4, 3, 2, 1}[0]",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "First element"
+        },
+        {
+            "id": "vec_edge_007",
+            "input": "{5, 4, 3, 2, 1}[-1]",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Last element with negative index"
+        },
+        {
+            "id": "vec_edge_008",
+            "input": "{5, 4, 3, 2, 1}[-2]",
+            "expected": 2.0,
+            "expectedType": "NodeRational",
+            "notes": "Second-to-last element"
+        },
+        {
+            "id": "vec_edge_009",
+            "input": "{1, 2, 3}[0:2]",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from start"
+        },
+        {
+            "id": "vec_edge_010",
+            "input": "{1, 2, 3, 4, 5}[2:4]",
+            "expected": [
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice middle elements"
+        },
+        {
+            "id": "vec_edge_011",
+            "input": "{1, 2, 3, 4, 5}[:]",
+            "expected": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice all elements"
+        },
+        {
+            "id": "vec_edge_012",
+            "input": "{1, 2, 3, 4, 5}[1:]",
+            "expected": [
+                2,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from index to end"
+        },
+        {
+            "id": "vec_edge_013",
+            "input": "{1, 2, 3, 4, 5}[:3]",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Slice from start to index"
+        },
+        {
+            "id": "vec_edge_015",
+            "input": "{10, 20, 30} - {1, 2, 3}",
+            "expected": [
+                9,
+                18,
+                27
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector subtraction"
+        },
+        {
+            "id": "vec_edge_020",
+            "input": "{{1, 2}, {3, 4}, {5, 6}}",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ],
+                [
+                    5,
+                    6
+                ]
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector of vectors"
+        },
+        {
+            "id": "vec_edge_021",
+            "input": "{{1, 2}, {3, 4}}[0]",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Index into vector of vectors"
+        },
+        {
+            "id": "vector_create_001",
+            "input": "{1, 2, 3}",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Create vector literal"
+        },
+        {
+            "id": "vector_create_002",
+            "input": "{1, 2, 3, 4, 5}",
+            "expected": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Create 5-element vector"
+        },
+        {
+            "id": "vector_create_003",
+            "input": "{42}",
+            "expected": [
+                42
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Single element vector"
+        },
+        {
+            "id": "vector_create_005",
+            "input": "{1.5, 2.5, 3.5}",
+            "expected": [
+                1.5,
+                2.5,
+                3.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector with decimals"
+        },
+        {
+            "id": "vector_expr_001",
+            "input": "v := {1, 2, 3}; v * 2",
+            "expected": [
+                2,
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Vector variable"
+        },
+        {
+            "id": "vector_expr_002",
+            "input": "v := {1, 2, 3}; v[0] + v[1] + v[2]",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Sum vector elements via access"
+        },
+        {
+            "id": "vector_nested_001",
+            "input": "{{1, 2}, {3, 4}}",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Nested vectors (vector of vectors)"
+        },
+        {
+            "id": "vector_display",
+            "input": "str({1, 2})",
+            "expected": "{1, 2}",
+            "expectedType": "NodeString",
+            "notes": "Vectors were always consistent; this pins that they stay so"
+        }
+    ]
+}

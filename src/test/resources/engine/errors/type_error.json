@@ -1,0 +1,209 @@
+{
+    "category": "Errors: TypeError",
+    "description": "Operations applied to a value type that has no meaning for them, and shape mismatches between collections.",
+    "tests": [
+        {
+            "id": "comp_err_001",
+            "input": "{x for x in 42}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot iterate over number"
+        },
+        {
+            "id": "comp_err_002",
+            "input": "{x for x in \"hello\"}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot iterate over string (not implemented)"
+        },
+        {
+            "id": "det_vector_001",
+            "input": "det({1, 2, 3})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Determinant requires matrix not vector"
+        },
+        {
+            "id": "dot_dimension_001",
+            "input": "{1, 2, 3} @ {1, 2}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Dot product requires equal length vectors"
+        },
+        {
+            "id": "err_eval_014",
+            "input": "min({})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Min of empty vector; there is no value to return, so the call has no result type"
+        },
+        {
+            "id": "err_eval_015",
+            "input": "max({})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Max of empty vector; there is no value to return, so the call has no result type"
+        },
+        {
+            "id": "err_eval_016",
+            "input": "median({})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Median of empty vector; there is no value to return, so the call has no result type"
+        },
+        {
+            "id": "gcd_nonint_001",
+            "input": "gcd(2.5, 3.5)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "GCD requires integers"
+        },
+        {
+            "id": "incompatible_types_001",
+            "input": "100 meters in celsius",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot convert length to temperature"
+        },
+        {
+            "id": "lcm_nonint_001",
+            "input": "lcm(2.5, 3.5)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "LCM requires integers"
+        },
+        {
+            "id": "logical_matrix_001",
+            "input": "[[true, false], [false, true]] && [[true, true], [false, false]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Logical AND not defined for matrices"
+        },
+        {
+            "id": "logical_matrix_002",
+            "input": "[[true, false], [false, true]] || [[true, true], [false, false]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Logical OR not defined for matrices"
+        },
+        {
+            "id": "logical_vector_001",
+            "input": "{true, false} && {true, true}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Logical AND not defined for vectors"
+        },
+        {
+            "id": "logical_vector_002",
+            "input": "{true, false} || {false, false}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Logical OR not defined for vectors"
+        },
+        {
+            "id": "matmul_dimension_001",
+            "input": "[[1, 2], [3, 4]] @ [[1, 2, 3]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot multiply 2x2 and 1x3 matrices (inner dimensions 2 != 1)"
+        },
+        {
+            "id": "matmul_dimension_002",
+            "input": "[[1, 2], [3, 4]] @ [[1], [2], [3]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot multiply 2x2 and 3x1 matrices (inner dimensions 2 != 3)"
+        },
+        {
+            "id": "matrix_power_negative_001",
+            "input": "[[1, 2], [3, 4]] ^ -1",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix power with negative exponent not supported"
+        },
+        {
+            "id": "matrix_power_nonsquare_001",
+            "input": "[[1, 2, 3], [4, 5, 6]] ^ 2",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Matrix power requires square matrix"
+        },
+        {
+            "id": "ordering_matrix_001",
+            "input": "[[1, 2], [3, 4]] < [[5, 6], [7, 8]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order matrices with <"
+        },
+        {
+            "id": "ordering_matrix_002",
+            "input": "[[1, 2], [3, 4]] > [[5, 6], [7, 8]]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order matrices with >"
+        },
+        {
+            "id": "ordering_vector_001",
+            "input": "{1, 2, 3} < {2, 3, 4}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order vectors with <"
+        },
+        {
+            "id": "ordering_vector_002",
+            "input": "{5, 6} > {1, 2}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order vectors with >"
+        },
+        {
+            "id": "ordering_vector_003",
+            "input": "{1, 2} <= {3, 4}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order vectors with <="
+        },
+        {
+            "id": "ordering_vector_004",
+            "input": "{1, 2} >= {3, 4}",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot order vectors with >="
+        },
+        {
+            "id": "str_err_div_001",
+            "input": "\"hello\" / 2",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot divide string"
+        },
+        {
+            "id": "str_err_div_002",
+            "input": "10 / \"hello\"",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot divide by string"
+        },
+        {
+            "id": "str_err_sub_001",
+            "input": "\"hello\" - 5",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot subtract from string"
+        },
+        {
+            "id": "str_err_sub_002",
+            "input": "5 - \"hello\"",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot subtract string from number"
+        },
+        {
+            "id": "subscript_scalar_001",
+            "input": "5[0]",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Cannot subscript scalar"
+        }
+    ]
+}

@@ -36,6 +36,8 @@ import java.util.*;
  */
 public final class ConstantRegistry {
 
+    private static final ConstantRegistry STANDARD = buildDefaults();
+
     private final List<ConstantDefinition> definitions;
     private final Map<String, ConstantDefinition> nameToDefinition;
 
@@ -62,6 +64,13 @@ public final class ConstantRegistry {
     }
 
     /**
+     * The standard registry. Immutable, so every engine shares one instance.
+     */
+    public static ConstantRegistry withDefaults() {
+        return STANDARD;
+    }
+
+    /**
      * Creates a registry with the standard mathematical constants.
      * <p>
      * Includes:
@@ -74,7 +83,7 @@ public final class ConstantRegistry {
      *
      * @return registry with standard constants
      */
-    public static ConstantRegistry withDefaults() {
+    private static ConstantRegistry buildDefaults() {
         return builder()
                 .addAll(mathematicalConstants())
                 .addAll(booleanConstants())

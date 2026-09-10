@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.function.vector;
 
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
@@ -50,7 +51,7 @@ public final class StatisticalFunctions {
             .noBroadcasting()
             .implementedBy((vector, pValue, ctx) -> {
                 NodeVector vec = ctx.requireVector(vector);
-                double p = ctx.toNumber(pValue).doubleValue();
+                double p = ctx.toDouble(pValue);
 
                 // Allow both 0-100 and 0-1 formats
                 if (p > 1) {
@@ -58,7 +59,7 @@ public final class StatisticalFunctions {
                 }
 
                 if (p < 0 || p > 1) {
-                    throw new IllegalArgumentException("percentile must be between 0 and 1 (or 0 and 100)");
+                    throw new DomainException("percentile must be between 0 and 1 (or 0 and 100)");
                 }
 
                 double[] values = ctx.toDoubleArray(vec);
@@ -182,7 +183,7 @@ public final class StatisticalFunctions {
                 NodeVector vec2 = ctx.requireVector(v2);
 
                 if (vec1.size() != vec2.size()) {
-                    throw new IllegalArgumentException("covariance requires vectors of equal length");
+                    throw new DomainException("covariance requires vectors of equal length");
                 }
                 if (vec1.size() < 2) {
                     throw new TypeError("covariance requires at least 2 elements");
@@ -210,7 +211,7 @@ public final class StatisticalFunctions {
                 NodeVector vec2 = ctx.requireVector(v2);
 
                 if (vec1.size() != vec2.size()) {
-                    throw new IllegalArgumentException("correlation requires vectors of equal length");
+                    throw new DomainException("correlation requires vectors of equal length");
                 }
                 if (vec1.size() < 2) {
                     throw new TypeError("correlation requires at least 2 elements");
@@ -252,10 +253,10 @@ public final class StatisticalFunctions {
             .noBroadcasting()
             .implementedBy((vector, qValue, ctx) -> {
                 NodeVector vec = ctx.requireVector(vector);
-                int q = (int) ctx.toNumber(qValue).doubleValue();
+                int q = (int) ctx.toDouble(qValue);
 
                 if (q < 1 || q > 3) {
-                    throw new IllegalArgumentException("quartile must be 1, 2, or 3");
+                    throw new DomainException("quartile must be 1, 2, or 3");
                 }
 
                 double[] values = ctx.toDoubleArray(vec);

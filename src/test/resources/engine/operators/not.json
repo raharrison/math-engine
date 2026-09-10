@@ -1,0 +1,48 @@
+{
+    "category": "Operator: not (logical negation)",
+    "description": "Negating a truth value, and what counts as a truth value.",
+    "tests": [
+        {
+            "id": "cmp_004",
+            "input": "not (5 > 3)",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT on comparison result"
+        },
+        {
+            "id": "logical_015",
+            "input": "not not true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT: double negation"
+        },
+        {
+            "id": "not_001",
+            "input": "not true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT: negate true"
+        },
+        {
+            "id": "not_002",
+            "input": "not false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "NOT: negate false"
+        },
+        {
+            "id": "not_004",
+            "input": "not not false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Double negation of false"
+        },
+        {
+            "id": "not_005",
+            "input": "not not not true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "Triple negation"
+        }
+    ]
+}

@@ -1,8 +1,10 @@
 package uk.co.ryanharrison.mathengine.parser.function.string;
 
+import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.util.Sequences;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -19,18 +21,6 @@ public final class StringFunctions {
     }
 
     // ==================== Basic String Operations ====================
-
-    /**
-     * String length
-     */
-    public static final MathFunction STRLEN = FunctionBuilder
-            .named("strlen")
-            .describedAs("Returns the number of characters in string str")
-            .withParams("str")
-            .inCategory(STRING)
-            .takingUnary()
-            .noBroadcasting()
-            .implementedBy((arg, ctx) -> new NodeRational(ctx.toStringValue(arg).length()));
 
     /**
      * Convert to uppercase
@@ -180,7 +170,7 @@ public final class StringFunctions {
                 if (index < 0) index = str.length() + index;
 
                 if (index < 0 || index >= str.length()) {
-                    throw new IllegalArgumentException("charat: index " + index + " out of bounds");
+                    throw new DomainException("charat: index " + index + " out of bounds");
                 }
                 return new NodeString(String.valueOf(str.charAt(index)));
             });
@@ -188,56 +178,19 @@ public final class StringFunctions {
     // ==================== Search Operations ====================
 
     /**
-     * Find index of substring
+     * Last position of a value in a vector, or of a substring in a string.
      */
-    public static final MathFunction STRINDEXOF = FunctionBuilder
-            .named("strindexof")
-            .alias("strfind")
-            .describedAs("Returns the first index of substr in string str (-1 if not found)")
-            .withParams("str", "substr")
-            .withParams("str", "substr", "start")
-            .inCategory(STRING)
-            .takingBetween(2, 3)
-            .noBroadcasting()
-            .implementedByAggregate((args, ctx) -> {
-                String s = ctx.toStringValue(args.get(0));
-                String needle = ctx.toStringValue(args.get(1));
-                int start = args.size() > 2 ? ctx.toInt(args.get(2)) : 0;
-                return new NodeRational(s.indexOf(needle, start));
-            });
-
-    /**
-     * Find last index of substring
-     */
-    public static final MathFunction STRLASTINDEXOF = FunctionBuilder
-            .named("strlastindexof")
-            .alias("strrfind")
-            .describedAs("Returns the last index of substr in string str (-1 if not found)")
+    public static final MathFunction LASTINDEXOF = FunctionBuilder
+            .named("lastindexof")
+            .alias("strlastindexof", "strrfind")
+            .describedAs("Returns the last index of a value in a vector, or of a substring in a string, or -1 if absent")
+            .withParams("vector", "value")
             .withParams("str", "substr")
             .inCategory(STRING)
             .takingBinary()
             .noBroadcasting()
-            .implementedBy((s, needle, ctx) -> {
-                String str = ctx.toStringValue(s);
-                String search = ctx.toStringValue(needle);
-                return new NodeRational(str.lastIndexOf(search));
-            });
-
-    /**
-     * Check if string contains substring
-     */
-    public static final MathFunction STRCONTAINS = FunctionBuilder
-            .named("strcontains")
-            .describedAs("Returns true if string str contains substr")
-            .withParams("str", "substr")
-            .inCategory(STRING)
-            .takingBinary()
-            .noBroadcasting()
-            .implementedBy((s, needle, ctx) -> {
-                String str = ctx.toStringValue(s);
-                String search = ctx.toStringValue(needle);
-                return new NodeBoolean(str.contains(search));
-            });
+            .implementedBy((sequence, target, ctx) ->
+                    new NodeRational(Sequences.lastIndexOf(sequence, target)));
 
     /**
      * Check if string starts with prefix
@@ -308,40 +261,8 @@ public final class StringFunctions {
                 try {
                     return new NodeString(str.replaceFirst(Pattern.quote(pat), rep));
                 } catch (PatternSyntaxException e) {
-                    throw new IllegalArgumentException("replacefirst: invalid pattern");
+                    throw new DomainException("replacefirst: invalid pattern");
                 }
-            });
-
-    /**
-     * Reverse a string
-     */
-    public static final MathFunction STRREVERSE = FunctionBuilder
-            .named("strreverse")
-            .describedAs("Returns string str with its characters in reversed order")
-            .withParams("str")
-            .inCategory(STRING)
-            .takingUnary()
-            .noBroadcasting()
-            .implementedBy((arg, ctx) -> {
-                String s = ctx.toStringValue(arg);
-                return new NodeString(new StringBuilder(s).reverse().toString());
-            });
-
-    /**
-     * Repeat string n times
-     */
-    public static final MathFunction STRREPEAT = FunctionBuilder
-            .named("strrepeat")
-            .describedAs("Returns string str repeated count times")
-            .withParams("str", "count")
-            .inCategory(STRING)
-            .takingBinary()
-            .noBroadcasting()
-            .implementedBy((s, n, ctx) -> {
-                String str = ctx.toStringValue(s);
-                int count = ctx.toInt(n);
-                if (count < 0) count = 0;
-                return new NodeString(str.repeat(count));
             });
 
     /**
@@ -485,7 +406,7 @@ public final class StringFunctions {
             .implementedBy((arg, ctx) -> {
                 String s = ctx.toStringValue(arg);
                 if (s.isEmpty()) {
-                    throw new IllegalArgumentException("ord: empty string");
+                    throw new DomainException("ord: empty string");
                 }
                 return new NodeRational(s.codePointAt(0));
             });
@@ -503,7 +424,7 @@ public final class StringFunctions {
             .implementedBy((arg, ctx) -> {
                 int code = ctx.toInt(arg);
                 if (code < 0 || code > 0x10FFFF) {
-                    throw new IllegalArgumentException("chr: code point out of range");
+                    throw new DomainException("chr: code point out of range");
                 }
                 return new NodeString(new String(Character.toChars(code)));
             });
@@ -535,7 +456,7 @@ public final class StringFunctions {
             .takingBinary()
             .noBroadcasting()
             .implementedBy((value, decimals, ctx) -> {
-                double val = ctx.toNumber(value).doubleValue();
+                double val = ctx.toDouble(value);
                 int dec = ctx.toInt(decimals);
                 dec = Math.max(0, Math.min(dec, 15));
                 return new NodeString(String.format("%." + dec + "f", val));
@@ -547,13 +468,13 @@ public final class StringFunctions {
     public static List<MathFunction> all() {
         return List.of(
                 // Basic operations
-                STRLEN, UPPER, LOWER, TRIM, LTRIM, RTRIM,
+                UPPER, LOWER, TRIM, LTRIM, RTRIM,
                 // Substring operations
                 SUBSTRING, LEFT, RIGHT, CHARAT,
                 // Search operations
-                STRINDEXOF, STRLASTINDEXOF, STRCONTAINS, STARTSWITH, ENDSWITH,
+                LASTINDEXOF, STARTSWITH, ENDSWITH,
                 // Transform operations
-                REPLACE, REPLACEFIRST, STRREVERSE, STRREPEAT, PADLEFT, PADRIGHT,
+                REPLACE, REPLACEFIRST, PADLEFT, PADRIGHT,
                 // Conversion
                 STR, SPLIT, JOIN, ORD, CHR, ISEMPTY, FORMAT
         );

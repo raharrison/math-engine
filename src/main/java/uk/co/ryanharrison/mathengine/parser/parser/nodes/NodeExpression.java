@@ -25,8 +25,4 @@ public abstract sealed class NodeExpression extends Node permits
         NodeVarRef,
         NodeConstRef {
 
-    @Override
-    public <T> T accept(NodeVisitor<T> visitor) {
-        return visitor.visitExpression(this);
-    }
 }

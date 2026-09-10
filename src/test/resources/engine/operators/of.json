@@ -1,0 +1,84 @@
+{
+    "category": "Operator: of (percentage of)",
+    "description": "Reading '50% of 200' as a share of a quantity, including over collections.",
+    "tests": [
+        {
+            "id": "of_002",
+            "input": "100% of 200",
+            "expected": 200.0,
+            "expectedType": "NodeDouble",
+            "notes": "100% of X = X"
+        },
+        {
+            "id": "of_003",
+            "input": "0% of 200",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "0% of X = 0"
+        },
+        {
+            "id": "of_004",
+            "input": "25% of 80",
+            "expected": 20.0,
+            "expectedType": "NodeDouble",
+            "notes": "25% of 80 = 20"
+        },
+        {
+            "id": "of_006",
+            "input": "10% of 1000",
+            "expected": 100.0,
+            "expectedType": "NodeDouble",
+            "notes": "10% of 1000 = 100"
+        },
+        {
+            "id": "percent_of_vector_001",
+            "input": "50% of {1, 2, 3}",
+            "expected": [
+                0.5,
+                1,
+                1.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Percent of vector: broadcasts"
+        },
+        {
+            "id": "of_broadcasts",
+            "input": "50% of {2, 4}",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Broadcasting comes free once it is ordinary multiplication"
+        },
+        {
+            "id": "of_exact_type",
+            "input": "typeof(2 of 3)",
+            "expected": "rational",
+            "expectedType": "NodeString",
+            "notes": "So the result type agrees with multiplication as well"
+        },
+        {
+            "id": "of_keeps_units",
+            "input": "50% of (100 meters)",
+            "expected": "50.0 meters",
+            "expectedType": "NodeUnit",
+            "notes": "Half of a hundred metres is fifty metres, not a bare fifty: 'of' is multiplication with the percentage spent"
+        },
+        {
+            "id": "of_percent_of_percent",
+            "input": "20% of 20%",
+            "expected": 0.04,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "A fifth of a fifth is four hundredths"
+        },
+        {
+            "id": "of_stays_exact",
+            "input": "2 of 3",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Two threes are an exact six, as multiplication already gave"
+        }
+    ]
+}

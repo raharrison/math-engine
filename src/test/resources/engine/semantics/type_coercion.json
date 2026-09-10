@@ -1,0 +1,434 @@
+{
+    "category": "Semantics: type coercion",
+    "description": "What happens when two different value types meet in one operation, and which type comes out.",
+    "tests": [
+        {
+            "id": "boolean_logical_002",
+            "input": "0 || 5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Zero is falsy, non-zero is truthy"
+        },
+        {
+            "id": "boolean_to_number_002",
+            "input": "false + 5",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "false coerces to 0"
+        },
+        {
+            "id": "boolean_to_number_003",
+            "input": "10 * false",
+            "expected": 0.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiply by false = 0"
+        },
+        {
+            "id": "boolean_to_number_004",
+            "input": "3 * true",
+            "expected": 3.0,
+            "expectedType": "NodeRational",
+            "notes": "Multiply by true = identity"
+        },
+        {
+            "id": "complex_type_mix_001",
+            "input": "5 + 2.5 * 2",
+            "expected": 10.0,
+            "expectedType": "NodeRational",
+            "notes": "Mixed types in expression"
+        },
+        {
+            "id": "complex_type_mix_002",
+            "input": "(10 + 5.0) / 3",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Parentheses with type mixing"
+        },
+        {
+            "id": "complex_type_mix_003",
+            "input": "sqrt(16) + 2.5",
+            "expected": 6.5,
+            "expectedType": "NodeDouble",
+            "notes": "Function result + double"
+        },
+        {
+            "id": "matrix_type_promotion_001",
+            "input": "[[1, 2], [3, 4]] + 0.5",
+            "expected": [
+                [
+                    1.5,
+                    2.5
+                ],
+                [
+                    3.5,
+                    4.5
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Rational matrix + double scalar"
+        },
+        {
+            "id": "matrix_type_promotion_002",
+            "input": "[[1.0, 2.0], [3.0, 4.0]] + 1",
+            "expected": [
+                [
+                    2.0,
+                    3.0
+                ],
+                [
+                    4.0,
+                    5.0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Double matrix + rational scalar"
+        },
+        {
+            "id": "mixed_001",
+            "input": "2 + 3.0",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Rational + Double = Double"
+        },
+        {
+            "id": "mixed_002",
+            "input": "2.5 * 3",
+            "expected": 7.5,
+            "expectedType": "NodeRational",
+            "notes": "Double * Rational = Double"
+        },
+        {
+            "id": "mixed_002_type_coercion",
+            "input": "3.0 + 2",
+            "expected": 5.0,
+            "expectedType": "NodeRational",
+            "notes": "Double + Rational = Double"
+        },
+        {
+            "id": "mixed_003",
+            "input": "1.5 + 0.5",
+            "expected": 2.0,
+            "expectedType": "NodeRational",
+            "notes": "Double + Double = Double"
+        },
+        {
+            "id": "mixed_003_type_coercion",
+            "input": "2 * 3.5",
+            "expected": 7.0,
+            "expectedType": "NodeRational",
+            "notes": "Rational * Double = Double"
+        },
+        {
+            "id": "mixed_004",
+            "input": "3.5 * 2",
+            "expected": 7.0,
+            "expectedType": "NodeRational",
+            "notes": "Double * Rational = Double"
+        },
+        {
+            "id": "mixed_005",
+            "input": "10 - 2.5",
+            "expected": 7.5,
+            "expectedType": "NodeRational",
+            "notes": "Rational - Double = Double"
+        },
+        {
+            "id": "mixed_006",
+            "input": "10.0 - 2",
+            "expected": 8.0,
+            "expectedType": "NodeRational",
+            "notes": "Double - Rational = Double"
+        },
+        {
+            "id": "mixed_007",
+            "input": "6 / 2.0",
+            "expected": 3.0,
+            "expectedType": "NodeRational",
+            "notes": "Rational / Double = Double"
+        },
+        {
+            "id": "mixed_008",
+            "input": "6.0 / 2",
+            "expected": 3.0,
+            "expectedType": "NodeRational",
+            "notes": "Double / Rational = Double"
+        },
+        {
+            "id": "mixed_009",
+            "input": "true + 2.5",
+            "expected": 3.5,
+            "expectedType": "NodeRational",
+            "notes": "Boolean + Double: true (1) + 2.5 = 3.5"
+        },
+        {
+            "id": "mixed_010",
+            "input": "false + 2.5",
+            "expected": 2.5,
+            "expectedType": "NodeRational",
+            "notes": "Boolean + Double: false (0) + 2.5 = 2.5"
+        },
+        {
+            "id": "mixed_011",
+            "input": "50% + true",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Percent + Boolean: 50% (0.5) + true (1) = 1.5"
+        },
+        {
+            "id": "mixed_012",
+            "input": "true + 50%",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean + Percent: true (1) + 50% (0.5) = 1.5"
+        },
+        {
+            "id": "mixed_013",
+            "input": "50% + 2",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Percent + Rational: 50% (0.5) + 2 = 2.5"
+        },
+        {
+            "id": "mixed_014",
+            "input": "2 + 50%",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Rational + Percent: 2 + 50% of 2 = 2 + 1 = 3 (percent arithmetic)"
+        },
+        {
+            "id": "mixed_015",
+            "input": "50% + 2.5",
+            "expected": 3.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent + Double: 50% (0.5) + 2.5 = 3.0 (simple addition)"
+        },
+        {
+            "id": "mixed_016",
+            "input": "2.5 + 50%",
+            "expected": 3.75,
+            "expectedType": "NodeDouble",
+            "notes": "Double + Percent: 2.5 + 50% of 2.5 = 2.5 + 1.25 = 3.75 (percent arithmetic)"
+        },
+        {
+            "id": "mixed_017",
+            "input": "true * 50%",
+            "expected": "50%",
+            "expectedType": "NodePercent",
+            "notes": "Boolean * Percent: true (1) * 50% (0.5) = 50%"
+        },
+        {
+            "id": "mixed_018",
+            "input": "false * 50%",
+            "expected": "0%",
+            "expectedType": "NodePercent",
+            "notes": "Boolean * Percent: false (0) * 50% (0.5) = 0.0%"
+        },
+        {
+            "id": "mixed_019",
+            "input": "true + false + 1 + 1.5",
+            "expected": 3.5,
+            "expectedType": "NodeRational",
+            "notes": "Multi-type: true (1) + false (0) + 1 + 1.5 = 3.5"
+        },
+        {
+            "id": "mixed_020",
+            "input": "50% of 200 + true",
+            "expected": 101.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent 'of' + Boolean: (50% of 200) + true = 100 + 1 = 101"
+        },
+        {
+            "id": "mixed_021",
+            "input": "true + 50% of 100",
+            "expected": 51.0,
+            "expectedType": "NodeDouble",
+            "notes": "Boolean + Percent 'of': true + (50% of 100) = 1 + 50 = 51"
+        },
+        {
+            "id": "mixed_022",
+            "input": "2 + 3 * true",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Precedence with boolean: 2 + (3 * 1) = 5"
+        },
+        {
+            "id": "mixed_023",
+            "input": "false + 2 * 3",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Boolean in expression: 0 + (2 * 3) = 6"
+        },
+        {
+            "id": "mixed_024",
+            "input": "(true + false) * 50%",
+            "expected": "50%",
+            "expectedType": "NodePercent",
+            "notes": "Parentheses: (1 + 0) * 0.5 = 50%"
+        },
+        {
+            "id": "mixed_025",
+            "input": "true * 2 + false * 3",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Multiple boolean operations: (1 * 2) + (0 * 3) = 2"
+        },
+        {
+            "id": "mixed_026",
+            "input": "25% * 4 + true",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent * Rational + Boolean: (0.25 * 4) + 1 = 2"
+        },
+        {
+            "id": "mixed_027",
+            "input": "100% - 50% + true",
+            "expected": 1.5,
+            "expectedType": "NodeDouble",
+            "notes": "Percent - Percent + Boolean: (100% - 50%) returns 50%, then 50% + true = 0.5 + 1 = 1.5"
+        },
+        {
+            "id": "mixed_028",
+            "input": "1 + 2 + 3.0 + true + 50%",
+            "expected": 10.5,
+            "expectedType": "NodeDouble",
+            "notes": "All types: 1+2=3, 3+3.0=6.0, 6.0+true=7.0, 7.0+50%=7.0+3.5=10.5"
+        },
+        {
+            "id": "mixed_029",
+            "input": "2.5 * 2 - 50% + false",
+            "expected": 2.5,
+            "expectedType": "NodeDouble",
+            "notes": "Mixed operations: 2.5*2=5.0, 5.0-50%=5.0-2.5=2.5, 2.5+false=2.5"
+        },
+        {
+            "id": "mixed_030",
+            "input": "10 / 2 + 50% of 10",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Division + Percent 'of': (10 / 2) + (50% of 10) = 5 + 5 = 10"
+        },
+        {
+            "id": "mixed_comparison_001",
+            "input": "1 == 1.0",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Rational equals equivalent double"
+        },
+        {
+            "id": "mixed_comparison_002",
+            "input": "2 < 2.5",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Compare rational and double"
+        },
+        {
+            "id": "mixed_comparison_003",
+            "input": "3.0 > 2",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Compare double and rational"
+        },
+        {
+            "id": "percent_add_001",
+            "input": "10% + 20%",
+            "expected": 0.30000000000000004,
+            "expectedType": "NodePercent",
+            "notes": "Percent + percent = percent"
+        },
+        {
+            "id": "percent_div_001",
+            "input": "20% / 10%",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent / percent = ratio (double)"
+        },
+        {
+            "id": "percent_mult_001",
+            "input": "10% * 20%",
+            "expected": 0.020000000000000004,
+            "expectedType": "NodePercent",
+            "notes": "Percent * percent = percent"
+        },
+        {
+            "id": "percent_number_add_001",
+            "input": "100 + 10%",
+            "expected": 110.0,
+            "expectedType": "NodeDouble",
+            "notes": "Number + percent (10% of 100 added to 100)"
+        },
+        {
+            "id": "percent_number_sub_001",
+            "input": "200 - 25%",
+            "expected": 150.0,
+            "expectedType": "NodeDouble",
+            "notes": "Number - percent (25% of 200 subtracted)"
+        },
+        {
+            "id": "percent_of_001",
+            "input": "50% of 100",
+            "expected": 50.0,
+            "expectedType": "NodeDouble",
+            "notes": "Percent 'of' operator"
+        },
+        {
+            "id": "percent_of_chained_001",
+            "input": "10% of 10% of 1000",
+            "expected": 10.0,
+            "expectedType": "NodeDouble",
+            "notes": "Chained percent 'of'"
+        },
+        {
+            "id": "rational_double_promotion_001",
+            "input": "5 + 2.5",
+            "expected": 7.5,
+            "expectedType": "NodeRational",
+            "notes": "Rational + double promotes to double"
+        },
+        {
+            "id": "rational_double_promotion_002",
+            "input": "1/2 + 0.25",
+            "expected": 0.75,
+            "expectedType": "NodeRational",
+            "notes": "Rational fraction + double promotes"
+        },
+        {
+            "id": "rational_preservation_001",
+            "input": "1/3 * 3",
+            "expected": 1.0,
+            "expectedType": "NodeRational",
+            "notes": "Rational * rational stays rational"
+        },
+        {
+            "id": "vector_type_promotion_001",
+            "input": "{1, 2, 3} + 2.5",
+            "expected": [
+                3.5,
+                4.5,
+                5.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational vector + double promotes elements"
+        },
+        {
+            "id": "vector_type_promotion_002",
+            "input": "{1.5, 2.5, 3.5} + 1",
+            "expected": [
+                2.5,
+                3.5,
+                4.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Double vector + rational"
+        },
+        {
+            "id": "vector_type_promotion_003",
+            "input": "{1, 2} + {1.5, 2.5}",
+            "expected": [
+                2.5,
+                4.5
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Rational vector + double vector promotes"
+        }
+    ]
+}

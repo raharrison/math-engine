@@ -5,22 +5,13 @@ import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeMatrix;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
+import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
+
+import java.util.function.BooleanSupplier;
 
 /**
- * Collection of logical operators.
- * <p>
- * Includes AND, OR, and XOR operators with broadcasting support.
- * </p>
- * <ul>
- *     <li>Scalar operations: {@code true && false} → {@code false}</li>
- *     <li>Vector operations: {@code {true, false} && {true, true}} → {@code {true, false}}</li>
- *     <li>Broadcasting: {@code {true, false, true} && true} → {@code {true, false, true}}</li>
- * </ul>
- * <p>
- * Note: Short-circuit evaluation only applies to scalar operations.
- * </p>
+ * The logical operators, which take scalars only. Numbers count as true when non-zero.
+ * {@code &&} and {@code ||} short-circuit, so the right operand may go unevaluated.
  */
 public final class LogicalOperators {
 
@@ -28,87 +19,44 @@ public final class LogicalOperators {
     }
 
     /**
-     * Logical AND operator (&&, and).
-     * Supports short-circuit evaluation for scalars and broadcasting for vectors.
+     * Stops at a false left operand.
      */
-    public static final BinaryOperator AND = new BinaryOperator() {
+    public static final BinaryOperator AND = new ShortCircuit("&&", false);
+
+    /**
+     * Stops at a true left operand.
+     */
+    public static final BinaryOperator OR = new ShortCircuit("||", true);
+
+    public static final BinaryOperator XOR = (left, right, ctx) ->
+            NodeBoolean.of(operand(left, "xor") ^ operand(right, "xor"));
+
+    private record ShortCircuit(String symbol, boolean decidingValue) implements BinaryOperator {
+
         @Override
         public boolean requiresShortCircuit() {
             return true;
         }
 
         @Override
-        public NodeConstant shortCircuitResult(NodeConstant leftValue, OperatorContext ctx) {
-            // Short-circuit only for scalar values
-            if (leftValue instanceof NodeBoolean bool && !bool.getValue()) {
-                return NodeBoolean.FALSE;
-            }
-            return null; // Continue evaluation
+        public NodeConstant shortCircuitResult(NodeConstant left, OperatorContext ctx) {
+            return operand(left, symbol) == decidingValue ? NodeBoolean.of(decidingValue) : null;
         }
 
         @Override
         public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-            // Logical operators only work on scalars
-            if (left instanceof NodeVector || left instanceof NodeMatrix ||
-                    right instanceof NodeVector || right instanceof NodeMatrix) {
-                throw new TypeError(
-                        "Logical AND (&&) does not work on containers");
-            }
-
-            boolean lVal = ctx.toBoolean(left);
-            boolean rVal = ctx.toBoolean(right);
-            return NodeBoolean.of(lVal && rVal);
-        }
-    };
-
-    /**
-     * Logical OR operator (||, or).
-     * Supports short-circuit evaluation for scalars and broadcasting for vectors.
-     */
-    public static final BinaryOperator OR = new BinaryOperator() {
-        @Override
-        public boolean requiresShortCircuit() {
-            return true;
+            return NodeBoolean.of(combine(() -> operand(left, symbol), () -> operand(right, symbol)));
         }
 
-        @Override
-        public NodeConstant shortCircuitResult(NodeConstant leftValue, OperatorContext ctx) {
-            // Short-circuit only for scalar values
-            if (leftValue instanceof NodeBoolean bool && bool.getValue()) {
-                return NodeBoolean.TRUE;
-            }
-            return null; // Continue evaluation
+        private boolean combine(BooleanSupplier left, BooleanSupplier right) {
+            return left.getAsBoolean() == decidingValue ? decidingValue : right.getAsBoolean();
         }
+    }
 
-        @Override
-        public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext ctx) {
-            // Logical operators only work on scalars
-            if (left instanceof NodeVector || left instanceof NodeMatrix ||
-                    right instanceof NodeVector || right instanceof NodeMatrix) {
-                throw new TypeError(
-                        "Logical OR (||) does not work on containers");
-            }
-
-            boolean lVal = ctx.toBoolean(left);
-            boolean rVal = ctx.toBoolean(right);
-            return NodeBoolean.of(lVal || rVal);
+    private static boolean operand(NodeConstant value, String symbol) {
+        if (value.isVector() || value.isMatrix()) {
+            throw new TypeError("Logical '" + symbol + "' does not work on collections");
         }
-    };
-
-    /**
-     * Logical XOR operator (xor).
-     * Supports broadcasting but not short-circuit evaluation.
-     */
-    public static final BinaryOperator XOR = (left, right, ctx) -> {
-        // Logical operators only work on scalars
-        if (left instanceof NodeVector || left instanceof NodeMatrix ||
-                right instanceof NodeVector || right instanceof NodeMatrix) {
-            throw new TypeError(
-                    "Logical XOR (xor) does not work on containers");
-        }
-
-        boolean lVal = ctx.toBoolean(left);
-        boolean rVal = ctx.toBoolean(right);
-        return NodeBoolean.of(lVal ^ rVal);
-    };
+        return TypeCoercion.toBoolean(value);
+    }
 }

@@ -44,7 +44,7 @@ public final class NodeRange extends NodeConstant {
 
     @Override
     public double doubleValue() {
-        throw new UnsupportedOperationException("Cannot convert range to double");
+        throw new TypeError("Cannot use a range as a number");
     }
 
     /**
@@ -152,43 +152,6 @@ public final class NodeRange extends NodeConstant {
             return new NodeRational((long) value, 1);
         }
         return new NodeDouble(value);
-    }
-
-    // ==================== Universal Arithmetic ====================
-
-    @Override
-    public NodeConstant add(NodeConstant other) {
-        return toVector().add(other);
-    }
-
-    @Override
-    public NodeConstant subtract(NodeConstant other) {
-        return toVector().subtract(other);
-    }
-
-    @Override
-    public NodeConstant multiply(NodeConstant other) {
-        return toVector().multiply(other);
-    }
-
-    @Override
-    public NodeConstant divide(NodeConstant other) {
-        return toVector().divide(other);
-    }
-
-    @Override
-    public NodeConstant power(NodeConstant other) {
-        return toVector().power(other);
-    }
-
-    @Override
-    public NodeConstant negate() {
-        return toVector().negate();
-    }
-
-    @Override
-    public int compareTo(NodeConstant other) {
-        throw new TypeError("Cannot compare ranges");
     }
 
     @Override

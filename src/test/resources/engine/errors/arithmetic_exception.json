@@ -1,0 +1,13 @@
+{
+    "category": "Errors: ArithmeticException",
+    "description": "Operations with no representable result that surface the JDK's own arithmetic failure rather than an engine exception.",
+    "tests": [
+        {
+            "id": "hmean_zero_001",
+            "input": "hmean({0, 1, 2})",
+            "expectError": true,
+            "expectedErrorType": "ArithmeticException",
+            "notes": "Harmonic mean with zero"
+        }
+    ]
+}

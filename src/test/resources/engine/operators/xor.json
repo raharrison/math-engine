@@ -1,0 +1,34 @@
+{
+    "category": "Operator: xor (exclusive or)",
+    "description": "Exclusive disjunction, which unlike and and or must evaluate both sides.",
+    "tests": [
+        {
+            "id": "xor_001",
+            "input": "true xor true",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: same values (true)"
+        },
+        {
+            "id": "xor_002",
+            "input": "true xor false",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: different values"
+        },
+        {
+            "id": "xor_003",
+            "input": "false xor true",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: different values (reversed)"
+        },
+        {
+            "id": "xor_004",
+            "input": "false xor false",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "XOR: same values (false)"
+        }
+    ]
+}

@@ -34,6 +34,8 @@ import java.util.*;
  */
 public final class KeywordRegistry {
 
+    private static final KeywordRegistry STANDARD = buildDefaults();
+
     private final Set<String> reservedKeywords;
     private final Map<String, TokenType> keywordOperators;
 
@@ -54,6 +56,13 @@ public final class KeywordRegistry {
     }
 
     /**
+     * The standard registry. Immutable, so every engine shares one instance.
+     */
+    public static KeywordRegistry withDefaults() {
+        return STANDARD;
+    }
+
+    /**
      * Creates a registry with the standard keywords.
      * <p>
      * Includes:
@@ -64,7 +73,7 @@ public final class KeywordRegistry {
      *
      * @return registry with standard keywords
      */
-    public static KeywordRegistry withDefaults() {
+    private static KeywordRegistry buildDefaults() {
         Builder builder = builder();
 
         SymbolRegistry symbolRegistry = SymbolRegistry.getDefault();

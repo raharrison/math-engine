@@ -1,20 +1,14 @@
 package uk.co.ryanharrison.mathengine.parser.operator.unary;
 
-import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.operator.UnaryOperator;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
 /**
- * Unary negation operator (-).
- * <p>
- * Negates a numeric value. Supports broadcasting over vectors and matrices.
+ * Unary minus, element-wise over collections.
  */
 public final class NegateOperator implements UnaryOperator {
 
-    /**
-     * Singleton instance
-     */
     public static final NegateOperator INSTANCE = new NegateOperator();
 
     private NegateOperator() {
@@ -27,6 +21,6 @@ public final class NegateOperator implements UnaryOperator {
 
     @Override
     public NodeConstant apply(NodeConstant operand, OperatorContext ctx) {
-        return ctx.dispatchUnary(operand, BigRational::negate, v -> -v);
+        return operand.negate();
     }
 }

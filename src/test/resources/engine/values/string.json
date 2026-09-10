@@ -1,0 +1,153 @@
+{
+    "category": "Value: string",
+    "description": "String literals and the operations defined on them: concatenation, repetition and lexicographic ordering.",
+    "tests": [
+        {
+            "id": "const_015",
+            "input": "\"hello\"",
+            "expected": "hello",
+            "expectedType": "NodeString",
+            "notes": "String literal"
+        },
+        {
+            "id": "const_016",
+            "input": "\"test 123\"",
+            "expected": "test 123",
+            "expectedType": "NodeString",
+            "notes": "String with spaces and numbers"
+        },
+        {
+            "id": "str_cmp_eq_001",
+            "input": "\"hello\" == \"hello\"",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String equality"
+        },
+        {
+            "id": "str_cmp_eq_002",
+            "input": "\"hello\" == \"world\"",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "String inequality via =="
+        },
+        {
+            "id": "str_cmp_ge_001",
+            "input": "\"z\" >= \"a\"",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String greater than or equal"
+        },
+        {
+            "id": "str_cmp_ge_002",
+            "input": "\"abc\" >= \"abd\"",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "String greater than or equal: false case"
+        },
+        {
+            "id": "str_cmp_gt_001",
+            "input": "\"b\" > \"a\"",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String greater than"
+        },
+        {
+            "id": "str_cmp_le_001",
+            "input": "\"a\" <= \"a\"",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String less than or equal: equal"
+        },
+        {
+            "id": "str_cmp_le_002",
+            "input": "\"a\" <= \"b\"",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String less than or equal: less"
+        },
+        {
+            "id": "str_cmp_lt_001",
+            "input": "\"a\" < \"b\"",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String less than: lexicographic"
+        },
+        {
+            "id": "str_cmp_lt_002",
+            "input": "\"b\" < \"a\"",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "String less than: reverse"
+        },
+        {
+            "id": "str_cmp_neq_001",
+            "input": "\"hello\" != \"world\"",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "String not-equal"
+        },
+        {
+            "id": "str_concat_001",
+            "input": "\"hello\" + \" world\"",
+            "expected": "hello world",
+            "expectedType": "NodeString",
+            "notes": "String + string concatenation"
+        },
+        {
+            "id": "str_concat_002",
+            "input": "\"abc\" + 123",
+            "expected": "abc123",
+            "expectedType": "NodeString",
+            "notes": "String + number concatenation"
+        },
+        {
+            "id": "str_concat_003",
+            "input": "5 + \"hello\"",
+            "expected": "5hello",
+            "expectedType": "NodeString",
+            "notes": "Number + string concatenation"
+        },
+        {
+            "id": "str_concat_004",
+            "input": "\"value: \" + true",
+            "expected": "value: true",
+            "expectedType": "NodeString",
+            "notes": "String + boolean concatenation"
+        },
+        {
+            "id": "str_concat_005",
+            "input": "\"\" + \"test\"",
+            "expected": "test",
+            "expectedType": "NodeString",
+            "notes": "Empty string + string"
+        },
+        {
+            "id": "str_repeat_001",
+            "input": "\"ab\" * 3",
+            "expected": "ababab",
+            "expectedType": "NodeString",
+            "notes": "String repetition: string * number"
+        },
+        {
+            "id": "str_repeat_002",
+            "input": "3 * \"ab\"",
+            "expected": "ababab",
+            "expectedType": "NodeString",
+            "notes": "String repetition: number * string"
+        },
+        {
+            "id": "str_repeat_003",
+            "input": "\"x\" * 0",
+            "expected": "",
+            "expectedType": "NodeString",
+            "notes": "String repetition: zero times"
+        },
+        {
+            "id": "str_repeat_004",
+            "input": "\"abc\" * 1",
+            "expected": "abc",
+            "expectedType": "NodeString",
+            "notes": "String repetition: one time"
+        }
+    ]
+}

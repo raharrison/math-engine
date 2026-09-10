@@ -1,591 +1,284 @@
 # Testing Infrastructure
 
-**Purpose:** JSON-based test framework for comprehensive parser testing
+**Purpose:** the declarative spec suite that guards the parser against regressions
 
 ---
 
 ## Overview
 
-The Math Engine uses a **JSON-based testing framework** where test cases are defined declaratively in JSON files and executed by `MathEngineTest.java`. This approach provides:
+The language the engine evaluates is specified by JSON files under
+`src/test/resources/engine`. Each file holds a list of cases, and each case is one
+expression together with the value or the exception it must produce. The files are the
+contract; the Java classes under `parser/spec` only load and run them.
 
-- **Declarative test definitions** - Tests as data, not code
-- **Easy test maintenance** - Update tests without recompiling
-- **Comprehensive coverage** - Hundreds of tests organized by feature
-- **Configuration flexibility** - Test with different engine settings
-- **Clear documentation** - Test files serve as executable specifications
+Writing the contract as data rather than as code buys three things:
+
+- a case is added by editing one file, with no recompilation and no boilerplate
+- a case reads as documentation, because it states an expression and its meaning
+- the whole surface can be checked mechanically, which is what `SpecIntegrityTest` and
+  `SpecCoverageTest` do
 
 ```
 src/test/resources/engine/
-├── advanced/           # Advanced features (comprehensions, recursion, unit conversion)
-├── config/             # Configuration tests (angle units, feature toggles)
-├── errors/             # Error handling tests
-├── functions/          # Function tests (built-in, user-defined, lambdas)
-├── integration/        # Integration tests
-├── operators/          # Operator tests (binary, unary, precedence)
-├── parser/             # Parser tests (lexer, AST construction)
-└── structures/         # Data structure tests (vectors, matrices, ranges)
+├── language/     syntax and parsing: literals, precedence, associativity, grouping,
+│                 sequences, assignment, implicit multiplication, comprehensions,
+│                 lambdas, subscripts, references
+├── values/       one file per value type: number, rational, percent, unit, string,
+│                 boolean, vector, matrix, range, function, constant
+├── operators/    one file per operator, covering every operand type it accepts
+├── functions/    one file per MathFunction.Category, plus aliases.json
+├── semantics/    scoping, closures, recursion, laziness, broadcasting, exactness,
+│                 units, type coercion, name resolution, operator/function agreement
+├── config/       one file per configuration flag
+├── errors/       one file per exception type
+└── integration/  several features at once, and real formulae
 ```
+
+There is one home per concern and no separate place for fixed bugs. A defect is a
+statement about some operator, function or value type, so its case belongs in that
+thing's file, next to the cases it contradicts. Filing it anywhere else is how a suite
+ends up asserting the same behaviour twice and disagreeing with itself.
 
 ---
 
-## Test Infrastructure Classes
+## Where a new case goes
 
-### JsonTestCase
+| The case is about                                                | Put it in                                           |
+|------------------------------------------------------------------|-----------------------------------------------------|
+| how something parses                                             | `language/`                                         |
+| what a literal of some type is, or its degenerate forms          | `values/`                                           |
+| one operator meeting one operand type                            | `operators/<operator>.json`                         |
+| one built-in function                                            | `functions/<category>.json`                         |
+| how evaluation behaves: scope, laziness, exactness, broadcasting | `semantics/`                                        |
+| a configuration flag changing the answer                         | `config/<flag>.json`                                |
+| an exception                                                     | `errors/<exception>.json`                           |
+| a bug that was fixed                                             | the file that owns the behaviour, by the rows above |
 
-**File:** `src/test/java/uk/co/ryanharrison/mathengine/parser/JsonTestCase.java`
-
-**Purpose:** Represents a single test case from JSON
-
-**Fields:**
-
-```java
-record JsonTestCase(
-    String id,                    // Unique test identifier
-    String input,                 // Expression to evaluate
-    Object expected,              // Expected result (number, array, etc.)
-    String expectedType,          // Expected node type (NodeDouble, NodeRational, etc.)
-    String evaluationOrder,       // Optional: for multi-statement tests
-    String notes,                 // Test description/rationale
-    Boolean skipTest,             // Skip this test
-    Boolean expectError,          // Test should throw error
-    String expectedErrorType,     // Expected exception type
-    TestConfig config,            // Per-test engine configuration
-    Double tolerance              // Floating-point tolerance
-)
-```
-
-**Example JSON:**
-
-```json
-{
-  "id": "add_001",
-  "input": "2 + 3",
-  "expected": 5,
-  "expectedType": "NodeRational",
-  "notes": "Simple integer addition"
-}
-```
-
-### JsonTestSuite
-
-**File:** `src/test/java/uk/co/ryanharrison/mathengine/parser/JsonTestSuite.java`
-
-**Purpose:** Container for a collection of related test cases
-
-**Fields:**
-
-```java
-record JsonTestSuite(
-    String category,              // Test category/name
-    String description,           // Suite description
-    TestConfig defaultConfig,     // Default config for all tests in suite
-    List<JsonTestCase> tests      // Test cases
-)
-```
-
-**Example JSON:**
-
-```json
-{
-  "category": "Arithmetic",
-  "description": "Basic arithmetic operations",
-  "defaultConfig": {
-    "implicitMultiplication": true
-  },
-  "tests": [
-    { "id": "add_001", "input": "2 + 3", "expected": 5 }
-  ]
-}
-```
-
-### JsonTestLoader
-
-**File:** `src/test/java/uk/co/ryanharrison/mathengine/parser/JsonTestLoader.java`
-
-**Purpose:** Load test suites from JSON files
-
-**Methods:**
-
-```java
-// Load single test suite from classpath
-JsonTestSuite loadFromResource(String resourcePath)
-
-// Load single test suite from filesystem
-JsonTestSuite loadFromFile(Path path)
-
-// Load all test suites from directory
-List<JsonTestSuite> loadAllFromDirectory(Path directory)
-```
-
-### TestConfig
-
-**File:** `src/test/java/uk/co/ryanharrison/mathengine/parser/TestConfig.java`
-
-**Purpose:** Per-test or per-suite engine configuration overrides
-
-**Supported Options:**
-
-- `angleUnit`: "RADIANS" | "DEGREES" | "GRADIANS"
-- `implicitMultiplication`: boolean
-- `vectorsEnabled`: boolean
-- `matricesEnabled`: boolean
-- `comprehensionsEnabled`: boolean
-- `lambdasEnabled`: boolean
-- `userDefinedFunctionsEnabled`: boolean
-- `unitsEnabled`: boolean
-- `maxRecursionDepth`: int
-- `decimalPlaces`: int
-- `forceDoubleArithmetic`: boolean
-
-**Example:**
-
-```json
-{
-  "id": "sin_degrees_001",
-  "input": "sin(90)",
-  "expected": 1.0,
-  "expectedType": "NodeDouble",
-  "config": {
-    "angleUnit": "DEGREES"
-  }
-}
-```
+An expression may be asserted in exactly one place. `SpecIntegrityTest` fails if two
+cases share an input under the same configuration, because two copies of an assertion
+drift apart.
 
 ---
 
-## Test File Organization
-
-### Test Categories
-
-Tests are organized by feature/category in `src/test/resources/engine/`:
-
-**advanced/**
-- `ambiguity_resolution.json` - Variable/function/unit/constant shadowing and reference symbols
-- `comprehensions.json` - List comprehensions
-- `functions_definitions.json` - User-defined functions
-- `functions_first_class.json` - Functions as first-class values
-- `functions_recursive.json` - Recursive functions
-- `lambdas.json` - Lambda expressions
-- `recursion_edge_cases.json` - Recursion limits and edge cases
-- `subscripts.json` - Vector/matrix indexing and slicing
-- `unit_conversion.json` - Unit conversion expressions
-- `unit_parsing.json` - Unit parsing and disambiguation
-- `user_functions.json` - User function features
-
-**config/**
-- `angle_units.json` - RADIANS vs DEGREES vs GRADIANS
-- `arithmetic_mode.json` - Rational vs floating-point arithmetic
-- `decimal_places.json` - Output formatting
-- `feature_toggles.json` - Enable/disable features
-- `implicit_multiplication.json` - Implicit multiplication behavior
-- `recursion_limits.json` - Max recursion depth
-
-**errors/**
-- `arithmetic_errors.json` - Division by zero, overflow, etc.
-- `domain_errors.json` - Invalid function domains
-- `errors_evaluation.json` - Runtime evaluation errors
-- `errors_lexer.json` - Tokenization errors
-- `errors_parser.json` - Syntax errors
-- `errors_type.json` - Type errors
-
-**functions/**
-- Tests for built-in functions organized by category
-
-**operators/**
-- Tests for binary and unary operators
-
-**structures/**
-- `vectors.json` - Vector operations
-- `matrices.json` - Matrix operations
-- `ranges.json` - Range expressions
-
----
-
-## Writing JSON Tests
-
-### Basic Test Case
+## The file format
 
 ```json
 {
-  "id": "unique_test_id",
-  "input": "2 + 3",
-  "expected": 5,
-  "expectedType": "NodeRational",
-  "notes": "Optional description of what this test verifies"
-}
-```
-
-### Test with Custom Tolerance
-
-For floating-point comparisons:
-
-```json
-{
-  "id": "float_test_001",
-  "input": "sqrt(2)",
-  "expected": 1.41421356,
-  "expectedType": "NodeDouble",
-  "tolerance": 1e-7,
-  "notes": "Floating-point result requires tolerance"
-}
-```
-
-### Test with Configuration Override
-
-```json
-{
-  "id": "degrees_test_001",
-  "input": "sin(90)",
-  "expected": 1.0,
-  "expectedType": "NodeDouble",
-  "config": {
-    "angleUnit": "DEGREES"
-  },
-  "notes": "Trig function in degree mode"
-}
-```
-
-### Test Expecting Error
-
-```json
-{
-  "id": "error_test_001",
-  "input": "1 / 0",
-  "expectError": true,
-  "expectedErrorType": "EvaluationException",
-  "notes": "Division by zero should throw"
-}
-```
-
-### Test with Vector/Matrix Result
-
-```json
-{
-  "id": "vector_add_001",
-  "input": "{1, 2, 3} + {4, 5, 6}",
-  "expected": [5, 7, 9],
-  "expectedType": "NodeVector",
-  "notes": "Element-wise vector addition"
-}
-```
-
-### Multi-Statement Test
-
-```json
-{
-  "id": "var_assign_001",
-  "input": "x := 10; x + 5",
-  "expected": 15,
-  "expectedType": "NodeRational",
-  "evaluationOrder": "sequential",
-  "notes": "Variable assignment followed by use"
-}
-```
-
-### Skip Test (Temporarily Disabled)
-
-```json
-{
-  "id": "wip_test_001",
-  "input": "some unfinished feature",
-  "expected": 42,
-  "skipTest": true,
-  "notes": "Test disabled while feature is in development"
-}
-```
-
----
-
-## Test Suite Structure
-
-```json
-{
-  "category": "Test Category Name",
-  "description": "Detailed description of what this suite tests",
-  "defaultConfig": {
-    "angleUnit": "RADIANS",
-    "implicitMultiplication": true
-  },
-  "tests": [
-    {
-      "id": "test_001",
-      "input": "expression",
-      "expected": "result"
-    },
-    {
-      "id": "test_002",
-      "input": "expression",
-      "expected": "result",
-      "config": {
+    "category": "Operator: + (addition)",
+    "description": "Addition across every operand type it accepts.",
+    "defaultConfig": {
         "angleUnit": "DEGREES"
-      }
-    }
-  ]
+    },
+    "tests": [
+        ...
+    ]
 }
 ```
 
-**Suite-Level Configuration:**
+`category` and `description` are required. `category` must be unique across the suite,
+so a failure names the file to open. `defaultConfig` is optional and applies to every
+case that declares no config of its own.
 
-- `defaultConfig` applies to all tests in the suite
-- Individual tests can override with their own `config`
-- Missing config values use engine defaults
+### A value case
+
+```json
+{
+    "id": "add_rational_integers",
+    "input": "1 + 2",
+    "expected": 3,
+    "expectedType": "NodeRational",
+    "notes": "Integer addition stays exact"
+}
+```
+
+`id`, `input`, `notes`, `expected` and `expectedType` are all required. The id must be
+unique across the whole suite, so it can be quoted in a bug report and found.
+
+### An error case
+
+```json
+{
+    "id": "fractional_count",
+    "input": "\"ab\" * 2.5",
+    "expectError": true,
+    "expectedErrorType": "TypeError",
+    "expectedErrorMessage": "fractional",
+    "notes": "A fractional count is refused rather than rounded down to 'abab'"
+}
+```
+
+The exception must be **exactly** the class named, not a subclass, so an exception type
+cannot be quietly widened. `expectedErrorMessage` is optional and asserts a substring.
+
+### How a value is written
+
+| Result type                  | JSON form                         | Example               |
+|------------------------------|-----------------------------------|-----------------------|
+| `NodeRational`               | a number, or a string `"num/den"` | `3`, `"1/3"`          |
+| `NodeDouble`                 | a number                          | `0.5`                 |
+| `NodeBoolean`                | a boolean                         | `true`                |
+| `NodeString`                 | a string                          | `"hello"`             |
+| `NodePercent`                | a string ending in `%`            | `"50%"`               |
+| `NodeUnit`                   | a string `"value unit"`           | `"328.084 feet"`      |
+| `NodeVector`                 | an array                          | `[1, 2, 3]`           |
+| `NodeMatrix`                 | an array of arrays                | `[[1, 2], [3, 4]]`    |
+| `NodeRange`                  | a string in range syntax          | `"1..10"`             |
+| `NodeFunction`, `NodeLambda` | the formatted form                | `"<function:square>"` |
+
+A rational written as `"num/den"` is compared exactly rather than through a double,
+which is the only way a case can pin down that a result really did stay exact. Numbers
+are compared with an absolute tolerance of `1e-7`, or whatever `tolerance` says.
+
+`NodeNumber` is the one loose spelling of `expectedType`, for the rare case that
+genuinely does not care which numeric type it gets.
+
+### Optional fields
+
+| Field             | Meaning                                                                                 |
+|-------------------|-----------------------------------------------------------------------------------------|
+| `evaluationOrder` | an equivalent expression with explicit parentheses; the two must parse to the same tree |
+| `config`          | engine configuration overrides, replacing the suite default outright                    |
+| `tolerance`       | absolute tolerance for the numeric comparison                                           |
+| `skip`            | a reason to skip; a blank or absent value means run                                     |
+
+`evaluationOrder` is how precedence and associativity are pinned down. It is not a
+comment: the runner parses the annotation, renders both trees in fully parenthesised
+form and compares them.
+
+```json
+{
+    "id": "prec_power_before_modulo",
+    "input": "2 ^ 3 mod 5",
+    "expected": 3,
+    "expectedType": "NodeRational",
+    "evaluationOrder": "(2 ^ 3) mod 5",
+    "notes": "Exponentiation binds tighter than modulo"
+}
+```
+
+### Multi-step cases
+
+Each case runs against a fresh engine, so nothing leaks between cases. A scenario that
+needs several steps puts them in one input, separated by `;`, and the value of the last
+statement is the result.
+
+```json
+{
+    "id": "parameter_leaves_global_alone",
+    "input": "f(x) := x * 2; x := 5; f(3); x",
+    "expected": 5,
+    "expectedType": "NodeRational",
+    "notes": "A parameter shadows a global for the length of the call and then gives it back"
+}
+```
 
 ---
 
-## Running Tests
+## The Java side
 
-### Run All Tests
+Everything lives in `src/test/java/uk/co/ryanharrison/mathengine/parser/spec`.
+
+| Class                                 | Responsibility                                                         |
+|---------------------------------------|------------------------------------------------------------------------|
+| `SpecCase`, `SpecSuite`, `SpecConfig` | the file format, as records                                            |
+| `SpecLoader`                          | finds and parses every file on the classpath, rejecting unknown fields |
+| `SpecValueAssertions`                 | compares a result against the JSON encoding above                      |
+| `SpecExceptions`                      | resolves the exception names a file may write                          |
+| `SpecCaseRunner`                      | runs one case against a fresh engine                                   |
+| `EngineSpecTest`                      | the JUnit entry point, one container per directory and file            |
+| `SpecIntegrityTest`                   | the structural rules below                                             |
+| `SpecCoverageTest`                    | fails when the engine grows a name no case exercises                   |
+
+### Structural rules
+
+`SpecIntegrityTest` exists because a fixture that asserts nothing still passes. It
+enforces that:
+
+- every file states a category and a description, and holds at least one case
+- no two files claim the same category
+- every case has an id, an input and a note, and ids are unique across the suite
+- every error case names a resolvable exception, and does not also expect a value
+- every value case states both a value and a real node type
+- no expression is asserted twice under the same configuration
+
+Unknown JSON properties are rejected at load time, so a misspelled field fails loudly
+instead of silently disabling an assertion.
+
+### Coverage rules
+
+`SpecCoverageTest` fails when:
+
+- a function name or alias is never called by any case
+- a built-in constant is never referenced
+- an operator symbol is never used
+- an exception type is never named
+
+An alias nobody calls is an alias that can break, or collide with a new function,
+unnoticed. `functions/aliases.json` closes that gap in one file, by asserting that each
+alternate spelling agrees with its primary name.
+
+---
+
+## Running the tests
 
 ```bash
+# the whole suite
 ./gradlew test
-```
 
-### Run Specific Test Class
+# only the spec files
+./gradlew test --tests "*EngineSpecTest*"
 
-```bash
-./gradlew test --tests MathEngineTest
-```
+# only the structural and coverage checks
+./gradlew test --tests "*Spec*Test"
 
-### Run Tests with Pattern
-
-```bash
-# Run all parser tests
-./gradlew test --tests "*Parser*"
-
-# Run all distribution tests
-./gradlew test --tests "*Distribution*"
-```
-
-### View Test Summary
-
-```bash
-# Run tests and view summary
+# a readable pass/fail summary, including the names of any failures
 ./gradlew test testSummary
-
-# Or separately
-./gradlew testSummary
 ```
 
----
-
-## Test Execution Flow
-
-1. **Load JSON files** - `JsonTestLoader` reads test suites from `src/test/resources/engine/`
-2. **Parse test definitions** - Jackson deserializes JSON into `JsonTestSuite` and `JsonTestCase` objects
-3. **Configure engine** - For each test, create `MathEngine` with appropriate config
-4. **Evaluate expression** - Run `engine.evaluate(testCase.input())`
-5. **Verify result** - Compare actual vs expected (type, value, tolerance)
-6. **Report failures** - AssertJ provides detailed failure messages
+A failure reads as `operators > add > add_types_unit_string`, naming the directory, the
+file and the case.
 
 ---
 
-## Example: ambiguity_resolution.json
+## Adding a defect to the suite
 
-This test suite demonstrates the comprehensive testing approach for reference symbols and shadowing:
+When a bug is found and fixed:
+
+1. Add the case to the file that owns the behaviour, using the table above. A unit that
+   went missing under `mod` is a `mod` case, so it goes in `operators/modulo.json`.
+2. Put the defect in the `notes`: say what the wrong answer was, not only what the right
+   one is. That sentence is what stops someone "simplifying" the fix away later, and it
+   sits where the next reader of that operator will actually see it.
+3. Add the neighbouring cases that must keep working, in their own files.
 
 ```json
 {
-  "category": "Ambiguity Resolution",
-  "description": "Tests for ambiguous identifier resolution based on context and explicit disambiguation",
-  "tests": [
-    {
-      "id": "var_func_coexist_001",
-      "input": "f := 100; f(x) := x * 2; f",
-      "expected": 100,
-      "expectedType": "NodeRational",
-      "notes": "Variable and function coexist - GENERAL context accesses variable"
-    },
-    {
-      "id": "var_func_coexist_002",
-      "input": "f := 100; f(x) := x * 2; f(5)",
-      "expected": 10,
-      "expectedType": "NodeRational",
-      "notes": "Variable and function coexist - CALL context accesses function"
-    },
-    {
-      "id": "const_shadow_002",
-      "input": "pi := 100; #pi",
-      "expected": 3.141592653589793,
-      "expectedType": "NodeDouble",
-      "notes": "Variable shadows constant pi, explicit # accesses constant"
-    },
-    {
-      "id": "explicit_unit_006",
-      "input": "m := 5; 100 @m in feet",
-      "expectedType": "NodeUnit",
-      "notes": "Explicit @ forces meter unit despite variable shadowing"
-    }
-  ]
+    "id": "modulo_keeps_unit",
+    "input": "(10 meters) mod 3",
+    "expected": "1.0 meter",
+    "expectedType": "NodeUnit",
+    "notes": "Ten metres modulo three is one metre, not a bare one: a scalar leaves the label in place"
 }
 ```
+
+A defect worth a paragraph rather than a sentence belongs in the file's `description`,
+which is the place to say what the file as a whole is guarding.
 
 ---
 
-## Adding New Tests
+## Conventions
 
-### 1. Choose Appropriate File
+**Ids** describe the case, not its position: `min_km_vs_meters`, not `min_003`. They are
+unique across the suite, so a bug report can quote one.
 
-Select or create a JSON file in the appropriate category:
+**Notes** say why the case exists, in a sentence. "Simple addition" adds nothing; "Ten
+percent added to a hundred is a hundred and ten" says what the reader needs.
 
-- **New feature?** → Create new file in `advanced/`
-- **Config option?** → Add to appropriate file in `config/`
-- **Error case?** → Add to appropriate file in `errors/`
-- **Operator?** → Add to appropriate file in `operators/`
-- **Function?** → Add to appropriate file in `functions/`
+**Errors are worth pinning down.** Most combinations of an operator and a value type are
+errors, and the error is part of the contract. The operator files carry a full matrix of
+every operand type against every other, errors included.
 
-### 2. Write Test Case
-
-```json
-{
-  "id": "descriptive_id_001",
-  "input": "test expression",
-  "expected": expectedResult,
-  "expectedType": "NodeType",
-  "notes": "Clear description of what this tests"
-}
-```
-
-### 3. Run Tests
-
-```bash
-./gradlew test
-```
-
-### 4. Verify
-
-Check that your test:
-- Passes when it should
-- Fails when it should (for error tests)
-- Has clear ID and notes
-
----
-
-## Best Practices
-
-### Test IDs
-
-- **Format**: `category_subcategory_###`
-- **Examples**: `add_basic_001`, `var_shadow_unit_003`, `error_div_zero_001`
-- **Unique**: Every ID must be unique across all test files
-
-### Test Organization
-
-- **One feature per file** - Don't mix unrelated tests
-- **Logical ordering** - Simple cases first, complex cases last
-- **Group related tests** - Use consistent ID prefixes
-
-### Expected Values
-
-- **Numbers**: Use appropriate precision
-  - Integers: `5`, `100`, `-7`
-  - Doubles: `3.14159`, `2.718281828`
-  - Use `tolerance` for floating-point comparisons
-- **Vectors**: `[1, 2, 3]`
-- **Matrices**: `[[1, 2], [3, 4]]`
-- **Booleans**: `true`, `false`
-
-### Notes
-
-- **Always include notes** - Explain what the test verifies
-- **Reference bugs** - Include issue numbers if applicable
-- **Explain edge cases** - Why is this case important?
-
-### Configuration
-
-- **Suite defaults** - Use `defaultConfig` for suite-wide settings
-- **Per-test overrides** - Use test-level `config` only when needed
-- **Minimal config** - Only specify what differs from defaults
-
----
-
-## Common Test Patterns
-
-### Operator Precedence
-
-```json
-{
-  "id": "precedence_001",
-  "input": "2 + 3 * 4",
-  "expected": 14,
-  "expectedType": "NodeRational",
-  "notes": "Multiplication before addition"
-}
-```
-
-### Shadowing
-
-```json
-{
-  "id": "shadow_var_const_001",
-  "input": "pi := 100; pi",
-  "expected": 100,
-  "notes": "Variable shadows constant"
-},
-{
-  "id": "shadow_explicit_const_001",
-  "input": "pi := 100; #pi",
-  "expected": 3.141592653589793,
-  "notes": "Explicit # accesses original constant"
-}
-```
-
-### Error Testing
-
-```json
-{
-  "id": "error_undefined_var_001",
-  "input": "undefinedVariable",
-  "expectError": true,
-  "expectedErrorType": "UndefinedVariableException",
-  "notes": "Reference to undefined variable should fail"
-}
-```
-
-### Feature Toggle Testing
-
-```json
-{
-  "id": "feature_disabled_001",
-  "input": "{1, 2, 3}",
-  "expectError": true,
-  "config": {
-    "vectorsEnabled": false
-  },
-  "notes": "Vectors disabled - should error"
-}
-```
-
----
-
-## Test Utilities (Java)
-
-While tests are defined in JSON, test execution uses standard JUnit 5 and AssertJ:
-
-```java
-@Test
-void runJsonTests() throws IOException {
-    JsonTestSuite suite = JsonTestLoader.loadFromResource("/engine/advanced/ambiguity_resolution.json");
-
-    for (JsonTestCase test : suite.tests()) {
-        if (test.shouldSkip()) continue;
-
-        MathEngine engine = createEngineWithConfig(test.config());
-
-        if (test.shouldExpectError()) {
-            assertThatThrownBy(() -> engine.evaluate(test.input()))
-                .hasMessageContaining(test.expectedErrorType());
-        } else {
-            NodeConstant result = engine.evaluate(test.input());
-            assertResultMatches(result, test);
-        }
-    }
-}
-```
-
----
-
-## Related Documentation
-
-- **[GRAMMAR_TESTS.md](../GRAMMAR_TESTS.md)** - JSON test format specification
-- **[OVERVIEW.md](./OVERVIEW.md)** - Parser architecture
-- **[EVALUATOR.md](./EVALUATOR.md)** - Evaluation system
+**Assert the type as well as the value.** Most of the defects this suite was built for
+were type losses, not value losses: an exact rational quietly becoming a double, or a
+quantity quietly losing its unit. A case that checks only the value would have missed
+every one of them.
