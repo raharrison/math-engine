@@ -340,17 +340,12 @@ of {
 
 ```java
 NodeConstant product = fraction.multiply(value);
-return product instanceof
-NodePercent percent
-        ?new
-
-NodeDouble(percent.getValue())   // a share is an amount, not another percentage
-        :product;
+// A share is an amount, not another percentage
+return product instanceof NodePercent percent ? percent.getFraction() : product;
 ```
 
-Going through `NodeConstant.multiply` rather than through doubles of its own is what
-keeps `of` in step with `*`. When it had its own arithmetic it dropped units and lost
-exactness.
+Going through `NodeConstant.multiply` rather than through doubles of its own is what keeps
+`of` in step with `*`. When it had its own arithmetic it dropped units and lost exactness.
 
 #### MatrixMultiplyOperator (@)
 
@@ -561,20 +556,21 @@ Typically limited to n <= 170 (double overflow prevention).
 
 ### PercentOperator (%)
 
-**Behavior:**
+Wraps the number to its left as the fraction that number of hundredths stands for.
 
 ```text
-50%  → 0.5 (NodePercent)
+50%          →  NodePercent holding 1/2
+(1/3)%       →  NodePercent holding 1/300, shown as 1/3%
 ```
 
-**Type:**
-Returns `NodePercent` which displays as percentage but computes as decimal.
+**Type:** `NodePercent`. The fraction is a `NodeNumber`, not a `double`, so a percentage is
+as exact as the number that made it and `1/2 + 25%` is exactly 5/8.
 
 ---
 
 ## Broadcasting System
 
-**File:** `operator/BroadcastingDispatcher.java`
+**File:** `util/BroadcastingEngine.java`
 
 **Purpose:** Handle scalar-vector and scalar-matrix operations
 

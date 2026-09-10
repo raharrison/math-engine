@@ -1,10 +1,16 @@
 package uk.co.ryanharrison.mathengine.parser.parser.nodes;
 
 import uk.co.ryanharrison.mathengine.core.BigRational;
+import uk.co.ryanharrison.mathengine.parser.format.RationalDisplay;
 
 /**
- * Node representing an exact rational number (arbitrary precision).
- * Used for integers and fractions to maintain exact arithmetic without rounding errors.
+ * An exact rational number, of arbitrary precision. Integers and fractions are both held
+ * this way, so arithmetic between them never rounds.
+ * <p>
+ * Exactness is not the same thing as fraction notation: {@code 2.5} is held as 5/2 and
+ * shown as {@code 2.5}, while a third has no decimal and is shown as {@code 1/3}.
+ * {@link RationalDisplay} decides which, for {@link #toString()} and for the formatters
+ * alike.
  */
 public final class NodeRational extends NodeNumber {
 
@@ -43,7 +49,8 @@ public final class NodeRational extends NodeNumber {
 
     @Override
     public String toString() {
-        return value.toString();
+        return RationalDisplay.asDecimal(value, -1)
+                .orElseGet(() -> value.getNumerator() + "/" + value.getDenominator());
     }
 
     @Override

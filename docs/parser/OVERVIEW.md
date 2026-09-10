@@ -145,7 +145,7 @@ Node (abstract AST base)
 │   ├─ NodeNumber
 │   │   ├─ NodeDouble (IEEE 754)
 │   │   ├─ NodeRational (BigRational, exact)
-│   │   ├─ NodePercent (auto /100)
+│   │   ├─ NodePercent (the fraction it stands for)
 │   │   └─ NodeBoolean (true=1, false=0)
 │   ├─ NodeString
 │   ├─ NodeUnit (value + unit descriptor)
@@ -173,10 +173,16 @@ Node (abstract AST base)
 
 ### Type Coercion Rules
 
-**Numeric Promotion:**
+**Numeric Promotion:** a boolean counts as an exact 1 or 0, exact meeting exact stays
+exact, and anything meeting a `NodeDouble` gives a double, since a result can be no better
+than its worst input. A percentage is not a step in this chain: it carries its own exact
+fraction and is read against the number beside it.
 
-```
-Boolean → Integer → Rational → Double → Percent
+```text
+true + 5                 →  6        exact
+1/2 + 1/3                →  5/6      exact
+1/2 + 25%                →  5/8      exact
+1/3 + NodeDouble(0.5)    →  0.8333…  a double got in
 ```
 
 **Broadcasting:**
@@ -201,7 +207,7 @@ Extensible operator system with registration and dispatch.
 - **BinaryOperator** - Two-operand operations
 - **UnaryOperator** - Single-operand operations
 - **OperatorExecutor** - Central registry and dispatcher
-- **BroadcastingDispatcher** - Handles vector/matrix broadcasting
+- **BroadcastingEngine** (`parser/util`) - Spreads an operation over vectors and matrices
 
 ### Operator Registration
 

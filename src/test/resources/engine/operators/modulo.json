@@ -77,8 +77,8 @@
         {
             "id": "modulo_types_boolean_percent",
             "input": "(true) mod (20%)",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
+            "expected": 0,
+            "expectedType": "NodeRational",
             "notes": "Boolean takes the modulo of a percent"
         },
         {
@@ -338,8 +338,8 @@
         {
             "id": "modulo_types_percent_boolean",
             "input": "(20%) mod (true)",
-            "expected": 0.2,
-            "expectedType": "NodeDouble",
+            "expected": "1/5",
+            "expectedType": "NodeRational",
             "notes": "Percent takes the modulo of a boolean"
         },
         {
@@ -385,8 +385,8 @@
         {
             "id": "modulo_types_percent_rational",
             "input": "(20%) mod (3)",
-            "expected": 0.2,
-            "expectedType": "NodeDouble",
+            "expected": "1/5",
+            "expectedType": "NodeRational",
             "notes": "Percent takes the modulo of a rational"
         },
         {
@@ -539,8 +539,8 @@
         {
             "id": "modulo_types_rational_percent",
             "input": "(3) mod (20%)",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
+            "expected": 0,
+            "expectedType": "NodeRational",
             "notes": "Rational takes the modulo of a percent"
         },
         {

@@ -47,7 +47,7 @@ public class ConversionEngineAstronomicalTest extends ConversionEngineBaseTest {
         assertEquals(0.0019861, engine.convertToDouble(AMOUNT, "light minute", "light day", PLACES), 0.0);
         assertEquals(5.4e-06, engine.convertToDouble(AMOUNT, "light minute", "light year", PLACES), 0.0);
         assertEquals(1.7e-06, engine.convertToDouble(AMOUNT, "light minute", "parsec", PLACES), 0.0);
-        assertEquals(51444385792.799995, engine.convertToDouble(AMOUNT, "light minute", "meter", PLACES), 0.0);
+        assertEquals(5.14443857928E10, engine.convertToDouble(AMOUNT, "light minute", "meter", PLACES), 0.0);
         assertEquals(31966059.3339895, engine.convertToDouble(AMOUNT, "light minute", "mile", PLACES), 0.0);
         assertEquals(20.6330687, engine.convertToDouble(AMOUNT, "light hour", "astronomical unit", PLACES), 0.0);
         assertEquals(3086663147.568, engine.convertToDouble(AMOUNT, "light hour", "kilometer", PLACES), 0.0);
@@ -60,7 +60,7 @@ public class ConversionEngineAstronomicalTest extends ConversionEngineBaseTest {
         assertEquals(3086663147568.0, engine.convertToDouble(AMOUNT, "light hour", "meter", PLACES), 0.0);
         assertEquals(1917963560.03937, engine.convertToDouble(AMOUNT, "light hour", "mile", PLACES), 0.0);
         assertEquals(495.1936495, engine.convertToDouble(AMOUNT, "light day", "astronomical unit", PLACES), 0.0);
-        assertEquals(74079915541.63199, engine.convertToDouble(AMOUNT, "light day", "kilometer", PLACES), 0.0);
+        assertEquals(7.4079915541632E10, engine.convertToDouble(AMOUNT, "light day", "kilometer", PLACES), 0.0);
         assertEquals(247104.0, engine.convertToDouble(AMOUNT, "light day", "light second", PLACES), 0.0);
         assertEquals(4118.4, engine.convertToDouble(AMOUNT, "light day", "light minute", PLACES), 0.0);
         assertEquals(68.64, engine.convertToDouble(AMOUNT, "light day", "light hour", PLACES), 0.0);
@@ -68,9 +68,9 @@ public class ConversionEngineAstronomicalTest extends ConversionEngineBaseTest {
         assertEquals(0.0078303, engine.convertToDouble(AMOUNT, "light day", "light year", PLACES), 0.0);
         assertEquals(0.0024008, engine.convertToDouble(AMOUNT, "light day", "parsec", PLACES), 0.0);
         assertEquals(74079915541632.0, engine.convertToDouble(AMOUNT, "light day", "meter", PLACES), 0.0);
-        assertEquals(46031125440.94488, engine.convertToDouble(AMOUNT, "light day", "mile", PLACES), 0.0);
+        assertEquals(4.6031125440944885E10, engine.convertToDouble(AMOUNT, "light day", "mile", PLACES), 0.0);
         assertEquals(180869.4804719, engine.convertToDouble(AMOUNT, "light year", "astronomical unit", PLACES), 0.0);
-        assertEquals(27057689151581.086, engine.convertToDouble(AMOUNT, "light year", "kilometer", PLACES), 0.0);
+        assertEquals(2.705768915158109E13, engine.convertToDouble(AMOUNT, "light year", "kilometer", PLACES), 0.0);
         assertEquals(90254736.0, engine.convertToDouble(AMOUNT, "light year", "light second", PLACES), 0.0);
         assertEquals(1504245.6, engine.convertToDouble(AMOUNT, "light year", "light minute", PLACES), 0.0);
         assertEquals(25070.76, engine.convertToDouble(AMOUNT, "light year", "light hour", PLACES), 0.0);

@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
+import uk.co.ryanharrison.mathengine.parser.registry.Factor;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 
 import java.util.List;
@@ -25,7 +26,8 @@ class NodeArithmeticRulesTest {
     private static final double TOLERANCE = 1e-9;
 
     private static UnitDefinition lengthUnit(String name, double toBase) {
-        return new UnitDefinition(name, name + "s", "length", name, toBase, 0.0, List.of());
+        return UnitDefinition.of(name, name + "s", "length", name,
+                Factor.of(Double.toString(toBase)), List.of());
     }
 
     @Nested
@@ -45,7 +47,7 @@ class NodeArithmeticRulesTest {
 
         @Test
         void addingUnlikeUnitsThrows() {
-            UnitDefinition second = new UnitDefinition("second", "seconds", "time", "second", 1.0, 0.0, List.of());
+            UnitDefinition second = UnitDefinition.of("second", "seconds", "time", "second", Factor.ONE, List.of());
 
             assertThatThrownBy(() -> NodeUnit.of(1, metre).add(NodeUnit.of(1, second)))
                     .isInstanceOf(TypeError.class)
@@ -108,7 +110,8 @@ class NodeArithmeticRulesTest {
         void aRatioOfPercentsIsAPlainNumber() {
             NodeConstant result = new NodePercent(20).divide(new NodePercent(10));
 
-            assertThat(result).isInstanceOf(NodeDouble.class);
+            // A plain number, and an exact one: a fifth over a tenth is two, not 2.0
+            assertThat(result).isInstanceOf(NodeRational.class);
             assertThat(result.doubleValue()).isCloseTo(2.0, within(TOLERANCE));
         }
 

@@ -1,37 +1,38 @@
 package uk.co.ryanharrison.mathengine.parser.registry;
 
+import uk.co.ryanharrison.mathengine.core.BigRational;
+
 import java.util.List;
 
 /**
- * Represents a unit of measurement with conversion factors.
- * Units can be converted to and from a base unit of the same type.
+ * A unit of measurement and the affine rule that converts it to its base unit:
+ * {@code base = (value - offset) * multiplier}.
  * <p>
  * Supports singular and plural forms for proper grammatical output.
- * </p>
  */
-public record UnitDefinition(String singularName, String pluralName, String type, String baseUnit, double multiplier,
-                             double offset, List<String> aliases) {
+public record UnitDefinition(String singularName, String pluralName, String type, String baseUnit,
+                             Factor multiplier, Factor offset, List<String> aliases) {
 
     /**
-     * Creates a unit definition with singular and plural names.
-     *
      * @param singularName the singular form (e.g., "meter")
      * @param pluralName   the plural form (e.g., "meters")
      * @param type         the unit type/category (e.g., "length")
      * @param baseUnit     the base unit for this type
-     * @param multiplier   conversion multiplier to base unit
-     * @param offset       conversion offset (for affine units like temperature)
+     * @param multiplier   conversion multiplier to the base unit
+     * @param offset       conversion offset, for affine units like temperature
      * @param aliases      additional names/symbols for this unit
      */
-    public UnitDefinition(String singularName, String pluralName, String type, String baseUnit,
-                          double multiplier, double offset, List<String> aliases) {
-        this.singularName = singularName;
-        this.pluralName = pluralName;
-        this.type = type;
-        this.baseUnit = baseUnit;
-        this.multiplier = multiplier;
-        this.offset = offset;
-        this.aliases = List.copyOf(aliases);
+    public UnitDefinition {
+        aliases = List.copyOf(aliases);
+    }
+
+    /**
+     * A unit that is a plain multiple of its base.
+     */
+    public static UnitDefinition of(String singularName, String pluralName, String type,
+                                    String baseUnit, Factor multiplier, List<String> aliases) {
+        return new UnitDefinition(singularName, pluralName, type, baseUnit,
+                multiplier, Factor.ZERO, aliases);
     }
 
     /**
@@ -39,22 +40,6 @@ public record UnitDefinition(String singularName, String pluralName, String type
      */
     public String getName() {
         return singularName;
-    }
-
-    /**
-     * Returns the singular form of the unit name.
-     */
-    @Override
-    public String singularName() {
-        return singularName;
-    }
-
-    /**
-     * Returns the plural form of the unit name.
-     */
-    @Override
-    public String pluralName() {
-        return pluralName;
     }
 
     /**
@@ -69,28 +54,34 @@ public record UnitDefinition(String singularName, String pluralName, String type
     }
 
     /**
-     * Convert a value in this unit to the base unit.
-     * <p>
-     * For affine transformations (like temperature), this applies:
-     * base = (value - offset) * multiplier
-     * </p>
-     * <p>
-     * This is the inverse of fromBase.
-     * </p>
+     * Whether both factors are exact, and so whether a conversion can be.
      */
-    public double toBase(double value) {
-        return (value - offset) * multiplier;
+    public boolean isExact() {
+        return multiplier.exact() && offset.exact();
     }
 
     /**
-     * Convert a value from the base unit to this unit.
-     * <p>
-     * For affine transformations (like temperature), this applies:
-     * value = (base / multiplier) + offset
-     * </p>
+     * {@code (value - offset) * multiplier}
      */
+    public BigRational toBase(BigRational value) {
+        return value.subtract(offset.value()).multiply(multiplier.value());
+    }
+
+    /**
+     * The inverse of {@link #toBase}.
+     */
+    public BigRational fromBase(BigRational baseValue) {
+        return baseValue.divide(multiplier.value()).add(offset.value());
+    }
+
+    /** As {@link #toBase(BigRational)}, rounding once at the end. */
+    public double toBase(double value) {
+        return toBase(BigRational.of(value)).doubleValue();
+    }
+
+    /** As {@link #fromBase(BigRational)}, rounding once at the end. */
     public double fromBase(double baseValue) {
-        return (baseValue / multiplier) + offset;
+        return fromBase(BigRational.of(baseValue)).doubleValue();
     }
 
     @Override

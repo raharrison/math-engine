@@ -166,8 +166,8 @@
         {
             "id": "multiply_types_boolean_percent",
             "input": "(true) * (20%)",
-            "expected": 0.2,
-            "expectedType": "NodeDouble",
+            "expected": "1/5",
+            "expectedType": "NodeRational",
             "tolerance": 1e-12,
             "notes": "A percent on the right measures the number on its left, so the answer is an amount"
         },
@@ -644,8 +644,8 @@
         {
             "id": "multiply_types_rational_percent",
             "input": "(3) * (20%)",
-            "expected": 0.6,
-            "expectedType": "NodeDouble",
+            "expected": "3/5",
+            "expectedType": "NodeRational",
             "tolerance": 1e-12,
             "notes": "Twenty percent of three is 0.6, the amount, rather than 60%"
         },
@@ -1036,8 +1036,8 @@
         {
             "id": "percent_on_the_right_measures",
             "input": "100 * 10%",
-            "expected": 10.0,
-            "expectedType": "NodeDouble",
+            "expected": 10,
+            "expectedType": "NodeRational",
             "tolerance": 1e-12,
             "notes": "A percent on the right is read against the number on its left, so this is the amount 10, agreeing with 10% of 100"
         },

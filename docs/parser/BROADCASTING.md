@@ -121,15 +121,14 @@ public NodeConstant apply(NodeConstant left, NodeConstant right, OperatorContext
 }
 ```
 
-An operator with its own scalar rule, such as `of`, calls the engine itself:
+An operator with its own scalar rule, such as `of`, calls the engine itself. The rule still
+goes through the value arithmetic, so `of` cannot drift away from `*`:
 
 ```java
-return BroadcastingEngine.applyBinary(left, right, (fraction, value) ->
-        new
+return BroadcastingEngine.applyBinary(left, right,
+        (fraction, value) ->
 
-NodeDouble(TypeCoercion.toDouble(fraction) *TypeCoercion.
-
-toDouble(value)));
+spendPercentage(fraction.multiply(value)));
 ```
 
 Functions built with `FunctionBuilder` get broadcasting automatically:

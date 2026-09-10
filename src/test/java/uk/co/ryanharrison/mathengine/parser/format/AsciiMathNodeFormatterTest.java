@@ -7,6 +7,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.registry.Factor;
 import uk.co.ryanharrison.mathengine.parser.registry.SymbolRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 
@@ -73,8 +74,15 @@ class AsciiMathNodeFormatterTest {
     }
 
     @Test
-    void formatsRationalFractionAsMathFraction() {
-        assertThat(fmt.format(new NodeRational(3, 4))).isEqualTo("(3)/(4)");
+    void formatsTerminatingRationalAsDecimal() {
+        // Same rule as the string formatter, so the two cannot disagree about a value
+        assertThat(fmt.format(new NodeRational(3, 4))).isEqualTo("0.75");
+        assertThat(fmt.format(new NodeRational(5, 2))).isEqualTo("2.5");
+    }
+
+    @Test
+    void formatsRepeatingRationalAsMathFraction() {
+        assertThat(fmt.format(new NodeRational(1, 3))).isEqualTo("(1)/(3)");
     }
 
     @Test
@@ -137,16 +145,16 @@ class AsciiMathNodeFormatterTest {
 
     @Test
     void formatsUnitWithQuotedName() {
-        var unitDef = new UnitDefinition("meter", "meters", "length", "meter",
-                1.0, 0.0, List.of("m"));
+        var unitDef = UnitDefinition.of("meter", "meters", "length", "meter",
+                Factor.ONE, List.of("m"));
         var unit = NodeUnit.of(5.0, unitDef);
         assertThat(fmt.format(unit)).isEqualTo("5 \"meters\"");
     }
 
     @Test
     void formatsUnitSingular() {
-        var unitDef = new UnitDefinition("meter", "meters", "length", "meter",
-                1.0, 0.0, List.of("m"));
+        var unitDef = UnitDefinition.of("meter", "meters", "length", "meter",
+                Factor.ONE, List.of("m"));
         var unit = NodeUnit.of(1.0, unitDef);
         assertThat(fmt.format(unit)).isEqualTo("1 \"meter\"");
     }

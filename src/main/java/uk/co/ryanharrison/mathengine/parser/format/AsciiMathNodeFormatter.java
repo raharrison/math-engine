@@ -98,7 +98,7 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
             // --- NodeNumber subtypes ---
             case NodeDouble n -> formatDouble(n.getValue());
             case NodeRational n -> formatRational(n);
-            case NodePercent n -> formatDouble(n.getPercentValue()) + "%";
+            case NodePercent n -> format(n.getPercent()) + "%";
             case NodeBoolean n -> "\"" + n.getValue() + "\"";
 
             // --- Other NodeConstant subtypes ---
@@ -145,11 +145,9 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
 
     private String formatRational(NodeRational node) {
         var rational = node.getValue();
-        if (rational.isInteger()) {
-            return rational.getNumerator().toString();
-        }
-        // AsciiMath fraction notation: (num)/(den) renders as proper fraction
-        return "(" + rational.getNumerator() + ")/(" + rational.getDenominator() + ")";
+        // AsciiMath fraction notation: (num)/(den) renders as a proper fraction
+        return RationalDisplay.asDecimal(rational, decimalPlaces)
+                .orElseGet(() -> "(" + rational.getNumerator() + ")/(" + rational.getDenominator() + ")");
     }
 
     // ==================== Constant Helpers ====================
@@ -177,7 +175,7 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
     }
 
     private String formatUnit(NodeUnit unit) {
-        String formattedValue = formatDouble(unit.getValue());
+        String formattedValue = format(unit.getMagnitude());
         String unitName = unit.getUnit().getDisplayName(unit.getValue());
         return formattedValue + " \"" + unitName + "\"";
     }

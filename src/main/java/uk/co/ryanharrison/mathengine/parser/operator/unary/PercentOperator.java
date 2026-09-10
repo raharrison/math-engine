@@ -25,6 +25,7 @@ public final class PercentOperator implements UnaryOperator {
 
     @Override
     public NodeConstant apply(NodeConstant operand, OperatorContext ctx) {
-        return BroadcastingEngine.applyUnary(operand, value -> new NodePercent(TypeCoercion.toDouble(value)));
+        return BroadcastingEngine.applyUnary(operand,
+                value -> NodePercent.ofPercentValue(TypeCoercion.toNumber(value)));
     }
 }

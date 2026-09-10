@@ -82,16 +82,16 @@
         {
             "id": "explicit_unit_008",
             "input": "5 @\"km/h\" in @mph",
-            "expected": "3.1068584466714393 miles_per_hour",
+            "expected": "3.1068559611866697 miles_per_hour",
             "expectedType": "NodeUnit",
-            "notes": "Unit arithmetic with quoted explicit reference"
+            "notes": "Kilometres per hour is a thousand metres over 3600 seconds exactly; the old factor was rounded to 0.277778"
         },
         {
             "id": "explicit_unit_009",
             "input": "5 mph in @\"km/h\"",
-            "expected": "8.046713562629149 kilometers_per_hour",
+            "expected": "8.04672 kilometers_per_hour",
             "expectedType": "NodeUnit",
-            "notes": "Unit arithmetic with quoted explicit reference"
+            "notes": "The same exact factor in the other direction"
         },
         {
             "id": "explicit_var_001",

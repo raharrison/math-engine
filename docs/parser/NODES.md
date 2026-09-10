@@ -100,30 +100,40 @@ double v = d.doubleValue();  // 3.14159
 
 - Parsing integer literals: `42`, `-17`
 - Parsing rational literals: `22/7`, `1/3`
+- Parsing decimal literals: `2.5` is held as `5/2`
 - Rational arithmetic that stays exact: `1/2 + 1/3` → `5/6`
 
 **Fields:**
 
 ```java
-private final BigRational value;  // Immutable numerator/denominator pair
+private final BigRational value;  // Immutable numerator/denominator pair, always reduced
 ```
 
 **Example:**
 
 ```java
-NodeRational r = new NodeRational(new BigRational(22, 7));
-double v = r.doubleValue();  // 3.142857...
-String s = r.toString();     // "22/7"
+NodeRational r = new NodeRational(BigRational.of(22, 7));
+double v = r.doubleValue();     // 3.142857...
+new NodeRational(4, 6);         // stored as 2/3
 ```
 
-**Automatic Simplification:**
+**How it is shown:** exactness belongs to the value, fraction notation to the display, and
+`RationalDisplay` keeps the two apart. A denominator of only twos and fives gives a finite
+decimal expansion, so that decimal *is* the value and is what prints. Any other denominator
+has no decimal equal to it, so a short ratio prints. A ratio too wide to read rounds.
 
 ```text
-new NodeRational(4, 6)  →  stores as 2/3 (simplified)
+5/2          →  2.5             a finite decimal, so the decimal is exact
+493/5        →  98.6
+1/3, 22/7    →  1/3, 22/7       no decimal equals these
+125000/381   →  328.0839895013123
 ```
 
-**Promotion to Double:**
-When mixed with doubles in operations:
+Both formatters and string coercion read the same rule, so a value cannot be spelled two
+ways. A formatter asked for a fixed number of decimal places gives decimals throughout.
+
+**Promotion to double:** an exact value meeting a `NodeDouble` gives a double, since the
+result can be no better than its worst input.
 
 ```text
 NodeRational(5, 2) + NodeDouble(3.5)  →  NodeDouble(6.0)
@@ -157,16 +167,16 @@ NodeBoolean b = new NodeBoolean(true);
 double v = b.doubleValue();  // 1.0
 ```
 
-**Type Promotion:**
+**Type Promotion:** a boolean becomes an exact 1 or 0, so it does not cost exactness.
 
 ```text
-true + 5      →  NodeDouble(6.0)
-false * 10    →  NodeDouble(0.0)
+true + 5      →  NodeRational(6)
+false * 10    →  NodeRational(0)
 ```
 
 ### NodePercent
 
-**Purpose:** Percentage values with automatic /100 conversion
+**Purpose:** Percentage values, held as the fraction they stand for
 
 **When Created:**
 
@@ -176,29 +186,34 @@ false * 10    →  NodeDouble(0.0)
 **Fields:**
 
 ```java
-private final double value;  // Already divided by 100
+private final NodeNumber fraction;  // 50% holds one half
 ```
+
+Holding a number rather than a `double` is what keeps `1/2 + 25%` exact. A percentage built
+from a `double` reads it through `TypeCoercion.toNumber`, the same rule every other edge of
+the engine uses.
 
 **Example:**
 
 ```java
-NodePercent p = new NodePercent(50.0);  // Stores 0.5
-double v = p.doubleValue();  // 0.5
-String s = p.toString();     // "50%"
+NodePercent p = new NodePercent(50.0);
+NodeNumber fraction = p.getFraction();  // 1/2, exact
+NodeNumber percent = p.getPercent();    // 50,  exact
+double v = p.doubleValue();             // 0.5
 ```
 
 **Operations:**
 
 ```text
-50%           →  NodePercent(50) → value 0.5
-50% of 200    →  NodeDouble(100.0)
-50% + 25%     →  NodePercent(75) → value 0.75
-10% * 5       →  NodePercent(50)     // on the left it is being scaled
-100 * 10%     →  NodeDouble(10.0)    // on the right it measures the number to its left
+50% + 25%     →  75%             a percentage, still
+10% * 5       →  50%             on the left it is being scaled
+50% of 200    →  100             on the right it measures the number to its left
+100 * 10%     →  10
+100 + 10%     →  110
 ```
 
-A percentage on the right is read against the number on its left, as in `100 + 10%`. Both
-spellings agree on the value.
+A percentage on the right is read against the number on its left. Both spellings agree on
+the value, because both go through the same arithmetic.
 
 ---
 
@@ -237,6 +252,10 @@ String v = s.getValue();  // "hello"
 ### NodeUnit
 
 **Purpose:** Values with physical units (length, mass, temperature, etc.)
+
+The magnitude is a `NodeNumber`, not a `double`, so a quantity is as exact as the number
+that made it and arithmetic on it follows the same rules as arithmetic on that number
+alone. `1 m + 2 m` is an exact 3, and `0 celsius in fahrenheit` is an exact 32.
 
 **When Created:**
 
@@ -289,14 +308,30 @@ sqrt(100 meters)          →  NodeUnit(10, meters)
 
 A label is not a claim about dimension. NodePercent follows the same rule.
 
-**Where a label is not carried:** it cancels under division by a like quantity, and two
-labels never merge, since the engine has no name for the product.
+**Where a label is not carried:** it cancels when a quantity is divided by a like
+quantity, since the answer is a ratio.
 
 ```text
-10 meters / 5 meters      →  NodeDouble(2.0)    // the labels cancel
-4 meters * 2 meters       →  TypeError          // no name for a square metre
-4 meters ^ 2 meters       →  TypeError          // same reason
+(10 meters) / (5 meters)  →  NodeRational(2)    // the labels cancel
+(1 km) / (500 meters)     →  NodeRational(2)    // converted first, then cancelled
 ```
+
+Two quantities of the same type multiply on their magnitudes and keep the left label, after
+converting the right one into it. Two quantities of different types cannot combine at all,
+in any operation, and neither can two quantities under `^`.
+
+```text
+(4 meters) * (2 meters)   →  NodeUnit(8, meters)
+(1 km) * (2 meters)       →  NodeUnit(0.002, kilometers)
+(4 meters) * (2 seconds)  →  TypeError          // length and time
+(4 meters) ^ (2 meters)   →  TypeError          // no meaning to give it
+```
+
+> **Parenthesise a quantity before dividing by another.** A unit name attaches by implicit
+> multiplication, which sits at the same precedence as `*` and `/` and associates left, so
+> `10 meters / 5 meters` reads as `((10 * meters) / 5) * meters` and answers `2 meters`
+> rather than `2`. The same rule makes `2 meters ^ 2` read as `2 * (meters ^ 2)`, since `^`
+> binds tighter still.
 
 A function whose answer is a pure number returns one:
 
@@ -422,8 +457,10 @@ private final NodeNumber end;
 private final NodeNumber step;  // Nullable (default depends on direction)
 ```
 
-**Lazy Evaluation:**
-NodeRange doesn't store elements. It generates them on demand when converted to NodeVector.
+**Never seen by a caller.** The evaluator builds a range, checks its size against
+`maxVectorSize`, and returns `range.toVector()`, so `1..5` evaluates to a `NodeVector`.
+The range itself is the intermediate that makes the size check possible before any element
+is built.
 
 **Conversion to Vector:**
 

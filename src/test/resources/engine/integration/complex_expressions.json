@@ -187,8 +187,8 @@
         {
             "id": "complex_018_complex_expressions",
             "input": "100 + 50%",
-            "expected": 150.0,
-            "expectedType": "NodeDouble",
+            "expected": 150,
+            "expectedType": "NodeRational",
             "notes": "Number plus percentage"
         },
         {

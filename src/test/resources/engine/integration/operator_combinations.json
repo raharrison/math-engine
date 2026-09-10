@@ -179,8 +179,8 @@
         {
             "id": "mixed_percent_002",
             "input": "100 + 20% + 10",
-            "expected": 130.0,
-            "expectedType": "NodeDouble",
+            "expected": 130,
+            "expectedType": "NodeRational",
             "notes": "Percent in arithmetic chain"
         },
         {

@@ -6,10 +6,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.ResolutionContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.UndefinedVariableException;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.operator.binary.MultiplyOperator;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeUnit;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVariable;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
 /**
  * Handles variable resolution with context-aware priority and explicit disambiguation support.
@@ -150,7 +147,7 @@ public final class VariableResolver {
         // Units have priority after numbers
         var unitOpt = context.resolveUnit(name);
         if (unitOpt.isPresent()) {
-            return NodeUnit.of(1.0, unitOpt.get());
+            return NodeUnit.of(new NodeRational(1), unitOpt.get());
         }
 
         // Fall back to variable
@@ -200,7 +197,7 @@ public final class VariableResolver {
         // Units
         var unitOpt = context.resolveUnit(name);
         if (unitOpt.isPresent()) {
-            return NodeUnit.of(1.0, unitOpt.get());
+            return NodeUnit.of(new NodeRational(1), unitOpt.get());
         }
 
         // Implicit multiplication as last resort
@@ -228,7 +225,7 @@ public final class VariableResolver {
      */
     public NodeConstant resolveUnitRef(String unitName, EvaluationContext context) {
         return context.resolveUnit(unitName)
-                .map(unit -> NodeUnit.of(1.0, unit))
+                .map(unit -> NodeUnit.of(new NodeRational(1), unit))
                 .orElseThrow(() -> UndefinedVariableException.unit(unitName));
     }
 

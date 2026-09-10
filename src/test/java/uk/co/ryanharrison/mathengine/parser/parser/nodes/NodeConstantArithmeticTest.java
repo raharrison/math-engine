@@ -185,7 +185,8 @@ class NodeConstantArithmeticTest {
             NodeConstant result = left.add(right);
 
             assertThat(result).isInstanceOf(NodeString.class);
-            assertThat(((NodeString) result).getValue()).isEqualTo("1/2 is a half");
+            // A half terminates, so it reads as a decimal rather than as a ratio
+            assertThat(((NodeString) result).getValue()).isEqualTo("0.5 is a half");
         }
 
         @Test
@@ -623,9 +624,9 @@ class NodeConstantArithmeticTest {
         }
 
         private uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition createTestUnit(String name) {
-            return new uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition(
+            return uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition.of(
                     name, name + "s", "length", name,
-                    1.0, 0.0, java.util.List.of()
+                    uk.co.ryanharrison.mathengine.parser.registry.Factor.ONE, java.util.List.of()
             );
         }
     }

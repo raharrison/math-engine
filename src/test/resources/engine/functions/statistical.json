@@ -327,7 +327,7 @@
         {
             "id": "mode_keeps_a_percentage",
             "input": "mode({10%, 10%, 20%})",
-            "expected": "10.00%",
+            "expected": "10%",
             "expectedType": "NodePercent",
             "notes": "A percentage survives for the same reason a unit does"
         },

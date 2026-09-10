@@ -63,8 +63,8 @@
         {
             "id": "divide_types_boolean_percent",
             "input": "(true) / (20%)",
-            "expected": 5.0,
-            "expectedType": "NodeDouble",
+            "expected": 5,
+            "expectedType": "NodeRational",
             "notes": "Boolean divides a percent"
         },
         {
@@ -354,8 +354,8 @@
         {
             "id": "divide_types_percent_percent",
             "input": "(20%) / (20%)",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
+            "expected": 1,
+            "expectedType": "NodeRational",
             "notes": "Percent divides a percent"
         },
         {
@@ -525,8 +525,8 @@
         {
             "id": "divide_types_rational_percent",
             "input": "(3) / (20%)",
-            "expected": 15.0,
-            "expectedType": "NodeDouble",
+            "expected": 15,
+            "expectedType": "NodeRational",
             "notes": "Rational divides a percent"
         },
         {
@@ -697,8 +697,8 @@
         {
             "id": "divide_types_unit_unit",
             "input": "(4 meters) / (4 meters)",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
+            "expected": 1,
+            "expectedType": "NodeRational",
             "notes": "Unit divides a unit"
         },
         {

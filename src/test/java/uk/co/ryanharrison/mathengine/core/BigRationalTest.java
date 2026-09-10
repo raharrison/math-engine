@@ -76,6 +76,33 @@ class BigRationalTest {
         assertThat(r.doubleValue()).isCloseTo(0.5, within(TOLERANCE));
     }
 
+    @Test
+    void readsAStringAsTheDecimalItIsWritten() {
+        // It used to parse through a double, so the one overload whose job was to avoid a
+        // double went straight through one and a tenth came out as a binary fraction.
+        assertThat(BigRational.of("0.1")).isEqualTo(BigRational.of(1, 10));
+        assertThat(BigRational.of("0.3048")).isEqualTo(BigRational.of(381, 1250));
+        assertThat(BigRational.of("2.9088820867E-4"))
+                .isEqualTo(BigRational.of(new BigInteger("29088820867"),
+                        new BigInteger("100000000000000")));
+    }
+
+    @Test
+    void readsADoubleEitherAsItsBitsOrAsTheDecimalItNames() {
+        // of(double) is the value the bits hold; ofDecimal is the figure somebody wrote
+        assertThat(BigRational.ofDecimal(0.1)).isEqualTo(BigRational.of(1, 10));
+        assertThat(BigRational.of(0.1)).isNotEqualTo(BigRational.of(1, 10));
+        assertThat(BigRational.of(0.1).doubleValue()).isEqualTo(0.1);
+    }
+
+    @Test
+    void ofDecimalRejectsValuesNoRationalHolds() {
+        assertThatThrownBy(() -> BigRational.ofDecimal(Double.NaN))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> BigRational.ofDecimal(Double.POSITIVE_INFINITY))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @ParameterizedTest
     @CsvSource({
             "0.5, 1, 2",     // 1/2

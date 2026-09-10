@@ -20,6 +20,20 @@ Lexer needs: "Is 'and' a keyword?" → KeywordRegistry
 
 **File:** `registry/UnitRegistry.java`
 
+A unit's multiplier and offset are a `Factor`, not a `double`: a `BigRational` together
+with whether it is the exact number or only the nearest one a double can hold.
+
+```java
+Factor.of("0.3048")          // a foot, exactly
+Factor.ratio(5, 9)           // a fahrenheit degree, exactly
+Factor.approx(Math.PI / 180) // a degree of arc, as close as a double gets
+```
+
+Almost every factor is exact, and holding them as doubles lost them before they were ever
+used, which is why `0 celsius in fahrenheit` answered 31.999999999999943. A conversion is
+exact when the magnitude is and both units say their factors are, so an angle still comes
+back as a double, since a degree is `pi/180` and no ratio can say so.
+
 **Purpose:** Define physical units and conversion factors
 
 **Interface:**

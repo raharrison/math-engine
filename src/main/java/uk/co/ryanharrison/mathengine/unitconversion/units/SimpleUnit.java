@@ -83,7 +83,7 @@ public final class SimpleUnit extends BaseUnit {
      * @return a new unit with the updated factor
      */
     public SimpleUnit withConversionFactor(double newFactor) {
-        return withConversionFactor(BigRational.of(newFactor));
+        return withConversionFactor(BigRational.ofDecimal(newFactor));
     }
 
     /**
@@ -173,7 +173,7 @@ public final class SimpleUnit extends BaseUnit {
          * @return this builder
          */
         public Builder conversionFactor(double conversionFactor) {
-            return conversionFactor(BigRational.of(conversionFactor));
+            return conversionFactor(BigRational.ofDecimal(conversionFactor));
         }
 
         /**

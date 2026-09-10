@@ -88,7 +88,7 @@ public class ConversionEngineFrequencyTest extends ConversionEngineBaseTest {
         assertEquals(2860000000000.0, engine.convertToDouble(AMOUNT, "gigahertz", "millihertz", PLACES), 0.0);
         assertEquals(6.469167562E13, engine.convertToDouble(AMOUNT, "gigahertz", "radian per hour", PLACES), 0.0);
         assertEquals(1078194603200.0001, engine.convertToDouble(AMOUNT, "gigahertz", "radian per minute", PLACES), 0.0);
-        assertEquals(1.7969909958E10, engine.convertToDouble(AMOUNT, "gigahertz", "radian per second", PLACES), 0.0);
+        assertEquals(1.7969909958000004E10, engine.convertToDouble(AMOUNT, "gigahertz", "radian per second", PLACES), 0.0);
         assertEquals(10296000000000.0, engine.convertToDouble(AMOUNT, "gigahertz", "revolution per hour", PLACES), 0.0);
         assertEquals(1.716E11, engine.convertToDouble(AMOUNT, "gigahertz", "revolution per minute", PLACES), 0.0);
         assertEquals(2860000000.0, engine.convertToDouble(AMOUNT, "gigahertz", "revolution per second", PLACES), 0.0);
@@ -130,8 +130,8 @@ public class ConversionEngineFrequencyTest extends ConversionEngineBaseTest {
         assertEquals(0.0, engine.convertToDouble(AMOUNT, "kilohertz", "terrahertz", PLACES), 0.0);
         assertEquals(2860000.0, engine.convertToDouble(AMOUNT, "megahertz", "cycle per second", PLACES), 0.0);
         assertEquals(3706560000000.0, engine.convertToDouble(AMOUNT, "megahertz", "degree per hour", PLACES), 0.0);
-        assertEquals(61776000000.0, engine.convertToDouble(AMOUNT, "megahertz", "degree per minute", PLACES), 0.0);
-        assertEquals(1.0296E9, engine.convertToDouble(AMOUNT, "megahertz", "degree per second", PLACES), 0.0);
+        assertEquals(6.177600000000001E10, engine.convertToDouble(AMOUNT, "megahertz", "degree per minute", PLACES), 0.0);
+        assertEquals(1.0295999999999999E9, engine.convertToDouble(AMOUNT, "megahertz", "degree per second", PLACES), 0.0);
         assertEquals(0.00286, engine.convertToDouble(AMOUNT, "megahertz", "gigahertz", PLACES), 0.0);
         assertEquals(2860000.0, engine.convertToDouble(AMOUNT, "megahertz", "hertz", PLACES), 0.0);
         assertEquals(2860.0, engine.convertToDouble(AMOUNT, "megahertz", "kilohertz", PLACES), 0.0);
@@ -140,7 +140,7 @@ public class ConversionEngineFrequencyTest extends ConversionEngineBaseTest {
         assertEquals(6.469167562E10, engine.convertToDouble(AMOUNT, "megahertz", "radian per hour", PLACES), 0.0);
         assertEquals(1078194603.2, engine.convertToDouble(AMOUNT, "megahertz", "radian per minute", PLACES), 0.0);
         assertEquals(17969909.958, engine.convertToDouble(AMOUNT, "megahertz", "radian per second", PLACES), 0.0);
-        assertEquals(10296000000.0, engine.convertToDouble(AMOUNT, "megahertz", "revolution per hour", PLACES), 0.0);
+        assertEquals(1.0295999999999998E10, engine.convertToDouble(AMOUNT, "megahertz", "revolution per hour", PLACES), 0.0);
         assertEquals(171600000.0, engine.convertToDouble(AMOUNT, "megahertz", "revolution per minute", PLACES), 0.0);
         assertEquals(2860000.0, engine.convertToDouble(AMOUNT, "megahertz", "revolution per second", PLACES), 0.0);
         assertEquals(171600000.0, engine.convertToDouble(AMOUNT, "megahertz", "RPM", PLACES), 0.0);
@@ -284,19 +284,19 @@ public class ConversionEngineFrequencyTest extends ConversionEngineBaseTest {
         assertEquals(2860000000000.0, engine.convertToDouble(AMOUNT, "terrahertz", "cycle per second", PLACES), 0.0);
         assertEquals(3.70656e+18, engine.convertToDouble(AMOUNT, "terrahertz", "degree per hour", PLACES), 0.0);
         assertEquals(6.1776e+16, engine.convertToDouble(AMOUNT, "terrahertz", "degree per minute", PLACES), 0.0);
-        assertEquals(1.0296E15, engine.convertToDouble(AMOUNT, "terrahertz", "degree per second", PLACES), 0.0);
+        assertEquals(1.0295999999999999E15, engine.convertToDouble(AMOUNT, "terrahertz", "degree per second", PLACES), 0.0);
         assertEquals(2860.0, engine.convertToDouble(AMOUNT, "terrahertz", "gigahertz", PLACES), 0.0);
         assertEquals(2860000000000.0, engine.convertToDouble(AMOUNT, "terrahertz", "hertz", PLACES), 0.0);
         assertEquals(2.86E9, engine.convertToDouble(AMOUNT, "terrahertz", "kilohertz", PLACES), 0.0);
         assertEquals(2860000.0, engine.convertToDouble(AMOUNT, "terrahertz", "megahertz", PLACES), 0.0);
         assertEquals(2860000000000000.0, engine.convertToDouble(AMOUNT, "terrahertz", "millihertz", PLACES), 0.0);
         assertEquals(6.469167562E16, engine.convertToDouble(AMOUNT, "terrahertz", "radian per hour", PLACES), 0.0);
-        assertEquals(1078194603200000.1, engine.convertToDouble(AMOUNT, "terrahertz", "radian per minute", PLACES), 0.0);
-        assertEquals(1.7969909958E13, engine.convertToDouble(AMOUNT, "terrahertz", "radian per second", PLACES), 0.0);
-        assertEquals(1.0296e+16, engine.convertToDouble(AMOUNT, "terrahertz", "revolution per hour", PLACES), 0.0);
-        assertEquals(171600000000000.0, engine.convertToDouble(AMOUNT, "terrahertz", "revolution per minute", PLACES), 0.0);
+        assertEquals(1.0781946032E15, engine.convertToDouble(AMOUNT, "terrahertz", "radian per minute", PLACES), 0.0);
+        assertEquals(1.7969909958000004E13, engine.convertToDouble(AMOUNT, "terrahertz", "radian per second", PLACES), 0.0);
+        assertEquals(1.0295999999999998E16, engine.convertToDouble(AMOUNT, "terrahertz", "revolution per hour", PLACES), 0.0);
+        assertEquals(1.7160000000000003E14, engine.convertToDouble(AMOUNT, "terrahertz", "revolution per minute", PLACES), 0.0);
         assertEquals(2860000000000.0, engine.convertToDouble(AMOUNT, "terrahertz", "revolution per second", PLACES), 0.0);
-        assertEquals(171600000000000.0, engine.convertToDouble(AMOUNT, "terrahertz", "RPM", PLACES), 0.0);
+        assertEquals(1.7160000000000003E14, engine.convertToDouble(AMOUNT, "terrahertz", "RPM", PLACES), 0.0);
         assertEquals(2.86, engine.convertToDouble(AMOUNT, "terrahertz", "terrahertz", PLACES), 0.0);
     }
 

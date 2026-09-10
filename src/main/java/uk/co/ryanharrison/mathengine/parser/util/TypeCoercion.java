@@ -2,35 +2,39 @@ package uk.co.ryanharrison.mathengine.parser.util;
 
 import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
+import uk.co.ryanharrison.mathengine.parser.format.StringNodeFormatter;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
+import java.math.BigDecimal;
+
 /**
- * Utility class for type coercion and conversion operations.
+ * Conversions between node types, for the edges of the engine where a value arrives as
+ * something other than a node or has to leave as one.
  * <p>
- * Provides static methods for converting between node types and
- * determining type compatibility for operations.
- *
- * <h2>Type Hierarchy:</h2>
- * <ul>
- *     <li>NodeBoolean - can be coerced to number (true=1, false=0)</li>
- *     <li>NodeRational - exact rational arithmetic</li>
- *     <li>NodeDouble - IEEE 754 double-precision floating point</li>
- *     <li>NodePercent - percentage (stored as fraction, e.g., 50% = 0.5)</li>
- *     <li>NodeVector - collection of values</li>
- *     <li>NodeMatrix - 2D collection of values</li>
- * </ul>
- *
- * <h2>Type Promotion Rules:</h2>
- * <ul>
- *     <li>Rational + Rational = Rational</li>
- *     <li>Rational + Double = Double</li>
- *     <li>Any + Percent = Double</li>
- *     <li>Boolean is coerced to Rational (1 or 0)</li>
- * </ul>
+ * What happens when two nodes meet in an operation is not here: that is
+ * {@code NodeArithmetic}, reached through {@link NodeConstant#add} and friends.
  */
 public final class TypeCoercion {
 
+    /**
+     * The most significant digits a written decimal is expected to have. A double needing
+     * more than this to name itself was computed rather than typed: a third needs sixteen
+     * and the classic {@code 0.1 + 0.2} needs seventeen, where every decimal anybody writes
+     * needs a handful.
+     */
+    private static final int MAX_WRITTEN_DIGITS = 12;
+
+    /**
+     * The largest denominator a {@code double} is allowed to name as a fraction.
+     */
     private static final int MAX_DENOMINATOR = 10_000;
+
+    /**
+     * Doubles below this in size are integers a {@code long} holds exactly.
+     */
+    private static final double LONG_EXACT_LIMIT = 0x1p63;
+
+    private static final StringNodeFormatter DISPLAY = StringNodeFormatter.fullPrecision();
 
     private TypeCoercion() {
     }
@@ -44,7 +48,8 @@ public final class TypeCoercion {
      * <ul>
      *     <li>NodeString: raw value (no quotes)</li>
      *     <li>NodeBoolean: "true" or "false"</li>
-     *     <li>NodeNumber: integer format if whole number, otherwise double format</li>
+     *     <li>NodeNumber and NodeUnit: whatever a formatter would show, so that
+     *         {@code str(2.5)} and {@code 2.5} agree</li>
      *     <li>Others: toString()</li>
      * </ul>
      *
@@ -57,6 +62,9 @@ public final class TypeCoercion {
         }
         if (node instanceof NodeBoolean bool) {
             return bool.getValue() ? "true" : "false";
+        }
+        if (node instanceof NodeNumber || node instanceof NodeUnit) {
+            return DISPLAY.format(node);
         }
         return node.toString();
     }
@@ -95,18 +103,56 @@ public final class TypeCoercion {
 
     // ==================== Type Conversion ====================
 
+    /**
+     * Turns a {@code double} into the number it stands for.
+     * <p>
+     * A double is a binary fraction, so most decimals are not in it exactly. The engine
+     * still has to take doubles at its edges: a Java caller binding a variable, a literal
+     * that was computed before it was read, an interpolation weight. This is the single
+     * place that decides how much exactness such a value may claim, so that every edge
+     * claims the same amount.
+     * <ul>
+     *     <li>Not finite: stays a double, since no rational is infinite.</li>
+     *     <li>Integral: exact, however large, matching the literal {@code 1e20}.</li>
+     *     <li>Named by a short decimal: that decimal. {@code 0.1} is a tenth and
+     *         {@code 0.000123} is 123 millionths, because those are the shortest decimals
+     *         that round to those doubles.</li>
+     *     <li>Named by a fraction with a small denominator: that fraction. This is what
+     *         reads {@code 1.0 / 3.0} back as a third rather than as sixteen threes.</li>
+     *     <li>Otherwise it came out of a calculation and is left as it came, so
+     *         {@code sqrt(2)} and {@code 0.1 + 0.2} stay doubles.</li>
+     * </ul>
+     * Both middle cases are round trips, which is what keeps this honest: an exact answer
+     * is one the double could only have meant, never a nearby value that looks tidier.
+     *
+     * @param value the double to read
+     * @return the value as a rational where that is exact, otherwise as a double
+     */
     public static NodeNumber toNumber(double value) {
         if (!Double.isFinite(value)) {
             return new NodeDouble(value);
         }
 
-        // Integers are always rational
-        if (value == Math.floor(value) && Math.abs(value) <= Long.MAX_VALUE) {
-            return new NodeRational((long) value, 1L);
+        // An integral double is exactly an integer, so it always reads back exactly.
+        // Below 2^63 a long holds it; above, only a BigInteger does, and casting to a
+        // long there used to land one short of 2^63 rather than on it.
+        if (value == Math.floor(value)) {
+            return Math.abs(value) < LONG_EXACT_LIMIT
+                    ? new NodeRational((long) value, 1L)
+                    : new NodeRational(BigRational.of(new BigDecimal(value).toBigIntegerExact()));
         }
 
-        // Find best rational approximation with a small denominator.
-        // Accept it only if it round-trips exactly to the same double.
+        // The shortest decimal that rounds to this double. Asking for the closest fraction
+        // within a denominator instead used to hide exact answers behind better
+        // approximations: 0.000123 is exactly 123/1000000, but the closest fraction under a
+        // million is 37/300813, which is nearer without being equal, so the value was lost.
+        BigDecimal shortest = BigDecimal.valueOf(value).stripTrailingZeros();
+        if (shortest.precision() <= MAX_WRITTEN_DIGITS) {
+            return new NodeRational(BigRational.of(shortest));
+        }
+
+        // No short decimal, so try a short fraction: this is the branch that reads
+        // 1.0 / 3.0 back as a third.
         try {
             BigRational approx = BigRational.of(value, MAX_DENOMINATOR);
             if (approx.doubleValue() == value) {
@@ -129,7 +175,7 @@ public final class TypeCoercion {
     public static NodeNumber toNumber(NodeConstant value) {
         return switch (value) {
             case NodeBoolean bool -> new NodeRational(bool.getValue() ? 1 : 0);
-            case NodeUnit unit -> new NodeDouble(unit.getValue());
+            case NodeUnit unit -> unit.getMagnitude();
             case NodeNumber num -> num;
             default -> throw new TypeError("Cannot convert " + value.typeName() + " to number");
         };

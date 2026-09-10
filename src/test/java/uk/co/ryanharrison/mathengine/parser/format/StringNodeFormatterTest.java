@@ -7,6 +7,7 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
 import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.registry.Factor;
 import uk.co.ryanharrison.mathengine.parser.registry.SymbolRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 
@@ -75,15 +76,42 @@ class StringNodeFormatterTest {
     }
 
     @Test
-    void formatsRationalFraction() {
-        assertThat(fmt.format(new NodeRational(3, 4))).isEqualTo("3/4");
+    void formatsTerminatingRationalAsDecimal() {
+        // Three quarters is exactly 0.75, so the decimal loses nothing and reads better.
+        // Printing every rational as a ratio is what showed 2.5 back as 5/2.
+        assertThat(fmt.format(new NodeRational(3, 4))).isEqualTo("0.75");
+        assertThat(fmt.format(new NodeRational(5, 2))).isEqualTo("2.5");
+        assertThat(fmt.format(new NodeRational(3, 10))).isEqualTo("0.3");
+        assertThat(fmt.format(new NodeRational(493, 5))).isEqualTo("98.6");
     }
 
     @Test
-    void formatsRationalFractionIgnoresDecimalPlaces() {
+    void formatsRepeatingRationalAsFraction() {
+        // No decimal equals a third, so the ratio is the only exact spelling
+        assertThat(fmt.format(new NodeRational(1, 3))).isEqualTo("1/3");
+        assertThat(fmt.format(new NodeRational(22, 7))).isEqualTo("22/7");
+        assertThat(fmt.format(new NodeRational(-1, 6))).isEqualTo("-1/6");
+    }
+
+    @Test
+    void formatsUnreadableRepeatingRationalAsDecimal() {
+        // 100 metres in feet. Exact, and no more meaningful as a ratio than as a decimal
+        assertThat(fmt.format(new NodeRational(125000, 381))).isEqualTo("328.0839895013123");
+    }
+
+    @Test
+    void formatsIntegerRationalWithoutLosingDigits() {
+        var big = new java.math.BigInteger("93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000");
+        assertThat(fmt.format(new NodeRational(uk.co.ryanharrison.mathengine.core.BigRational.of(big))))
+                .isEqualTo(big.toString());
+    }
+
+    @Test
+    void formatsRationalAsRoundedDecimalWhenDecimalPlacesAsked() {
         var rounded = StringNodeFormatter.withDecimalPlaces(3);
-        // Rationals always display as exact fractions, never lossy decimals
-        assertThat(rounded.format(new NodeRational(1, 3))).isEqualTo("1/3");
+        // Asking for three places is asking for a decimal, so every number answers as one
+        assertThat(rounded.format(new NodeRational(1, 3))).isEqualTo("0.333");
+        assertThat(rounded.format(new NodeRational(3, 4))).isEqualTo("0.75");
     }
 
     // ==================== NodePercent ====================
@@ -169,16 +197,16 @@ class StringNodeFormatterTest {
 
     @Test
     void formatsUnitSingular() {
-        var unitDef = new UnitDefinition("meter", "meters", "length", "meter",
-                1.0, 0.0, List.of("m"));
+        var unitDef = UnitDefinition.of("meter", "meters", "length", "meter",
+                Factor.ONE, List.of("m"));
         var unit = NodeUnit.of(1.0, unitDef);
         assertThat(fmt.format(unit)).isEqualTo("1 meter");
     }
 
     @Test
     void formatsUnitPlural() {
-        var unitDef = new UnitDefinition("meter", "meters", "length", "meter",
-                1.0, 0.0, List.of("m"));
+        var unitDef = UnitDefinition.of("meter", "meters", "length", "meter",
+                Factor.ONE, List.of("m"));
         var unit = NodeUnit.of(5.0, unitDef);
         assertThat(fmt.format(unit)).isEqualTo("5 meters");
     }

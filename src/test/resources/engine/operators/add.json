@@ -77,8 +77,8 @@
         {
             "id": "add_types_boolean_percent",
             "input": "(true) + (20%)",
-            "expected": 1.2,
-            "expectedType": "NodeDouble",
+            "expected": "6/5",
+            "expectedType": "NodeRational",
             "notes": "Boolean adds a percent"
         },
         {
@@ -347,8 +347,8 @@
         {
             "id": "add_types_percent_boolean",
             "input": "(20%) + (true)",
-            "expected": 1.2,
-            "expectedType": "NodeDouble",
+            "expected": "6/5",
+            "expectedType": "NodeRational",
             "notes": "Percent adds a boolean"
         },
         {
@@ -394,14 +394,14 @@
         {
             "id": "add_types_percent_rational",
             "input": "(20%) + (3)",
-            "expected": 3.2,
-            "expectedType": "NodeDouble",
+            "expected": "16/5",
+            "expectedType": "NodeRational",
             "notes": "Percent adds a rational"
         },
         {
             "id": "add_types_percent_string",
             "input": "(20%) + (\"ab\")",
-            "expected": "20.00%ab",
+            "expected": "20%ab",
             "expectedType": "NodeString",
             "notes": "Percent adds a string"
         },
@@ -551,8 +551,8 @@
         {
             "id": "add_types_rational_percent",
             "input": "(3) + (20%)",
-            "expected": 3.6,
-            "expectedType": "NodeDouble",
+            "expected": "18/5",
+            "expectedType": "NodeRational",
             "notes": "Rational adds a percent"
         },
         {
@@ -629,7 +629,7 @@
         {
             "id": "add_types_string_percent",
             "input": "(\"ab\") + (20%)",
-            "expected": "ab20.00%",
+            "expected": "ab20%",
             "expectedType": "NodeString",
             "notes": "String adds a percent"
         },
@@ -660,9 +660,9 @@
         {
             "id": "add_types_string_unit",
             "input": "(\"ab\") + (4 meters)",
-            "expected": "ab4.0 meters",
+            "expected": "ab4 meters",
             "expectedType": "NodeString",
-            "notes": "String adds a unit"
+            "notes": "A quantity reads the same when concatenated as when printed, so an exact 4 is '4 meters' and not '4.0 meters'"
         },
         {
             "id": "add_types_string_vector",
@@ -731,9 +731,9 @@
         {
             "id": "add_types_unit_string",
             "input": "(4 meters) + (\"ab\")",
-            "expected": "4.0 metersab",
+            "expected": "4 metersab",
             "expectedType": "NodeString",
-            "notes": "Unit adds a string"
+            "notes": "The same, with the string on the right"
         },
         {
             "id": "add_types_unit_unit",

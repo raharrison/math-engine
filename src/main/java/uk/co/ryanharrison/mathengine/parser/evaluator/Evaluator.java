@@ -271,7 +271,7 @@ public final class Evaluator {
                 if (!TypeCoercion.isNumeric(value)) {
                     throw new TypeError("Cannot apply unit conversion to: " + value.typeName());
                 }
-                yield NodeUnit.of(value.doubleValue(), target);
+                yield NodeUnit.of(TypeCoercion.toNumber(value), target);
             }
         };
     }

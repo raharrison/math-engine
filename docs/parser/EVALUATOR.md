@@ -172,42 +172,34 @@ class EvaluationContext {
 ### Variable Management
 
 ```java
-// Define variable
-context.define("x",new NodeDouble(5.0));
+// Define in this scope
+context.define("x", new NodeRational(5));
 
-// Lookup variable
-NodeConstant value = context.get("x");
+// Look up through the scope chain
+Optional<NodeConstant> value = context.resolve("x");
 
-// Check existence
-boolean exists = context.has("x");
-
-// Assign (update if exists, create if not)
-context.
-
-assign("x",new NodeDouble(10.0));
+// Update where it is defined, or define here if it is not defined anywhere
+context.assign("x", new NodeRational(10));
 ```
 
 ### Scoping
 
-**Flat Scoping:** Variables defined at top level
+A scope is never mutated in place for a call. `withBindings` returns a child holding the
+arguments and pointing at this context as its parent, so lookups walk outwards and nothing
+a call defines can leak back.
 
-**Function Scoping:** New context created for function calls
+**Function and comprehension scoping:**
 
 ```java
-EvaluationContext funcContext = new EvaluationContext(parentContext);
-funcContext.
-
-define("param",argValue);
-// Evaluate function body in funcContext
+EvaluationContext callScope = parent.withBindings(Map.of("x", argument));
+// Evaluate the body against callScope
 ```
 
-**Lambda Scoping:** Captures parent context
+**Lambda scoping:** a lambda captures where it was written, not where it is called, by
+flattening the chain it was defined in.
 
 ```java
-EvaluationContext lambdaContext = new EvaluationContext(capturedContext);
-lambdaContext.
-
-define("param",argValue);
+EvaluationContext captured = context.snapshot();
 ```
 
 ---
@@ -453,25 +445,20 @@ NodeConstant result = functionExecutor.execute("sin", List.of(arg), context);
 
 ```java
 // f(x) := x^2; f(5)
-FunctionDefinition def = context.get("f").getFunction();
+FunctionDefinition def = context.resolveFunction("f").orElseThrow();
 
-// Create new context for function
-EvaluationContext funcContext = new EvaluationContext(context);
-funcContext.
+// A child scope holding the arguments, with the caller as its parent
+EvaluationContext callScope = context.withBindings(Map.of("x", new NodeRational(5)));
 
-define("x",new NodeDouble(5));
-
-// Evaluate body
-NodeConstant result = evaluator.evaluate(def.getBody());
+NodeConstant result = evaluator.evaluate(def.getBody(), callScope);
 ```
 
 **Lambda Functions:**
 
 ```java
 // (x -> x^2)(5)
-NodeLambda lambda = ...;
 NodeConstant result = functionCallHandler.evaluate(
-        new NodeCall(lambda, List.of(new NodeDouble(5))),
+        new NodeCall(lambda, List.of(new NodeRational(5))),
         context
 );
 ```
@@ -479,17 +466,8 @@ NodeConstant result = functionCallHandler.evaluate(
 **Special: Lazy Evaluation (if function)**
 
 ```java
-// if(condition, thenExpr, elseExpr)
-// Only evaluates ONE branch, not both
-if(condition.booleanValue()){
-        return
-
-evaluate(thenExpr);
-}else{
-        return
-
-evaluate(elseExpr);
-}
+// if(condition, thenExpr, elseExpr) evaluates one branch, never both
+return TypeCoercion.toBoolean(condition) ? evaluate(thenExpr) : evaluate(elseExpr);
 ```
 
 ### 4. ComprehensionHandler
@@ -610,27 +588,14 @@ boolean toBoolean(NodeConstant node);
 String typeName(NodeConstant node);
 ```
 
-**Numeric Promotion:**
-
-```java
-if(left instanceof NodeRational &&right instanceof NodeRational){
-        // Stay rational (exact)
-        return new
-
-NodeRational(leftRat.add(rightRat));
-        }else{
-        // Promote to double
-        return new
-
-NodeDouble(left.doubleValue() +right.
-
-doubleValue());
-        }
-```
+**Numeric Promotion:** not the evaluator's decision. Two nodes meeting in an operation go
+through `NodeArithmetic`, reached by `NodeConstant.add` and friends, which is also what
+operators and functions call. Exact meeting exact stays exact; anything meeting a
+`NodeDouble` gives a double. See the dispatch order in that class.
 
 ### Broadcasting
 
-Handled by operators via `BroadcastingDispatcher`:
+Handled by `util/BroadcastingEngine`:
 
 **Scalar to Vector:**
 
@@ -676,12 +641,10 @@ class RecursionTracker {
 
 ```java
 recursionTracker.enter("fib");
-try{
-        // Evaluate function body
-        }finally{
-        recursionTracker.
-
-exit();
+try {
+    // Evaluate function body
+} finally {
+    recursionTracker.exit();
 }
 ```
 
@@ -844,15 +807,10 @@ if(false,expensive(),cheap())  // Only evaluates cheap()
 For compiled expressions:
 
 ```java
+// Parsed once, then evaluated with a fresh binding each time
 CompiledExpression expr = engine.compile("x^2 + 2*x + 1");
-
-// Context created once, variables updated
-for(
-int i = 0;
-i< 1000;i++){
-        expr.
-
-evaluateDouble("x",i);
+for (int i = 0; i < 1000; i++) {
+    expr.evaluateDouble("x", i);
 }
 ```
 
@@ -891,18 +849,15 @@ double value = left.doubleValue();
 **Problem:**
 
 ```java
-// WRONG - modifying parent context in function
-context.define("x",newValue);  // Pollutes parent scope!
+// WRONG: defines into the caller's own scope
+context.define("x", newValue);
 ```
 
 **Solution:**
 
 ```java
-// RIGHT - create new context for function
-EvaluationContext funcContext = new EvaluationContext(context);
-funcContext.
-
-define("x",newValue);
+// RIGHT: a child scope holding the binding, with the caller as its parent
+EvaluationContext callScope = context.withBindings(Map.of("x", newValue));
 ```
 
 ### 3. Not Handling NodeConstant Subclasses
@@ -910,27 +865,22 @@ define("x",newValue);
 **Problem:**
 
 ```java
-if(node instanceof NodeConstant){
-        return(NodeConstant)node;  // WRONG for NodeRange, NodeVector
+// WRONG: a range or a vector of expressions is a NodeConstant that is not finished yet
+if (node instanceof NodeConstant constant) {
+    return constant;
 }
 ```
 
 **Solution:**
 
 ```java
-if(node instanceof
-NodeRange range){
-        return range.
-
-toVector();  // Evaluate range first
+if (node instanceof NodeRange range) {
+    return range.toVector();              // build the elements
 }
-        if(node instanceof
-NodeVector vector){
-        return
-
-evaluateVectorElements(vector);  // Evaluate elements
+if (node instanceof NodeVector vector) {
+    return evaluateVectorElements(vector); // evaluate each element
 }
-// Then check other NodeConstant types
+// Then the other NodeConstant types
 ```
 
 ### 4. Forgetting Short-Circuit Evaluation

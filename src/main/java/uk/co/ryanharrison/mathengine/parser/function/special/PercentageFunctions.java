@@ -4,7 +4,10 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodePercent;
+import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 import java.util.List;
@@ -268,9 +271,7 @@ public final class PercentageFunctions {
      * The value a percentage stands for, so 50% becomes 1/2 and a plain number is itself.
      */
     private static NodeConstant asFraction(NodeConstant value) {
-        return value instanceof NodePercent percent
-                ? TypeCoercion.toNumber(percent.getValue())
-                : value;
+        return value instanceof NodePercent percent ? percent.getFraction() : value;
     }
 
     /**
@@ -278,11 +279,9 @@ public final class PercentageFunctions {
      * {@code addpercent(100, 20)} and {@code addpercent(100, 20%)} agree.
      */
     private static NodeConstant asPercentage(NodeConstant value) {
-        return value instanceof NodePercent ? value : NodePercent.fromDecimal(divideByHundred(value));
-    }
-
-    private static double divideByHundred(NodeConstant value) {
-        return value.doubleValue() / 100.0;
+        return value instanceof NodePercent
+                ? value
+                : NodePercent.ofPercentValue(TypeCoercion.toNumber(value));
     }
 
     /**
@@ -290,7 +289,7 @@ public final class PercentageFunctions {
      * {@code OfOperator}, which this has to agree with.
      */
     private static NodeConstant spendPercentage(NodeConstant product) {
-        return product instanceof NodePercent percent ? new NodeDouble(percent.getValue()) : product;
+        return product instanceof NodePercent percent ? percent.getFraction() : product;
     }
 
     /**

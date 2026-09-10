@@ -34,38 +34,52 @@ full();        // All features (same as create())
 ```java
 // Single evaluation
 NodeConstant result = engine.evaluate("2 + 3 * 4");
+double d = engine.evaluateDouble("2 + 3 * 4");
 
-// Stateful session (variables/functions persist)
+// Stateful session: variables and functions persist across calls
 engine.
 
 evaluate("x := 10");
 engine.
 
 evaluate("f(n) := n^2");
+engine.
 
-NodeConstant result = engine.evaluate("f(x)");  // 100
+evaluate("f(x)");                    // 100
 
-// Pre-compile for repeated evaluation
+// Pre-compile for repeated evaluation, binding the variables per call
 CompiledExpression expr = engine.compile("x^2 + y^2");
-result =engine.
+expr.
 
-evaluate(expr);  // Uses current variable values
+evaluate(Map.of("x", 3,"y",4));      // 25
+        expr.
+
+evaluate("x",3);                      // one variable
+expr.
+
+evaluate();                            // whatever the session holds
 ```
 
 ### Session State
 
 ```java
-// Variables
-engine.setVariable("x",new NodeDouble(5.0));
-NodeConstant value = engine.getVariable("x");
-
-// Clear session
+// Define
+engine.defineVariable("x",5.0);
 engine.
 
-clearVariables();
-engine.
+defineVariable("y",new NodeRational(1, 2));
+        engine.
 
-clearFunctions();
+defineFunction("f(n) := n^2");
+
+// Read back what this session has defined
+Map<String, NodeConstant> variables = engine.getLocalVariables();
+Map<String, FunctionDefinition> functions = engine.getLocalFunctions();
+
+// A session is cleared by making a new engine on the same configuration
+engine =MathEngine.
+
+create(engine.getConfig());
 ```
 
 ## 2. Configuration (MathEngineConfig)
@@ -149,44 +163,42 @@ All evaluation returns `NodeConstant`. Use `instanceof` or type methods to handl
 ### Number Types
 
 ```java
-// NodeRational (exact fractions, default)
+// NodeRational: exact, and the default for integers, fractions and decimal literals
 if(result instanceof
 NodeRational r){
-int numerator = r.getNumerator();
-int denominator = r.getDenominator();
-double value = r.doubleValue();
+BigRational value = r.getValue();      // getNumerator(), getDenominator()
+double approx = r.doubleValue();
 }
 
-// NodeDouble (floating point)
+// NodeDouble: what a value falls back to once a calculation cannot stay exact
         if(result instanceof
 NodeDouble d){
 double value = d.getValue();
 }
 
-// NodePercent (0.5 = 50%)
+// NodePercent: holds the fraction it stands for, so 50% holds one half
         if(result instanceof
 NodePercent p){
-double decimal = p.getValue();  // 0.5
-double display = p.getPercentage();  // 50.0
+NodeNumber fraction = p.getFraction();   // 1/2, exact
+NodeNumber percent = p.getPercent();     // 50,  exact
+double decimal = p.getValue();           // 0.5
+double display = p.getPercentValue();    // 50.0
 }
 ```
 
 ### Other Types
 
 ```java
-// NodeBoolean
 if(result instanceof
 NodeBoolean b){
 boolean value = b.getValue();
 }
 
-// NodeString
         if(result instanceof
 NodeString s){
 String value = s.getValue();
 }
 
-// NodeVector
         if(result instanceof
 NodeVector v){
 int size = v.size();
@@ -194,7 +206,6 @@ Node[] elements = v.getElements();
 List<NodeConstant> list = v.toList();
 }
 
-// NodeMatrix
         if(result instanceof
 NodeMatrix m){
 int rows = m.getRows();
@@ -202,32 +213,24 @@ int cols = m.getCols();
 Node element = m.getElement(row, col);
 }
 
-// NodeUnit (value with unit)
+// NodeUnit: a magnitude wearing a label
         if(result instanceof
 NodeUnit u){
-NodeNumber value = u.getValue();
-String unit = u.getUnit();
+NodeNumber magnitude = u.getMagnitude();   // exact where the quantity is
+double value = u.getValue();
+UnitDefinition unit = u.getUnit();         // getName(), getDisplayName(value)
 }
 
-// NodeRange (1..10)
-        if(result instanceof
-NodeRange r){
-double start = r.getStart();
-double end = r.getEnd();
-double step = r.getStep();
-}
+// A range expression evaluates to a vector, so there is no NodeRange to match on:
+// "1..5" gives NodeVector {1, 2, 3, 4, 5}
 
-// NodeFunction/NodeLambda (callable)
-        if(result instanceof
-NodeFunction f){
-        // Cannot be serialized, only used internally
-        }
+// NodeFunction and NodeLambda are callable and have no serialised form
 ```
 
 ### Type Checking
 
 ```java
-result.isNumeric();   // true for NodeRational, NodeDouble, NodePercent
+result.isNumeric();   // NodeRational, NodeDouble, NodePercent, NodeBoolean, NodeUnit
 result.
 
 isBoolean();
@@ -244,20 +247,32 @@ isMatrix();
 
 ## 5. Serialization
 
-### toString() Formatting
+### Showing a value
 
-All nodes have sensible `toString()`:
+Use a `NodeFormatter`. `toString()` gives the same text at full precision, but a formatter
+is the one that takes a decimal-place setting.
 
 ```java
-NodeRational:"1/3"or "42"
-NodeDouble:"3.14159"
-NodePercent:"50%"
-NodeBoolean:"true"or "false"
-NodeString:"hello"
-NodeVector:"{1, 2, 3}"
-NodeMatrix:"[[1, 2], [3, 4]]"
-NodeUnit:"5 meters"
+NodeFormatter fmt = StringNodeFormatter.fullPrecision();
+fmt.
+
+format(result);
 ```
+
+```text
+NodeRational   "2.5", "1/3" or "42"
+NodeDouble     "3.14159"
+NodePercent    "50%"
+NodeBoolean    "true" or "false"
+NodeString     "hello"
+NodeVector     "{1, 2, 3}"
+NodeMatrix     "[1, 2; 3, 4]"
+NodeUnit       "5 meters"
+```
+
+A rational shows as a decimal where a decimal equals it exactly and as a ratio where none
+does, so `2.5` is not shown back as `5/2`. See `RationalDisplay`, and the NodeRational
+section of NODES.md.
 
 ### JSON Serialization (Recommended Approach)
 
@@ -267,8 +282,8 @@ public Object toJson(NodeConstant node) {
     return switch (node) {
         case NodeRational r -> Map.of(
                 "type", "rational",
-                "numerator", r.getNumerator(),
-                "denominator", r.getDenominator(),
+                "numerator", r.getValue().getNumerator().toString(),
+                "denominator", r.getValue().getDenominator().toString(),
                 "decimal", r.doubleValue()
         );
         case NodeDouble d -> Map.of(
@@ -300,18 +315,18 @@ public Object toJson(NodeConstant node) {
         case NodePercent p -> Map.of(
                 "type", "percent",
                 "decimal", p.getValue(),
-                "display", p.getPercentage() + "%"
+                "display", p.getPercentValue() + "%"
         );
         case NodeUnit u -> Map.of(
                 "type", "unit",
-                "value", toJson(u.getValue()),
-                "unit", u.getUnit()
+                "value", toJson(u.getMagnitude()),
+                "unit", u.getUnit().getName()
         );
         case NodeRange r -> Map.of(
-                "type", "range",
-                "start", r.getStart(),
-                "end", r.getEnd(),
-                "step", r.getStep()
+                "type", "range",   // internal only; evaluation returns a vector
+                "start", r.getStart().doubleValue(),
+                "end", r.getEnd().doubleValue(),
+                "step", r.getStep().doubleValue()
         );
         case NodeFunction f, NodeLambda l -> Map.of(
                 "type", "function",

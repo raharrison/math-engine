@@ -109,6 +109,27 @@
             "expected": "10000.0 centimeters",
             "expectedType": "NodeUnit",
             "notes": "Unit conversion of subscripted value"
+        },
+        {
+            "id": "display_conversion_exact_001",
+            "input": "str(37 celsius in fahrenheit)",
+            "expected": "98.6 fahrenheit",
+            "expectedType": "NodeString",
+            "notes": "Exactly 493/5, shown as the decimal a thermometer shows. It read 493/5 for a while after the magnitude stopped being a double."
+        },
+        {
+            "id": "display_conversion_exact_002",
+            "input": "str(1 mile in km)",
+            "expected": "1.609344 kilometers",
+            "expectedType": "NodeString",
+            "notes": "25146/15625 exactly, a terminating decimal, so no digit is rounded away"
+        },
+        {
+            "id": "display_conversion_wide_001",
+            "input": "str(100 m in feet)",
+            "expected": "328.0839895013123 feet",
+            "expectedType": "NodeString",
+            "notes": "125000/381 exactly. Nobody measures a room in 381sts of a foot, so the ratio rounds for display while the value stays exact."
         }
     ]
 }

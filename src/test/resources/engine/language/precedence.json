@@ -65,7 +65,7 @@
             "id": "prec_018",
             "input": "50% of 100 + 50",
             "expected": 100,
-            "expectedType": "NodeDouble",
+            "expectedType": "NodeRational",
             "evaluationOrder": "(50% of 100) + 50",
             "notes": "'of' before addition"
         },
@@ -227,8 +227,8 @@
         {
             "id": "prec_of_before_divide",
             "input": "50% of 200 / 2",
-            "expected": 50.0,
-            "expectedType": "NodeDouble",
+            "expected": 50,
+            "expectedType": "NodeRational",
             "evaluationOrder": "(50% of 200) / 2",
             "notes": "of shares the multiplicative level, so it groups left to right with division"
         },

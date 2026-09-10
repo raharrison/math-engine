@@ -4,7 +4,10 @@ A comprehensive Java mathematical library featuring an advanced expression parse
 
 ## Features
 
-- **Advanced Expression Parser** - Natural mathematical syntax with exact rational arithmetic, lambdas, and comprehensions
+- **Advanced Expression Parser** - Natural mathematical syntax with lambdas and comprehensions
+- **Exact by default** - Decimal literals, percentages and unit conversions are held as exact
+  fractions, so `0.1 + 0.2 - 0.3` is 0 and `0 celsius in fahrenheit` is 32. Results are shown
+  as decimals wherever a decimal equals the value exactly
 - **Rich Data Types** - Vectors, matrices, ranges, strings, functions
 - **Functional Programming** - Lambda functions, list comprehensions, higher-order functions (map, filter, reduce)
 - **Unit Conversions** - Physical units with automatic conversion integrated into parser
@@ -27,8 +30,8 @@ A comprehensive Java mathematical library featuring an advanced expression parse
 # Run tests
 ./gradlew test
 
-# Run GUI applications
-./gradlew run  # Interactive expression evaluator (MainFrame)
+# Run a GUI application (no application plugin, so run the class directly)
+java -cp build/classes/java/main uk.co.ryanharrison.mathengine.gui.MainFrame
 ```
 
 For complete grammar documentation, see [docs/GRAMMAR.md](docs/GRAMMAR.md).
@@ -49,14 +52,26 @@ MathEngine engine = MathEngine.create();
 NodeConstant result = engine.evaluate("2 + 3 * 4");
 System.out.println(result);  // 14
 
-// Exact rational arithmetic (fractions preserved)
+// Exact arithmetic, shown as a decimal because one equals the value exactly
 result = engine.evaluate("1/3 + 1/6");
-System.out.println(result);  // 1/2
+System.out.println(result);  // 0.5
+
+// A third has no decimal, so it keeps the fraction
+result = engine.evaluate("1/3 + 1/3");
+System.out.println(result);  // 2/3
+
+// Decimals are exact too, so the classic floating-point trap does not apply
+result = engine.evaluate("0.1 + 0.2 - 0.3");
+System.out.println(result);  // 0
 
 // Power and factorial
 result = engine.evaluate("2^10 + 5!");
 System.out.println(result);  // 1144
 ```
+
+Exactness is a property of the value; fraction notation is only how it is shown. `2.5` is
+held as 5/2 and shown as `2.5`, a third is shown as `1/3`, and a ratio too wide to read is
+rounded for display only. Nothing reads the rounded text back, so chained work stays exact.
 
 ### Variables and Functions
 
@@ -90,10 +105,10 @@ NodeConstant result = engine.evaluate("v1 + v2");  // {5, 7, 9}
 // Matrix operations
 engine.evaluate("m1 := [[1, 2], [3, 4]]");
 engine.evaluate("m2 := [[5, 6], [7, 8]]");
-result = engine.evaluate("m1 + m2");  // [[6, 8], [10, 12]]
+result = engine.evaluate("m1 + m2");  // [6, 8; 10, 12]
 
 // Matrix multiplication (@ operator)
-result = engine.evaluate("m1 @ m2");  // [[19, 22], [43, 50]]
+result = engine.evaluate("m1 @ m2");  // [19, 22; 43, 50]
 
 // Subscript access
 result = engine.evaluate("v1[0]");    // 1
@@ -229,20 +244,24 @@ MathEngine engine = MathEngine.create();
 
 // Length conversions
 NodeConstant result = engine.evaluate("100 meters in feet");
-// 328.084 feet
+// 328.0839895013123 feet
 
-// Temperature
+// Temperature, exactly 0 rather than 0.0000000000000284
 result = engine.evaluate("32 fahrenheit to celsius");
 // 0 celsius
 
 // Speed
 result = engine.evaluate("60 mph in kph");
-// 96.56064 kph
+// 96.56064 kilometers_per_hour
 
 // Combined expressions
 result = engine.evaluate("(50 + 50) meters in centimeters");
-// 10000 cm
+// 10000 centimeters
 ```
+
+Conversion factors are exact rationals, not doubles, and a conversion goes to the base unit
+and back in one step. A quantity keeps that exactness, so `(100 m in feet) in m` is exactly
+100 again.
 
 ### Configuration
 
@@ -746,17 +765,22 @@ Exact fraction arithmetic (used internally by parser):
 ```java
 import uk.co.ryanharrison.mathengine.core.BigRational;
 
-BigRational a = new BigRational(1, 3);  // 1/3
-BigRational b = new BigRational(1, 6);  // 1/6
+BigRational a = BigRational.of(1, 3);   // 1/3
+BigRational b = BigRational.of(1, 6);   // 1/6
 
 BigRational sum = a.add(b);             // 1/2 (exact)
 BigRational product = a.multiply(b);    // 1/18
 
 // Automatic simplification
-BigRational c = new BigRational(6, 8);  // Stored as 3/4
+BigRational c = BigRational.of(6, 8);   // stored as 3/4
+
+// Reading a decimal, three ways that mean different things
+BigRational written = BigRational.of("0.1");        // 1/10, read as written
+BigRational named   = BigRational.ofDecimal(0.1);   // 1/10, the decimal the double names
+BigRational bits    = BigRational.of(0.1);          // the exact binary fraction
 
 // Convert to decimal when needed
-double decimal = c.toDouble();          // 0.75
+double decimal = c.doubleValue();       // 0.75
 ```
 
 ---

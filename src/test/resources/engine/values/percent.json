@@ -19,22 +19,22 @@
         {
             "id": "percent_010",
             "input": "150% of 100",
-            "expected": 150.0,
-            "expectedType": "NodeDouble",
+            "expected": 150,
+            "expectedType": "NodeRational",
             "notes": "Percent over 100: 150% of 100 = 150"
         },
         {
             "id": "percent_012",
             "input": "75% of 200",
-            "expected": 150.0,
-            "expectedType": "NodeDouble",
+            "expected": 150,
+            "expectedType": "NodeRational",
             "notes": "75% of 200 = 150"
         },
         {
             "id": "percent_013",
             "input": "50% + 0.5",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
+            "expected": 1,
+            "expectedType": "NodeRational",
             "notes": "Percent + Double: 50% + 0.5 = 1.0"
         },
         {
@@ -61,50 +61,50 @@
         {
             "id": "percent_019",
             "input": "20% of 50",
-            "expected": 10.0,
-            "expectedType": "NodeDouble",
+            "expected": 10,
+            "expectedType": "NodeRational",
             "notes": "20% of 50 = 10"
         },
         {
             "id": "percent_020",
             "input": "5% of 1000",
-            "expected": 50.0,
-            "expectedType": "NodeDouble",
+            "expected": 50,
+            "expectedType": "NodeRational",
             "notes": "5% of 1000 = 50"
         },
         {
             "id": "percent_021",
             "input": "200% of 50",
-            "expected": 100.0,
-            "expectedType": "NodeDouble",
+            "expected": 100,
+            "expectedType": "NodeRational",
             "notes": "200% of 50 = 100"
         },
         {
             "id": "percent_022",
             "input": "1% of 100",
-            "expected": 1.0,
-            "expectedType": "NodeDouble",
+            "expected": 1,
+            "expectedType": "NodeRational",
             "notes": "1% of 100 = 1"
         },
         {
             "id": "percent_023",
             "input": "50% of 200 + 50",
-            "expected": 150.0,
-            "expectedType": "NodeDouble",
+            "expected": 150,
+            "expectedType": "NodeRational",
             "notes": "Precedence: (50% of 200) + 50 = 100 + 50 = 150"
         },
         {
             "id": "percent_024",
             "input": "50% + 1",
-            "expected": 1.5,
-            "expectedType": "NodeDouble",
+            "expected": "3/2",
+            "expectedType": "NodeRational",
             "notes": "Percent + Integer: 50% + 1 = 0.5 + 1 = 1.5"
         },
         {
             "id": "percent_025",
             "input": "1 + 50%",
-            "expected": 1.5,
-            "expectedType": "NodeDouble",
+            "expected": "3/2",
+            "expectedType": "NodeRational",
             "notes": "Integer + Percent: 1 + 50% = 1 + 0.5 = 1.5"
         },
         {
@@ -121,6 +121,20 @@
             "expectedType": "NodePercent",
             "tolerance": 1e-12,
             "notes": "A root works on the magnitude and the marker rides along, exactly as it does for a quantity"
+        },
+        {
+            "id": "display_percent_001",
+            "input": "str(50%)",
+            "expected": "50%",
+            "expectedType": "NodeString",
+            "notes": "The number in front of the sign is spelled by the same rules as any other number, so 50.00% became 50%"
+        },
+        {
+            "id": "display_percent_002",
+            "input": "str((1/3)%)",
+            "expected": "1/3%",
+            "expectedType": "NodeString",
+            "notes": "A third of a percent has no decimal, so it keeps the ratio instead of showing 0.33333333333333%"
         }
     ]
 }

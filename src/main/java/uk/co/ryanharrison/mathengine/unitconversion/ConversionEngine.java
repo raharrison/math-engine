@@ -121,7 +121,7 @@ public final class ConversionEngine {
      * @throws IllegalArgumentException if units are not found or incompatible
      */
     public ConversionResult convert(double amount, String fromUnit, String toUnit) {
-        return convert(BigRational.of(amount), fromUnit, toUnit);
+        return convert(BigRational.ofDecimal(amount), fromUnit, toUnit);
     }
 
     /**

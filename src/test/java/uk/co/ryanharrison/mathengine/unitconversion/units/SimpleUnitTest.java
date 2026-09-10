@@ -82,7 +82,8 @@ class SimpleUnitTest {
                 .conversionFactor(0.3048)
                 .build();
 
-        assertThat(unit.getConversionFactor()).isEqualTo(BigRational.of(0.3048));
+        // Read as the decimal it names, so 381/1250 rather than the binary fraction near it
+        assertThat(unit.getConversionFactor()).isEqualTo(BigRational.of("0.3048"));
     }
 
     @Test
@@ -240,7 +241,7 @@ class SimpleUnitTest {
         SimpleUnit updated = original.withConversionFactor(1.2);
 
         assertThat(updated).isNotSameAs(original);
-        assertThat(updated.getConversionFactor()).isEqualTo(BigRational.of(1.2));
+        assertThat(updated.getConversionFactor()).isEqualTo(BigRational.of("1.2"));
     }
 
     @Test

@@ -284,8 +284,8 @@ public final class BigRational extends Number implements Comparable<BigRational>
     /**
      * Creates a rational number from a string representation.
      * <p>
-     * The string is parsed as a decimal number and converted to a rational using
-     * exact double-to-rational conversion.
+     * The decimal is read as written, with no floating-point intermediary, so
+     * {@code of("0.1")} is a tenth rather than the binary fraction nearest one.
      * </p>
      *
      * @param value the string representation of the number (e.g., "3.14159")
@@ -295,7 +295,7 @@ public final class BigRational extends Number implements Comparable<BigRational>
      */
     public static BigRational of(String value) {
         Objects.requireNonNull(value, "Value cannot be null");
-        return of(Double.parseDouble(value));
+        return of(new BigDecimal(value.trim()));
     }
 
     /**
@@ -319,6 +319,31 @@ public final class BigRational extends Number implements Comparable<BigRational>
         } else {
             return new BigRational(unscaled.multiply(BigInteger.TEN.pow(-scale)), BigInteger.ONE);
         }
+    }
+
+    /**
+     * Creates a rational number from the decimal a double prints as, rather than from its
+     * bits: {@code ofDecimal(0.1)} is a tenth, where {@link #of(double)} is the binary
+     * fraction nearest a tenth.
+     * <p>
+     * This is the reading to use where a double arrived from outside carrying a figure
+     * somebody wrote, such as an amount to convert or a conversion factor. Where the double
+     * is the result of a calculation there is no decimal to recover and {@link #of(double)}
+     * is the honest reading.
+     * </p>
+     *
+     * @param value the double to read as a decimal
+     * @return an exact rational for the shortest decimal that names this double
+     * @throws IllegalArgumentException if value is NaN or infinite
+     */
+    public static BigRational ofDecimal(double value) {
+        if (Double.isNaN(value)) {
+            throw new IllegalArgumentException("Cannot convert NaN to rational");
+        }
+        if (Double.isInfinite(value)) {
+            throw new IllegalArgumentException("Cannot convert infinity to rational");
+        }
+        return of(BigDecimal.valueOf(value));
     }
 
     /**

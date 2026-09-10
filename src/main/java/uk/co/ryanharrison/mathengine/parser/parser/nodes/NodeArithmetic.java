@@ -96,7 +96,7 @@ final class NodeArithmetic {
     static NodeConstant negate(NodeConstant value) {
         return switch (materialise(value)) {
             case NodeNumber number -> number.negate();
-            case NodeUnit unit -> NodeUnit.of(-unit.getValue(), unit.getUnit());
+            case NodeUnit unit -> NodeUnit.of(unit.getMagnitude().negate(), unit.getUnit());
             case NodeVector vector -> BroadcastingEngine.applyUnary(vector, NodeArithmetic::negate);
             case NodeMatrix matrix -> BroadcastingEngine.applyUnary(matrix, NodeArithmetic::negate);
             default -> throw new TypeError("Cannot negate " + value.typeName());
@@ -163,10 +163,9 @@ final class NodeArithmetic {
      */
     private static NodeConstant mapScalar(NodeConstant value, java.util.function.UnaryOperator<NodeNumber> map) {
         return switch (materialise(value)) {
-            case NodePercent percent -> NodePercent.fromDecimal(
-                    map.apply(new NodeDouble(percent.getValue())).doubleValue());
+            case NodePercent percent -> NodePercent.fromFraction(map.apply(percent.getFraction()));
             case NodeNumber number -> map.apply(number);
-            case NodeUnit unit -> NodeUnit.of(map.apply(new NodeDouble(unit.getValue())).doubleValue(), unit.getUnit());
+            case NodeUnit unit -> NodeUnit.of(map.apply(unit.getMagnitude()), unit.getUnit());
             case NodeVector vector -> BroadcastingEngine.applyUnary(vector, v -> mapScalar(v, map));
             case NodeMatrix matrix -> BroadcastingEngine.applyUnary(matrix, v -> mapScalar(v, map));
             default -> throw new TypeError("Expected a number, got " + value.typeName());
@@ -218,20 +217,19 @@ final class NodeArithmetic {
             // A percentage means the same thing beside a quantity as beside a plain number,
             // so '100 m + 10%' is 110 meters. Reading it as the bare 0.1 gave 100.1 meters
             NodeUnit labelled = (NodeUnit) (leftIsUnit ? left : right);
-            NodeConstant magnitude = new NodeDouble(labelled.getValue());
             NodeConstant result = leftIsUnit
-                    ? percents(op, magnitude, right)
-                    : percents(op, left, magnitude);
-            return NodeUnit.of(result.doubleValue(), labelled.getUnit());
+                    ? percents(op, labelled.getMagnitude(), right)
+                    : percents(op, left, labelled.getMagnitude());
+            return relabel(op, result, labelled);
         }
 
         // One side carries a label: the arithmetic happens on the magnitude, the label rides
         NodeUnit unit = (NodeUnit) (leftIsUnit ? left : right);
-        double scalar = requireNumber(op, leftIsUnit ? right : left).doubleValue();
-        double magnitude = leftIsUnit
-                ? op.apply(unit.getValue(), scalar)
-                : op.apply(scalar, unit.getValue());
-        return NodeUnit.of(magnitude, unit.getUnit());
+        NodeNumber scalar = requireNumber(op, leftIsUnit ? right : left);
+        NodeConstant magnitude = leftIsUnit
+                ? numbers(op, unit.getMagnitude(), scalar)
+                : numbers(op, scalar, unit.getMagnitude());
+        return relabel(op, magnitude, unit);
     }
 
     private static NodeConstant bothUnits(Op op, NodeUnit left, NodeUnit right) {
@@ -239,19 +237,26 @@ final class NodeArithmetic {
             throw new TypeError("Cannot combine units of different types: " +
                     left.getUnit().type() + " and " + right.getUnit().type());
         }
-        double rightValue = right.convertTo(left.getUnit()).getValue();
+        NodeNumber rightValue = right.convertTo(left.getUnit()).getMagnitude();
 
         if (op == Op.DIVIDE) {
             // Like quantities cancel, leaving a plain ratio
-            return new NodeDouble(left.getValue() / rightValue);
+            return numbers(op, left.getMagnitude(), rightValue);
         }
         if (op.isAdditive() || op == Op.MODULO || op == Op.MULTIPLY) {
             // The label rides along, as it does for a scalar and for a power. Without
             // compound units there is no way to spell m^2, so a product keeps the label
             // it started with rather than refusing to be a product at all
-            return NodeUnit.of(op.apply(left.getValue(), rightValue), left.getUnit());
+            return relabel(op, numbers(op, left.getMagnitude(), rightValue), left);
         }
         throw new TypeError("Cannot apply '" + op.symbol + "' to two unit values");
+    }
+
+    /**
+     * Puts the label back on a magnitude the number rules produced.
+     */
+    private static NodeConstant relabel(Op op, NodeConstant magnitude, NodeUnit source) {
+        return NodeUnit.of(requireNumber(op, magnitude), source.getUnit());
     }
 
     // ==================== Percents ====================
@@ -259,34 +264,46 @@ final class NodeArithmetic {
     private static NodeConstant percents(Op op, NodeConstant left, NodeConstant right) {
         boolean leftIsPercent = left instanceof NodePercent;
         boolean rightIsPercent = right instanceof NodePercent;
-        double leftValue = requireNumber(op, left).doubleValue();
-        double rightValue = requireNumber(op, right).doubleValue();
+        NodeNumber leftValue = fractionOf(requireNumber(op, left));
+        NodeNumber rightValue = fractionOf(requireNumber(op, right));
 
         if (leftIsPercent && rightIsPercent) {
             // A ratio of two percents is a plain number; everything else stays a percent
             return op == Op.DIVIDE
-                    ? new NodeDouble(leftValue / rightValue)
-                    : NodePercent.fromDecimal(op.apply(leftValue, rightValue));
+                    ? numbers(op, leftValue, rightValue)
+                    : asPercent(op, numbers(op, leftValue, rightValue));
         }
 
         if (rightIsPercent) {
             // Read against the number on its left, so "100 * 10%" is the amount 10
             if (op.isAdditive()) {
-                double delta = leftValue * rightValue;
-                return new NodeDouble(op == Op.ADD ? leftValue + delta : leftValue - delta);
+                NodeConstant delta = numbers(Op.MULTIPLY, leftValue, rightValue);
+                return numbers(op, leftValue, requireNumber(op, delta));
             }
-            return new NodeDouble(op.apply(leftValue, rightValue));
+            return numbers(op, leftValue, rightValue);
         }
 
         // On the left it is the thing being scaled, so 10% * 5 is 50%
+        NodeConstant result = numbers(op, leftValue, rightValue);
         return op == Op.MULTIPLY || op == Op.DIVIDE || op == Op.POWER
-                ? NodePercent.fromDecimal(op.apply(leftValue, rightValue))
-                : new NodeDouble(op.apply(leftValue, rightValue));
+                ? asPercent(op, result)
+                : result;
+    }
+
+    /**
+     * The plain number a percentage stands for.
+     */
+    private static NodeNumber fractionOf(NodeNumber value) {
+        return value instanceof NodePercent percent ? percent.getFraction() : value;
+    }
+
+    private static NodeConstant asPercent(Op op, NodeConstant fraction) {
+        return NodePercent.fromFraction(requireNumber(op, fraction));
     }
 
     // ==================== Plain numbers ====================
 
-    private static NodeConstant numbers(Op op, NodeNumber left, NodeNumber right) {
+    static NodeConstant numbers(Op op, NodeNumber left, NodeNumber right) {
         BigRational leftExact = exactValue(left);
         BigRational rightExact = exactValue(right);
 
@@ -323,6 +340,7 @@ final class NodeArithmetic {
         return switch (number) {
             case NodeRational rational -> rational.getValue();
             case NodeBoolean bool -> BigRational.of(bool.getValue() ? 1 : 0);
+            case NodePercent percent -> exactValue(percent.getFraction());
             default -> null;
         };
     }

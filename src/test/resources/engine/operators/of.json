@@ -5,29 +5,29 @@
         {
             "id": "of_002",
             "input": "100% of 200",
-            "expected": 200.0,
-            "expectedType": "NodeDouble",
+            "expected": 200,
+            "expectedType": "NodeRational",
             "notes": "100% of X = X"
         },
         {
             "id": "of_003",
             "input": "0% of 200",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
+            "expected": 0,
+            "expectedType": "NodeRational",
             "notes": "0% of X = 0"
         },
         {
             "id": "of_004",
             "input": "25% of 80",
-            "expected": 20.0,
-            "expectedType": "NodeDouble",
+            "expected": 20,
+            "expectedType": "NodeRational",
             "notes": "25% of 80 = 20"
         },
         {
             "id": "of_006",
             "input": "10% of 1000",
-            "expected": 100.0,
-            "expectedType": "NodeDouble",
+            "expected": 100,
+            "expectedType": "NodeRational",
             "notes": "10% of 1000 = 100"
         },
         {
@@ -68,8 +68,8 @@
         {
             "id": "of_percent_of_percent",
             "input": "20% of 20%",
-            "expected": 0.04,
-            "expectedType": "NodeDouble",
+            "expected": "1/25",
+            "expectedType": "NodeRational",
             "tolerance": 1e-12,
             "notes": "A fifth of a fifth is four hundredths"
         },

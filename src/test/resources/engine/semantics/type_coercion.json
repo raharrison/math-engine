@@ -170,58 +170,58 @@
         {
             "id": "mixed_011",
             "input": "50% + true",
-            "expected": 1.5,
-            "expectedType": "NodeDouble",
+            "expected": "3/2",
+            "expectedType": "NodeRational",
             "notes": "Percent + Boolean: 50% (0.5) + true (1) = 1.5"
         },
         {
             "id": "mixed_012",
             "input": "true + 50%",
-            "expected": 1.5,
-            "expectedType": "NodeDouble",
+            "expected": "3/2",
+            "expectedType": "NodeRational",
             "notes": "Boolean + Percent: true (1) + 50% (0.5) = 1.5"
         },
         {
             "id": "mixed_013",
             "input": "50% + 2",
-            "expected": 2.5,
-            "expectedType": "NodeDouble",
+            "expected": "5/2",
+            "expectedType": "NodeRational",
             "notes": "Percent + Rational: 50% (0.5) + 2 = 2.5"
         },
         {
             "id": "mixed_014",
             "input": "2 + 50%",
-            "expected": 3.0,
-            "expectedType": "NodeDouble",
+            "expected": 3,
+            "expectedType": "NodeRational",
             "notes": "Rational + Percent: 2 + 50% of 2 = 2 + 1 = 3 (percent arithmetic)"
         },
         {
             "id": "mixed_015",
             "input": "50% + 2.5",
-            "expected": 3.0,
-            "expectedType": "NodeDouble",
+            "expected": 3,
+            "expectedType": "NodeRational",
             "notes": "Percent + Double: 50% (0.5) + 2.5 = 3.0 (simple addition)"
         },
         {
             "id": "mixed_016",
             "input": "2.5 + 50%",
-            "expected": 3.75,
-            "expectedType": "NodeDouble",
+            "expected": "15/4",
+            "expectedType": "NodeRational",
             "notes": "Double + Percent: 2.5 + 50% of 2.5 = 2.5 + 1.25 = 3.75 (percent arithmetic)"
         },
         {
             "id": "mixed_017",
             "input": "true * 50%",
-            "expected": 0.5,
-            "expectedType": "NodeDouble",
+            "expected": "1/2",
+            "expectedType": "NodeRational",
             "tolerance": 1e-12,
             "notes": "True counts as one, so this is half of one"
         },
         {
             "id": "mixed_018",
             "input": "false * 50%",
-            "expected": 0.0,
-            "expectedType": "NodeDouble",
+            "expected": 0,
+            "expectedType": "NodeRational",
             "tolerance": 1e-12,
             "notes": "False counts as zero, so this is nothing"
         },
@@ -235,15 +235,15 @@
         {
             "id": "mixed_020",
             "input": "50% of 200 + true",
-            "expected": 101.0,
-            "expectedType": "NodeDouble",
+            "expected": 101,
+            "expectedType": "NodeRational",
             "notes": "Percent 'of' + Boolean: (50% of 200) + true = 100 + 1 = 101"
         },
         {
             "id": "mixed_021",
             "input": "true + 50% of 100",
-            "expected": 51.0,
-            "expectedType": "NodeDouble",
+            "expected": 51,
+            "expectedType": "NodeRational",
             "notes": "Boolean + Percent 'of': true + (50% of 100) = 1 + 50 = 51"
         },
         {
@@ -263,8 +263,8 @@
         {
             "id": "mixed_024",
             "input": "(true + false) * 50%",
-            "expected": 0.5,
-            "expectedType": "NodeDouble",
+            "expected": "1/2",
+            "expectedType": "NodeRational",
             "tolerance": 1e-12,
             "notes": "The sum is one, and half of one is 0.5"
         },
@@ -278,36 +278,36 @@
         {
             "id": "mixed_026",
             "input": "25% * 4 + true",
-            "expected": 2.0,
-            "expectedType": "NodeDouble",
+            "expected": 2,
+            "expectedType": "NodeRational",
             "notes": "Percent * Rational + Boolean: (0.25 * 4) + 1 = 2"
         },
         {
             "id": "mixed_027",
             "input": "100% - 50% + true",
-            "expected": 1.5,
-            "expectedType": "NodeDouble",
+            "expected": "3/2",
+            "expectedType": "NodeRational",
             "notes": "Percent - Percent + Boolean: (100% - 50%) returns 50%, then 50% + true = 0.5 + 1 = 1.5"
         },
         {
             "id": "mixed_028",
             "input": "1 + 2 + 3.0 + true + 50%",
-            "expected": 10.5,
-            "expectedType": "NodeDouble",
+            "expected": "21/2",
+            "expectedType": "NodeRational",
             "notes": "All types: 1+2=3, 3+3.0=6.0, 6.0+true=7.0, 7.0+50%=7.0+3.5=10.5"
         },
         {
             "id": "mixed_029",
             "input": "2.5 * 2 - 50% + false",
-            "expected": 2.5,
-            "expectedType": "NodeDouble",
+            "expected": "5/2",
+            "expectedType": "NodeRational",
             "notes": "Mixed operations: 2.5*2=5.0, 5.0-50%=5.0-2.5=2.5, 2.5+false=2.5"
         },
         {
             "id": "mixed_030",
             "input": "10 / 2 + 50% of 10",
-            "expected": 10.0,
-            "expectedType": "NodeDouble",
+            "expected": 10,
+            "expectedType": "NodeRational",
             "notes": "Division + Percent 'of': (10 / 2) + (50% of 10) = 5 + 5 = 10"
         },
         {
@@ -341,8 +341,8 @@
         {
             "id": "percent_div_001",
             "input": "20% / 10%",
-            "expected": 2.0,
-            "expectedType": "NodeDouble",
+            "expected": 2,
+            "expectedType": "NodeRational",
             "notes": "Percent / percent = ratio (double)"
         },
         {
@@ -355,29 +355,29 @@
         {
             "id": "percent_number_add_001",
             "input": "100 + 10%",
-            "expected": 110.0,
-            "expectedType": "NodeDouble",
+            "expected": 110,
+            "expectedType": "NodeRational",
             "notes": "Number + percent (10% of 100 added to 100)"
         },
         {
             "id": "percent_number_sub_001",
             "input": "200 - 25%",
-            "expected": 150.0,
-            "expectedType": "NodeDouble",
+            "expected": 150,
+            "expectedType": "NodeRational",
             "notes": "Number - percent (25% of 200 subtracted)"
         },
         {
             "id": "percent_of_001",
             "input": "50% of 100",
-            "expected": 50.0,
-            "expectedType": "NodeDouble",
+            "expected": 50,
+            "expectedType": "NodeRational",
             "notes": "Percent 'of' operator"
         },
         {
             "id": "percent_of_chained_001",
             "input": "10% of 10% of 1000",
-            "expected": 10.0,
-            "expectedType": "NodeDouble",
+            "expected": 10,
+            "expectedType": "NodeRational",
             "notes": "Chained percent 'of'"
         },
         {

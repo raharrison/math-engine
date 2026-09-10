@@ -268,70 +268,37 @@ public Node parseExpression() {
 Uses lookahead to distinguish between assignment and regular expressions:
 
 ```java
-// Save position for potential backtrack
-int savepoint = stream.savePosition();
+private Node parseAssignment() {
+    int savepoint = stream.savePosition();
 
-// Check for identifier
-if(stream.
+    if (stream.check(IDENTIFIER) || stream.check(UNIT) || stream.check(FUNCTION)) {
+        Token id = stream.advance();
 
-check(IDENTIFIER, UNIT, FUNCTION)){
-Token id = stream.advance();
-
-// Check for function parameters
-    if(stream.
-
-check(LPAREN)){
-        if(
-
-isFunctionDefinition()){  // Lookahead for 'id(...) :='
-// Parse function definition
-params =
-
-parseParamList();
-            stream.
-
-expect(RPAREN);
-        }else{
-                // Not a definition, backtrack
-                stream.
-
-restorePosition(savepoint);
-            return
-
-parseLambda();
+        List<String> params = null;
+        if (stream.check(LPAREN)) {
+            if (isFunctionDefinition()) {          // lookahead for  id(...) :=
+                stream.advance();
+                params = parseParamList();
+                stream.expect(RPAREN, "Expected ')' after parameter list");
+            } else {
+                stream.restorePosition(savepoint); // a call, not a definition
+                return parseLambda();
+            }
         }
-                }
 
-                // Check for assignment operator
-                if(stream.
-
-check(ASSIGN)){
-        stream.
-
-advance();
-
-Node value = parseLambda();
-
-        if(params !=null){
-        return new
-
-NodeFunctionDef(id, params, value);
-        }else{
-                return new
-
-NodeAssignment(id, value);
+        if (stream.check(ASSIGN)) {
+            stream.advance();
+            Node value = parseLambda();
+            return params != null
+                    ? new NodeFunctionDef(id.lexeme(), params, value)
+                    : new NodeAssignment(id.lexeme(), value);
         }
-                }
 
-                // Not an assignment, backtrack
-                stream.
+        stream.restorePosition(savepoint);         // no ':=', so not an assignment
+    }
 
-restorePosition(savepoint);
+    return parseLambda();
 }
-
-        return
-
-parseLambda();
 ```
 
 **Function Definition Lookahead:**
@@ -385,23 +352,16 @@ Accepts IDENTIFIER, UNIT, or KEYWORD tokens as parameter names:
 **Single Parameter Pattern:**
 
 ```java
-if(stream.check(IDENTIFIER)){
-int savepoint = stream.savePosition();
-Token param = stream.advance();
+if (stream.check(IDENTIFIER)) {
+    int savepoint = stream.savePosition();
+    Token param = stream.advance();
 
-    if(stream.
-
-match(LAMBDA)){  // LAMBDA = "->"
-List<String> params = List.of(param.getLexeme());
-Node body = parseExpression();  // Parse full expression as body
-        return new
-
-NodeLambda(params, body);
+    if (stream.match(LAMBDA)) {                    // LAMBDA is "->"
+        Node body = parseExpression();             // the whole rest is the body
+        return new NodeLambda(List.of(param.lexeme()), body);
     }
 
-            stream.
-
-restorePosition(savepoint);
+    stream.restorePosition(savepoint);
 }
 
         return
@@ -688,61 +648,49 @@ private boolean isCallableOrParenthesized(Node node) {
 **Integer Literal:**
 
 ```java
-if(stream.match(TokenType.INTEGER)){
-Token token = stream.previous();
-Object literal = token.getLiteral();
-    if(literal instanceof
-Long longVal){
-        return new
-
-NodeRational(longVal, 1L);
-    }else if(literal instanceof
-Integer intVal){
-        return new
-
-NodeRational(intVal.longValue(), 1L);
-        }
-        }
+if (stream.match(TokenType.INTEGER)) {
+    Object literal = stream.previous().literal();
+    if (literal instanceof Long value) {
+        return new NodeRational(value, 1L);
+    }
+    if (literal instanceof BigInteger value) {     // beyond a long, still exact
+        return new NodeRational(BigRational.of(value));
+    }
+}
 ```
 
 **Decimal/Scientific:**
 
 ```java
-if(stream.match(DECIMAL, SCIENTIFIC)){
-Token token = stream.previous();
-Object literal = token.getLiteral();
-    if(literal instanceof
-Double doubleVal){
-        return TypeCoercion.
-
-toNumber(doubleVal);  // May become NodeRational
+if (stream.match(DECIMAL, SCIENTIFIC)) {
+    Object literal = stream.previous().literal();
+    if (literal instanceof String text) {
+        // The usual path: read the decimal as written, so 2.5 is exactly 5/2
+        return new NodeRational(BigRational.of(new BigDecimal(text)));
     }
-            }
+    if (literal instanceof Double value) {
+        // A value already computed during lexing, such as 1/2E5
+        return TypeCoercion.toNumber(value);
+    }
+}
 ```
 
 **Rational Literal:**
 
 ```java
 // Input: "22/7"
-if(stream.match(RATIONAL)){
-String[] parts = token.getLexeme().split("/");
-long numerator = Long.parseLong(parts[0]);
-long denominator = Long.parseLong(parts[1]);
+if (stream.match(RATIONAL)) {
+    String[] parts = token.lexeme().split("/");
+    long numerator = Long.parseLong(parts[0]);
+    long denominator = Long.parseLong(parts[1]);
 
-    if(denominator ==0){
-        // Lazy evaluation: create division AST node
-        return new
+    if (denominator == 0) {
+        // Left as a division so that the evaluator raises the error, not the parser
+        return new NodeBinary(divideToken,
+                new NodeRational(numerator), new NodeRational(0));
+    }
 
-NodeBinary(divideToken,
-                             new NodeRational(numerator),
-                             new
-
-NodeRational(0));
-        }
-
-        return new
-
-NodeRational(numerator, denominator);
+    return new NodeRational(numerator, denominator);
 }
 ```
 
@@ -789,53 +737,25 @@ Handles three cases:
 3. Regular expression: `(expr)`
 
 ```java
-if(stream.match(LPAREN)){
-        // Check for lambda first
-        if(
-
-isMultiParamLambda()){
-        return
-
-parseParenthesizedLambda();
+if (stream.match(LPAREN)) {
+    if (isMultiParamLambda()) {                    // (a, b) -> ...
+        return parseParenthesizedLambda();
     }
 
-// Parse first expression
-Node firstExpr = parseExpression();
+    Node first = parseExpression();
 
-// Check for statement sequence
-    if(stream.
-
-match(SEMICOLON)){
-List<Node> statements = new ArrayList<>();
-        statements.
-
-add(firstExpr);
-
-        while(!stream.
-
-check(RPAREN) &&!stream.
-
-isAtEnd()){
-        statements.
-
-add(parseExpression());
-        if(!stream.
-
-match(SEMICOLON))break;
+    if (stream.match(SEMICOLON)) {                 // (stmt1; stmt2; expr)
+        List<Node> statements = new ArrayList<>();
+        statements.add(first);
+        while (!stream.check(RPAREN) && !stream.isAtEnd()) {
+            statements.add(parseExpression());
+            if (!stream.match(SEMICOLON)) break;
         }
-
-        stream.
-
-expect(RPAREN);
-        return new
-
-NodeSequence(statements);
+        stream.expect(RPAREN);
+        return new NodeSequence(statements);
     }
 
-            // Regular parenthesized expression
-            stream.
-
-expect(RPAREN);
+    stream.expect(RPAREN);                         // (expr)
     return firstExpr;
 }
 ```
@@ -878,16 +798,12 @@ private boolean isMultiParamLambda() {
 
 ```java
 // Vector or comprehension
-if(stream.match(LBRACE)){
-        return collectionParser.
-
-parseVectorOrComprehension();
+if (stream.match(LBRACE)) {
+    return collectionParser.parseVectorOrComprehension();
 }
 
 // Matrix
-        if(stream.
-
-match(LBRACKET)){
+if (stream.match(LBRACKET)) {
         return collectionParser.
 
 parseMatrix();
@@ -1500,22 +1416,14 @@ Node ast = parser.parse();
 // Could be: function call OR variable assignment that failed
 
 int savepoint = stream.savePosition();
-if(stream.
-
-check(IDENTIFIER)){
-Token id = stream.advance();
-    if(stream.
-
-check(LPAREN)){
-        if(
-
-isFunctionDefinition()){
-        // It's a function definition like: x(y) := ...
-        }else{
-        // It's a function call
-        stream.
-
-restorePosition(savepoint);
+if (stream.check(IDENTIFIER)) {
+    Token id = stream.advance();
+    if (stream.check(LPAREN)) {
+        if (isFunctionDefinition()) {
+            // A definition: x(y) := ...
+        } else {
+            // A call, so put the tokens back and parse it as one
+            stream.restorePosition(savepoint);
         }
                 }
                 }
@@ -1565,11 +1473,9 @@ private Node parsePower() {
 
 ```java
 int savepoint = stream.savePosition();
-// Try to parse as function definition
-if(!success){
-        stream.
-
-restorePosition(savepoint);
+// Try to parse as a function definition
+if (!success) {
+    stream.restorePosition(savepoint);
 // Parse as something else
 }
 ```
@@ -1581,22 +1487,18 @@ restorePosition(savepoint);
 **Wrong:**
 
 ```java
-while(true){
-        args.add(parseExpression());  // Never checks for )
-        stream.
-
-match(COMMA);
+while (true) {
+    args.add(parseExpression());   // never checks for ')'
+    stream.match(COMMA);
 }
 ```
 
 **Correct:**
 
 ```java
-if(!stream.check(RPAREN)){  // Check for closing delimiter
-        do{
-        args.
-
-add(parseExpression());
+if (!stream.check(RPAREN)) {       // stop at the closing delimiter
+    do {
+        args.add(parseExpression());
         }while(stream.
 
 match(COMMA));

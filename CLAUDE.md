@@ -17,7 +17,7 @@ parser/evaluator). Most packages can be used standalone or integrated through th
 
 ```
 src/main/java/uk/co/ryanharrison/mathengine/
-├── core/                             # BigRational and Function
+├── core/                             # BigRational, Function and AngleUnit
 ├── utils/                            # Utility methods
 │
 ├── parser/                           # Expression parser (CORE)
@@ -82,11 +82,16 @@ src/main/java/uk/co/ryanharrison/mathengine/
 │   │   └── string/                   # String functions
 │   │
 │   ├── format/                       # Output formatting
-│   │   └── NodeFormatter.java        # Node formatting by String or AsciiMath
+│   │   ├── NodeFormatter.java        # The formatting interface
+│   │   ├── StringNodeFormatter.java  # Plain text
+│   │   ├── AsciiMathNodeFormatter.java
+│   │   └── RationalDisplay.java      # Decimal or fraction, decided once for all callers
 │   │
 │   ├── registry/                     # Lookup registries
 │   │   ├── SymbolRegistry.java       # Operator symbols and precedence
 │   │   ├── UnitRegistry.java         # Physical units
+│   │   ├── UnitDefinition.java       # One unit and its affine rule to the base unit
+│   │   ├── Factor.java               # A multiplier or offset, and whether it is exact
 │   │   ├── ConstantRegistry.java     # Mathematical constants
 │   │   └── KeywordRegistry.java      # Reserved keywords
 │   │
@@ -95,7 +100,7 @@ src/main/java/uk/co/ryanharrison/mathengine/
 │       ├── BroadcastingEngine.java   # Element-wise spreading over collections
 │       ├── MatrixOperations.java     # True matrix multiply/power, dot product
 │       ├── Sequences.java            # Operations shared by vectors and strings
-│       ├── TypeCoercion.java         # Type promotion/conversion
+│       ├── TypeCoercion.java         # Conversions at the edges, incl. reading a double
 │       ├── AstTreeBuilder.java       # Child nodes, for tree views
 │       └── FunctionCaller.java       # Function invocation helper
 │
@@ -236,13 +241,13 @@ Node tree = f.getCompiledExpression(); // Cached parse tree
 - `Function(String equation, String variable)`
 - `Function(String equation, String variable, AngleUnit angleUnit)`
 
-Internally uses `Evaluator.newSimpleEvaluator()` with lazy initialization. The expression tree is cached for performance.
+Internally builds a `MathEngine` from a `MathEngineConfig`, lazily. The expression tree is cached for performance.
 
 ### Package Organization
 
 **parser/** - Expression parser and evaluator (CORE)
 
-- **Entry point**: `MathEngine.create()` or `MathEngine.builder()...build()`
+- **Entry point**: `MathEngine.create()`, or `MathEngine.create(MathEngineConfig.builder()...build())`
 - **Pipeline**: Text → Lexer → Parser → Evaluator → Result
 - **Lexer**: Two-stage tokenization (TokenScanner → TokenProcessor)
   - Conservative identifier splitting (only constants/functions, NOT units)
@@ -256,6 +261,16 @@ Internally uses `Evaluator.newSimpleEvaluator()` with lazy initialization. The e
 - **Arithmetic**: One implementation, on `NodeConstant`, covering units, percentages,
   exact rationals, strings and broadcasting. Operators and functions both call it, so
   `100 + 10%` and `sum(100, 10%)` cannot disagree
+- **Exactness**: a decimal literal, a percentage and a unit conversion are all held as
+  exact `BigRational` values, so `0.1 + 0.2` is 3/10 and `0 celsius in fahrenheit` is 32.
+  Two rules keep that from leaking:
+    - `TypeCoercion.toNumber(double)` is the single place deciding how exact a `double`
+      arriving from outside may claim to be. Integral is exact; a short decimal or a short
+      fraction that rounds back to the same double is exact; anything else was calculated
+      and stays a double
+    - `format/RationalDisplay` decides decimal against fraction for display only, so `2.5`
+      is not shown back as `5/2` and `100 m in feet` is not shown as `125000/381 feet`.
+      Nothing reads the rounded text back, so chained work stays exact
 - **Operator System**: Extensible binary/unary operators with broadcasting
 - **Function System**: 100+ built-in functions organized by category
 - See `docs/parser/` for detailed architecture documentation

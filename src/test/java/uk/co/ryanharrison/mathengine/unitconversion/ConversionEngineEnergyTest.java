@@ -65,7 +65,7 @@ public class ConversionEngineEnergyTest extends ConversionEngineBaseTest {
         assertEquals(2860000000000000.0, engine.convertToDouble(AMOUNT, "petajoule", "joule", PLACES), 0.0);
         assertEquals(1.0296e+19, engine.convertToDouble(AMOUNT, "petawatthour", "joule", PLACES), 0.0);
         assertEquals(0.0, engine.convertToDouble(AMOUNT, "picojoule", "joule", PLACES), 0.0);
-        assertEquals(3.0174598739999997e+21, engine.convertToDouble(AMOUNT, "Q unit", "joule", PLACES), 0.0);
+        assertEquals(3.017459874E21, engine.convertToDouble(AMOUNT, "Q unit", "joule", PLACES), 0.0);
         assertEquals(3.017459874e+18, engine.convertToDouble(AMOUNT, "quad", "joule", PLACES), 0.0);
         assertEquals(5e-07, engine.convertToDouble(AMOUNT, "teraelectronvolt", "joule", PLACES), 0.0);
         assertEquals(2860000000000.0, engine.convertToDouble(AMOUNT, "terajoule", "joule", PLACES), 0.0);
@@ -78,7 +78,7 @@ public class ConversionEngineEnergyTest extends ConversionEngineBaseTest {
         assertEquals(2.86, engine.convertToDouble(AMOUNT, "wattsecond", "joule", PLACES), 0.0);
         assertEquals(0.0, engine.convertToDouble(AMOUNT, "yoctojoule", "joule", PLACES), 0.0);
         assertEquals(2.86e+24, engine.convertToDouble(AMOUNT, "yottajoule", "joule", PLACES), 0.0);
-        assertEquals(1.0295999999999999e+28, engine.convertToDouble(AMOUNT, "yottawatthour", "joule", PLACES), 0.0);
+        assertEquals(1.0296E28, engine.convertToDouble(AMOUNT, "yottawatthour", "joule", PLACES), 0.0);
         assertEquals(0.0, engine.convertToDouble(AMOUNT, "zeptojoule", "joule", PLACES), 0.0);
         assertEquals(2.86e+21, engine.convertToDouble(AMOUNT, "zettajoule", "joule", PLACES), 0.0);
         assertEquals(1.0296e+25, engine.convertToDouble(AMOUNT, "zettawatthour", "joule", PLACES), 0.0);

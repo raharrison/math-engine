@@ -145,8 +145,8 @@
         {
             "id": "sum_number_and_percent",
             "input": "sum(100, 10%)",
-            "expected": 110.0,
-            "expectedType": "NodeDouble",
+            "expected": 110,
+            "expectedType": "NodeRational",
             "notes": "Ten percent added to a hundred is a hundred and ten, whichever spelling is used; the aggregate once added a raw tenth"
         },
         {

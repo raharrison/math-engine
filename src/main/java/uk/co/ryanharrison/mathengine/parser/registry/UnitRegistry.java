@@ -15,8 +15,8 @@ import java.util.*;
  *
  * // Create custom registry
  * UnitRegistry custom = UnitRegistry.builder()
- *     .add(new UnitDefinition("meter", "meters", "length", "meter", 1.0, 0.0, List.of("m")))
- *     .add(new UnitDefinition("foot", "feet", "length", "meter", 0.3048, 0.0, List.of("ft")))
+ *     .add(UnitDefinition.of("meter", "meters", "length", "meter", Factor.ONE, List.of("m")))
+ *     .add(UnitDefinition.of("foot", "feet", "length", "meter", Factor.of("0.3048"), List.of("ft")))
  *     .build();
  *
  * // Empty registry (no units)
@@ -152,17 +152,17 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> lengthUnits() {
         return List.of(
-                new UnitDefinition("meter", "meters", "length", "meter", 1.0, 0.0, List.of("m")),
-                new UnitDefinition("kilometer", "kilometers", "length", "meter", 1000.0, 0.0, List.of("km")),
-                new UnitDefinition("centimeter", "centimeters", "length", "meter", 0.01, 0.0, List.of("cm")),
-                new UnitDefinition("millimeter", "millimeters", "length", "meter", 0.001, 0.0, List.of("mm")),
-                new UnitDefinition("micrometer", "micrometers", "length", "meter", 1e-6, 0.0, List.of("micron", "microns", "μm")),
-                new UnitDefinition("nanometer", "nanometers", "length", "meter", 1e-9, 0.0, List.of("nm")),
-                new UnitDefinition("foot", "feet", "length", "meter", 0.3048, 0.0, List.of("ft")),
-                new UnitDefinition("inch", "inches", "length", "meter", 0.0254, 0.0, List.of("in")),
-                new UnitDefinition("yard", "yards", "length", "meter", 0.9144, 0.0, List.of("yd")),
-                new UnitDefinition("mile", "miles", "length", "meter", 1609.344, 0.0, List.of("mi")),
-                new UnitDefinition("nautical_mile", "nautical_miles", "length", "meter", 1852.0, 0.0, List.of("nmi"))
+                UnitDefinition.of("meter", "meters", "length", "meter", Factor.ONE, List.of("m")),
+                UnitDefinition.of("kilometer", "kilometers", "length", "meter", Factor.of("1000"), List.of("km")),
+                UnitDefinition.of("centimeter", "centimeters", "length", "meter", Factor.of("0.01"), List.of("cm")),
+                UnitDefinition.of("millimeter", "millimeters", "length", "meter", Factor.of("0.001"), List.of("mm")),
+                UnitDefinition.of("micrometer", "micrometers", "length", "meter", Factor.of("0.000001"), List.of("micron", "microns", "μm")),
+                UnitDefinition.of("nanometer", "nanometers", "length", "meter", Factor.of("0.000000001"), List.of("nm")),
+                UnitDefinition.of("foot", "feet", "length", "meter", Factor.of("0.3048"), List.of("ft")),
+                UnitDefinition.of("inch", "inches", "length", "meter", Factor.of("0.0254"), List.of("in")),
+                UnitDefinition.of("yard", "yards", "length", "meter", Factor.of("0.9144"), List.of("yd")),
+                UnitDefinition.of("mile", "miles", "length", "meter", Factor.of("1609.344"), List.of("mi")),
+                UnitDefinition.of("nautical_mile", "nautical_miles", "length", "meter", Factor.of("1852"), List.of("nmi"))
         );
     }
 
@@ -171,15 +171,15 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> massUnits() {
         return List.of(
-                new UnitDefinition("kilogram", "kilograms", "mass", "kilogram", 1.0, 0.0, List.of("kg")),
-                new UnitDefinition("gram", "grams", "mass", "kilogram", 0.001, 0.0, List.of("g")),
-                new UnitDefinition("milligram", "milligrams", "mass", "kilogram", 1e-6, 0.0, List.of("mg")),
-                new UnitDefinition("microgram", "micrograms", "mass", "kilogram", 1e-9, 0.0, List.of("μg")),
-                new UnitDefinition("tonne", "tonnes", "mass", "kilogram", 1000.0, 0.0, List.of("metric_ton", "metric_tons", "t")),
-                new UnitDefinition("pound", "pounds", "mass", "kilogram", 0.45359237, 0.0, List.of("lb", "lbs")),
-                new UnitDefinition("ounce", "ounces", "mass", "kilogram", 0.028349523125, 0.0, List.of("oz")),
-                new UnitDefinition("ton", "tons", "mass", "kilogram", 907.18474, 0.0, List.of("imperial_ton")),
-                new UnitDefinition("stone", "stones", "mass", "kilogram", 6.35029318, 0.0, List.of("st"))
+                UnitDefinition.of("kilogram", "kilograms", "mass", "kilogram", Factor.ONE, List.of("kg")),
+                UnitDefinition.of("gram", "grams", "mass", "kilogram", Factor.of("0.001"), List.of("g")),
+                UnitDefinition.of("milligram", "milligrams", "mass", "kilogram", Factor.of("0.000001"), List.of("mg")),
+                UnitDefinition.of("microgram", "micrograms", "mass", "kilogram", Factor.of("0.000000001"), List.of("μg")),
+                UnitDefinition.of("tonne", "tonnes", "mass", "kilogram", Factor.of("1000"), List.of("metric_ton", "metric_tons", "t")),
+                UnitDefinition.of("pound", "pounds", "mass", "kilogram", Factor.of("0.45359237"), List.of("lb", "lbs")),
+                UnitDefinition.of("ounce", "ounces", "mass", "kilogram", Factor.of("0.028349523125"), List.of("oz")),
+                UnitDefinition.of("ton", "tons", "mass", "kilogram", Factor.of("907.18474"), List.of("imperial_ton")),
+                UnitDefinition.of("stone", "stones", "mass", "kilogram", Factor.of("6.35029318"), List.of("st"))
         );
     }
 
@@ -188,17 +188,17 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> volumeUnits() {
         return List.of(
-                new UnitDefinition("liter", "liters", "volume", "liter", 1.0, 0.0, List.of("l", "L")),
-                new UnitDefinition("milliliter", "milliliters", "volume", "liter", 0.001, 0.0, List.of("ml", "mL")),
-                new UnitDefinition("cubic_meter", "cubic_meters", "volume", "liter", 1000.0, 0.0, List.of("m3")),
-                new UnitDefinition("cubic_centimeter", "cubic_centimeters", "volume", "liter", 0.001, 0.0, List.of("cc", "cm3")),
-                new UnitDefinition("gallon", "gallons", "volume", "liter", 3.785411784, 0.0, List.of("gal")),
-                new UnitDefinition("quart", "quarts", "volume", "liter", 0.946352946, 0.0, List.of("qt")),
-                new UnitDefinition("pint", "pints", "volume", "liter", 0.473176473, 0.0, List.of("pt")),
-                new UnitDefinition("cup", "cups", "volume", "liter", 0.2365882365, 0.0, List.of()),
-                new UnitDefinition("fluid_ounce", "fluid_ounces", "volume", "liter", 0.0295735296, 0.0, List.of("fl_oz", "floz")),
-                new UnitDefinition("tablespoon", "tablespoons", "volume", "liter", 0.01478676478, 0.0, List.of("tbsp")),
-                new UnitDefinition("teaspoon", "teaspoons", "volume", "liter", 0.00492892159, 0.0, List.of("tsp"))
+                UnitDefinition.of("liter", "liters", "volume", "liter", Factor.ONE, List.of("l", "L")),
+                UnitDefinition.of("milliliter", "milliliters", "volume", "liter", Factor.of("0.001"), List.of("ml", "mL")),
+                UnitDefinition.of("cubic_meter", "cubic_meters", "volume", "liter", Factor.of("1000"), List.of("m3")),
+                UnitDefinition.of("cubic_centimeter", "cubic_centimeters", "volume", "liter", Factor.of("0.001"), List.of("cc", "cm3")),
+                UnitDefinition.of("gallon", "gallons", "volume", "liter", Factor.of("3.785411784"), List.of("gal")),
+                UnitDefinition.of("quart", "quarts", "volume", "liter", Factor.of("0.946352946"), List.of("qt")),
+                UnitDefinition.of("pint", "pints", "volume", "liter", Factor.of("0.473176473"), List.of("pt")),
+                UnitDefinition.of("cup", "cups", "volume", "liter", Factor.of("0.2365882365"), List.of()),
+                UnitDefinition.of("fluid_ounce", "fluid_ounces", "volume", "liter", Factor.of("0.0295735296"), List.of("fl_oz", "floz")),
+                UnitDefinition.of("tablespoon", "tablespoons", "volume", "liter", Factor.of("0.01478676478"), List.of("tbsp")),
+                UnitDefinition.of("teaspoon", "teaspoons", "volume", "liter", Factor.of("0.00492892159"), List.of("tsp"))
         );
     }
 
@@ -207,15 +207,15 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> timeUnits() {
         return List.of(
-                new UnitDefinition("second", "seconds", "time", "second", 1.0, 0.0, List.of("s", "sec")),
-                new UnitDefinition("minute", "minutes", "time", "second", 60.0, 0.0, List.of("min")),
-                new UnitDefinition("hour", "hours", "time", "second", 3600.0, 0.0, List.of("hr", "h")),
-                new UnitDefinition("day", "days", "time", "second", 86400.0, 0.0, List.of("d")),
-                new UnitDefinition("week", "weeks", "time", "second", 604800.0, 0.0, List.of("wk")),
-                new UnitDefinition("year", "years", "time", "second", 31557600.0, 0.0, List.of("yr")),
-                new UnitDefinition("millisecond", "milliseconds", "time", "second", 0.001, 0.0, List.of("ms")),
-                new UnitDefinition("microsecond", "microseconds", "time", "second", 1e-6, 0.0, List.of("μs")),
-                new UnitDefinition("nanosecond", "nanoseconds", "time", "second", 1e-9, 0.0, List.of("ns"))
+                UnitDefinition.of("second", "seconds", "time", "second", Factor.ONE, List.of("s", "sec")),
+                UnitDefinition.of("minute", "minutes", "time", "second", Factor.of("60"), List.of("min")),
+                UnitDefinition.of("hour", "hours", "time", "second", Factor.of("3600"), List.of("hr", "h")),
+                UnitDefinition.of("day", "days", "time", "second", Factor.of("86400"), List.of("d")),
+                UnitDefinition.of("week", "weeks", "time", "second", Factor.of("604800"), List.of("wk")),
+                UnitDefinition.of("year", "years", "time", "second", Factor.of("31557600"), List.of("yr")),
+                UnitDefinition.of("millisecond", "milliseconds", "time", "second", Factor.of("0.001"), List.of("ms")),
+                UnitDefinition.of("microsecond", "microseconds", "time", "second", Factor.of("0.000001"), List.of("μs")),
+                UnitDefinition.of("nanosecond", "nanoseconds", "time", "second", Factor.of("0.000000001"), List.of("ns"))
         );
     }
 
@@ -224,9 +224,9 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> temperatureUnits() {
         return List.of(
-                new UnitDefinition("kelvin", "kelvin", "temperature", "kelvin", 1.0, 0.0, List.of("K")),
-                new UnitDefinition("celsius", "celsius", "temperature", "kelvin", 1.0, -273.15, List.of("C")),
-                new UnitDefinition("fahrenheit", "fahrenheit", "temperature", "kelvin", 5.0 / 9.0, -459.67, List.of("F"))
+                UnitDefinition.of("kelvin", "kelvin", "temperature", "kelvin", Factor.ONE, List.of("K")),
+                new UnitDefinition("celsius", "celsius", "temperature", "kelvin", Factor.ONE, Factor.of("-273.15"), List.of("C")),
+                new UnitDefinition("fahrenheit", "fahrenheit", "temperature", "kelvin", Factor.ratio(5, 9), Factor.of("-459.67"), List.of("F"))
         );
     }
 
@@ -235,14 +235,14 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> areaUnits() {
         return List.of(
-                new UnitDefinition("square_meter", "square_meters", "area", "square_meter", 1.0, 0.0, List.of("m2", "sq_m")),
-                new UnitDefinition("square_kilometer", "square_kilometers", "area", "square_meter", 1e6, 0.0, List.of("km2", "sq_km")),
-                new UnitDefinition("square_centimeter", "square_centimeters", "area", "square_meter", 1e-4, 0.0, List.of("cm2", "sq_cm")),
-                new UnitDefinition("square_foot", "square_feet", "area", "square_meter", 0.09290304, 0.0, List.of("ft2", "sq_ft")),
-                new UnitDefinition("square_inch", "square_inches", "area", "square_meter", 0.00064516, 0.0, List.of("in2", "sq_in")),
-                new UnitDefinition("square_mile", "square_miles", "area", "square_meter", 2589988.110336, 0.0, List.of("mi2", "sq_mi")),
-                new UnitDefinition("acre", "acres", "area", "square_meter", 4046.8564224, 0.0, List.of()),
-                new UnitDefinition("hectare", "hectares", "area", "square_meter", 10000.0, 0.0, List.of("ha"))
+                UnitDefinition.of("square_meter", "square_meters", "area", "square_meter", Factor.ONE, List.of("m2", "sq_m")),
+                UnitDefinition.of("square_kilometer", "square_kilometers", "area", "square_meter", Factor.of("1000000"), List.of("km2", "sq_km")),
+                UnitDefinition.of("square_centimeter", "square_centimeters", "area", "square_meter", Factor.of("0.0001"), List.of("cm2", "sq_cm")),
+                UnitDefinition.of("square_foot", "square_feet", "area", "square_meter", Factor.of("0.09290304"), List.of("ft2", "sq_ft")),
+                UnitDefinition.of("square_inch", "square_inches", "area", "square_meter", Factor.of("0.00064516"), List.of("in2", "sq_in")),
+                UnitDefinition.of("square_mile", "square_miles", "area", "square_meter", Factor.of("2589988.110336"), List.of("mi2", "sq_mi")),
+                UnitDefinition.of("acre", "acres", "area", "square_meter", Factor.of("4046.8564224"), List.of()),
+                UnitDefinition.of("hectare", "hectares", "area", "square_meter", Factor.of("10000"), List.of("ha"))
         );
     }
 
@@ -251,11 +251,11 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> speedUnits() {
         return List.of(
-                new UnitDefinition("meters_per_second", "meters_per_second", "speed", "meters_per_second", 1.0, 0.0, List.of("m/s", "mps")),
-                new UnitDefinition("kilometers_per_hour", "kilometers_per_hour", "speed", "meters_per_second", 0.277778, 0.0, List.of("km/h", "kph", "kmph")),
-                new UnitDefinition("miles_per_hour", "miles_per_hour", "speed", "meters_per_second", 0.44704, 0.0, List.of("mph")),
-                new UnitDefinition("knot", "knots", "speed", "meters_per_second", 0.514444, 0.0, List.of("kt", "kts")),
-                new UnitDefinition("feet_per_second", "feet_per_second", "speed", "meters_per_second", 0.3048, 0.0, List.of("ft/s", "fps"))
+                UnitDefinition.of("meters_per_second", "meters_per_second", "speed", "meters_per_second", Factor.ONE, List.of("m/s", "mps")),
+                UnitDefinition.of("kilometers_per_hour", "kilometers_per_hour", "speed", "meters_per_second", Factor.ratio(1000, 3600), List.of("km/h", "kph", "kmph")),
+                UnitDefinition.of("miles_per_hour", "miles_per_hour", "speed", "meters_per_second", Factor.of("0.44704"), List.of("mph")),
+                UnitDefinition.of("knot", "knots", "speed", "meters_per_second", Factor.ratio(1852, 3600), List.of("kt", "kts")),
+                UnitDefinition.of("feet_per_second", "feet_per_second", "speed", "meters_per_second", Factor.of("0.3048"), List.of("ft/s", "fps"))
         );
     }
 
@@ -264,12 +264,12 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> pressureUnits() {
         return List.of(
-                new UnitDefinition("pascal", "pascals", "pressure", "pascal", 1.0, 0.0, List.of("Pa")),
-                new UnitDefinition("kilopascal", "kilopascals", "pressure", "pascal", 1000.0, 0.0, List.of("kPa")),
-                new UnitDefinition("bar", "bars", "pressure", "pascal", 100000.0, 0.0, List.of()),
-                new UnitDefinition("atmosphere", "atmospheres", "pressure", "pascal", 101325.0, 0.0, List.of("atm")),
-                new UnitDefinition("psi", "psi", "pressure", "pascal", 6894.757, 0.0, List.of("pounds_per_square_inch")),
-                new UnitDefinition("torr", "torr", "pressure", "pascal", 133.322, 0.0, List.of("mmHg"))
+                UnitDefinition.of("pascal", "pascals", "pressure", "pascal", Factor.ONE, List.of("Pa")),
+                UnitDefinition.of("kilopascal", "kilopascals", "pressure", "pascal", Factor.of("1000"), List.of("kPa")),
+                UnitDefinition.of("bar", "bars", "pressure", "pascal", Factor.of("100000"), List.of()),
+                UnitDefinition.of("atmosphere", "atmospheres", "pressure", "pascal", Factor.of("101325"), List.of("atm")),
+                UnitDefinition.of("psi", "psi", "pressure", "pascal", Factor.of("6894.757293168361"), List.of("pounds_per_square_inch")),
+                UnitDefinition.of("torr", "torr", "pressure", "pascal", Factor.ratio(101325, 760), List.of("mmHg"))
         );
     }
 
@@ -278,13 +278,13 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> energyUnits() {
         return List.of(
-                new UnitDefinition("joule", "joules", "energy", "joule", 1.0, 0.0, List.of("J")),
-                new UnitDefinition("kilojoule", "kilojoules", "energy", "joule", 1000.0, 0.0, List.of("kJ")),
-                new UnitDefinition("calorie", "calories", "energy", "joule", 4.184, 0.0, List.of("cal")),
-                new UnitDefinition("kilocalorie", "kilocalories", "energy", "joule", 4184.0, 0.0, List.of("kcal", "Cal")),
-                new UnitDefinition("watt_hour", "watt_hours", "energy", "joule", 3600.0, 0.0, List.of("Wh")),
-                new UnitDefinition("kilowatt_hour", "kilowatt_hours", "energy", "joule", 3.6e6, 0.0, List.of("kWh")),
-                new UnitDefinition("electronvolt", "electronvolts", "energy", "joule", 1.602176634e-19, 0.0, List.of("eV"))
+                UnitDefinition.of("joule", "joules", "energy", "joule", Factor.ONE, List.of("J")),
+                UnitDefinition.of("kilojoule", "kilojoules", "energy", "joule", Factor.of("1000"), List.of("kJ")),
+                UnitDefinition.of("calorie", "calories", "energy", "joule", Factor.of("4.184"), List.of("cal")),
+                UnitDefinition.of("kilocalorie", "kilocalories", "energy", "joule", Factor.of("4184"), List.of("kcal", "Cal")),
+                UnitDefinition.of("watt_hour", "watt_hours", "energy", "joule", Factor.of("3600"), List.of("Wh")),
+                UnitDefinition.of("kilowatt_hour", "kilowatt_hours", "energy", "joule", Factor.of("3600000"), List.of("kWh")),
+                UnitDefinition.of("electronvolt", "electronvolts", "energy", "joule", Factor.of("0.0000000000000000001602176634"), List.of("eV"))
         );
     }
 
@@ -293,10 +293,10 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> powerUnits() {
         return List.of(
-                new UnitDefinition("watt", "watts", "power", "watt", 1.0, 0.0, List.of("W")),
-                new UnitDefinition("kilowatt", "kilowatts", "power", "watt", 1000.0, 0.0, List.of("kW")),
-                new UnitDefinition("megawatt", "megawatts", "power", "watt", 1e6, 0.0, List.of("MW")),
-                new UnitDefinition("horsepower", "horsepower", "power", "watt", 745.699872, 0.0, List.of("hp"))
+                UnitDefinition.of("watt", "watts", "power", "watt", Factor.ONE, List.of("W")),
+                UnitDefinition.of("kilowatt", "kilowatts", "power", "watt", Factor.of("1000"), List.of("kW")),
+                UnitDefinition.of("megawatt", "megawatts", "power", "watt", Factor.of("1000000"), List.of("MW")),
+                UnitDefinition.of("horsepower", "horsepower", "power", "watt", Factor.of("745.69987158227022"), List.of("hp"))
         );
     }
 
@@ -305,9 +305,9 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> angleUnits() {
         return List.of(
-                new UnitDefinition("radian", "radians", "angle", "radian", 1.0, 0.0, List.of("rad")),
-                new UnitDefinition("degree", "degrees", "angle", "radian", Math.PI / 180.0, 0.0, List.of("deg", "°")),
-                new UnitDefinition("gradian", "gradians", "angle", "radian", Math.PI / 200.0, 0.0, List.of("grad"))
+                UnitDefinition.of("radian", "radians", "angle", "radian", Factor.ONE, List.of("rad")),
+                UnitDefinition.of("degree", "degrees", "angle", "radian", Factor.approx(Math.PI / 180.0), List.of("deg", "°")),
+                UnitDefinition.of("gradian", "gradians", "angle", "radian", Factor.approx(Math.PI / 200.0), List.of("grad"))
         );
     }
 
@@ -316,16 +316,16 @@ public final class UnitRegistry {
      */
     public static List<UnitDefinition> dataUnits() {
         return List.of(
-                new UnitDefinition("byte", "bytes", "data", "byte", 1.0, 0.0, List.of("B")),
-                new UnitDefinition("kilobyte", "kilobytes", "data", "byte", 1024.0, 0.0, List.of("KB", "kB")),
-                new UnitDefinition("megabyte", "megabytes", "data", "byte", 1048576.0, 0.0, List.of("MB")),
-                new UnitDefinition("gigabyte", "gigabytes", "data", "byte", 1.073741824e9, 0.0, List.of("GB")),
-                new UnitDefinition("terabyte", "terabytes", "data", "byte", 1.099511627776e12, 0.0, List.of("TB")),
-                new UnitDefinition("petabyte", "petabytes", "data", "byte", 1.125899906842624e15, 0.0, List.of("PB")),
-                new UnitDefinition("bit", "bits", "data", "byte", 0.125, 0.0, List.of("b")),
-                new UnitDefinition("kilobit", "kilobits", "data", "byte", 128.0, 0.0, List.of("Kb", "kb")),
-                new UnitDefinition("megabit", "megabits", "data", "byte", 131072.0, 0.0, List.of("Mb")),
-                new UnitDefinition("gigabit", "gigabits", "data", "byte", 1.34217728e8, 0.0, List.of("Gb"))
+                UnitDefinition.of("byte", "bytes", "data", "byte", Factor.ONE, List.of("B")),
+                UnitDefinition.of("kilobyte", "kilobytes", "data", "byte", Factor.of("1024"), List.of("KB", "kB")),
+                UnitDefinition.of("megabyte", "megabytes", "data", "byte", Factor.of("1048576"), List.of("MB")),
+                UnitDefinition.of("gigabyte", "gigabytes", "data", "byte", Factor.of("1073741824"), List.of("GB")),
+                UnitDefinition.of("terabyte", "terabytes", "data", "byte", Factor.of("1099511627776"), List.of("TB")),
+                UnitDefinition.of("petabyte", "petabytes", "data", "byte", Factor.of("1125899906842624"), List.of("PB")),
+                UnitDefinition.of("bit", "bits", "data", "byte", Factor.of("0.125"), List.of("b")),
+                UnitDefinition.of("kilobit", "kilobits", "data", "byte", Factor.of("128"), List.of("Kb", "kb")),
+                UnitDefinition.of("megabit", "megabits", "data", "byte", Factor.of("131072"), List.of("Mb")),
+                UnitDefinition.of("gigabit", "gigabits", "data", "byte", Factor.of("134217728"), List.of("Gb"))
         );
     }
 
