@@ -113,6 +113,10 @@ unit_expr     := identifier                      (* validated against unit regis
 
 iterable      := range | vector | matrix | identifier
 
+(* Comments, discarded by the lexer and allowed wherever whitespace is *)
+comment       := '//' (any character except newline)*
+               | '/*' (any character)* '*/'
+
 (* Character classes *)
 letter        := [a-zA-Z]
 digit         := [0-9]
@@ -1465,6 +1469,21 @@ mean({x meters in centimeters for x in 1..5}) → 300 cm
 - `2 x` → `2 * x` (implicit multiplication)
 - `2x` → `2 * x` (same)
 - Whitespace required between keywords: `forx` is identifier, `for x` is keyword + identifier
+
+### Comments
+
+- `// ...` runs to the end of the line
+- `/* ... */` runs to the closing delimiter and may span lines; they do not nest
+- Neither is recognised inside a string literal: `"a // b"` is the string `a // b`
+- A comment is removed before parsing, so it may appear anywhere whitespace may
+- An input that is nothing but a comment is an empty expression, and an unterminated
+  block comment is a lexer error
+- A single `/` is still division; only `//` and `/*` start a comment
+
+```text
+x := 5;          // set x
+x * 2 /* and double it */
+```
 
 ### Unicode and Extended Characters
 

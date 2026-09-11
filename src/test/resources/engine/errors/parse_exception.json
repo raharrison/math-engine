@@ -85,6 +85,14 @@
             "expectError": true,
             "expectedErrorType": "ParseException",
             "notes": "Extra closing parenthesis"
+        },
+        {
+            "id": "comment_only_input",
+            "input": "// nothing but a comment",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "Empty expression",
+            "notes": "Input that is all comment leaves no tokens, so it fails the same way an empty expression does"
         }
     ]
 }

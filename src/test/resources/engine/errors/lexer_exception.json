@@ -45,6 +45,14 @@
             "expectedErrorType": "LexerException",
             "expectedErrorMessage": "Unterminated string",
             "notes": "A string literal with no closing quote cannot be tokenised"
+        },
+        {
+            "id": "unterminated_block_comment",
+            "input": "2 + /* never closed",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "expectedErrorMessage": "Unterminated block comment",
+            "notes": "A block comment with no '*/' runs off the end of the input and is rejected rather than silently swallowing the rest"
         }
     ]
 }

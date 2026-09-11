@@ -38,6 +38,7 @@ Stage 2: TokenProcessor (single-pass: split + classify + implicit multiplication
 - Reference symbol scanning (`@unit`, `@"km/h"`, `$var`, `#const`)
 - Operator scanning (single and multi-character)
 - Structural tokens (parentheses, brackets, braces, commas, semicolons)
+- Comment skipping (`//` to the end of the line, `/* ... */` across lines)
 - Position tracking (line and column numbers)
 
 **Key Challenge: Decimal vs Range Disambiguation**
@@ -52,6 +53,18 @@ The scanner must distinguish between:
 - If next is `.` → emit integer `1`, then scan `..` as RANGE operator
 - If next is digit → continue scanning decimal `1.5`
 - Otherwise → emit integer `1`, emit DOT token
+
+**Comments**
+
+A slash is the division operator unless it starts a comment:
+
+- `//` discards the rest of the line, leaving the newline for the line counter
+- `/*` discards everything up to the next `*/`, which may be several lines away
+- neither is recognised inside a string literal, and block comments do not nest
+- an unterminated block comment is a `LexerException`
+
+Comments produce no tokens, so they may appear anywhere whitespace may. Because they
+leave nothing behind, `2 /* x */ 3` is still implicit multiplication.
 
 **Number Formats:**
 

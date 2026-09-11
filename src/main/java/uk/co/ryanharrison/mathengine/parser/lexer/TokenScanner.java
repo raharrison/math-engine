@@ -109,6 +109,7 @@ public final class TokenScanner {
             case '>' -> scanGreaterThan();
             case '&' -> scanAmpersand();
             case '|' -> scanPipe();
+            case '/' -> scanSlash();
             case '-' -> scanMinus();
             case '@' -> scanAtSign();
             case '$' -> scanDollarSign();
@@ -195,6 +196,33 @@ public final class TokenScanner {
         } else {
             throw scanner.error("Unexpected character '|' (use '||' for logical OR)");
         }
+    }
+
+    /**
+     * Scans a slash, which starts a comment when doubled or followed by a star,
+     * and is the division operator otherwise. A line comment runs to the end of
+     * the line; the newline itself is left for the main loop to count.
+     */
+    private void scanSlash() {
+        if (scanner.match('/')) {
+            scanner.consumeWhile(c -> c != '\n');
+        } else if (scanner.match('*')) {
+            scanBlockComment();
+        } else {
+            addToken(TokenType.DIVIDE, "/");
+        }
+    }
+
+    private void scanBlockComment() {
+        while (!scanner.isAtEnd()) {
+            char c = scanner.advance();
+            if (c == '\n') {
+                scanner.newLine();
+            } else if (c == '*' && scanner.match('/')) {
+                return;
+            }
+        }
+        throw scanner.error("Unterminated block comment (expected '*/')");
     }
 
     private void scanMinus() {

@@ -634,6 +634,73 @@ class LexerTest {
         assertThat(tokens.get(3).line()).isEqualTo(2); // y is on line 2
     }
 
+    // ==================== Comments ====================
+
+    @Test
+    void lineCommentProducesNoTokens() {
+        List<Token> tokens = lexer.tokenize("2 + 3 // add them");
+
+        assertThat(tokens).hasSize(4); // INTEGER + PLUS + INTEGER + EOF
+    }
+
+    @Test
+    void commentOnlyInputProducesOnlyEof() {
+        List<Token> tokens = lexer.tokenize("// nothing here");
+
+        assertThat(tokens).singleElement()
+                .extracting(Token::type).isEqualTo(TokenType.EOF);
+    }
+
+    @Test
+    void lineCommentEndsAtNewline() {
+        List<Token> tokens = lexer.tokenize("1 + // keep going\n2");
+
+        assertThat(tokens).hasSize(4); // INTEGER + PLUS + INTEGER + EOF
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.get(2).line()).isEqualTo(2);
+        assertThat(tokens.get(2).column()).isEqualTo(1);
+    }
+
+    @Test
+    void blockCommentSpanningLinesKeepsPositionsCorrect() {
+        List<Token> tokens = lexer.tokenize("1 +\n/* a\n b */ 2");
+
+        assertThat(tokens).hasSize(4); // INTEGER + PLUS + INTEGER + EOF
+        assertThat(tokens.get(2).line()).isEqualTo(3);
+        assertThat(tokens.get(2).column()).isEqualTo(7);
+    }
+
+    @Test
+    void blockCommentBetweenTokensStillAllowsImplicitMultiplication() {
+        List<Token> tokens = lexer.tokenize("2 /* x */ 3");
+
+        assertThat(tokens).hasSize(4); // INTEGER + MULTIPLY + INTEGER + EOF
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.MULTIPLY);
+    }
+
+    @Test
+    void singleSlashIsStillDivision() {
+        List<Token> tokens = lexer.tokenize("10 / 2");
+
+        assertThat(tokens).hasSize(4); // INTEGER + DIVIDE + INTEGER + EOF
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.DIVIDE);
+    }
+
+    @Test
+    void doubleSlashAfterNumberDoesNotStartRational() {
+        List<Token> tokens = lexer.tokenize("1//2");
+
+        assertThat(tokens).hasSize(2); // INTEGER + EOF
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.INTEGER);
+    }
+
+    @Test
+    void unterminatedBlockCommentThrowsException() {
+        assertThatThrownBy(() -> lexer.tokenize("2 + /* never closed"))
+                .isInstanceOf(LexerException.class)
+                .hasMessageContaining("Unterminated block comment");
+    }
+
     // ==================== Error Cases ====================
 
     @Test

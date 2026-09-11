@@ -1,0 +1,125 @@
+{
+    "category": "Language: comments",
+    "description": "Comments are removed while scanning, so they may appear anywhere whitespace may. A line comment starts at '//' and ends at the newline; a block comment runs from '/*' to the matching '*/' and may span lines. Neither is recognised inside a string literal, and a lone '/' is still division.",
+    "tests": [
+        {
+            "id": "comment_line_trailing",
+            "input": "2 + 3 // add them",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "A line comment at the end of an expression is dropped"
+        },
+        {
+            "id": "comment_line_mid_expression",
+            "input": "1 + // keep going\n2",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "An expression continues on the next line, because the comment ends at the newline and a newline is whitespace"
+        },
+        {
+            "id": "comment_line_no_space_after_operator",
+            "input": "1 +// c\n2",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "A comment needs no whitespace in front of it"
+        },
+        {
+            "id": "comment_line_swallows_rest_of_line",
+            "input": "2 // 3 */ 4",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "Everything after '//' is gone, including text that looks like the end of a block comment"
+        },
+        {
+            "id": "comment_line_empty",
+            "input": "2 + 3 //",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "A comment with no text, ending at the end of the input"
+        },
+        {
+            "id": "comment_line_in_sequence",
+            "input": "x := 5; // set x\nx * 2",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "Annotating one statement of a multi-statement script"
+        },
+        {
+            "id": "comment_line_before_separator",
+            "input": "f(x) := x^2 // square\n; f(4)",
+            "expected": 16,
+            "expectedType": "NodeRational",
+            "notes": "The ';' on the next line still separates the statements"
+        },
+        {
+            "id": "comment_block_inline",
+            "input": "2 /* inline */ + 4",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "A block comment between two tokens"
+        },
+        {
+            "id": "comment_block_leading",
+            "input": "/* lead */ 7",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "A block comment before the expression"
+        },
+        {
+            "id": "comment_block_spans_lines",
+            "input": "1 + /* multi\nline */ 2",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "A block comment may cross a newline"
+        },
+        {
+            "id": "comment_block_empty",
+            "input": "5 /**/ + 1",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "'/**/' is an empty block comment, not a stray operator"
+        },
+        {
+            "id": "comment_block_does_not_nest",
+            "input": "1 + 2 /* a /* b */ + 4",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "Block comments do not nest: the first '*/' closes the comment, so the trailing '+ 4' is code"
+        },
+        {
+            "id": "comment_block_inside_argument_list",
+            "input": "sum(1, 2 /* two */, 3)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "A comment may sit anywhere whitespace may, including between arguments"
+        },
+        {
+            "id": "comment_block_leaves_implicit_multiplication",
+            "input": "2 /* x */ 3",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Removing a comment leaves the two numbers adjacent on one line, so implicit multiplication still applies"
+        },
+        {
+            "id": "comment_divide_still_divides",
+            "input": "100 / 4 // still division",
+            "expected": 25,
+            "expectedType": "NodeRational",
+            "notes": "A single slash is the division operator; only a doubled slash starts a comment"
+        },
+        {
+            "id": "comment_line_not_in_string",
+            "input": "\"a // b\"",
+            "expected": "a // b",
+            "expectedType": "NodeString",
+            "notes": "'//' inside a string literal is text, not the start of a comment"
+        },
+        {
+            "id": "comment_block_not_in_string",
+            "input": "'/* not a comment */'",
+            "expected": "/* not a comment */",
+            "expectedType": "NodeString",
+            "notes": "Block comment delimiters inside a string literal are text"
+        }
+    ]
+}
