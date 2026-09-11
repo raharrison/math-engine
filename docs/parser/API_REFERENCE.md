@@ -95,7 +95,7 @@ MathEngineConfig config = MathEngineConfig.builder()
 
         // Limits (DoS protection)
         .maxRecursionDepth(256)                 // levels of user function nesting
-        .maxExpressionDepth(256)                // levels of parser recursion
+        .maxExpressionDepth(256)                // levels of syntax recursion
         .maxVectorSize(1_000_000)
         .maxMatrixDimension(10_000)
         .maxIdentifierLength(256)

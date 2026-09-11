@@ -11,7 +11,7 @@ import java.util.*;
  * </p>
  * <p>
  * Each complex unit stores conversion equations to target units. The equations
- * are evaluated using the expression parser, with the source value bound to
+ * are evaluated using the expression syntax, with the source value bound to
  * a variable (typically "x").
  * </p>
  *

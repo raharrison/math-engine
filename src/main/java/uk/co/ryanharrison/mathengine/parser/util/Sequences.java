@@ -1,10 +1,10 @@
 package uk.co.ryanharrison.mathengine.parser.util;
 
+import uk.co.ryanharrison.mathengine.parser.ast.Node;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeString;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeVector;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeString;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
 
 /**
  * Operations that read the same on a vector and on a string, so {@code len},

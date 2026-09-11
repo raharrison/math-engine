@@ -4,8 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.co.ryanharrison.mathengine.core.AngleUnit;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeRational;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
 
 import static org.assertj.core.api.Assertions.*;
 

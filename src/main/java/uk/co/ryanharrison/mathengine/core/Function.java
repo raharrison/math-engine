@@ -3,7 +3,7 @@ package uk.co.ryanharrison.mathengine.core;
 import uk.co.ryanharrison.mathengine.parser.CompiledExpression;
 import uk.co.ryanharrison.mathengine.parser.MathEngine;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
+import uk.co.ryanharrison.mathengine.parser.ast.Node;
 
 /**
  * Class representing a function of one variable that can be evaluated.

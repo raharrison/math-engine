@@ -352,7 +352,7 @@ Immutable configuration object with builder pattern.
 ```java
 .angleUnit(AngleUnit.RADIANS)           // or DEGREES
 .maxRecursionDepth(256)                 // Levels of user function nesting
-.maxExpressionDepth(256)                // Levels of parser recursion
+.maxExpressionDepth(256)                // Levels of syntax recursion
 .forceDoubleArithmetic(false)           // Disable exact rationals
 ```
 
@@ -429,8 +429,8 @@ All exceptions include:
 - `MathEngineTest.java` - the engine's own API: factories, session, reconfiguration
 - `CompiledExpressionTest.java` - repeated evaluation and scope isolation
 - `lexer/LexerTest.java` - tokenization
-- `parser/ParserTest.java` - AST construction
-- `parser/nodes/*` - the arithmetic type rules
+- `syntax/ParserTest.java` - AST construction
+- `ast/*` - the arithmetic type rules
 
 **The spec suite** is the end-to-end contract for the language, written as JSON under
 `src/test/resources/engine` and run by `spec/EngineSpecTest`:

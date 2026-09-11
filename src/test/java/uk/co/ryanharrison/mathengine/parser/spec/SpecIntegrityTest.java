@@ -2,7 +2,7 @@ package uk.co.ryanharrison.mathengine.parser.spec;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 
 import java.util.*;
 

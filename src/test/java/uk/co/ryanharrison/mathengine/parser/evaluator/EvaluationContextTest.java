@@ -3,8 +3,8 @@ package uk.co.ryanharrison.mathengine.parser.evaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeRational;
 
 import java.util.Map;
 

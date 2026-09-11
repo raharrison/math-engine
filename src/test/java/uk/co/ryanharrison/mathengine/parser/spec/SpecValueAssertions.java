@@ -2,8 +2,8 @@ package uk.co.ryanharrison.mathengine.parser.spec;
 
 import org.assertj.core.data.Offset;
 import uk.co.ryanharrison.mathengine.core.BigRational;
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.format.StringNodeFormatter;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
 import java.math.BigDecimal;
 import java.util.List;

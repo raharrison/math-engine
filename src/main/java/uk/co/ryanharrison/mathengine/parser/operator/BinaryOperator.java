@@ -1,6 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.operator;
 
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 
 /**

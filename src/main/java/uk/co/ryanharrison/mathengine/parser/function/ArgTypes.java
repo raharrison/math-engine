@@ -1,7 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
 /**
  * Factory for common {@link ArgType} extractors.

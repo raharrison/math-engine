@@ -425,7 +425,7 @@ class IntegratorTest {
         @Test
         void integrateXSquaredTimesExp() {
             // ∫x²*exp(x) dx - complex but should work with repeated integration by parts
-            // NOTE: Using (x^2)*exp(x) to work around parser precedence bug
+            // NOTE: Using (x^2)*exp(x) to work around syntax precedence bug
             String result = integrate("(x^2)*exp(x)");
             verifyDefiniteIntegral("(x^2)*exp(x)", result, 0.1, 2.0);
         }

@@ -17,7 +17,7 @@ final class SpecExceptions {
      */
     private static final List<String> PACKAGES = List.of(
             "uk.co.ryanharrison.mathengine.parser.evaluator.",
-            "uk.co.ryanharrison.mathengine.parser.parser.",
+            "uk.co.ryanharrison.mathengine.parser.syntax.",
             "uk.co.ryanharrison.mathengine.parser.lexer.",
             "uk.co.ryanharrison.mathengine.parser.",
             "uk.co.ryanharrison.mathengine.core.",

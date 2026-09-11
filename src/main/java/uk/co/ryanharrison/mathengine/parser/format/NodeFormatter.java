@@ -1,13 +1,13 @@
 package uk.co.ryanharrison.mathengine.parser.format;
 
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
+import uk.co.ryanharrison.mathengine.parser.ast.Node;
 
 /**
  * Formats AST {@link Node} instances into string representations.
  * <p>
  * Implementations handle both unevaluated expressions ({@code NodeExpression} subtypes)
  * and evaluated constants ({@code NodeConstant} subtypes), making them suitable for
- * formatting both the input and output of a parser request.
+ * formatting both the input and output of a syntax request.
  * </p>
  * <p>
  * Formatters do not rely on any {@code Node.toString()} method; all formatting

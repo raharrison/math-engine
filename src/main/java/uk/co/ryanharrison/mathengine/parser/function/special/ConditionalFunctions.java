@@ -1,8 +1,8 @@
 package uk.co.ryanharrison.mathengine.parser.function.special;
 
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 
 import java.util.List;

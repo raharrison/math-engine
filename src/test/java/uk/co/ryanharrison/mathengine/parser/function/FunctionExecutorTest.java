@@ -2,13 +2,13 @@ package uk.co.ryanharrison.mathengine.parser.function;
 
 import org.junit.jupiter.api.Test;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeDouble;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeVector;
 import uk.co.ryanharrison.mathengine.parser.evaluator.ArityException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.RecursionTracker;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
 
 import java.util.List;
 

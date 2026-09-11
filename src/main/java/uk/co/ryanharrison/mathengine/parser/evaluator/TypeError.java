@@ -1,7 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.evaluator;
 
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
 /**
  * Exception thrown when an operation is applied to incompatible types.

@@ -33,17 +33,20 @@ src/main/java/uk/co/ryanharrison/mathengine/
 │   │   ├── Token.java                # Token record
 │   │   └── TokenType.java            # Token types enum
 │   │
-│   ├── parser/                       # AST construction
+│   ├── syntax/                       # Tokens → AST
 │   │   ├── Parser.java               # Main parser
 │   │   ├── PrecedenceParser.java     # Operator precedence
 │   │   ├── CollectionParser.java     # Vectors/matrices/comprehensions
-│   │   └── nodes/                    # AST node types
-│   │       ├── Node.java             # Base class
-│   │       ├── NodeConstant.java     # Values, and the arithmetic API
-│   │       ├── NodeArithmetic.java   # The one implementation of the type rules
-│   │       ├── NodeExpression.java   # Unevaluated AST
-│   │       ├── NodeVariable.java     # Variable reference
-│   │       └── (30+ other nodes)
+│   │   ├── TokenStream.java          # Token navigation and lookahead
+│   │   └── ParseException.java       # Syntax errors
+│   │
+│   ├── ast/                          # The node types the parser produces
+│   │   ├── Node.java                 # Base class
+│   │   ├── NodeConstant.java         # Values, and the arithmetic API
+│   │   ├── NodeArithmetic.java       # The one implementation of the type rules
+│   │   ├── NodeExpression.java       # Unevaluated AST
+│   │   ├── NodeVariable.java         # Variable reference
+│   │   └── (30+ other nodes)
 │   │
 │   ├── evaluator/                    # Evaluation engine
 │   │   ├── Evaluator.java            # Main evaluator; scope is a parameter
@@ -131,10 +134,10 @@ src/main/java/uk/co/ryanharrison/mathengine/
 ./gradlew test --info
 
 # Run tests for a specific class
-./gradlew test --tests uk.co.ryanharrison.mathengine.parser.ParserTest
+./gradlew test --tests uk.co.ryanharrison.mathengine.parser.syntax.ParserTest
 
 # Run a single test method
-./gradlew test --tests uk.co.ryanharrison.mathengine.parser.ParserTest.testSingleRowMatrix
+./gradlew test --tests uk.co.ryanharrison.mathengine.parser.syntax.ParserTest.testSingleRowMatrix
 
 # Run tests matching a pattern
 ./gradlew test --tests "*Distribution*"

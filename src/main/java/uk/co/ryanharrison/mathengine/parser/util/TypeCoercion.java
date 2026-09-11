@@ -1,9 +1,9 @@
 package uk.co.ryanharrison.mathengine.parser.util;
 
 import uk.co.ryanharrison.mathengine.core.BigRational;
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.format.StringNodeFormatter;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
 import java.math.BigDecimal;
 

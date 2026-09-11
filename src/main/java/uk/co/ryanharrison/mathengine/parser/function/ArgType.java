@@ -1,7 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
 /**
  * Describes how to extract a typed value from a {@link NodeConstant}.

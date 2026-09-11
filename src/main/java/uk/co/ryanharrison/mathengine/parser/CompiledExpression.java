@@ -1,10 +1,10 @@
 package uk.co.ryanharrison.mathengine.parser;
 
+import uk.co.ryanharrison.mathengine.parser.ast.Node;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeDouble;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeRational;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 import java.util.HashMap;

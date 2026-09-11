@@ -1,9 +1,9 @@
 package uk.co.ryanharrison.mathengine.parser.function.vector;
 
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 import java.util.ArrayList;

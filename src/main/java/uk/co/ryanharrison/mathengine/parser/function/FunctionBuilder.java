@@ -1,7 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 
 import java.util.ArrayList;

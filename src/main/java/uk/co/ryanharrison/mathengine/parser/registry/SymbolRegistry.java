@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Single source of truth for all symbol metadata in the parser.
+ * Single source of truth for all symbol metadata in the syntax.
  * <p>
  * This registry centralizes information about operators, their symbols, formats,
  * precedence, and classification. It eliminates duplication across TokenType,

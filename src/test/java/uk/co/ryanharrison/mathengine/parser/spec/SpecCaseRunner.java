@@ -2,8 +2,8 @@ package uk.co.ryanharrison.mathengine.parser.spec;
 
 import uk.co.ryanharrison.mathengine.parser.MathEngine;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.format.StringNodeFormatter;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -71,7 +71,7 @@ public final class SpecCaseRunner {
     }
 
     /**
-     * Checks that the declared grouping is the grouping the parser actually produced.
+     * Checks that the declared grouping is the grouping the syntax actually produced.
      * <p>
      * The annotation is an ordinary expression with explicit parentheses. Both it and
      * the input are parsed and rendered in the formatter's fully parenthesised form, so

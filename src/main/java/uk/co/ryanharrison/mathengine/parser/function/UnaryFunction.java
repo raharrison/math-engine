@@ -1,6 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 
 /**
  * The body of a single-argument function. Broadcasting over vectors and matrices

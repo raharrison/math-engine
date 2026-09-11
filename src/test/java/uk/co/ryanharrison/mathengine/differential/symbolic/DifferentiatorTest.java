@@ -67,7 +67,7 @@ class DifferentiatorTest {
             assertThat(result).matches(".*2.*x.*/2.*");
 
             // The issue with "x^2/2" is operator precedence - it's parsed as x^(2/2) = x^1
-            // d/dx[x^1] = 1*x^0 = x^0, which is wrong but indicates parser behavior
+            // d/dx[x^1] = 1*x^0 = x^0, which is wrong but indicates syntax behavior
             // For integration tests, use explicit parentheses
         }
     }

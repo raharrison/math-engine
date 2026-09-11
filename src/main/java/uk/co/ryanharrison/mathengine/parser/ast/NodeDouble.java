@@ -1,0 +1,58 @@
+package uk.co.ryanharrison.mathengine.parser.ast;
+
+/**
+ * Node representing a double-precision floating-point number (IEEE 754).
+ * Used for decimal numbers, scientific notation, and results of operations that require floating-point precision.
+ */
+public final class NodeDouble extends NodeNumber {
+
+    private final double value;
+
+    public NodeDouble(double value) {
+        this.value = value;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    @Override
+    public double doubleValue() {
+        return value;
+    }
+
+    @Override
+    public NodeNumber negate() {
+        return new NodeDouble(-value);
+    }
+
+    @Override
+    public NodeNumber abs() {
+        return new NodeDouble(Math.abs(value));
+    }
+
+    /**
+     * Whole numbers print without a decimal point, but only where a long can hold them.
+     */
+    @Override
+    public String toString() {
+        if (Double.isNaN(value) || Double.isInfinite(value)) {
+            return String.valueOf(value);
+        }
+        return (value == Math.floor(value) && Math.abs(value) < 1e15)
+                ? String.valueOf((long) value)
+                : String.valueOf(value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof NodeDouble other)) return false;
+        return Double.compare(value, other.value) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Double.hashCode(value);
+    }
+}

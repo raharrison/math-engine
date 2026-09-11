@@ -15,7 +15,7 @@ import java.util.Optional;
  * {@code F = C * 9/5 + 32}
  * </p>
  * <p>
- * Conversion equations are evaluated using the expression parser. Each complex unit
+ * Conversion equations are evaluated using the expression syntax. Each complex unit
  * defines conversion formulas to other units in its group.
  * </p>
  *

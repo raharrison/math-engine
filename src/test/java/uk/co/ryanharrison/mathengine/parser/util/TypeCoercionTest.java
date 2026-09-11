@@ -2,7 +2,7 @@ package uk.co.ryanharrison.mathengine.parser.util;
 
 import org.junit.jupiter.api.Test;
 import uk.co.ryanharrison.mathengine.core.BigRational;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 
 import java.math.BigInteger;
 

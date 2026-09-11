@@ -1,7 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.function.vector;
 
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeRational;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 import java.util.List;

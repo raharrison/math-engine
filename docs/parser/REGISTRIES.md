@@ -325,7 +325,7 @@ KeywordRegistry keywords = KeywordRegistry.standard();
 keywords.register("unless");
 
 // Now 'unless' can't be used as variable name
-// You'd also need to add parser support for the keyword
+// You'd also need to add syntax support for the keyword
 ```
 
 ---

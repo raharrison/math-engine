@@ -1,18 +1,18 @@
 package uk.co.ryanharrison.mathengine.parser;
 
+import uk.co.ryanharrison.mathengine.parser.ast.Node;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.evaluator.*;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.lexer.Lexer;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorExecutor;
-import uk.co.ryanharrison.mathengine.parser.parser.Parser;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.registry.ConstantDefinition;
 import uk.co.ryanharrison.mathengine.parser.registry.ConstantRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
+import uk.co.ryanharrison.mathengine.parser.syntax.Parser;
 
 import java.util.Collection;
 import java.util.EnumMap;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * Main entry point for the Math Engine parser and evaluator.
+ * Main entry point for the Math Engine syntax and evaluator.
  * <p>
  * An engine bundles an immutable {@link MathEngineConfig} with one mutable session
  * scope holding user-defined variables and functions. Configuration is shared and

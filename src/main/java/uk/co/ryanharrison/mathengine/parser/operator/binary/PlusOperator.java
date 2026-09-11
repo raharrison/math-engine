@@ -1,8 +1,8 @@
 package uk.co.ryanharrison.mathengine.parser.operator.binary;
 
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
 /**
  * Addition ({@code +}).

@@ -35,7 +35,7 @@ AST:
 
 ### Parser (Main Coordinator)
 
-**File:** `parser/Parser.java`
+**File:** `syntax/Parser.java`
 
 **Responsibility:** Entry point and pipeline coordinator
 
@@ -92,7 +92,7 @@ NodeSequence([NodeAssignment, NodeAssignment])
 
 ### TokenStream (Navigation)
 
-**File:** `parser/TokenStream.java`
+**File:** `syntax/TokenStream.java`
 
 **Responsibility:** Token navigation and manipulation
 
@@ -155,7 +155,7 @@ ParseException error(Token token, String message)  // Create exception with cont
 
 ### PrecedenceParser (Expression Parsing)
 
-**File:** `parser/PrecedenceParser.java`
+**File:** `syntax/PrecedenceParser.java`
 
 **Responsibility:** Parse expressions with correct precedence and associativity
 
@@ -216,14 +216,14 @@ private Node parseBinary(int minPrecedence) {
 
 ### CollectionParser (Collections & Comprehensions)
 
-**File:** `parser/CollectionParser.java`
+**File:** `syntax/CollectionParser.java`
 
 **Responsibility:** Parse collection literals and comprehensions
 
 **Constructor:**
 
 ```java
-// Takes expression parser as Supplier to break circular dependency
+// Takes expression syntax as Supplier to break circular dependency
 CollectionParser parser = new CollectionParser(stream, () -> parseExpression());
 ```
 
@@ -685,7 +685,7 @@ if (stream.match(RATIONAL)) {
     long denominator = Long.parseLong(parts[1]);
 
     if (denominator == 0) {
-        // Left as a division so that the evaluator raises the error, not the parser
+        // Left as a division so that the evaluator raises the error, not the syntax
         return new NodeBinary(divideToken,
                 new NodeRational(numerator), new NodeRational(0));
     }
@@ -1176,7 +1176,7 @@ SliceArg(1,3,true),SliceArg(null,null,true)]
 
 ### ParseException
 
-**File:** `parser/ParseException.java`
+**File:** `syntax/ParseException.java`
 
 **Extends:** `MathEngineException`
 

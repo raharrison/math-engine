@@ -1,12 +1,12 @@
 package uk.co.ryanharrison.mathengine.parser.evaluator.handler;
 
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.ResolutionContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.UndefinedVariableException;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.operator.binary.MultiplyOperator;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
 /**
  * Handles variable resolution with context-aware priority and explicit disambiguation support.

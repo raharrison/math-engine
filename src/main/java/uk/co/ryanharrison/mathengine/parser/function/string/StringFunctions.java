@@ -1,9 +1,9 @@
 package uk.co.ryanharrison.mathengine.parser.function.string;
 
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.util.Sequences;
 
 import java.util.List;

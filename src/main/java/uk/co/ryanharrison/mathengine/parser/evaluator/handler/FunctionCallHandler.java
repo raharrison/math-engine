@@ -1,12 +1,12 @@
 package uk.co.ryanharrison.mathengine.parser.evaluator.handler;
 
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.evaluator.*;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
 import uk.co.ryanharrison.mathengine.parser.function.LazyFunction;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.operator.binary.MultiplyOperator;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 

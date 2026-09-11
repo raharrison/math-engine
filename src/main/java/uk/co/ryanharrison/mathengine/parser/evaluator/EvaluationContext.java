@@ -2,8 +2,8 @@ package uk.co.ryanharrison.mathengine.parser.evaluator;
 
 import uk.co.ryanharrison.mathengine.core.AngleUnit;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 

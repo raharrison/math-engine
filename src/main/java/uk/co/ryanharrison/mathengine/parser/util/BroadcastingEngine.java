@@ -1,7 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.util;
 
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
 /**
  * Spreads a scalar operation over vectors and matrices.

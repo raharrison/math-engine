@@ -1,7 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.format;
 
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 import uk.co.ryanharrison.mathengine.parser.registry.SymbolRegistry;
 
 import java.util.List;

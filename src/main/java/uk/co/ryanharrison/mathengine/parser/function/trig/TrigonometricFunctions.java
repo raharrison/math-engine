@@ -1,9 +1,9 @@
 package uk.co.ryanharrison.mathengine.parser.function.trig;
 
+import uk.co.ryanharrison.mathengine.parser.ast.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.function.TrigFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 import uk.co.ryanharrison.mathengine.utils.TrigUtils;
 
 import java.util.List;

@@ -1,10 +1,10 @@
 package uk.co.ryanharrison.mathengine.parser.function.special;
 
 import uk.co.ryanharrison.mathengine.core.BigRational;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeDouble;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeRational;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
 import uk.co.ryanharrison.mathengine.special.Beta;
 import uk.co.ryanharrison.mathengine.special.Erf;
 import uk.co.ryanharrison.mathengine.special.Gamma;

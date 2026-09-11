@@ -1,9 +1,9 @@
 package uk.co.ryanharrison.mathengine.parser.registry;
 
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeRational;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeBoolean;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeDouble;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeRational;
 
 import java.util.*;
 

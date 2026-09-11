@@ -1,8 +1,8 @@
 package uk.co.ryanharrison.mathengine.parser.util;
 
 import org.junit.jupiter.api.Test;
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

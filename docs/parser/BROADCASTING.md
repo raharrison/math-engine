@@ -36,7 +36,7 @@ Vector  op Matrix  → Matrix (intelligent row/column broadcasting)
 - **Shared by operators and functions**: both reach it through `NodeConstant`
 - **Type preservation**: Maintains rational precision where possible
 
-### 2. NodeArithmetic (parser/nodes/NodeArithmetic.java)
+### 2. NodeArithmetic (ast/NodeArithmetic.java)
 
 The single implementation of the type rules, reached through `NodeConstant.add()`
 and its siblings. It calls `BroadcastingEngine` itself when either side is a

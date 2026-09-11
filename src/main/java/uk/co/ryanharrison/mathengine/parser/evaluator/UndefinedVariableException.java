@@ -17,7 +17,7 @@ import uk.co.ryanharrison.mathengine.parser.lexer.Token;
 public class UndefinedVariableException extends EvaluationException {
 
     /**
-     * What the parser was trying to resolve, which decides the wording.
+     * What the syntax was trying to resolve, which decides the wording.
      */
     public enum Kind {
         /**

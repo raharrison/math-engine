@@ -1,7 +1,7 @@
 package uk.co.ryanharrison.mathengine.differential.symbolic;
 
 import uk.co.ryanharrison.mathengine.core.Function;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
+import uk.co.ryanharrison.mathengine.parser.ast.Node;
 import uk.co.ryanharrison.mathengine.parser.symbolic.ExpressionItem;
 import uk.co.ryanharrison.mathengine.parser.symbolic.TreeToStack;
 import uk.co.ryanharrison.mathengine.utils.Utils;

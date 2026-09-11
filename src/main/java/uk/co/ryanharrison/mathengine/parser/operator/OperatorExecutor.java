@@ -1,8 +1,8 @@
 package uk.co.ryanharrison.mathengine.parser.operator;
 
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationException;
 import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
 import java.util.HashMap;
 import java.util.Map;

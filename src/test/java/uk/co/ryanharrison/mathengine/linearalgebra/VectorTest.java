@@ -189,7 +189,7 @@ class VectorTest {
 
     @Test
     void parseRejectsInvalidNumberFormat() {
-        // The parser extracts numeric sequences, so "1.2.3" becomes an invalid number
+        // The syntax extracts numeric sequences, so "1.2.3" becomes an invalid number
         assertThatThrownBy(() -> Vector.parse("{1.2.3, 4.5}"))
                 .isInstanceOf(NumberFormatException.class);
     }

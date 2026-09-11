@@ -1,6 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.evaluator;
 
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
+import uk.co.ryanharrison.mathengine.parser.ast.Node;
 
 import java.util.List;
 

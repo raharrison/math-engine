@@ -1,9 +1,9 @@
 package uk.co.ryanharrison.mathengine.parser.operator.unary;
 
+import uk.co.ryanharrison.mathengine.parser.ast.NodeBoolean;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.operator.UnaryOperator;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 /**

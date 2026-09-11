@@ -1,9 +1,9 @@
 package uk.co.ryanharrison.mathengine.parser.operator.binary;
 
+import uk.co.ryanharrison.mathengine.parser.ast.NodeBoolean;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 import uk.co.ryanharrison.mathengine.parser.operator.BinaryOperator;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeBoolean;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
 
 import java.util.function.IntPredicate;
 

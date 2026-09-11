@@ -1,13 +1,13 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
+import uk.co.ryanharrison.mathengine.parser.ast.Node;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeDouble;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeVector;
 import uk.co.ryanharrison.mathengine.parser.evaluator.ArityException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationException;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.Node;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeVector;
 import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 
 import java.util.*;

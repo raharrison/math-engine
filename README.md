@@ -298,7 +298,7 @@ The `Function` class provides a simple interface for working with single-variabl
 
 ```java
 import uk.co.ryanharrison.mathengine.core.Function;
-import uk.co.ryanharrison.mathengine.parser.AngleUnit;
+import uk.co.ryanharrison.mathengine.core.AngleUnit;
 
 // Create function (defaults to variable 'x' and radians)
 Function f = new Function("x^2 + 8*x + 12");
@@ -793,7 +793,6 @@ Add your own functions to the parser:
 
 ```java
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.*;
 
 // Define custom function
 MathFunction myFunc = new MathFunction() {
@@ -814,13 +813,13 @@ MathFunction myFunc = new MathFunction() {
     }
 };
 
-// Register with engine
-MathEngineConfig config = MathEngineConfig.builder()
-    .additionalFunction(myFunc)
-    .build();
-MathEngine engine = MathEngine.create(config);
+        // Register with engine
+        MathEngineConfig config = MathEngineConfig.builder()
+                .additionalFunction(myFunc)
+                .build();
+        MathEngine engine = MathEngine.create(config);
 
-NodeConstant result = engine.evaluate("double(21)");  // 42
+        NodeConstant result = engine.evaluate("double(21)");  // 42
 ```
 
 ### Error Handling
@@ -829,26 +828,38 @@ All parser exceptions extend `MathEngineException` and provide detailed error me
 
 ```java
 import uk.co.ryanharrison.mathengine.parser.MathEngineException;
-import uk.co.ryanharrison.mathengine.parser.parser.ParseException;
+import uk.co.ryanharrison.mathengine.parser.syntax.ParseException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.UndefinedVariableException;
 
 MathEngine engine = MathEngine.create();
 
-try {
-    engine.evaluate("2 + * 3");  // Syntax error
-} catch (ParseException e) {
-    System.out.println(e.formatMessage());
-    // Parse error at line 1, column 5: Unexpected token '*'
-    //    1 | 2 + * 3
-    //      |      ^
-}
+try{
+        engine.
 
-try {
-    engine.evaluate("unknownVar + 5");
-} catch (UndefinedVariableException e) {
-    System.out.println(e.formatMessage());
-    System.out.println(e.getVariableName());  // "unknownVar"
-}
+evaluate("2 + * 3");  // Syntax error
+}catch(
+ParseException e){
+        System.out.
+
+println(e.formatMessage());
+        // Parse error at line 1, column 5: Unexpected token '*'
+        //    1 | 2 + * 3
+        //      |      ^
+        }
+
+        try{
+        engine.
+
+evaluate("unknownVar + 5");
+}catch(
+UndefinedVariableException e){
+        System.out.
+
+println(e.formatMessage());
+        System.out.
+
+println(e.getVariableName());  // "unknownVar"
+        }
 ```
 
 ---

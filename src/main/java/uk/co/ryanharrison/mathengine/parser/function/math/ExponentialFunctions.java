@@ -1,8 +1,8 @@
 package uk.co.ryanharrison.mathengine.parser.function.math;
 
+import uk.co.ryanharrison.mathengine.parser.ast.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeDouble;
 
 import java.util.List;
 

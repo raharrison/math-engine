@@ -201,7 +201,7 @@ public final class TokenScanner {
         if (scanner.match('>')) {
             addToken(TokenType.LAMBDA, "->");
         } else {
-            // Minus operator; parser will handle unary minus
+            // Minus operator; syntax will handle unary minus
             addToken(TokenType.MINUS, "-");
         }
     }
@@ -406,7 +406,7 @@ public final class TokenScanner {
             long value = Long.parseLong(text);
             addToken(TokenType.INTEGER, text, value);
         } catch (NumberFormatException e) {
-            // Number too large for long — store as BigInteger, parser handles it
+            // Number too large for long — store as BigInteger, syntax handles it
             addToken(TokenType.INTEGER, text, new BigInteger(text));
         }
     }

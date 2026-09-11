@@ -1,6 +1,6 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
-import uk.co.ryanharrison.mathengine.parser.parser.nodes.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 
 import java.util.List;
 
