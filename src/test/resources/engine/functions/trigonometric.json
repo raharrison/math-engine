@@ -318,6 +318,128 @@
             "config": {
                 "angleUnit": "DEGREES"
             }
+        },
+        {
+            "id": "asec_001",
+            "input": "asec(2)",
+            "expected": 1.0471975511965979,
+            "expectedType": "NodeDouble",
+            "notes": "asec(x) is acos(1/x), so asec(2) is a third of a half turn"
+        },
+        {
+            "id": "asec_at_one",
+            "input": "asec(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "acos(1) = 0"
+        },
+        {
+            "id": "asec_negative",
+            "input": "asec(-2)",
+            "expected": 2.0943951023931957,
+            "expectedType": "NodeDouble",
+            "notes": "acos(-1/2)"
+        },
+        {
+            "id": "asec_degrees",
+            "input": "asec(2)",
+            "expected": 60.0,
+            "expectedType": "NodeDouble",
+            "notes": "The result is an angle, so it follows the configured unit",
+            "config": {
+                "angleUnit": "DEGREES"
+            }
+        },
+        {
+            "id": "acsc_001",
+            "input": "acsc(2)",
+            "expected": 0.5235987755982989,
+            "expectedType": "NodeDouble",
+            "notes": "acsc(x) is asin(1/x), so acsc(2) is a sixth of a half turn"
+        },
+        {
+            "id": "acsc_at_one",
+            "input": "acsc(1)",
+            "expected": 1.5707963267948966,
+            "expectedType": "NodeDouble",
+            "notes": "asin(1) = a quarter turn"
+        },
+        {
+            "id": "acsc_negative",
+            "input": "acsc(-2)",
+            "expected": -0.5235987755982989,
+            "expectedType": "NodeDouble",
+            "notes": "asin(-1/2)"
+        },
+        {
+            "id": "acsc_degrees",
+            "input": "acsc(2)",
+            "expected": 30.0,
+            "expectedType": "NodeDouble",
+            "notes": "The same in degrees",
+            "config": {
+                "angleUnit": "DEGREES"
+            }
+        },
+        {
+            "id": "acot_001",
+            "input": "acot(1)",
+            "expected": 0.7853981633974483,
+            "expectedType": "NodeDouble",
+            "notes": "acot(x) is atan(1/x), so acot(1) is an eighth of a half turn"
+        },
+        {
+            "id": "acot_at_zero",
+            "input": "acot(0)",
+            "expected": 1.5707963267948966,
+            "expectedType": "NodeDouble",
+            "notes": "atan(1/x) takes the value of a quarter turn at zero rather than being undefined"
+        },
+        {
+            "id": "acot_negative",
+            "input": "acot(-1)",
+            "expected": -0.7853981633974483,
+            "expectedType": "NodeDouble",
+            "notes": "The atan(1/x) branch, so a negative argument gives a negative angle"
+        },
+        {
+            "id": "acot_degrees",
+            "input": "acot(1)",
+            "expected": 45.0,
+            "expectedType": "NodeDouble",
+            "notes": "The same in degrees",
+            "config": {
+                "angleUnit": "DEGREES"
+            }
+        },
+        {
+            "id": "asec_broadcasts",
+            "input": "asec({2, -2})",
+            "expected": [
+                1.0471975511965979,
+                2.0943951023931957
+            ],
+            "expectedType": "NodeVector",
+            "notes": "An inverse broadcasts element-wise like the rest of the family"
+        },
+        {
+            "id": "asec_round_trip",
+            "input": "sec(asec(2))",
+            "expected": 2.0,
+            "expectedType": "NodeDouble",
+            "notes": "The inverse undoes the function, in either angle unit",
+            "tolerance": 1e-09
+        },
+        {
+            "id": "acot_round_trip_degrees",
+            "input": "acot(cot(45))",
+            "expected": 45.0,
+            "expectedType": "NodeDouble",
+            "notes": "And the same in degrees, since both ends use the configured unit",
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "tolerance": 1e-09
         }
     ]
 }

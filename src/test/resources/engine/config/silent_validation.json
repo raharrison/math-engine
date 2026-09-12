@@ -13,6 +13,19 @@
             "notes": "acos(-2) returns NaN in silent mode (domain is [-1, 1])"
         },
         {
+            "id": "acoth_out_of_domain_silent",
+            "input": "acoth({0.5, 2})",
+            "expected": [
+                "NaN",
+                0.5493061443340549
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A domain error inside a collection is NaN for that element, as for ln",
+            "config": {
+                "silentValidation": true
+            }
+        },
+        {
             "id": "asin_out_of_range_silent",
             "input": "asin(2)",
             "expected": "NaN",

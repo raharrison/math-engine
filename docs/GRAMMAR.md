@@ -380,9 +380,15 @@ cannot be redefined.
 
 **Inverse Trigonometry:**
 
-- `asin(x)` - Arcsine (returns in configured angle unit)
-- `acos(x)` - Arccosine
+Every inverse answers an angle in the configured unit, and a restricted domain is a domain
+error (NaN under silent validation).
+
+- `asin(x)` - Arcsine, defined on [-1, 1] (returns in configured angle unit)
+- `acos(x)` - Arccosine, defined on [-1, 1]
 - `atan(x)` - Arctangent
+- `asec(x)` - Arcsecant, `acos(1/x)`, defined for |x| >= 1
+- `acsc(x)` - Arccosecant, `asin(1/x)`, defined for |x| >= 1
+- `acot(x)` - Arccotangent, `atan(1/x)`, a quarter turn at zero
 - `atan2(y, x)` - Two-argument arctangent (handles quadrants)
 
 **Hyperbolic Functions:**
@@ -397,8 +403,11 @@ cannot be redefined.
 **Inverse Hyperbolic:**
 
 - `asinh(x)` - Inverse hyperbolic sine
-- `acosh(x)` - Inverse hyperbolic cosine
-- `atanh(x)` - Inverse hyperbolic tangent
+- `acosh(x)` - Inverse hyperbolic cosine, defined for x >= 1
+- `atanh(x)` - Inverse hyperbolic tangent, defined for |x| < 1
+- `asech(x)` - Inverse hyperbolic secant, `acosh(1/x)`, defined on (0, 1]
+- `acsch(x)` - Inverse hyperbolic cosecant, `asinh(1/x)`, undefined at zero
+- `acoth(x)` - Inverse hyperbolic cotangent, `atanh(1/x)`, defined for |x| > 1
 
 **Angle Conversion:**
 

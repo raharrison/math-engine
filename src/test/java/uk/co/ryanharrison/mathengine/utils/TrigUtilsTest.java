@@ -21,6 +21,44 @@ class TrigUtilsTest {
 
     @ParameterizedTest
     @CsvSource({
+            "0.0, 0.0",                     // asin(0) = 0
+            "1.0, 1.5707963267948966",      // asin(1) = π/2
+            "-1.0, -1.5707963267948966",    // asin(-1) = -π/2
+            "0.5, 0.5235987755982989"       // asin(1/2) = π/6
+    })
+    void asin_ValidInput_ReturnsCorrectValue(double input, double expected) {
+        assertThat(TrigUtils.asin(input)).isCloseTo(expected, within(TOLERANCE));
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {1.01, -1.01, 2.0, -2.0})
+    void asin_InputOutsideUnitRange_ThrowsException(double input) {
+        assertThatThrownBy(() -> TrigUtils.asin(input))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Arcsine requires |x| <= 1");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1.0, 0.0",                     // acos(1) = 0
+            "0.0, 1.5707963267948966",      // acos(0) = π/2
+            "-1.0, 3.141592653589793",      // acos(-1) = π
+            "0.5, 1.0471975511965979"       // acos(1/2) = π/3
+    })
+    void acos_ValidInput_ReturnsCorrectValue(double input, double expected) {
+        assertThat(TrigUtils.acos(input)).isCloseTo(expected, within(TOLERANCE));
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {1.01, -1.01, 2.0, -2.0})
+    void acos_InputOutsideUnitRange_ThrowsException(double input) {
+        assertThatThrownBy(() -> TrigUtils.acos(input))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Arccosine requires |x| <= 1");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
             "1.0, 1.5707963267948966",      // acosec(1) = π/2
             "-1.0, -1.5707963267948966",    // acosec(-1) = -π/2
             "2.0, 0.5235987755982989",      // acosec(2) = π/6

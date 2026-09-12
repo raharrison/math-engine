@@ -461,20 +461,29 @@ lerp(a,b,t)  // Linear interpolation
 
 ### Trigonometric Functions
 
-**Basic** (`trig/TrigonometricFunctions.java`):
+**Circular** (`trig/TrigonometricFunctions.java`):
 
 ```
-sin(x), cos(x), tan(x)
-asin(x), acos(x), atan(x)
-atan2(y, x)  // Two-argument arctangent
+sin(x),  cos(x),  tan(x)     // the argument is an angle
+sec(x),  csc(x),  cot(x)     // reciprocals, also of an angle
+asin(x), acos(x), atan(x)    // the result is an angle
+asec(x), acsc(x), acot(x)    // inverse reciprocals: acos(1/x), asin(1/x), atan(1/x)
+atan2(y, x)                  // two-argument arctangent
 ```
 
 **Hyperbolic** (`trig/HyperbolicFunctions.java`):
 
 ```
-sinh(x), cosh(x), tanh(x)
+sinh(x),  cosh(x),  tanh(x)
+sech(x),  csch(x),  coth(x)
 asinh(x), acosh(x), atanh(x)
+asech(x), acsch(x), acoth(x)  // acosh(1/x), asinh(1/x), atanh(1/x)
 ```
+
+Both families are built by one factory each, so every entry is a name, a description and
+the operation. A restricted domain lives with the maths in `TrigUtils`, and
+`FunctionContext.checkingDomain` turns its complaint into the engine's own
+`DomainException`.
 
 ### Vector Functions
 

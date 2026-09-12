@@ -141,6 +141,73 @@
             "expected": -0.7615941559557649,
             "expectedType": "NodeDouble",
             "notes": "tanh(-1) = -tanh(1)"
+        },
+        {
+            "id": "asech_at_one",
+            "input": "asech(1)",
+            "expected": 0.0,
+            "expectedType": "NodeDouble",
+            "notes": "acosh(1) = 0"
+        },
+        {
+            "id": "asech_001",
+            "input": "asech(0.5)",
+            "expected": 1.3169578969248166,
+            "expectedType": "NodeDouble",
+            "notes": "asech(x) is acosh(1/x)"
+        },
+        {
+            "id": "asech_matches_acosh",
+            "input": "asech(0.5) == acosh(2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Which is the definition, so the two agree exactly"
+        },
+        {
+            "id": "acsch_001",
+            "input": "acsch(1)",
+            "expected": 0.8813735870195429,
+            "expectedType": "NodeDouble",
+            "notes": "acsch(x) is asinh(1/x)"
+        },
+        {
+            "id": "acsch_negative",
+            "input": "acsch(-1)",
+            "expected": -0.8813735870195429,
+            "expectedType": "NodeDouble",
+            "notes": "Odd, like asinh"
+        },
+        {
+            "id": "acoth_001",
+            "input": "acoth(2)",
+            "expected": 0.5493061443340549,
+            "expectedType": "NodeDouble",
+            "notes": "acoth(x) is atanh(1/x)"
+        },
+        {
+            "id": "acoth_negative",
+            "input": "acoth(-2)",
+            "expected": -0.5493061443340549,
+            "expectedType": "NodeDouble",
+            "notes": "Odd, like atanh"
+        },
+        {
+            "id": "asech_round_trip",
+            "input": "sech(asech(0.5))",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "notes": "The inverse undoes the function",
+            "tolerance": 1e-09
+        },
+        {
+            "id": "asech_broadcasts",
+            "input": "asech({0.5, 1})",
+            "expected": [
+                1.3169578969248166,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Element-wise over a vector"
         }
     ]
 }

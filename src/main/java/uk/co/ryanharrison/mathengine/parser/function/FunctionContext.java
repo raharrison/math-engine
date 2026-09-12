@@ -101,6 +101,25 @@ public final class FunctionContext {
                 "requires value in range [" + min + ", " + max + "], got: " + value);
     }
 
+    /**
+     * Adapts a maths routine that polices its own domain, so its complaint arrives as a
+     * {@link DomainException} attributed to the function, exactly as the require* checks
+     * above do, rather than as a raw {@link IllegalArgumentException} that
+     * {@code silentValidation} would not catch.
+     */
+    public DoubleUnaryOperator checkingDomain(DoubleUnaryOperator fn) {
+        return value -> {
+            try {
+                return fn.applyAsDouble(value);
+            } catch (IllegalArgumentException e) {
+                if (isSilentValidation()) {
+                    return Double.NaN;
+                }
+                throw error(e.getMessage());
+            }
+        };
+    }
+
     private double require(boolean valid, double value, String message) {
         if (valid) {
             return value;

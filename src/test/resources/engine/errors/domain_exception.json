@@ -17,11 +17,67 @@
             "notes": "acos requires input in range [-1,1]"
         },
         {
+            "id": "acosh_domain_001",
+            "input": "acosh(0.5)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "acosh requires x >= 1, reported like every other domain error",
+            "expectedErrorMessage": "x >= 1"
+        },
+        {
+            "id": "acoth_domain_001",
+            "input": "acoth(1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "acoth is atanh(1/x), so it needs |x| > 1",
+            "expectedErrorMessage": "|x| > 1"
+        },
+        {
+            "id": "acsc_domain_001",
+            "input": "acsc(0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "acsc is asin(1/x), so it needs |x| >= 1",
+            "expectedErrorMessage": "|x| >= 1"
+        },
+        {
+            "id": "acsch_domain_001",
+            "input": "acsch(0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "acsch is asinh(1/x), which has no value at zero",
+            "expectedErrorMessage": "undefined for x = 0"
+        },
+        {
+            "id": "asec_domain_001",
+            "input": "asec(0.5)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "asec is acos(1/x), so it needs |x| >= 1",
+            "expectedErrorMessage": "|x| >= 1"
+        },
+        {
+            "id": "asech_domain_001",
+            "input": "asech(2)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "asech is acosh(1/x), so it needs 0 < x <= 1",
+            "expectedErrorMessage": "0 < x <= 1"
+        },
+        {
             "id": "asin_outofrange_001",
             "input": "asin(2)",
             "expectError": true,
             "expectedErrorType": "DomainException",
             "notes": "asin requires input in range [-1,1]"
+        },
+        {
+            "id": "atanh_domain_001",
+            "input": "atanh(2)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "atanh requires |x| < 1, reported like every other domain error",
+            "expectedErrorMessage": "|x| < 1"
         },
         {
             "id": "col_outofbounds_001",
@@ -36,6 +92,22 @@
             "expectError": true,
             "expectedErrorType": "DomainException",
             "notes": "Correlation requires equal length vectors"
+        },
+        {
+            "id": "cot_at_a_pole",
+            "input": "cot(0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "A pole of the function is a domain error like any other",
+            "expectedErrorMessage": "tan(x) = 0"
+        },
+        {
+            "id": "coth_at_zero",
+            "input": "coth(0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "notes": "coth is 1/tanh, which has no value at zero",
+            "expectedErrorMessage": "undefined for x = 0"
         },
         {
             "id": "covariance_length_001",

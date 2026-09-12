@@ -1,10 +1,12 @@
 package uk.co.ryanharrison.mathengine.parser.function.trig;
 
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.utils.TrigUtils;
 
 import java.util.List;
+import java.util.function.DoubleUnaryOperator;
 
 import static uk.co.ryanharrison.mathengine.parser.function.MathFunction.Category.HYPERBOLIC;
 
@@ -13,6 +15,10 @@ import static uk.co.ryanharrison.mathengine.parser.function.MathFunction.Categor
  * <p>
  * Hyperbolic functions do NOT use the angle unit setting since they
  * operate on real numbers, not angles.
+ * <p>
+ * A restricted domain belongs to the maths: the routines in {@link TrigUtils} police their
+ * own arguments, and {@link FunctionContext#checkingDomain} reports that as the engine's
+ * own domain error, as it does for the circular functions.
  */
 public final class HyperbolicFunctions {
 
@@ -22,107 +28,82 @@ public final class HyperbolicFunctions {
     // ==================== Standard Hyperbolic Functions ====================
 
     /**
-     * Hyperbolic sine function
+     * Hyperbolic sine function.
      */
-    public static final MathFunction SINH = FunctionBuilder
-            .named("sinh")
-            .describedAs("Returns the hyperbolic sine of x")
-            .withParams("x")
-            .inCategory(HYPERBOLIC)
-            .takingUnary()
-            .implementedByDouble(Math::sinh);
+    public static final MathFunction SINH = hyperbolic(
+            "sinh", "Returns the hyperbolic sine of x", Math::sinh);
 
     /**
-     * Hyperbolic cosine function
+     * Hyperbolic cosine function.
      */
-    public static final MathFunction COSH = FunctionBuilder
-            .named("cosh")
-            .describedAs("Returns the hyperbolic cosine of x")
-            .withParams("x")
-            .inCategory(HYPERBOLIC)
-            .takingUnary()
-            .implementedByDouble(Math::cosh);
+    public static final MathFunction COSH = hyperbolic(
+            "cosh", "Returns the hyperbolic cosine of x", Math::cosh);
 
     /**
-     * Hyperbolic tangent function
+     * Hyperbolic tangent function.
      */
-    public static final MathFunction TANH = FunctionBuilder
-            .named("tanh")
-            .describedAs("Returns the hyperbolic tangent of x")
-            .withParams("x")
-            .inCategory(HYPERBOLIC)
-            .takingUnary()
-            .implementedByDouble(Math::tanh);
-
-    // ==================== Inverse Hyperbolic Functions ====================
-
-    /**
-     * Inverse hyperbolic sine (area hyperbolic sine)
-     */
-    public static final MathFunction ASINH = FunctionBuilder
-            .named("asinh")
-            .describedAs("Returns the inverse hyperbolic sine of x")
-            .withParams("x")
-            .inCategory(HYPERBOLIC)
-            .takingUnary()
-            .implementedByDouble(TrigUtils::asinh);
-
-    /**
-     * Inverse hyperbolic cosine (area hyperbolic cosine)
-     */
-    public static final MathFunction ACOSH = FunctionBuilder
-            .named("acosh")
-            .describedAs("Returns the inverse hyperbolic cosine of x")
-            .withParams("x")
-            .inCategory(HYPERBOLIC)
-            .takingUnary()
-            .implementedByDouble(TrigUtils::acosh);
-
-    /**
-     * Inverse hyperbolic tangent (area hyperbolic tangent)
-     */
-    public static final MathFunction ATANH = FunctionBuilder
-            .named("atanh")
-            .describedAs("Returns the inverse hyperbolic tangent of x")
-            .withParams("x")
-            .inCategory(HYPERBOLIC)
-            .takingUnary()
-            .implementedByDouble(TrigUtils::atanh);
+    public static final MathFunction TANH = hyperbolic(
+            "tanh", "Returns the hyperbolic tangent of x", Math::tanh);
 
     // ==================== Reciprocal Hyperbolic Functions ====================
 
     /**
-     * Hyperbolic secant (1/cosh)
+     * Hyperbolic secant (1/cosh).
      */
-    public static final MathFunction SECH = FunctionBuilder
-            .named("sech")
-            .describedAs("Returns the hyperbolic secant of x (1/cosh(x))")
-            .withParams("x")
-            .inCategory(HYPERBOLIC)
-            .takingUnary()
-            .implementedByDouble(TrigUtils::sech);
+    public static final MathFunction SECH = hyperbolic(
+            "sech", "Returns the hyperbolic secant of x (1/cosh(x))", TrigUtils::sech);
 
     /**
-     * Hyperbolic cosecant (1/sinh)
+     * Hyperbolic cosecant (1/sinh), undefined at zero.
      */
-    public static final MathFunction CSCH = FunctionBuilder
-            .named("csch")
-            .describedAs("Returns the hyperbolic cosecant of x (1/sinh(x))")
-            .withParams("x")
-            .inCategory(HYPERBOLIC)
-            .takingUnary()
-            .implementedByDouble(TrigUtils::cosech);
+    public static final MathFunction CSCH = hyperbolic(
+            "csch", "Returns the hyperbolic cosecant of x (1/sinh(x))", TrigUtils::cosech);
 
     /**
-     * Hyperbolic cotangent (1/tanh)
+     * Hyperbolic cotangent (1/tanh), undefined at zero.
      */
-    public static final MathFunction COTH = FunctionBuilder
-            .named("coth")
-            .describedAs("Returns the hyperbolic cotangent of x (1/tanh(x))")
-            .withParams("x")
-            .inCategory(HYPERBOLIC)
-            .takingUnary()
-            .implementedByDouble(TrigUtils::coth);
+    public static final MathFunction COTH = hyperbolic(
+            "coth", "Returns the hyperbolic cotangent of x (1/tanh(x))", TrigUtils::coth);
+
+    // ==================== Inverse Hyperbolic Functions ====================
+
+    /**
+     * Inverse hyperbolic sine (area hyperbolic sine).
+     */
+    public static final MathFunction ASINH = hyperbolic(
+            "asinh", "Returns the inverse hyperbolic sine of x", TrigUtils::asinh);
+
+    /**
+     * Inverse hyperbolic cosine (area hyperbolic cosine), defined for x >= 1.
+     */
+    public static final MathFunction ACOSH = hyperbolic(
+            "acosh", "Returns the inverse hyperbolic cosine of x", TrigUtils::acosh);
+
+    /**
+     * Inverse hyperbolic tangent (area hyperbolic tangent), defined for |x| < 1.
+     */
+    public static final MathFunction ATANH = hyperbolic(
+            "atanh", "Returns the inverse hyperbolic tangent of x", TrigUtils::atanh);
+
+    // ==================== Inverse Reciprocal Hyperbolic Functions ====================
+
+    /**
+     * Inverse hyperbolic secant, acosh(1/x), defined on (0, 1].
+     */
+    public static final MathFunction ASECH = hyperbolic(
+            "asech", "Returns the inverse hyperbolic secant of x, acosh(1/x)", TrigUtils::asech);
+
+    /**
+     * Inverse hyperbolic cosecant, asinh(1/x), undefined at zero.
+     */
+    public static final MathFunction ACSCH = hyperbolic(
+            "acsch", "Returns the inverse hyperbolic cosecant of x, asinh(1/x)", TrigUtils::acosech);
+
+    /**
+     * Inverse hyperbolic cotangent, atanh(1/x), defined for |x| > 1.
+     */
+    public static final MathFunction ACOTH = hyperbolic(
+            "acoth", "Returns the inverse hyperbolic cotangent of x, atanh(1/x)", TrigUtils::acoth);
 
     // ==================== All Functions ====================
 
@@ -132,15 +113,35 @@ public final class HyperbolicFunctions {
      * @return list of all hyperbolic functions
      */
     public static List<MathFunction> all() {
-        return List.of(SINH, COSH, TANH, ASINH, ACOSH, ATANH, SECH, CSCH, COTH);
+        return List.of(SINH, COSH, TANH, SECH, CSCH, COTH,
+                ASINH, ACOSH, ATANH, ASECH, ACSCH, ACOTH);
     }
 
     /**
-     * Gets standard hyperbolic functions (sinh, cosh, tanh).
+     * Gets standard hyperbolic functions (sinh, cosh, tanh) and their reciprocals.
      *
      * @return list of standard hyperbolic functions
      */
     public static List<MathFunction> standard() {
-        return List.of(SINH, COSH, TANH);
+        return List.of(SINH, COSH, TANH, SECH, CSCH, COTH);
+    }
+
+    /**
+     * Gets the inverse hyperbolic functions.
+     *
+     * @return list of inverse hyperbolic functions
+     */
+    public static List<MathFunction> inverse() {
+        return List.of(ASINH, ACOSH, ATANH, ASECH, ACSCH, ACOTH);
+    }
+
+    private static MathFunction hyperbolic(String name, String description, DoubleUnaryOperator fn) {
+        return FunctionBuilder
+                .named(name)
+                .describedAs(description)
+                .withParams("x")
+                .inCategory(HYPERBOLIC)
+                .takingUnary()
+                .implementedBy((arg, ctx) -> ctx.mapDouble(arg, ctx.checkingDomain(fn)));
     }
 }

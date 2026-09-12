@@ -7,7 +7,7 @@ package uk.co.ryanharrison.mathengine.utils;
  * </p>
  * <ul>
  *     <li>Trigonometric functions: sec, csc, cot</li>
- *     <li>Inverse trigonometric functions: asec, acosec, acot</li>
+ *     <li>Inverse trigonometric functions: asin, acos, asec, acosec, acot</li>
  *     <li>Hyperbolic functions: sinh, cosh, tanh, sech, cosech, coth</li>
  *     <li>Inverse hyperbolic functions: asinh, acosh, atanh, asech, acosech, acoth</li>
  * </ul>
@@ -46,6 +46,34 @@ public final class TrigUtils {
     }
 
     // ==================== Inverse Trigonometric Functions ====================
+
+    /**
+     * Calculates the inverse sine (arcsine) of a value.
+     *
+     * @param a the value, must satisfy |a| ≤ 1
+     * @return the inverse sine of the value in radians, in the range [-π/2, π/2]
+     * @throws IllegalArgumentException if |a| > 1
+     */
+    public static double asin(double a) {
+        if (Math.abs(a) > 1.0) {
+            throw new IllegalArgumentException("Arcsine requires |x| <= 1, got: " + a);
+        }
+        return Math.asin(a);
+    }
+
+    /**
+     * Calculates the inverse cosine (arccosine) of a value.
+     *
+     * @param a the value, must satisfy |a| ≤ 1
+     * @return the inverse cosine of the value in radians, in the range [0, π]
+     * @throws IllegalArgumentException if |a| > 1
+     */
+    public static double acos(double a) {
+        if (Math.abs(a) > 1.0) {
+            throw new IllegalArgumentException("Arccosine requires |x| <= 1, got: " + a);
+        }
+        return Math.acos(a);
+    }
 
     /**
      * Calculates the inverse cosecant (arccosecant) of a value.
@@ -88,7 +116,8 @@ public final class TrigUtils {
      * </p>
      *
      * @param a the value
-     * @return the inverse cotangent of the value in radians, in the range (0, π)
+     * @return the inverse cotangent of the value in radians, in the range
+     *         [-π/2, π/2] excluding 0, taking the value π/2 at zero
      */
     public static double acot(double a) {
         return Math.atan(1.0 / a);

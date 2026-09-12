@@ -20,63 +20,83 @@ public final class TrigonometricFunctions {
     // ==================== Standard Trig Functions ====================
 
     /**
-     * Sine function
+     * Sine function.
      */
-    public static final MathFunction SIN = TrigFunction.standard("sin", "Returns the sine of x", Math::sin);
+    public static final MathFunction SIN = TrigFunction.standard(
+            "sin", "Returns the sine of x", Math::sin);
 
     /**
-     * Cosine function
+     * Cosine function.
      */
-    public static final MathFunction COS = TrigFunction.standard("cos", "Returns the cosine of x", Math::cos);
+    public static final MathFunction COS = TrigFunction.standard(
+            "cos", "Returns the cosine of x", Math::cos);
 
     /**
-     * Tangent function
+     * Tangent function.
      */
-    public static final MathFunction TAN = TrigFunction.standard("tan", "Returns the tangent of x", Math::tan);
-
-    // ==================== Inverse Trig Functions ====================
-
-    /**
-     * Arcsine function, defined on [-1, 1]
-     */
-    public static final MathFunction ASIN = TrigFunction.inverse(
-            "asin", "Returns the arcsine of x (inverse sine)", -1.0, 1.0, Math::asin);
-
-    /**
-     * Arccosine function, defined on [-1, 1]
-     */
-    public static final MathFunction ACOS = TrigFunction.inverse(
-            "acos", "Returns the arccosine of x (inverse cosine)", -1.0, 1.0, Math::acos);
-
-    /**
-     * Arctangent function
-     */
-    public static final MathFunction ATAN = TrigFunction.inverse(
-            "atan", "Returns the arctangent of x (inverse tangent)", Math::atan);
-
-    /**
-     * Two-argument arctangent function
-     */
-    public static final MathFunction ATAN2 = TrigFunction.inverseBinary("atan2",
-            "Returns the angle to point (x, y) in current angle units; takes y first, then x (atan2 convention)",
-            "y", "x", Math::atan2);
+    public static final MathFunction TAN = TrigFunction.standard(
+            "tan", "Returns the tangent of x", Math::tan);
 
     // ==================== Reciprocal Trig Functions ====================
 
     /**
-     * Secant function (1/cos)
+     * Secant function (1/cos).
      */
-    public static final MathFunction SEC = TrigFunction.standard("sec", "Returns the secant of x (1/cos(x))", TrigUtils::sec);
+    public static final MathFunction SEC = TrigFunction.standard(
+            "sec", "Returns the secant of x (1/cos(x))", TrigUtils::sec);
 
     /**
-     * Cosecant function (1/sin)
+     * Cosecant function (1/sin).
      */
-    public static final MathFunction CSC = TrigFunction.standard("csc", "Returns the cosecant of x (1/sin(x))", TrigUtils::cosec);
+    public static final MathFunction CSC = TrigFunction.standard(
+            "csc", "Returns the cosecant of x (1/sin(x))", TrigUtils::cosec);
 
     /**
-     * Cotangent function (1/tan)
+     * Cotangent function (1/tan).
      */
-    public static final MathFunction COT = TrigFunction.standard("cot", "Returns the cotangent of x (1/tan(x))", TrigUtils::cot);
+    public static final MathFunction COT = TrigFunction.standard(
+            "cot", "Returns the cotangent of x (1/tan(x))", TrigUtils::cot);
+
+    // ==================== Inverse Trig Functions ====================
+
+    /** Arcsine function, defined on [-1, 1]. */
+    public static final MathFunction ASIN = TrigFunction.inverse(
+            "asin", "Returns the arcsine of x (inverse sine)", TrigUtils::asin);
+
+    /** Arccosine function, defined on [-1, 1]. */
+    public static final MathFunction ACOS = TrigFunction.inverse(
+            "acos", "Returns the arccosine of x (inverse cosine)", TrigUtils::acos);
+
+    /** Arctangent function. */
+    public static final MathFunction ATAN = TrigFunction.inverse(
+            "atan", "Returns the arctangent of x (inverse tangent)", Math::atan);
+
+    // ==================== Inverse Reciprocal Trig Functions ====================
+
+    /**
+     * Arcsecant function, acos(1/x), defined for |x| >= 1.
+     */
+    public static final MathFunction ASEC = TrigFunction.inverse(
+            "asec", "Returns the arcsecant of x (inverse secant), acos(1/x)", TrigUtils::asec);
+
+    /**
+     * Arccosecant function, asin(1/x), defined for |x| >= 1.
+     */
+    public static final MathFunction ACSC = TrigFunction.inverse(
+            "acsc", "Returns the arccosecant of x (inverse cosecant), asin(1/x)", TrigUtils::acosec);
+
+    /**
+     * Arccotangent function, atan(1/x), which is a quarter turn at zero.
+     */
+    public static final MathFunction ACOT = TrigFunction.inverse(
+            "acot", "Returns the arccotangent of x (inverse cotangent), atan(1/x)", TrigUtils::acot);
+
+    // ==================== Two-Argument Inverse ====================
+
+    /** Two-argument arctangent function. */
+    public static final MathFunction ATAN2 = TrigFunction.inverseBinary("atan2",
+            "Returns the angle to point (x, y) in current angle units; takes y first, then x (atan2 convention)",
+            "y", "x", Math::atan2);
 
     // ==================== All Functions ====================
 
@@ -86,24 +106,24 @@ public final class TrigonometricFunctions {
      * @return list of all trig functions
      */
     public static List<MathFunction> all() {
-        return List.of(SIN, COS, TAN, ASIN, ACOS, ATAN, ATAN2, SEC, CSC, COT);
+        return List.of(SIN, COS, TAN, SEC, CSC, COT, ASIN, ACOS, ATAN, ASEC, ACSC, ACOT, ATAN2);
     }
 
     /**
-     * Gets standard trig functions (sin, cos, tan).
+     * Gets the functions whose argument is an angle.
      *
-     * @return list of standard trig functions
+     * @return sin, cos, tan and their reciprocals
      */
     public static List<MathFunction> standard() {
-        return List.of(SIN, COS, TAN);
+        return List.of(SIN, COS, TAN, SEC, CSC, COT);
     }
 
     /**
-     * Gets inverse trig functions (asin, acos, atan).
+     * Gets the functions whose result is an angle.
      *
-     * @return list of inverse trig functions
+     * @return the inverses, including the two-argument arctangent
      */
     public static List<MathFunction> inverse() {
-        return List.of(ASIN, ACOS, ATAN, ATAN2);
+        return List.of(ASIN, ACOS, ATAN, ASEC, ACSC, ACOT, ATAN2);
     }
 }

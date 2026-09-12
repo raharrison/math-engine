@@ -19,8 +19,10 @@ import java.util.*;
  *
  * <h2>Included Categories:</h2>
  * <ul>
- *     <li>Trigonometric: sin, cos, tan, asin, acos, atan, atan2, sec, csc, cot</li>
- *     <li>Hyperbolic: sinh, cosh, tanh, asinh, acosh, atanh, sech, csch, coth</li>
+ *     <li>Trigonometric: sin, cos, tan, sec, csc, cot and their inverses asin, acos,
+ *     atan, asec, acsc, acot, plus atan2</li>
+ *     <li>Hyperbolic: sinh, cosh, tanh, sech, csch, coth and their inverses asinh,
+ *     acosh, atanh, asech, acsch, acoth</li>
  *     <li>Exponential: exp, exp2, exp10, expm1</li>
  *     <li>Logarithmic: ln, log, log2, logn, log1p</li>
  *     <li>Power/Root: sqrt, cbrt, nroot, pow</li>
