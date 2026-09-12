@@ -27,6 +27,10 @@ import java.util.Optional;
  *         {@code 125000/381} is {@code 328.0839895013123}.</li>
  * </ol>
  *
+ * <p>A decimal-places setting rounds the values that print as decimals. It does not turn a
+ * fraction into one, because rounding a third to six places does not make it a third: at
+ * any setting {@code 1/3} is {@code 1/3}.
+ *
  * <p>Rounding uses {@link FormatUtils#formatFiniteDouble}, so a rational and a double of
  * equal value print alike. Both formatters and string coercion read this class, so one
  * value cannot be spelled two ways.
@@ -57,9 +61,9 @@ public final class RationalDisplay {
      * {@link BigRational#getDenominator()} in whatever notation it uses.
      *
      * @param value         the rational to display
-     * @param decimalPlaces places to round to, or negative for full precision. A caller
-     *                      that asked for a fixed number of places asked for decimals, so
-     *                      every value answers as one.
+     * @param decimalPlaces places to round to, or negative for full precision. It rounds
+     *                      the values that answer as a decimal, and leaves a fraction a
+     *                      fraction.
      * @return the decimal text, or empty to ask for a fraction
      */
     public static Optional<String> asDecimal(BigRational value, int decimalPlaces) {
@@ -69,19 +73,20 @@ public final class RationalDisplay {
         if (denominator.equals(BigInteger.ONE)) {
             return Optional.of(numerator.toString());
         }
-        if (decimalPlaces >= 0) {
-            return Optional.of(FormatUtils.formatFiniteDouble(value.doubleValue(), decimalPlaces));
-        }
 
         Optional<String> exact = exactDecimal(numerator, denominator);
         if (exact.isPresent()) {
-            return exact;
+            return decimalPlaces < 0 ? exact : Optional.of(rounded(value, decimalPlaces));
         }
         if (numerator.abs().compareTo(FRACTION_LIMIT) <= 0
                 && denominator.compareTo(FRACTION_LIMIT) <= 0) {
             return Optional.empty();
         }
-        return Optional.of(FormatUtils.formatFiniteDouble(value.doubleValue(), -1));
+        return Optional.of(rounded(value, decimalPlaces));
+    }
+
+    private static String rounded(BigRational value, int decimalPlaces) {
+        return FormatUtils.formatFiniteDouble(value.doubleValue(), decimalPlaces);
     }
 
     /**

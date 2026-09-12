@@ -45,6 +45,26 @@
             "notes": "Full precision pi with decimalPlaces=-1"
         },
         {
+            "id": "decimal_places_leaves_a_fraction_alone",
+            "input": "str(1/3)",
+            "expected": "1/3",
+            "expectedType": "NodeString",
+            "config": {
+                "decimalPlaces": 6
+            },
+            "notes": "Rounding a third to six places does not make it a third, so the ratio stays. This used to answer 0.333333"
+        },
+        {
+            "id": "decimal_places_mixed_vector",
+            "input": "str({1/3, 2.5})",
+            "expected": "{1/3, 2.5}",
+            "expectedType": "NodeString",
+            "config": {
+                "decimalPlaces": 4
+            },
+            "notes": "The rule is per element: the fraction stays, the decimal rounds"
+        },
+        {
             "id": "decimal_places_not_affect_calc_001",
             "input": "pi",
             "expected": 3.141592653589793,
@@ -76,6 +96,36 @@
             "notes": "Trig functions calculated at full precision regardless of decimalPlaces"
         },
         {
+            "id": "decimal_places_reaches_str",
+            "input": "str(pi)",
+            "config": {
+                "decimalPlaces": 3
+            },
+            "expected": "3.142",
+            "expectedType": "NodeString",
+            "notes": "The display setting reaches the engine's own string conversion, not only a formatter the caller builds"
+        },
+        {
+            "id": "decimal_places_rounds_a_finite_expansion",
+            "input": "str(1/8)",
+            "expected": "0.13",
+            "expectedType": "NodeString",
+            "config": {
+                "decimalPlaces": 2
+            },
+            "notes": "An eighth is exactly 0.125, which is a decimal, so it rounds to the places asked for"
+        },
+        {
+            "id": "decimal_places_rounds_a_wide_ratio",
+            "input": "str(125000/381)",
+            "expected": "328.084",
+            "expectedType": "NodeString",
+            "config": {
+                "decimalPlaces": 3
+            },
+            "notes": "A ratio too wide to read prints as a decimal, and that decimal rounds"
+        },
+        {
             "id": "decimal_places_vector_001",
             "input": "{pi, e, sqrt(2)}",
             "expected": [
@@ -88,16 +138,6 @@
                 "decimalPlaces": 3
             },
             "notes": "Vector elements stored at full precision"
-        },
-        {
-            "id": "decimal_places_reaches_str",
-            "input": "str(pi)",
-            "config": {
-                "decimalPlaces": 3
-            },
-            "expected": "3.142",
-            "expectedType": "NodeString",
-            "notes": "The display setting reaches the engine's own string conversion, not only a formatter the caller builds"
         }
     ]
 }

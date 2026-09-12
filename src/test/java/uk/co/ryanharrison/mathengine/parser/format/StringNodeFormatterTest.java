@@ -107,11 +107,16 @@ class StringNodeFormatterTest {
     }
 
     @Test
-    void formatsRationalAsRoundedDecimalWhenDecimalPlacesAsked() {
+    void decimalPlacesRoundsDecimalsAndLeavesFractionsAlone() {
         var rounded = StringNodeFormatter.withDecimalPlaces(3);
-        // Asking for three places is asking for a decimal, so every number answers as one
-        assertThat(rounded.format(new NodeRational(1, 3))).isEqualTo("0.333");
+        // Rounding a third to three places does not make it a third, so the ratio stays
+        assertThat(rounded.format(new NodeRational(1, 3))).isEqualTo("1/3");
+        assertThat(rounded.format(new NodeRational(22, 7))).isEqualTo("22/7");
+        // A finite expansion is a decimal, and rounds to the places asked for
         assertThat(rounded.format(new NodeRational(3, 4))).isEqualTo("0.75");
+        assertThat(rounded.format(new NodeRational(1, 8))).isEqualTo("0.125");
+        // As does a ratio too wide to read
+        assertThat(rounded.format(new NodeRational(125000, 381))).isEqualTo("328.084");
     }
 
     // ==================== NodePercent ====================
