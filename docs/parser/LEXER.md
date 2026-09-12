@@ -83,6 +83,17 @@ leave nothing behind, `2 /* x */ 3` is still implicit multiplication.
 
 // Rationals (explicit)
 "22/7"      → RATIONAL(22, 7)
+
+// Digit separators (stripped, so the lexeme is already parseable)
+"1_000"     → INTEGER(1000)
+"0xFF_FF"   → INTEGER(65535)
+
+// Other bases
+"0x1f"      → INTEGER(31)
+"0o17"      → INTEGER(15)
+"0b1011"    → INTEGER(11)
+"0x"        → INTEGER(0), MULTIPLY, IDENTIFIER(x)   // prefix needs a digit
+"0b12"      → LexerException                        // 2 is not a binary digit
 ```
 
 **Operator Scanning:**

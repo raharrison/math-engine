@@ -82,15 +82,23 @@ reference     := '@' (identifier | string)   (* Unit reference: @m or @"km/h" *)
                | '$' identifier              (* Variable reference: $m1 *)
                | '#' identifier              (* Constant reference: #pi *)
 
-number        := integer | decimal | scientific | rational_literal
+number        := integer | based_integer | decimal | scientific | rational_literal
 
-integer       := '-'? digit+
+integer       := '-'? digits
 
-decimal       := '-'? digit+ '.' digit+
+based_integer := '0' [xX] hex_digits | '0' [oO] octal_digits | '0' [bB] binary_digits
 
-scientific    := decimal [eE] [+-]? digit+
+decimal       := '-'? digits '.' digits
+
+scientific    := decimal [eE] [+-]? digits
 
 rational_literal := integer '/' integer
+
+(* A '_' groups digits and is not part of the value, so it must sit between two of them *)
+digits        := digit ('_'? digit)*
+hex_digits    := hex_digit ('_'? hex_digit)*
+octal_digits  := octal_digit ('_'? octal_digit)*
+binary_digits := binary_digit ('_'? binary_digit)*
 
 string        := '"' char* '"' | "'" char* "'"
 
@@ -120,6 +128,9 @@ comment       := '//' (any character except newline)*
 (* Character classes *)
 letter        := [a-zA-Z]
 digit         := [0-9]
+hex_digit     := [0-9a-fA-F]
+octal_digit   := [0-7]
+binary_digit  := [01]
 char          := any character except quote
 ```
 
@@ -225,6 +236,10 @@ Examples:
 - `1..10` → `{1,2,3,4,5,6,7,8,9,10}`
 - `0..1 step 0.1` → `{0.0, 0.1, 0.2, ..., 1.0}`
 - `10..1 step -1` → `{10,9,8,...,1}`
+- `0..0.3 step 0.1` → `{0, 0.1, 0.2, 0.3}`
+
+An exact step is stepped exactly, so a tenth is a tenth and the end is not missed by a
+rounding error. A bound that is already a double keeps the range on double arithmetic.
 
 ### Subscript and Slice
 
@@ -752,6 +767,20 @@ if(false, 1/0, 10)                            → 10 (no error)
 **Scientific:** `1e3`, `2.5E-2`, `-3.2e2`
 
 - Parsed as `NodeDouble`
+
+**Digit separators:** `1_000`, `1_000.000_1`, `0xFF_FF`
+
+- `_` groups digits and is not part of the value
+- It must sit between two digits, so `1_` is one times a variable named `_`
+
+**Other bases:** `0x1f`, `0o17`, `0b1011`
+
+- Hexadecimal, octal and binary integers, parsed as `NodeRational` like any other integer
+- The prefix may be uppercase, and needs at least one digit after it, so `0x` alone is
+  zero times a variable named `x`
+- A letter outside the base ends the literal, so `0b10x` is binary two times `x`
+- A decimal digit outside the base is a lexer error, so `0b12` is refused rather than read
+  as one times two
 
 **Rational:** `1/3`, `22/7`
 

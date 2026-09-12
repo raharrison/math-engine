@@ -457,6 +457,13 @@ private final NodeNumber end;
 private final NodeNumber step;  // Nullable (default depends on direction)
 ```
 
+**Exact stepping.** When all three bounds are exact, each element is computed from its
+index in exact arithmetic, so `0..1 step 0.1` is a run of tenths that ends on exactly 1,
+rather than reaching 0.30000000000000004 and stopping at 0.9999999999999999. A bound that
+is already a double puts the whole range back on double stepping, because there is no
+exact value left to preserve. An integer range steps in `long`, which keeps the common
+case as cheap as it was.
+
 **Never seen by a caller.** The evaluator builds a range, checks its size against
 `maxVectorSize`, and returns `range.toVector()`, so `1..5` evaluates to a `NodeVector`.
 The range itself is the intermediate that makes the size check possible before any element

@@ -239,7 +239,7 @@ public final class TokenScanner {
             addToken(TokenType.RANGE, "..");
         } else if (CharacterScanner.isDigit(scanner.peek())) {
             // Decimal starting with . (e.g., ".5")
-            scanner.consumeWhile(CharacterScanner::isDigit);
+            consumeDigits();
 
             // Check for invalid format: .5.3
             if (scanner.peek() == '.' && CharacterScanner.isDigit(scanner.peek(1))) {
@@ -326,11 +326,18 @@ public final class TokenScanner {
      * Scans a number literal.
      * <p>
      * Handles integers, decimals, rationals, scientific notation, and 'd' suffix for forced doubles.
+     * Digits may be grouped with '_', and an integer may be written in another base as 0x1f,
+     * 0o17 or 0b1011.
      * </p>
      */
     private void scanNumber() {
+        if (startsBasedInteger()) {
+            scanBasedInteger();
+            return;
+        }
+
         // Consume integer part
-        scanner.consumeWhile(CharacterScanner::isDigit);
+        consumeDigits();
 
         // Check what comes next
         if (scanner.peek() == '.' && scanner.peek(1) == '.') {
@@ -340,7 +347,7 @@ public final class TokenScanner {
         } else if (scanner.peek() == '.' && CharacterScanner.isDigit(scanner.peek(1))) {
             // Decimal: "1.5"
             scanner.advance(); // consume '.'
-            scanner.consumeWhile(CharacterScanner::isDigit);
+            consumeDigits();
 
             // Check for invalid format: 1.2.3
             if (scanner.peek() == '.' && CharacterScanner.isDigit(scanner.peek(1))) {
@@ -366,7 +373,7 @@ public final class TokenScanner {
         } else if (scanner.peek() == '/' && CharacterScanner.isDigit(scanner.peek(1))) {
             // Rational: "1/2"
             scanner.advance(); // consume '/'
-            scanner.consumeWhile(CharacterScanner::isDigit);
+            consumeDigits();
             // Check for scientific notation after rational
             if (isExponentStart()) {
                 scanExponent();
@@ -407,6 +414,111 @@ public final class TokenScanner {
     }
 
     /**
+     * True when the number starting here is a based integer: a leading zero, then a base
+     * prefix, then a digit. The leading digit has already been consumed, so it is read
+     * back through the scanner.
+     * <p>
+     * Any decimal digit after the prefix starts a based literal, valid for that base or
+     * not, so that {@code 0b12} is reported rather than read as two tokens. A prefix with
+     * no digit after it is not a literal at all, which keeps {@code 0x} as a zero times a
+     * variable named x.
+     */
+    private boolean startsBasedInteger() {
+        if (scanner.peek(-1) != '0') {
+            return false;
+        }
+        int radix = radixOf(scanner.peek());
+        char next = scanner.peek(1);
+        return radix != 0 && (CharacterScanner.isDigit(next) || isDigitOfRadix(next, radix));
+    }
+
+    /**
+     * Scans a based integer such as {@code 0x1f}, {@code 0o17} or {@code 0b1011}, digit
+     * separators included.
+     * <p>
+     * A letter that is not a digit of the base ends the literal, so {@code 0b10x} is two
+     * times x, the same way {@code 2x} is two times x. A decimal digit that is not a digit
+     * of the base is a typo rather than a product, and is rejected.
+     */
+    private void scanBasedInteger() {
+        int radix = radixOf(scanner.advance());
+        int digitsStart = scanner.getPosition();
+        consumeDigits(radix);
+
+        if (CharacterScanner.isDigit(scanner.peek())) {
+            throw scanner.error("Invalid digit '" + scanner.peek() + "' in a base " + radix + " literal");
+        }
+
+        String digits = withoutSeparators(scanner.substring(digitsStart, scanner.getPosition()));
+        String text = numberText();
+        try {
+            addToken(TokenType.INTEGER, text, Long.parseLong(digits, radix));
+        } catch (NumberFormatException e) {
+            // Too large for a long, the same fallback a plain integer literal takes
+            addToken(TokenType.INTEGER, text, new BigInteger(digits, radix));
+        }
+    }
+
+    /**
+     * The base a prefix character stands for, or 0 when it is not a base prefix.
+     */
+    private static int radixOf(char prefix) {
+        return switch (prefix) {
+            case 'x', 'X' -> 16;
+            case 'o', 'O' -> 8;
+            case 'b', 'B' -> 2;
+            default -> 0;
+        };
+    }
+
+    /**
+     * Consumes a run of decimal digits, allowing '_' between two of them.
+     */
+    private void consumeDigits() {
+        consumeDigits(10);
+    }
+
+    /**
+     * Consumes a run of digits of the given base, allowing '_' between two of them.
+     * A separator with no digit after it is left where it is, so the number ends there
+     * and the separator starts an identifier: {@code 1_} is one times a name.
+     */
+    private void consumeDigits(int radix) {
+        scanner.consumeWhile(c -> isDigitOfRadix((char) c, radix));
+        while (scanner.peek() == '_' && isDigitOfRadix(scanner.peek(1), radix)) {
+            scanner.advance();
+            scanner.consumeWhile(c -> isDigitOfRadix((char) c, radix));
+        }
+    }
+
+    /**
+     * Whether a character is a digit of the given base. ASCII only, matching the rest of
+     * the scanner, so a Unicode digit is never read as part of a number.
+     */
+    private static boolean isDigitOfRadix(char c, int radix) {
+        int digit;
+        if (CharacterScanner.isDigit(c)) {
+            digit = c - '0';
+        } else {
+            char lower = Character.toLowerCase(c);
+            digit = lower >= 'a' && lower <= 'z' ? lower - 'a' + 10 : -1;
+        }
+        return digit >= 0 && digit < radix;
+    }
+
+    /**
+     * The text of the number just scanned, with its digit separators removed so that
+     * everything downstream sees a literal it can parse.
+     */
+    private String numberText() {
+        return withoutSeparators(scanner.substring(start, scanner.getPosition()));
+    }
+
+    private static String withoutSeparators(String text) {
+        return text.indexOf('_') < 0 ? text : text.replace("_", "");
+    }
+
+    /**
      * Scans the exponent part of scientific notation (e.g., "e10", "E-3").
      */
     private void scanExponent() {
@@ -422,14 +534,14 @@ public final class TokenScanner {
             throw scanner.error("Expected digit in scientific notation exponent");
         }
 
-        scanner.consumeWhile(CharacterScanner::isDigit);
+        consumeDigits();
     }
 
     /**
      * Emits an integer token.
      */
     private void emitInteger() {
-        String text = scanner.substring(start, scanner.getPosition());
+        String text = numberText();
         try {
             long value = Long.parseLong(text);
             addToken(TokenType.INTEGER, text, value);
@@ -443,7 +555,7 @@ public final class TokenScanner {
      * Emits a decimal token.
      */
     private void emitDecimal() {
-        String text = scanner.substring(start, scanner.getPosition());
+        String text = numberText();
         addToken(TokenType.DECIMAL, text, text);
     }
 
@@ -451,7 +563,7 @@ public final class TokenScanner {
      * Emits a double token (with 'd' suffix).
      */
     private void emitDouble() {
-        String text = scanner.substring(start, scanner.getPosition());
+        String text = numberText();
         // Remove 'd' or 'D' suffix for parsing
         String numericPart = text.substring(0, text.length() - 1);
         double value = Double.parseDouble(numericPart);
@@ -462,7 +574,7 @@ public final class TokenScanner {
      * Emits a rational token.
      */
     private void emitRational() {
-        String text = scanner.substring(start, scanner.getPosition());
+        String text = numberText();
         addToken(TokenType.RATIONAL, text);
     }
 
@@ -470,7 +582,7 @@ public final class TokenScanner {
      * Emits a rational as a double (with 'd' suffix).
      */
     private void emitRationalAsDouble() {
-        String text = scanner.substring(start, scanner.getPosition());
+        String text = numberText();
         // Remove 'd' suffix and evaluate rational
         String rationalPart = text.substring(0, text.length() - 1);
         int slashIndex = rationalPart.indexOf('/');
@@ -489,7 +601,7 @@ public final class TokenScanner {
      * Emits a scientific notation token.
      */
     private void emitScientific() {
-        String text = scanner.substring(start, scanner.getPosition());
+        String text = numberText();
         addToken(TokenType.SCIENTIFIC, text, text);
     }
 
@@ -498,7 +610,7 @@ public final class TokenScanner {
      * E.g., "1/2E5" = 0.5 * 10^5 = 50000.0
      */
     private void emitRationalScientific() {
-        String text = scanner.substring(start, scanner.getPosition());
+        String text = numberText();
 
         // Find the slash and E/e to split rational and exponent parts
         int slashIndex = text.indexOf('/');

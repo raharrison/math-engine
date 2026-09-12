@@ -569,6 +569,13 @@
             "expected": 5,
             "expectedType": "NodeRational",
             "notes": "Summing exact elements gives an exact total"
+        },
+        {
+            "id": "range_elements_stay_exact",
+            "input": "sum(0..1 step 0.1)",
+            "expected": "11/2",
+            "expectedType": "NodeRational",
+            "notes": "The elements of a range built from exact bounds are exact, so adding them up gives eleven halves rather than a double carrying the drift of ten additions"
         }
     ]
 }

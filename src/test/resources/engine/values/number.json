@@ -1,6 +1,6 @@
 {
     "category": "Value: number",
-    "description": "Numeric literals in every form, and the special values: infinity, NaN and negative zero.",
+    "description": "Numeric literals in every form, including digit separators and the other bases, and the special values: infinity, NaN and negative zero.",
     "tests": [
         {
             "id": "const_008",
@@ -169,6 +169,134 @@
             "expected": "NaN",
             "expectedType": "NodeDouble",
             "notes": "NaN * anything = NaN"
+        },
+        {
+            "id": "separator_thousands",
+            "input": "1_000",
+            "expected": 1000,
+            "expectedType": "NodeRational",
+            "notes": "'_' groups digits and is not part of the value"
+        },
+        {
+            "id": "separator_several_groups",
+            "input": "1_000_000 + 1",
+            "expected": 1000001,
+            "expectedType": "NodeRational",
+            "notes": "A grouped literal is an ordinary number once scanned"
+        },
+        {
+            "id": "separator_either_side_of_point",
+            "input": "1_000.000_1",
+            "expected": 1000.0001,
+            "expectedType": "NodeRational",
+            "notes": "Groups are allowed in the fraction as well as the integer part, and the value stays exact"
+        },
+        {
+            "id": "separator_in_exponent",
+            "input": "1_0e1_0",
+            "expected": 100000000000,
+            "expectedType": "NodeRational",
+            "notes": "Groups are allowed in the exponent of scientific notation"
+        },
+        {
+            "id": "separator_in_rational",
+            "input": "1_000/3",
+            "expected": "1000/3",
+            "expectedType": "NodeRational",
+            "notes": "Both halves of a rational literal may be grouped"
+        },
+        {
+            "id": "separator_trailing_starts_a_name",
+            "input": "1_",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "A separator must sit between two digits, so a trailing one ends the number and starts an identifier"
+        },
+        {
+            "id": "base_hexadecimal",
+            "input": "0x10",
+            "expected": 16,
+            "expectedType": "NodeRational",
+            "notes": "0x reads the digits that follow as base 16"
+        },
+        {
+            "id": "base_hexadecimal_letters",
+            "input": "0xff",
+            "expected": 255,
+            "expectedType": "NodeRational",
+            "notes": "Hexadecimal letters are digits, in either case"
+        },
+        {
+            "id": "base_hexadecimal_uppercase_prefix",
+            "input": "0X1F",
+            "expected": 31,
+            "expectedType": "NodeRational",
+            "notes": "The prefix itself may be uppercase"
+        },
+        {
+            "id": "base_binary",
+            "input": "0b1011",
+            "expected": 11,
+            "expectedType": "NodeRational",
+            "notes": "0b reads the digits that follow as base 2"
+        },
+        {
+            "id": "base_octal",
+            "input": "0o17",
+            "expected": 15,
+            "expectedType": "NodeRational",
+            "notes": "0o reads the digits that follow as base 8"
+        },
+        {
+            "id": "base_with_separators",
+            "input": "0xFF_FF",
+            "expected": 65535,
+            "expectedType": "NodeRational",
+            "notes": "Digit separators group a based literal too"
+        },
+        {
+            "id": "base_in_arithmetic",
+            "input": "0x10 + 0b1",
+            "expected": 17,
+            "expectedType": "NodeRational",
+            "notes": "A based literal is an ordinary integer once scanned, whatever base it was written in"
+        },
+        {
+            "id": "base_beyond_long",
+            "input": "0xFFFFFFFFFFFFFFFFFF",
+            "expected": "4722366482869645213695",
+            "expectedType": "NodeRational",
+            "notes": "A based literal too large for a long stays exact, as a decimal one does"
+        },
+        {
+            "id": "base_prefix_needs_a_digit",
+            "input": "x := 3; 0x",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "'0x' with nothing after it is a zero times a variable named x, not a literal"
+        },
+        {
+            "id": "base_ends_at_a_letter",
+            "input": "x := 3; 0b10x",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "A letter that is not a digit of the base ends the literal, so this is binary two times x"
+        },
+        {
+            "id": "base_rejects_invalid_digit",
+            "input": "0b12",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "expectedErrorMessage": "Invalid digit '2' in a base 2 literal",
+            "notes": "A decimal digit outside the base is a typo, not a product, so it is refused rather than read as one times two"
+        },
+        {
+            "id": "base_rejects_invalid_octal_digit",
+            "input": "0o8",
+            "expectError": true,
+            "expectedErrorType": "LexerException",
+            "expectedErrorMessage": "Invalid digit '8' in a base 8 literal",
+            "notes": "Eight is not an octal digit"
         }
     ]
 }

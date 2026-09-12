@@ -10,6 +10,7 @@ import uk.co.ryanharrison.mathengine.parser.registry.ConstantRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.KeywordRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
 
@@ -215,6 +216,106 @@ class LexerTest {
         assertThat(tokens).hasSize(2); // RATIONAL + EOF
         assertThat(tokens.getFirst().type()).isEqualTo(TokenType.RATIONAL);
         assertThat(tokens.getFirst().lexeme()).isEqualTo(input);
+    }
+
+    // ==================== Digit Separators ====================
+
+    @Test
+    void separatorsAreNotPartOfTheNumber() {
+        List<Token> tokens = lexer.tokenize("1_000");
+
+        assertThat(tokens).hasSize(2); // INTEGER + EOF
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo("1000");
+        assertThat(tokens.getFirst().literal()).isEqualTo(1000L);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1_000.000_1, 1000.0001",
+            "1_0e1_0, 10e10"
+    })
+    void separatorsAreStrippedFromDecimalsAndExponents(String input, String expected) {
+        List<Token> tokens = lexer.tokenize(input);
+
+        assertThat(tokens.getFirst().lexeme()).isEqualTo(expected);
+    }
+
+    @Test
+    void separatorsAreStrippedFromRationals() {
+        List<Token> tokens = lexer.tokenize("1_000/3");
+
+        assertThat(tokens).hasSize(2); // RATIONAL + EOF
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.RATIONAL);
+        assertThat(tokens.getFirst().lexeme()).isEqualTo("1000/3");
+    }
+
+    @Test
+    void trailingSeparatorEndsTheNumber() {
+        List<Token> tokens = lexer.tokenize("1_");
+
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.getFirst().literal()).isEqualTo(1L);
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.IDENTIFIER); // 1 * _
+        assertThat(tokens.get(2).lexeme()).isEqualTo("_");
+    }
+
+    // ==================== Based Integer Literals ====================
+
+    @ParameterizedTest
+    @CsvSource({
+            "0x10, 16",
+            "0xff, 255",
+            "0X1F, 31",
+            "0xFF_FF, 65535",
+            "0b1011, 11",
+            "0B101, 5",
+            "0o17, 15",
+            "0O7, 7"
+    })
+    void tokenizeBasedIntegers(String input, long expected) {
+        List<Token> tokens = lexer.tokenize(input);
+
+        assertThat(tokens).hasSize(2); // INTEGER + EOF
+        assertThat(tokens.getFirst().type()).isEqualTo(TokenType.INTEGER);
+        assertThat(tokens.getFirst().literal()).isEqualTo(expected);
+    }
+
+    @Test
+    void basedIntegerTooLargeForLongBecomesBigInteger() {
+        List<Token> tokens = lexer.tokenize("0xFFFFFFFFFFFFFFFFFF");
+
+        assertThat(tokens.getFirst().literal())
+                .isEqualTo(new BigInteger("4722366482869645213695"));
+    }
+
+    @Test
+    void basePrefixWithoutDigitsIsMultiplication() {
+        List<Token> tokens = lexer.tokenize("0x");
+
+        assertThat(tokens).hasSize(4); // INTEGER + MULTIPLY + IDENTIFIER + EOF
+        assertThat(tokens.getFirst().literal()).isEqualTo(0L);
+        assertThat(tokens.get(2).lexeme()).isEqualTo("x");
+    }
+
+    @Test
+    void basedIntegerEndsAtALetterOutsideTheBase() {
+        List<Token> tokens = lexer.tokenize("0b10x");
+
+        assertThat(tokens).hasSize(4); // INTEGER + MULTIPLY + IDENTIFIER + EOF
+        assertThat(tokens.getFirst().literal()).isEqualTo(2L);
+        assertThat(tokens.get(2).lexeme()).isEqualTo("x");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "0b12, base 2",
+            "0o8, base 8"
+    })
+    void digitOutsideTheBaseThrowsException(String input, String expectedMessage) {
+        assertThatThrownBy(() -> lexer.tokenize(input))
+                .isInstanceOf(LexerException.class)
+                .hasMessageContaining(expectedMessage);
     }
 
     // ==================== Decimal vs Range Disambiguation ====================
