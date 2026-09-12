@@ -474,6 +474,19 @@ x := 5             | Define variable x = 5           | Simple assignment
 y := x + 3         | Define y = 8 (if x = 5)         | Expression assignment
 ```
 
+### 9.1.1 Element Assignment
+
+```test
+Input                                | Result       | Notes
+-------------------------------------|--------------|-----------------------------------
+v := {1, 2, 3}; v[0] := 9; v         | {9, 2, 3}    | Vector element
+m := [1, 2; 3, 4]; m[0, 1] := 9; m   | [1, 9; 3, 4] | Matrix element
+m := [1, 2; 3, 4]; m[0] := {7, 8}; m | [7, 8; 3, 4] | Whole row, width preserved
+s := "hello"; s[0] := "H"; s         | "Hello"      | One character of a string
+x := {1, 2}; y := x; x[0] := 9; y    | {1, 2}       | A copy leaves the other name alone
+v := {1, 2, 3}; v[1:2] := 9          | error        | A slice target is refused
+```
+
 ### 9.2 Function Definitions (One Argument)
 
 ```test

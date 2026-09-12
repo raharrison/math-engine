@@ -6,7 +6,6 @@ import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationContext;
 import uk.co.ryanharrison.mathengine.parser.evaluator.EvaluationException;
 import uk.co.ryanharrison.mathengine.parser.evaluator.NodeEvaluator;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
-import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
 import java.util.List;
 
@@ -28,10 +27,12 @@ public final class SubscriptHandler {
 
     private final MathEngineConfig config;
     private final NodeEvaluator evaluator;
+    private final IndexResolver indexResolver;
 
     public SubscriptHandler(MathEngineConfig config, NodeEvaluator evaluator) {
         this.config = config;
         this.evaluator = evaluator;
+        this.indexResolver = new IndexResolver(evaluator);
     }
 
     /**
@@ -71,14 +72,14 @@ public final class SubscriptHandler {
         NodeSubscript.SliceArg arg = indices.getFirst();
 
         if (!arg.isRange() && arg.getStart() != null) {
-            int index = requireIndex(arg.getStart(), value.length(), "String index", context);
+            int index = indexResolver.requireIndex(arg.getStart(), value.length(), "String index", context);
             return new NodeString(String.valueOf(value.charAt(index)));
         }
 
-        int start = arg.getStart() == null ? 0 : resolveIndex(arg.getStart(), value.length(), "start", context);
-        int end = arg.getEnd() == null ? value.length() : resolveIndex(arg.getEnd(), value.length(), "end", context);
-        start = clamp(start, 0, value.length());
-        end = clamp(end, 0, value.length());
+        int start = arg.getStart() == null ? 0 : indexResolver.resolveIndex(arg.getStart(), value.length(), "start", context);
+        int end = arg.getEnd() == null ? value.length() : indexResolver.resolveIndex(arg.getEnd(), value.length(), "end", context);
+        start = indexResolver.clamp(start, 0, value.length());
+        end = indexResolver.clamp(end, 0, value.length());
         return new NodeString(start >= end ? "" : value.substring(start, end));
     }
 
@@ -107,16 +108,16 @@ public final class SubscriptHandler {
         int end = vector.size();
 
         if (arg.getStart() != null) {
-            start = resolveIndex(arg.getStart(), vector.size(), "start", context);
+            start = indexResolver.resolveIndex(arg.getStart(), vector.size(), "start", context);
         }
 
         if (arg.getEnd() != null) {
-            end = resolveIndex(arg.getEnd(), vector.size(), "end", context);
+            end = indexResolver.resolveIndex(arg.getEnd(), vector.size(), "end", context);
         }
 
         // Clamp bounds
-        start = clamp(start, 0, vector.size());
-        end = clamp(end, 0, vector.size());
+        start = indexResolver.clamp(start, 0, vector.size());
+        end = indexResolver.clamp(end, 0, vector.size());
         if (start > end) start = end;
 
         Node[] elements = vector.getElements();
@@ -130,7 +131,7 @@ public final class SubscriptHandler {
      * Evaluates a single vector index access.
      */
     private NodeConstant evaluateVectorIndex(NodeVector vector, NodeSubscript.SliceArg arg, EvaluationContext context) {
-        int index = requireIndex(arg.getStart(), vector.size(), "Vector index", context);
+        int index = indexResolver.requireIndex(arg.getStart(), vector.size(), "Vector index", context);
 
         Node element = vector.getElement(index);
         if (element instanceof NodeConstant constant) {
@@ -163,7 +164,7 @@ public final class SubscriptHandler {
      * Evaluates matrix row access.
      */
     private NodeConstant evaluateMatrixRowAccess(NodeMatrix matrix, NodeSubscript.SliceArg rowArg, EvaluationContext context) {
-        int rowIndex = requireIndex(rowArg.getStart(), matrix.getRows(), "Matrix row index", context);
+        int rowIndex = indexResolver.requireIndex(rowArg.getStart(), matrix.getRows(), "Matrix row index", context);
 
         Node[][] elements = matrix.getElements();
         return new NodeVector(elements[rowIndex]);
@@ -178,15 +179,15 @@ public final class SubscriptHandler {
         boolean singleRow = false;
 
         if (rowArg.getStart() != null && !rowArg.isRange()) {
-            startRow = requireIndex(rowArg.getStart(), matrix.getRows(), "Matrix row index", context);
+            startRow = indexResolver.requireIndex(rowArg.getStart(), matrix.getRows(), "Matrix row index", context);
             endRow = startRow + 1;
             singleRow = true;
         } else if (rowArg.isRange()) {
             if (rowArg.getStart() != null) {
-                startRow = resolveIndex(rowArg.getStart(), matrix.getRows(), "row start", context);
+                startRow = indexResolver.resolveIndex(rowArg.getStart(), matrix.getRows(), "row start", context);
             }
             if (rowArg.getEnd() != null) {
-                endRow = resolveIndex(rowArg.getEnd(), matrix.getRows(), "row end", context);
+                endRow = indexResolver.resolveIndex(rowArg.getEnd(), matrix.getRows(), "row end", context);
             }
         }
 
@@ -196,24 +197,24 @@ public final class SubscriptHandler {
 
         if (colArg != null) {
             if (colArg.getStart() != null && !colArg.isRange()) {
-                startCol = requireIndex(colArg.getStart(), matrix.getCols(), "Matrix column index", context);
+                startCol = indexResolver.requireIndex(colArg.getStart(), matrix.getCols(), "Matrix column index", context);
                 endCol = startCol + 1;
                 singleCol = true;
             } else if (colArg.isRange()) {
                 if (colArg.getStart() != null) {
-                    startCol = resolveIndex(colArg.getStart(), matrix.getCols(), "column start", context);
+                    startCol = indexResolver.resolveIndex(colArg.getStart(), matrix.getCols(), "column start", context);
                 }
                 if (colArg.getEnd() != null) {
-                    endCol = resolveIndex(colArg.getEnd(), matrix.getCols(), "column end", context);
+                    endCol = indexResolver.resolveIndex(colArg.getEnd(), matrix.getCols(), "column end", context);
                 }
             }
         }
 
         // Clamp bounds
-        startRow = clamp(startRow, 0, matrix.getRows());
-        endRow = clamp(endRow, 0, matrix.getRows());
-        startCol = clamp(startCol, 0, matrix.getCols());
-        endCol = clamp(endCol, 0, matrix.getCols());
+        startRow = indexResolver.clamp(startRow, 0, matrix.getRows());
+        endRow = indexResolver.clamp(endRow, 0, matrix.getRows());
+        startCol = indexResolver.clamp(startCol, 0, matrix.getCols());
+        endCol = indexResolver.clamp(endCol, 0, matrix.getCols());
 
         Node[][] elements = matrix.getElements();
 
@@ -236,60 +237,5 @@ public final class SubscriptHandler {
             }
             return new NodeMatrix(subElements);
         }
-    }
-
-    /**
-     * Resolves an index that must land on an existing element.
-     * <p>
-     * The failure quotes the index as it was written, so {@code v[-4]} reports -4 rather
-     * than the position it was translated to.
-     *
-     * @throws EvaluationException if the index is outside the collection
-     */
-    private int requireIndex(Node indexNode, int size, String description, EvaluationContext context) {
-        int written = readIndex(indexNode, description, context);
-        int index = written < 0 ? size + written : written;
-        if (index < 0 || index >= size) {
-            throw new EvaluationException(description + " out of bounds: " + written +
-                    " (size: " + size + ")");
-        }
-        return index;
-    }
-
-    /**
-     * Resolves an index expression to a position from the start of the collection.
-     * <p>
-     * This is the one place a negative index is turned into a position, so {@code v[-1]}
-     * is the last element and {@code v[-4]} of a three-element vector is out of range
-     * rather than wrapping around a second time.
-     *
-     * @param size the length of the dimension being indexed
-     * @return a position, which may still be out of range and is checked by the caller
-     */
-    private int resolveIndex(Node indexNode, int size, String description, EvaluationContext context) {
-        int index = readIndex(indexNode, description, context);
-        return index < 0 ? size + index : index;
-    }
-
-    /**
-     * Evaluates an index expression to the integer the user wrote.
-     */
-    private int readIndex(Node indexNode, String description, EvaluationContext context) {
-        NodeConstant indexValue = evaluator.evaluate(indexNode, context);
-        if (!TypeCoercion.isNumeric(indexValue)) {
-            throw new TypeError(description + " must be a number");
-        }
-        double index = TypeCoercion.toDouble(indexValue);
-        if (index != Math.floor(index) || Double.isInfinite(index)) {
-            throw new TypeError(description + " must be a whole number, got: " + index);
-        }
-        return (int) index;
-    }
-
-    /**
-     * Clamps a value between min (inclusive) and max (inclusive).
-     */
-    private int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(value, max));
     }
 }

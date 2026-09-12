@@ -2,10 +2,7 @@ package uk.co.ryanharrison.mathengine.parser.evaluator;
 
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
 import uk.co.ryanharrison.mathengine.parser.ast.*;
-import uk.co.ryanharrison.mathengine.parser.evaluator.handler.ComprehensionHandler;
-import uk.co.ryanharrison.mathengine.parser.evaluator.handler.FunctionCallHandler;
-import uk.co.ryanharrison.mathengine.parser.evaluator.handler.SubscriptHandler;
-import uk.co.ryanharrison.mathengine.parser.evaluator.handler.VariableResolver;
+import uk.co.ryanharrison.mathengine.parser.evaluator.handler.*;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
 import uk.co.ryanharrison.mathengine.parser.operator.OperatorExecutor;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
@@ -19,7 +16,8 @@ import java.util.ArrayDeque;
  * Evaluation is a pure function of (node, scope): the scope travels as an argument,
  * so a single evaluator can serve nested calls and independent sessions.
  * Specialised concerns are delegated to {@link VariableResolver},
- * {@link SubscriptHandler}, {@link FunctionCallHandler} and {@link ComprehensionHandler}.
+ * {@link SubscriptHandler}, {@link ElementAssignmentHandler}, {@link FunctionCallHandler}
+ * and {@link ComprehensionHandler}.
  *
  * @see uk.co.ryanharrison.mathengine.parser.MathEngine
  */
@@ -31,6 +29,7 @@ public final class Evaluator {
 
     private final VariableResolver variableResolver;
     private final SubscriptHandler subscriptHandler;
+    private final ElementAssignmentHandler elementAssignmentHandler;
     private final FunctionCallHandler functionCallHandler;
     private final ComprehensionHandler comprehensionHandler;
 
@@ -42,6 +41,7 @@ public final class Evaluator {
 
         this.variableResolver = new VariableResolver(config);
         this.subscriptHandler = new SubscriptHandler(config, this::evaluate);
+        this.elementAssignmentHandler = new ElementAssignmentHandler(config, this::evaluate);
         this.functionCallHandler = new FunctionCallHandler(config, functionExecutor, this::evaluate);
         this.comprehensionHandler = new ComprehensionHandler(config, this::evaluate);
     }
@@ -81,6 +81,7 @@ public final class Evaluator {
             case NodeBinary binary -> evaluateBinary(binary, context);
             case NodeUnary unary -> evaluateUnary(unary, context);
             case NodeAssignment assignment -> evaluateAssignment(assignment, context);
+            case NodeElementAssignment assignment -> elementAssignmentHandler.evaluate(assignment, context);
             case NodeSubscript subscript -> subscriptHandler.evaluate(subscript, context);
             case NodeRangeExpression rangeExpr -> evaluateRangeExpression(rangeExpr, context);
             case NodeFunctionDef funcDef -> functionCallHandler.evaluateFunctionDef(funcDef, context);

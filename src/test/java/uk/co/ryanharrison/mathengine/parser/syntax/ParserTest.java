@@ -499,6 +499,50 @@ class ParserTest {
     }
 
     @Test
+    void testElementAssignment() {
+        Node node = parse("v[0] := 5");
+        assertThat(node).isInstanceOf(NodeElementAssignment.class);
+        NodeElementAssignment assignment = (NodeElementAssignment) node;
+        assertThat(assignment.getIdentifier()).isEqualTo("v");
+        assertThat(assignment.getIndexGroups()).hasSize(1);
+        assertThat(assignment.getIndexGroups().getFirst()).hasSize(1);
+        assertThat(assignment.getValue()).isInstanceOf(NodeRational.class);
+    }
+
+    @Test
+    void testMatrixElementAssignment() {
+        Node node = parse("m[1, 2] := 9");
+        assertThat(node).isInstanceOf(NodeElementAssignment.class);
+        NodeElementAssignment assignment = (NodeElementAssignment) node;
+        assertThat(assignment.getIndexGroups()).hasSize(1);
+        assertThat(assignment.getIndexGroups().getFirst()).hasSize(2);
+    }
+
+    @Test
+    void testChainedElementAssignment() {
+        Node node = parse("m[0][1] := 9");
+        assertThat(node).isInstanceOf(NodeElementAssignment.class);
+        NodeElementAssignment assignment = (NodeElementAssignment) node;
+        assertThat(assignment.getIndexGroups()).hasSize(2);
+        assertThat(assignment.getIndexGroups().getFirst()).hasSize(1);
+        assertThat(assignment.getIndexGroups().getLast()).hasSize(1);
+    }
+
+    @Test
+    void testSubscriptWithoutAssignStaysARead() {
+        assertThat(parse("v[0] + 1")).isInstanceOf(NodeBinary.class);
+        assertThat(parse("v[0]")).isInstanceOf(NodeSubscript.class);
+        assertThat(parse("v[0] == 1")).isInstanceOf(NodeBinary.class);
+        assertThat(parse("v[0]; x := 1")).isInstanceOf(NodeSequence.class);
+    }
+
+    @Test
+    void testElementAssignmentTargetMustBeAName() {
+        assertThatThrownBy(() -> parse("sin(1)[0] := 5")).isInstanceOf(ParseException.class);
+        assertThatThrownBy(() -> parse("{1, 2}[0] := 5")).isInstanceOf(ParseException.class);
+    }
+
+    @Test
     void testFunctionDefinition() {
         Node node = parse("f(x) := x^2");
         assertThat(node).isInstanceOf(NodeFunctionDef.class);

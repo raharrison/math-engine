@@ -15,6 +15,7 @@ public abstract sealed class NodeExpression extends Node permits
         NodeCall,
         NodeVariable,
         NodeAssignment,
+        NodeElementAssignment,
         NodeFunctionDef,
         NodeSubscript,
         NodeRangeExpression,

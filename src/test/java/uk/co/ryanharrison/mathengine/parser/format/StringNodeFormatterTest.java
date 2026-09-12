@@ -360,6 +360,31 @@ class StringNodeFormatterTest {
         assertThat(fmt.format(assignment)).isEqualTo("x := 42");
     }
 
+    // ==================== NodeElementAssignment ====================
+
+    @Test
+    void formatsElementAssignment() {
+        var assignment = new NodeElementAssignment("v",
+                List.of(List.of(new NodeSubscript.SliceArg(dbl(0), null, false))), dbl(5));
+        assertThat(fmt.format(assignment)).isEqualTo("v[0] := 5");
+    }
+
+    @Test
+    void formatsMatrixElementAssignment() {
+        var assignment = new NodeElementAssignment("m",
+                List.of(List.of(new NodeSubscript.SliceArg(dbl(1), null, false),
+                        new NodeSubscript.SliceArg(dbl(2), null, false))), dbl(9));
+        assertThat(fmt.format(assignment)).isEqualTo("m[1, 2] := 9");
+    }
+
+    @Test
+    void formatsChainedElementAssignment() {
+        var assignment = new NodeElementAssignment("m",
+                List.of(List.of(new NodeSubscript.SliceArg(dbl(0), null, false)),
+                        List.of(new NodeSubscript.SliceArg(dbl(1), null, false))), dbl(9));
+        assertThat(fmt.format(assignment)).isEqualTo("m[0][1] := 9");
+    }
+
     // ==================== NodeFunctionDef ====================
 
     @Test

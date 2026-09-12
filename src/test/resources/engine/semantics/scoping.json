@@ -10,6 +10,35 @@
             "notes": "The same for a comprehension's iteration variable"
         },
         {
+            "id": "element_assign_copy_leaves_other_name_alone",
+            "input": "x := {1, 2, 3}; y := x; x[0] := 9; y",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The write rebuilds and rebinds rather than mutating, so y keeps the old value"
+        },
+        {
+            "id": "element_assign_reaches_outer_scope",
+            "input": "v := {1, 2, 3}; f(i) := (v[i] := 99); f(0); v",
+            "expected": [
+                99,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A named function writes into the scope that defines v, as a plain assignment does"
+        },
+        {
+            "id": "element_assign_string_copy_leaves_other_name_alone",
+            "input": "s := \"ab\"; t := s; s[0] := \"X\"; t",
+            "expected": "ab",
+            "expectedType": "NodeString",
+            "notes": "The same holds for a string, which stays immutable"
+        },
+        {
             "id": "lambda_parameter_does_not_leak",
             "input": "map(y -> y * 3, {1, 2, 3})",
             "expected": [

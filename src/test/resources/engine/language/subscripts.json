@@ -519,6 +519,13 @@
             "expectedErrorType": "TypeError",
             "expectedErrorMessage": "whole number",
             "notes": "A fractional index is refused rather than truncated to 1"
+        },
+        {
+            "id": "subscript_read_then_operator",
+            "input": "v := {5, 6, 7}; v[0] + 1",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "A subscript followed by an operator is still a read"
         }
     ]
 }

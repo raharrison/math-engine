@@ -163,7 +163,7 @@ ParseException error(Token token, String message)  // Create exception with cont
 
 ```
 parseExpression()        → Entry point
-parseAssignment()        → x := 5, f(x) := expr
+parseAssignment()        → x := 5, v[0] := 5, f(x) := expr
 parseLambda()            → x -> expr
 parseBinary(precedence)  → every binary operator, by precedence climbing
 parseUnary()             → -, +, not
@@ -260,6 +260,7 @@ public Node parseExpression() {
 **Syntax:**
 
 - Variable assignment: `x := 5`
+- Element assignment: `v[0] := 5`, `m[1, 2] := 9`, `m[0][1] := 9`
 - Function definition: `f(x) := x + 1`
 - Multi-parameter: `add(a, b) := a + b`
 
@@ -273,6 +274,12 @@ private Node parseAssignment() {
 
     if (stream.check(IDENTIFIER) || stream.check(UNIT) || stream.check(FUNCTION)) {
         Token id = stream.advance();
+
+        if (stream.check(LBRACKET) && isElementAssignment()) {  // lookahead for  id[...] :=
+            var groups = parseIndexGroups();
+            stream.expect(ASSIGN, "Expected ':=' after subscript in element assignment");
+            return new NodeElementAssignment(id.lexeme(), groups, parseLambda());
+        }
 
         List<String> params = null;
         if (stream.check(LPAREN)) {
@@ -300,6 +307,15 @@ private Node parseAssignment() {
     return parseLambda();
 }
 ```
+
+**Element Assignment Lookahead:**
+
+`isElementAssignment()` scans ahead over balanced brackets for the pattern
+`[...]...[...] :=`, and the subscripts are only parsed once the `:=` is known to follow.
+
+A token scan rather than a speculative parse: subscript arguments are full expressions
+that re-enter `parseAssignment`, so backtracking when no `:=` turned up would parse
+`a[b[c[d[0]]]] + 1` once per level of nesting.
 
 **Function Definition Lookahead:**
 

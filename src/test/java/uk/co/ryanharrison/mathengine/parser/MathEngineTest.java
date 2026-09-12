@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.co.ryanharrison.mathengine.core.AngleUnit;
-import uk.co.ryanharrison.mathengine.parser.ast.NodeRational;
+import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 
 import static org.assertj.core.api.Assertions.*;
@@ -175,6 +175,58 @@ class MathEngineTest {
         @Test
         void tokenizeExposesTheLexerOutput() {
             assertThat(engine.tokenize("1 + 2")).isNotEmpty();
+        }
+    }
+
+    /**
+     * Element assignment under configurations that forbid it. Not in the spec files
+     * because the statement setting the target up would be the one to fail, so the target
+     * arrives through the API.
+     */
+    @Nested
+    @DisplayName("Element assignment gates")
+    class ElementAssignmentGates {
+
+        private final NodeVector vector = new NodeVector(
+                new Node[]{new NodeRational(1), new NodeRational(2), new NodeRational(3)});
+
+        private MathEngine engineWith(MathEngineConfig config, String name, NodeConstant value) {
+            MathEngine engine = MathEngine.create(config);
+            engine.defineVariable(name, value);
+            return engine;
+        }
+
+        @Test
+        void writingAnElementNeedsUserDefinedVariables() {
+            MathEngine engine = engineWith(MathEngineConfig.builder()
+                    .userDefinedVariablesEnabled(false)
+                    .build(), "v", vector);
+
+            assertThatThrownBy(() -> engine.evaluate("v[0] := 5"))
+                    .isInstanceOf(MathEngineException.class)
+                    .hasMessageContaining("User-defined variables are disabled");
+        }
+
+        @Test
+        void writingIntoAVectorNeedsVectors() {
+            MathEngine engine = engineWith(MathEngineConfig.builder()
+                    .vectorsEnabled(false)
+                    .build(), "v", vector);
+
+            assertThatThrownBy(() -> engine.evaluate("v[0] := 5"))
+                    .isInstanceOf(MathEngineException.class)
+                    .hasMessageContaining("Vectors are disabled");
+        }
+
+        @Test
+        void writingIntoAStringIsNotGatedByCollections() {
+            MathEngine engine = engineWith(MathEngineConfig.builder()
+                    .vectorsEnabled(false)
+                    .matricesEnabled(false)
+                    .build(), "s", new NodeString("hello"));
+
+            engine.evaluate("s[0] := \"H\"");
+            assertThat(engine.evaluate("s")).isEqualTo(new NodeString("Hello"));
         }
     }
 

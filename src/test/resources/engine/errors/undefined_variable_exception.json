@@ -118,6 +118,14 @@
             "expectedErrorType": "UndefinedVariableException",
             "expectedErrorMessage": "Undefined variable '$notdefined'",
             "notes": "An explicit variable reference says variable"
+        },
+        {
+            "id": "element_assign_unknown_target",
+            "input": "v[0] := 1",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "notes": "Writing into an unknown name is a name error, not a new vector",
+            "expectedErrorMessage": "No value associated with 'v'"
         }
     ]
 }

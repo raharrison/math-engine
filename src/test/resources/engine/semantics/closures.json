@@ -10,6 +10,17 @@
             "notes": "The captured value is the parameter of the enclosing call"
         },
         {
+            "id": "element_assign_in_lambda_writes_the_capture",
+            "input": "v := {1, 2, 3}; f := i -> (v[i] := 99); f(0); v",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A lambda writes into its capture, so the outer v is unchanged"
+        },
+        {
             "id": "lambda_captures_defining_scope",
             "input": "a := 1; g := (x -> x + a); a := 2; g(1)",
             "expected": 2,

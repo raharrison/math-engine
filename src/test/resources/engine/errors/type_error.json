@@ -31,6 +31,54 @@
             "notes": "Dot product requires equal length vectors"
         },
         {
+            "id": "element_assign_fractional_index",
+            "input": "v := {1, 2, 3}; v[1.5] := 9",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "A fractional index is refused, as on the read path",
+            "expectedErrorMessage": "whole number"
+        },
+        {
+            "id": "element_assign_into_number",
+            "input": "x := 5; x[0] := 1",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "A number holds no elements",
+            "expectedErrorMessage": "Cannot assign into a number"
+        },
+        {
+            "id": "element_assign_row_from_non_vector",
+            "input": "m := [1, 2; 3, 4]; m[0] := 5",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "A single index addresses a row, so the right side must be a vector",
+            "expectedErrorMessage": "must be assigned a vector"
+        },
+        {
+            "id": "element_assign_string_from_longer_string",
+            "input": "s := \"abc\"; s[0] := \"xy\"",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "One index is one character, so the length is preserved rather than spliced",
+            "expectedErrorMessage": "single character"
+        },
+        {
+            "id": "element_assign_string_from_number",
+            "input": "s := \"abc\"; s[0] := 5",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "Strings never coerce, so a number is not written as its digits",
+            "expectedErrorMessage": "must be assigned a string"
+        },
+        {
+            "id": "element_assign_two_indices_on_vector",
+            "input": "v := {1, 2}; v[0, 1] := 3",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "notes": "A vector takes one index",
+            "expectedErrorMessage": "Vector subscript requires exactly one index"
+        },
+        {
             "id": "err_eval_014",
             "input": "min({})",
             "expectError": true,

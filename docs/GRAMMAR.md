@@ -32,7 +32,9 @@ statement     := expression
 expression    := assignment | comprehension | lambda | pipeline
 
 assignment    := identifier params? ':=' expression
+               | identifier index_group+ ':=' expression
 params        := '(' identifier (',' identifier)* ')'
+index_group   := '[' slice_args ']'
 
 comprehension := '{' expression 'for' identifier 'in' iterable ('if' expression)? '}'
                | '[' expression 'for' identifier 'in' iterable ('if' expression)? ']'
@@ -265,6 +267,9 @@ rounding error. A bound that is already a double keeps the range on double arith
 - `s[1:3]` - Slice, answering a string
 
 An index must be whole. A single index out of range is an error; a slice clamps.
+
+The same forms address the element an assignment writes, except a slice. See **Element
+Assignment** under Assignment.
 
 ### Unit Conversion
 
@@ -1006,6 +1011,22 @@ x := 5                             → Assign value to variable
 f(x) := x^2                        → Define single-parameter function
 f(x, y) := x + y                   → Define multi-parameter function
 ```
+
+**Element Assignment:**
+
+```
+v[0] := 99                         → Replace one element of a vector
+v[-1] := 99                        → Index from the end
+m[0, 1] := 9                       → Replace one element of a matrix
+m[0] := {7, 8}                     → Replace a whole row, keeping its width
+m[0][1] := 9                       → Chain of groups, reaching the same element as m[0, 1]
+s[0] := "H"                        → Replace one character of a string
+```
+
+The target must be a name that already has a value, and the assignment answers the value
+assigned. Nothing is mutated: the collection is rebuilt and the name rebound, so a second
+name for the same value is unaffected. A string element takes a single character. A slice
+target (`v[1:3] := ...`) is refused.
 
 **Function Assignment:**
 

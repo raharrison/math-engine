@@ -176,9 +176,12 @@ MathFunction reduce = FunctionBuilder
 
 ### Level 2: Type-Aware (`implementedBy` with UnaryFunction/BinaryFunction)
 
-For functions that need full control over the input `NodeConstant` but still want optional
-broadcasting. Use `noBroadcasting()` when the function broadcasts internally (e.g., trig
-functions that need angle conversion before broadcasting).
+For functions that need full control over the input `NodeConstant` but still want
+broadcasting. Use `noBroadcasting()` only when the function is not element-wise: an
+aggregate, or one that takes a vector, matrix or string as a whole. An element-wise
+function must leave broadcasting on, because the same flag decides whether several
+arguments are folded into a vector, so `sin(0, 90)` means `sin({0, 90})` as
+`sqrt(4, 9, 16)` does.
 
 ```java
 // With automatic broadcasting (default)
@@ -195,16 +198,13 @@ MathFunction abs = FunctionBuilder
         return new NodeDouble(Math.abs(ctx.toNumber(arg).doubleValue()));
     });
 
-// With manual broadcasting (for angle conversion)
+// Reading the argument as an angle, which needs the context per element
 MathFunction sin = FunctionBuilder
     .named("sin")
     .describedAs("Sine")
     .inCategory(TRIGONOMETRIC)
     .takingUnary()
-    .noBroadcasting()  // broadcasts internally
-    .implementedBy((arg, ctx) ->
-            ctx.mapDouble(arg, value ->
-            Math.sin(ctx.toRadians(value))));
+    .implementedBy((arg, ctx) -> ctx.mapAngle(arg, Math::sin));
 
 // Binary with broadcasting. Exactness, units and percentages are the
 // value arithmetic's job, so the body stays a delegation.
@@ -236,21 +236,24 @@ MathFunction sum = FunctionBuilder
 
 ### TrigFunction Helper
 
-The `TrigFunction` factory simplifies creating trigonometric functions with automatic angle
-unit conversion:
+Every trigonometric function is built by the `TrigFunction` factory, which is the one place
+the angle unit is applied: to the argument of a standard function, and to the result of an
+inverse one.
 
 ```java
-// Standard trig: input is an angle (converted from context unit to radians)
+// Standard trig: the argument is an angle, read by its label or by the context unit
 MathFunction sin = TrigFunction.standard("sin", "Sine", Math::sin);
 MathFunction cos = TrigFunction.standard("cos", "Cosine", Math::cos);
 
-// Inverse trig: output is an angle (converted from radians to context unit)
-MathFunction asin = TrigFunction.inverse("asin", "Arcsine", Math::asin);
+// Inverse trig: the result is radians, expressed in the context unit
 MathFunction atan = TrigFunction.inverse("atan", "Arctangent", Math::atan);
-```
 
-Internally these use `FunctionBuilder` with `noBroadcasting()` and broadcast manually via
-`FunctionContext.mapDouble()`.
+// An inverse defined only on part of the real line
+MathFunction asin = TrigFunction.inverse("asin", "Arcsine", -1.0, 1.0, Math::asin);
+
+// An inverse of two arguments
+MathFunction atan2 = TrigFunction.inverseBinary("atan2", "...", "y", "x", Math::atan2);
+```
 
 ---
 
@@ -727,20 +730,12 @@ sqrt({4, 9, 16})  -> {2, 3, 4}  (vector - auto-broadcast)
 sqrt([[4,9]])     -> [[2,3]]    (matrix - auto-broadcast)
 ```
 
-### Manual Broadcasting (Level 2 with `noBroadcasting()`)
-
-Functions that need pre-processing before broadcasting (e.g., angle conversion) disable
-automatic broadcasting and broadcast through a `FunctionContext` helper instead:
-
-```text
-.noBroadcasting()
-.implementedBy((arg, ctx) -> ctx.mapAngle(arg, Math::sin));
-```
-
-### No Broadcasting (Level 1 and Level 3)
+### No Broadcasting (`noBroadcasting()`, Level 1 and Level 3)
 
 Typed functions (`takingTyped`) and aggregate functions have no broadcasting because they
-operate on specific types (vectors, matrices) or handle their own argument processing.
+operate on specific types (vectors, matrices) or handle their own argument processing. The
+same flag also turns off the shorthand that folds several arguments into a vector, so an
+element-wise function must not set it.
 
 ---
 

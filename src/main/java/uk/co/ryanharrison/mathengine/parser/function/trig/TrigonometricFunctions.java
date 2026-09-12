@@ -1,7 +1,5 @@
 package uk.co.ryanharrison.mathengine.parser.function.trig;
 
-import uk.co.ryanharrison.mathengine.parser.ast.NodeDouble;
-import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.parser.function.TrigFunction;
 import uk.co.ryanharrison.mathengine.utils.TrigUtils;
@@ -11,8 +9,8 @@ import java.util.List;
 /**
  * Collection of trigonometric functions.
  * <p>
- * All functions respect the angle unit setting in the context
- * (radians or degrees). Input conversion happens automatically.
+ * Every one is built by {@link TrigFunction}, which is where the angle unit is applied:
+ * to the argument of a standard function, and to the result of an inverse one.
  */
 public final class TrigonometricFunctions {
 
@@ -39,55 +37,29 @@ public final class TrigonometricFunctions {
     // ==================== Inverse Trig Functions ====================
 
     /**
-     * Arcsine function
+     * Arcsine function, defined on [-1, 1]
      */
-    public static final MathFunction ASIN = FunctionBuilder
-            .named("asin")
-            .describedAs("Returns the arcsine of x (inverse sine)")
-            .withParams("x")
-            .inCategory(MathFunction.Category.TRIGONOMETRIC)
-            .takingUnary()
-            .noBroadcasting() // broadcasts internally via ctx.mapDouble()
-            .implementedBy((arg, ctx) ->
-                    ctx.mapDouble(arg, value -> {
-                        return ctx.fromRadians(Math.asin(ctx.requireInRange(value, -1.0, 1.0)));
-                    }));
+    public static final MathFunction ASIN = TrigFunction.inverse(
+            "asin", "Returns the arcsine of x (inverse sine)", -1.0, 1.0, Math::asin);
 
     /**
-     * Arccosine function
+     * Arccosine function, defined on [-1, 1]
      */
-    public static final MathFunction ACOS = FunctionBuilder
-            .named("acos")
-            .describedAs("Returns the arccosine of x (inverse cosine)")
-            .withParams("x")
-            .inCategory(MathFunction.Category.TRIGONOMETRIC)
-            .takingUnary()
-            .noBroadcasting() // broadcasts internally via ctx.mapDouble()
-            .implementedBy((arg, ctx) ->
-                    ctx.mapDouble(arg, value -> {
-                        return ctx.fromRadians(Math.acos(ctx.requireInRange(value, -1.0, 1.0)));
-                    }));
+    public static final MathFunction ACOS = TrigFunction.inverse(
+            "acos", "Returns the arccosine of x (inverse cosine)", -1.0, 1.0, Math::acos);
 
     /**
      * Arctangent function
      */
-    public static final MathFunction ATAN = TrigFunction.inverse("atan", "Returns the arctangent of x (inverse tangent)", Math::atan);
+    public static final MathFunction ATAN = TrigFunction.inverse(
+            "atan", "Returns the arctangent of x (inverse tangent)", Math::atan);
 
     /**
      * Two-argument arctangent function
      */
-    public static final MathFunction ATAN2 = FunctionBuilder
-            .named("atan2")
-            .describedAs("Returns the angle to point (x, y) in current angle units; takes y first, then x (atan2 convention)")
-            .withParams("y", "x")
-            .inCategory(MathFunction.Category.TRIGONOMETRIC)
-            .takingBinary()
-            .implementedBy((y, x, ctx) -> {
-                double yVal = ctx.toDouble(y);
-                double xVal = ctx.toDouble(x);
-                double radians = Math.atan2(yVal, xVal);
-                return new NodeDouble(ctx.fromRadians(radians));
-            });
+    public static final MathFunction ATAN2 = TrigFunction.inverseBinary("atan2",
+            "Returns the angle to point (x, y) in current angle units; takes y first, then x (atan2 convention)",
+            "y", "x", Math::atan2);
 
     // ==================== Reciprocal Trig Functions ====================
 

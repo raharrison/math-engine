@@ -48,6 +48,17 @@ public final class AstTreeBuilder {
                 yield children;
             }
             case NodeAssignment assignment -> List.of(assignment.getValue());
+            case NodeElementAssignment assignment -> {
+                var children = new ArrayList<Node>();
+                for (List<NodeSubscript.SliceArg> group : assignment.getIndexGroups()) {
+                    for (NodeSubscript.SliceArg arg : group) {
+                        addIfPresent(children, arg.getStart());
+                        addIfPresent(children, arg.getEnd());
+                    }
+                }
+                children.add(assignment.getValue());
+                yield children;
+            }
             case NodeFunctionDef definition -> List.of(definition.getBody());
             case NodeRangeExpression range -> {
                 var children = new ArrayList<Node>(List.of(range.getStart(), range.getEnd()));

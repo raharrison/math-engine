@@ -3,6 +3,46 @@
     "description": "Failures during evaluation that are not a type, domain, arity or name problem, including disabled features and empty aggregates.",
     "tests": [
         {
+            "id": "element_assign_out_of_bounds",
+            "input": "v := {1, 2, 3}; v[5] := 1",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "Writing past the end does not grow the vector",
+            "expectedErrorMessage": "out of bounds: 5"
+        },
+        {
+            "id": "element_assign_row_length_mismatch",
+            "input": "m := [1, 2; 3, 4]; m[0] := {1, 2, 3}",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "A row write does not reshape the matrix",
+            "expectedErrorMessage": "does not match matrix width"
+        },
+        {
+            "id": "element_assign_slice_refused",
+            "input": "v := {1, 2, 3, 4}; v[1:3] := 9",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "A slice target is refused; filling and length matching are a separate design",
+            "expectedErrorMessage": "Slice assignment is not supported"
+        },
+        {
+            "id": "element_assign_string_out_of_bounds",
+            "input": "s := \"abc\"; s[3] := \"d\"",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "A string does not grow either",
+            "expectedErrorMessage": "out of bounds: 3"
+        },
+        {
+            "id": "element_assign_string_slice_refused",
+            "input": "s := \"hello\"; s[1:3] := \"EL\"",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "notes": "A string slice is refused too",
+            "expectedErrorMessage": "Slice assignment is not supported"
+        },
+        {
             "id": "subscript_before_the_start",
             "input": "{1, 2, 3}[-4]",
             "expectError": true,

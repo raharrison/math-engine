@@ -46,14 +46,23 @@ final class FormatUtils {
     }
 
     static String formatSubscript(NodeSubscript subscript, NodeFormatter fmt) {
-        var sb = new StringBuilder(fmt.format(subscript.getTarget()));
-        sb.append("[");
-        var indices = subscript.getIndices();
-        for (int i = 0; i < indices.size(); i++) {
-            if (i > 0) sb.append(", ");
-            sb.append(formatSliceArg(indices.get(i), fmt));
+        return fmt.format(subscript.getTarget()) +
+                formatIndexGroups(List.of(subscript.getIndices()), fmt);
+    }
+
+    /**
+     * The {@code [...]} groups of a subscript or an element assignment target.
+     */
+    static String formatIndexGroups(List<List<NodeSubscript.SliceArg>> groups, NodeFormatter fmt) {
+        var sb = new StringBuilder();
+        for (List<NodeSubscript.SliceArg> group : groups) {
+            sb.append("[");
+            for (int i = 0; i < group.size(); i++) {
+                if (i > 0) sb.append(", ");
+                sb.append(formatSliceArg(group.get(i), fmt));
+            }
+            sb.append("]");
         }
-        sb.append("]");
         return sb.toString();
     }
 

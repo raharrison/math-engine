@@ -122,6 +122,7 @@ public final class PrecedenceParser {
      * Syntax:
      * <ul>
      *     <li>Variable assignment: {@code x := 5}</li>
+     *     <li>Element assignment: {@code v[0] := 5}, {@code m[1, 2] := 9}, {@code m[0][1] := 9}</li>
      *     <li>Function definition: {@code f(x) := x + 1}</li>
      * </ul>
      * <p>
@@ -133,6 +134,12 @@ public final class PrecedenceParser {
 
         if (stream.check(TokenType.IDENTIFIER) || stream.check(TokenType.UNIT) || stream.check(TokenType.FUNCTION)) {
             Token id = stream.advance();
+
+            if (stream.check(TokenType.LBRACKET) && isElementAssignment()) {
+                List<List<NodeSubscript.SliceArg>> indexGroups = parseIndexGroups();
+                stream.expect(TokenType.ASSIGN, "Expected ':=' after subscript in element assignment");
+                return new NodeElementAssignment(id.lexeme(), indexGroups, parseLambda());
+            }
 
             // Check for function parameters
             List<String> params = null;
@@ -196,6 +203,66 @@ public final class PrecedenceParser {
         }
 
         return false;
+    }
+
+    /**
+     * Checks if current position is at an element assignment target.
+     * <p>
+     * Looks for pattern: {@code [...]...[...] :=}, from the bracket after a name. A token
+     * scan, not a speculative parse: subscript arguments re-enter {@code parseExpression},
+     * so backtracking would parse {@code a[b[c[0]]]} once per level of nesting.
+     */
+    private boolean isElementAssignment() {
+        int depth = 0;
+        int lookAhead = 0;
+
+        while (stream.getPosition() + lookAhead < stream.size()) {
+            TokenType type = stream.getTokenAt(stream.getPosition() + lookAhead).type();
+
+            if (type == TokenType.LBRACKET) {
+                depth++;
+            } else if (type == TokenType.RBRACKET) {
+                depth--;
+                if (depth == 0) {
+                    // Another group continues the chain, ':=' ends it
+                    if (stream.getPosition() + lookAhead + 1 >= stream.size()) {
+                        return false;
+                    }
+                    TokenType next = stream.getTokenAt(stream.getPosition() + lookAhead + 1).type();
+                    if (next == TokenType.ASSIGN) {
+                        return true;
+                    }
+                    if (next != TokenType.LBRACKET) {
+                        return false;
+                    }
+                }
+            } else if (type == TokenType.EOF || (depth == 0 && type == TokenType.SEMICOLON)) {
+                return false;
+            }
+
+            lookAhead++;
+        }
+
+        return false;
+    }
+
+    /**
+     * Parses the consecutive {@code [...]} groups of an element assignment target.
+     */
+    private List<List<NodeSubscript.SliceArg>> parseIndexGroups() {
+        var groups = new ArrayList<List<NodeSubscript.SliceArg>>();
+
+        while (stream.match(TokenType.LBRACKET)) {
+            enterDepth();
+            try {
+                groups.add(collectionParser.parseSliceArgs());
+            } finally {
+                exitDepth();
+            }
+            stream.expect(TokenType.RBRACKET, "Expected ']' after subscript");
+        }
+
+        return groups;
     }
 
     /**

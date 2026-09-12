@@ -35,6 +35,7 @@ Node (abstract base class)
     ├─ NodeVarRef            - Explicit variable reference ($var)
     ├─ NodeConstRef          - Explicit constant reference (#const)
     ├─ NodeAssignment        - Variable assignment (x := value)
+    ├─ NodeElementAssignment - Element assignment (v[0] := value)
     ├─ NodeFunctionDef       - Function definition (f(x) := expr)
     ├─ NodeRangeExpression   - Range before evaluation
     ├─ NodeUnitConversion    - Unit conversion (value in unit)
@@ -871,6 +872,33 @@ NodeConstant result = evaluator.evaluate(value);
 context.define(identifier, result);
 return result;
 ```
+
+### NodeElementAssignment
+
+**Purpose:** Writing one element of a vector, a matrix or a string
+
+**Fields:**
+
+```java
+private final String identifier;
+private final List<List<NodeSubscript.SliceArg>> indexGroups;
+private final Node value;
+```
+
+Each `[...]` group is held separately, so `m[0][1]` and `m[0, 1]` stay distinguishable.
+
+**Example:**
+
+```java
+// v[0] := 5
+new NodeElementAssignment("v",
+        List.of(List.of(new NodeSubscript.SliceArg(new NodeDouble(0), null, false))),
+        new NodeDouble(5));
+```
+
+**Evaluation:** `ElementAssignmentHandler` resolves the name, evaluates the right side,
+rebuilds the target and rebinds the name with `context.assign`. A slice target is refused,
+and a string element takes a single character.
 
 ### NodeFunctionDef
 

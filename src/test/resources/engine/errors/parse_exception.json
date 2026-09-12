@@ -93,6 +93,20 @@
             "expectedErrorType": "ParseException",
             "expectedErrorMessage": "Empty expression",
             "notes": "Input that is all comment leaves no tokens, so it fails the same way an empty expression does"
+        },
+        {
+            "id": "element_assign_call_target",
+            "input": "sin(1)[0] := 5",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "Only a name can be rebound, so a subscripted call is not a target"
+        },
+        {
+            "id": "element_assign_literal_target",
+            "input": "{1, 2}[0] := 5",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "notes": "A literal has no name to rebind"
         }
     ]
 }

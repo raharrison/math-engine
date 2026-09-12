@@ -80,6 +80,8 @@ public final class StringNodeFormatter implements NodeFormatter {
             case NodeCall n -> formatCall(n);
             case NodeVariable n -> n.getName();
             case NodeAssignment n -> n.getIdentifier() + " := " + format(n.getValue());
+            case NodeElementAssignment n -> n.getIdentifier() +
+                    FormatUtils.formatIndexGroups(n.getIndexGroups(), this) + " := " + format(n.getValue());
             case NodeFunctionDef n -> formatFunctionDef(n);
             case NodeSubscript n -> FormatUtils.formatSubscript(n, this);
             case NodeRangeExpression n -> formatRangeExpr(n);

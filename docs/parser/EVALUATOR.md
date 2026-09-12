@@ -47,6 +47,7 @@ Result (NodeConstant)
 
 - **VariableResolver** - Variable lookup
 - **SubscriptHandler** - Indexing and slicing
+- **ElementAssignmentHandler** - Writing one element of a collection
 - **FunctionCallHandler** - Function invocation
 - **ComprehensionHandler** - List comprehensions
 
@@ -64,6 +65,7 @@ Result (NodeConstant)
 │  Delegates to:                      │
 │  ├─ VariableResolver                │
 │  ├─ SubscriptHandler                │
+│  ├─ ElementAssignmentHandler        │
 │  ├─ FunctionCallHandler             │
 │  └─ ComprehensionHandler            │
 │                                     │
@@ -426,7 +428,39 @@ m[:,j]        // Column j (all rows)
 m[1:3,2:4]    // Sub-matrix
 ```
 
-### 3. FunctionCallHandler
+### 3. ElementAssignmentHandler
+
+**File:** `evaluator/handler/ElementAssignmentHandler.java`
+
+**Purpose:** Write one element of a vector, a matrix or a string
+
+**Operations:**
+
+- Vector element: `v[0] := 5`, `v[-1] := 5`
+- Matrix element: `m[1, 2] := 9`
+- Matrix row: `m[0] := {7, 8}`, keeping the width
+- String character: `s[0] := "H"`, a single character
+- Chains: `m[0][1] := 9`, `v[0][0] := "A"`
+
+A value is immutable, so the write is a copy:
+
+```text
+update(container, groups, value):
+    if groups is empty:  return value
+    head        = groups.first
+    current     = element of container at head
+    replacement = update(current, groups.rest, value)
+    return a copy of container with head replaced by replacement
+```
+
+The name is rebound with `EvaluationContext.assign`, which walks to the scope that defines
+it, and the assignment answers the value assigned.
+
+Index rules come from `IndexResolver`, shared with `SubscriptHandler`. A slice target is
+refused, writing past the end does not grow the collection, and a target that holds no
+elements is a `TypeError`.
+
+### 4. FunctionCallHandler
 
 **File:** `evaluator/handler/FunctionCallHandler.java`
 
@@ -470,7 +504,7 @@ NodeConstant result = functionCallHandler.evaluate(
 return TypeCoercion.toBoolean(condition) ? evaluate(thenExpr) : evaluate(elseExpr);
 ```
 
-### 4. ComprehensionHandler
+### 5. ComprehensionHandler
 
 **File:** `evaluator/handler/ComprehensionHandler.java`
 
@@ -667,6 +701,18 @@ MathEngineConfig config = MathEngineConfig.builder()
 private NodeConstant evaluateAssignment(NodeAssignment node) {
     NodeConstant value = evaluate(node.getValue());
     context.assign(node.getIdentifier(), value);
+    return value;
+}
+```
+
+**Element Assignment:**
+
+```java
+// v[0] := 5
+private NodeConstant evaluate(NodeElementAssignment node, EvaluationContext context) {
+    NodeConstant target = context.resolve(node.getIdentifier()).orElseThrow(...);
+    NodeConstant value = evaluate(node.getValue(), context);
+    context.assign(node.getIdentifier(), update(target, node.getIndexGroups(), 0, value, context));
     return value;
 }
 ```

@@ -212,6 +212,17 @@
             "expectedType": "NodeDouble",
             "tolerance": 1e-12,
             "notes": "The even-root guard exists to allow this case, which then answered NaN anyway"
+        },
+        {
+            "id": "sqrt_several_arguments",
+            "input": "sqrt(4, 9, 16)",
+            "expected": [
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Several arguments to an element-wise unary function are the vector of them"
         }
     ]
 }

@@ -139,12 +139,10 @@ MathFunction exp = FunctionBuilder.named("exp")
                 .takingUnary()
                 .implementedByDouble(Math::exp);
 
-// Broadcast by the body, when it needs the context for each element
+// The body reads each element as an angle, and the builder still broadcasts
 MathFunction sin = FunctionBuilder.named("sin")
         .takingUnary()
-        .noBroadcasting()
-        .implementedBy((arg, ctx) ->
-                ctx.mapDouble(arg, value -> Math.sin(ctx.toRadians(value))));
+        .implementedBy((arg, ctx) -> ctx.mapAngle(arg, Math::sin));
 ```
 
 ## Broadcasting Examples
@@ -181,7 +179,7 @@ MathFunction sin = FunctionBuilder.named("sin")
 5. **Performance**: Recursive dispatch is elegant but efficient
 6. **Extensibility**: New operators just define scalar operation, broadcasting is automatic
 7. **Shared Infrastructure**: arithmetic reaches the engine through `NodeConstant`;
-   functions reach it through `FunctionBuilder` or `FunctionContext.mapDouble()`
+   functions reach it through `FunctionBuilder` or a `FunctionContext.map*` helper
 
 ## Summary
 

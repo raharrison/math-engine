@@ -107,6 +107,218 @@
             "notes": "Circle area formula"
         },
         {
+            "id": "element_matrix_chain_001",
+            "input": "m := [1, 2; 3, 4]; m[0][1] := 9; m",
+            "expected": [
+                [
+                    1,
+                    9
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "A chain reaches the same element as two indices in one group"
+        },
+        {
+            "id": "element_matrix_element_001",
+            "input": "m := [1, 2; 3, 4]; m[0, 1] := 9; m",
+            "expected": [
+                [
+                    1,
+                    9
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Two indices in one group address a matrix element"
+        },
+        {
+            "id": "element_matrix_element_negative_001",
+            "input": "m := [1, 2; 3, 4]; m[-1, -1] := 0; m",
+            "expected": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    0
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "Negative row and column indices count from the end"
+        },
+        {
+            "id": "element_matrix_row_001",
+            "input": "m := [1, 2; 3, 4]; m[0] := {7, 8}; m",
+            "expected": [
+                [
+                    7,
+                    8
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeMatrix",
+            "notes": "A single index addresses a whole row, which keeps its width"
+        },
+        {
+            "id": "element_nested_vector_001",
+            "input": "v := {{1, 2}, {3, 4}}; v[0][1] := 9; v",
+            "expected": [
+                [
+                    1,
+                    9
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A chain of groups writes through a vector of vectors"
+        },
+        {
+            "id": "element_nested_vector_deep_001",
+            "input": "a := {{{1, 2}}}; a[0][0][1] := 7; a",
+            "expected": [
+                [
+                    [
+                        1,
+                        7
+                    ]
+                ]
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The rule is recursive, so depth costs no extra case"
+        },
+        {
+            "id": "element_returns_assigned_value_001",
+            "input": "v := {10, 20, 30}; v[0] := 5",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Answers the value assigned, not the rebuilt vector, as 'x := 5' does"
+        },
+        {
+            "id": "element_string_001",
+            "input": "s := \"hello\"; s[0] := \"H\"; s",
+            "expected": "Hello",
+            "expectedType": "NodeString",
+            "notes": "One character of a string is replaced"
+        },
+        {
+            "id": "element_string_chain_on_character_001",
+            "input": "s := \"abc\"; s[0][0] := \"Z\"; s",
+            "expected": "Zbc",
+            "expectedType": "NodeString",
+            "notes": "'s[0]' is itself a one-character string, so indexing it again lands on the same character"
+        },
+        {
+            "id": "element_string_from_variable_001",
+            "input": "s := \"cat\"; c := \"C\"; s[0] := c; s",
+            "expected": "Cat",
+            "expectedType": "NodeString",
+            "notes": "The right side is any expression answering a single character"
+        },
+        {
+            "id": "element_string_in_vector_001",
+            "input": "v := {\"ab\", \"cd\"}; v[0][0] := \"A\"; v",
+            "expected": [
+                "Ab",
+                "cd"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A chain can end in a string held in a vector"
+        },
+        {
+            "id": "element_string_negative_001",
+            "input": "s := \"hello\"; s[-1] := \"O\"; s",
+            "expected": "hellO",
+            "expectedType": "NodeString",
+            "notes": "A negative string index counts from the end"
+        },
+        {
+            "id": "element_string_returns_character_001",
+            "input": "s := \"abc\"; s[1] := \"B\"",
+            "expected": "B",
+            "expectedType": "NodeString",
+            "notes": "The value is the character assigned, not the whole string"
+        },
+        {
+            "id": "element_value_keeps_its_type_001",
+            "input": "v := {1, 2, 3}; v[0] := 5 m; v",
+            "expected": [
+                "5 meters",
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The value goes in as it is, so a vector can hold a unit quantity"
+        },
+        {
+            "id": "element_vector_001",
+            "input": "v := {10, 20, 30}; v[0] := 99; v",
+            "expected": [
+                99,
+                20,
+                30
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Writing one element of a vector, which used to be a parse error"
+        },
+        {
+            "id": "element_vector_computed_index_001",
+            "input": "v := {1, 2, 3}; i := 1; v[i + 1] := 7; v",
+            "expected": [
+                1,
+                2,
+                7
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The index is an expression"
+        },
+        {
+            "id": "element_vector_negative_001",
+            "input": "v := {10, 20, 30}; v[-1] := 99; v",
+            "expected": [
+                10,
+                20,
+                99
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A negative index counts from the end, as on the read side"
+        },
+        {
+            "id": "element_vector_reads_old_value_001",
+            "input": "v := {1, 2, 3}; v[0] := v[0] + 10; v",
+            "expected": [
+                11,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The right side is evaluated before the rebuild, so it can read the element it replaces"
+        },
+        {
+            "id": "element_vector_twice_001",
+            "input": "v := {1, 2, 3}; v[0] := 9; v[1] := 8; v",
+            "expected": [
+                9,
+                8,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Two writes in a session accumulate"
+        },
+        {
             "id": "naming_001",
             "input": "myVar := 42; myVar",
             "expected": 42,

@@ -278,6 +278,46 @@
             "expectedType": "NodeVector",
             "tolerance": 1e-12,
             "notes": "Each element is read through its own label"
+        },
+        {
+            "id": "sin_several_arguments",
+            "input": "sin(0, 90, 180)",
+            "expected": [
+                0,
+                1,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Several arguments fold into a vector, as for sqrt; sin used to reject them",
+            "config": {
+                "angleUnit": "DEGREES"
+            }
+        },
+        {
+            "id": "asin_several_arguments",
+            "input": "asin(0, 1)",
+            "expected": [
+                0,
+                90
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The same shorthand on an inverse, which is built by the same factory",
+            "config": {
+                "angleUnit": "DEGREES"
+            }
+        },
+        {
+            "id": "cot_several_arguments",
+            "input": "cot(45, 90)",
+            "expected": [
+                1,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "And on a reciprocal function",
+            "config": {
+                "angleUnit": "DEGREES"
+            }
         }
     ]
 }
