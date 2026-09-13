@@ -602,6 +602,17 @@ class LexerTest {
     }
 
     @Test
+    void anInsertedMultiplyIsMarkedImplicit() {
+        List<Token> inserted = lexer.tokenize("45 degrees");
+        assertThat(inserted.get(1).type()).isEqualTo(TokenType.MULTIPLY);
+        assertThat(inserted.get(1).implicit()).isTrue();
+
+        List<Token> written = lexer.tokenize("45 * 2");
+        assertThat(written.get(1).type()).isEqualTo(TokenType.MULTIPLY);
+        assertThat(written.get(1).implicit()).isFalse();
+    }
+
+    @Test
     void implicitMultiplicationNumberParenthesis() {
         List<Token> tokens = lexer.tokenize("2(x+1)");
 

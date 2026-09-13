@@ -55,15 +55,6 @@ public final class ConstantRegistry {
     // ==================== Factory Methods ====================
 
     /**
-     * Creates an empty constant registry.
-     *
-     * @return new empty registry
-     */
-    public static ConstantRegistry empty() {
-        return new ConstantRegistry(List.of());
-    }
-
-    /**
      * The standard registry. Immutable, so every engine shares one instance.
      */
     public static ConstantRegistry withDefaults() {
@@ -89,17 +80,6 @@ public final class ConstantRegistry {
                 .addAll(booleanConstants())
                 .addAll(specialNumericConstants())
                 .addAll(numericWordConstants())
-                .build();
-    }
-
-    /**
-     * Creates a registry with only mathematical constants (pi, e, goldenratio).
-     *
-     * @return registry with mathematical constants only
-     */
-    public static ConstantRegistry mathematicalOnly() {
-        return builder()
-                .addAll(mathematicalConstants())
                 .build();
     }
 
@@ -236,31 +216,12 @@ public final class ConstantRegistry {
     }
 
     /**
-     * Gets a constant definition by name.
-     *
-     * @param name the constant name (case-insensitive)
-     * @return the constant definition, or empty if not found
-     */
-    public Optional<ConstantDefinition> getDefinition(String name) {
-        return Optional.ofNullable(nameToDefinition.get(name.toLowerCase()));
-    }
-
-    /**
      * Gets all constant definitions.
      *
      * @return unmodifiable list of all definitions
      */
     public List<ConstantDefinition> getDefinitions() {
         return definitions;
-    }
-
-    /**
-     * Gets all constant names (including aliases).
-     *
-     * @return unmodifiable set of all constant names (lowercase)
-     */
-    public Set<String> getConstantNames() {
-        return Set.copyOf(nameToDefinition.keySet());
     }
 
     /**

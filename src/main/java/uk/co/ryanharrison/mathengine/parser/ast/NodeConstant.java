@@ -33,14 +33,6 @@ public abstract sealed class NodeConstant extends Node permits
 
     public abstract boolean isNumeric();
 
-    public boolean isBoolean() {
-        return false;
-    }
-
-    public boolean isString() {
-        return false;
-    }
-
     public boolean isVector() {
         return false;
     }

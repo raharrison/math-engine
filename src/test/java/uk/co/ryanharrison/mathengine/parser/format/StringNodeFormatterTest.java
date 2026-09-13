@@ -274,6 +274,43 @@ class StringNodeFormatterTest {
         assertThat(fmt.format(outer)).isEqualTo("(1 + (2 * 3))");
     }
 
+    // ==================== Implied multiplication ====================
+
+    @Test
+    void formatsAnImpliedProductAsTheJuxtapositionItWasWrittenAs() {
+        assertThat(fmt.format(implied(dbl(45), var("degrees")))).isEqualTo("45 degrees");
+        assertThat(fmt.format(implied(dbl(2), var("x")))).isEqualTo("2 x");
+    }
+
+    @Test
+    void anImpliedProductNeedsNoParenthesesUnderALooserOperator() {
+        assertThat(fmt.format(binary(TokenType.PLUS, implied(dbl(2), var("m")), implied(dbl(3), var("m")))))
+                .isEqualTo("(2 m + 3 m)");
+        // Left-associative, so the left of another product is safe too
+        assertThat(fmt.format(binary(TokenType.MULTIPLY, implied(dbl(45), var("degrees")), dbl(2))))
+                .isEqualTo("(45 degrees * 2)");
+    }
+
+    @Test
+    void anImpliedProductKeepsParenthesesWhereJuxtapositionWouldBindDifferently() {
+        // Each would re-parse as a different tree without them
+        assertThat(fmt.format(binary(TokenType.POWER, implied(dbl(2), var("m")), dbl(2))))
+                .isEqualTo("((2 m) ^ 2)");
+        assertThat(fmt.format(binary(TokenType.MULTIPLY, dbl(2), implied(dbl(3), var("m")))))
+                .isEqualTo("(2 * (3 m))");
+        assertThat(fmt.format(prefixUnary(TokenType.MINUS, "-", implied(dbl(2), var("m")))))
+                .isEqualTo("-(2 m)");
+        assertThat(fmt.format(new NodeSubscript(implied(dbl(2), var("m")),
+                List.of(new NodeSubscript.SliceArg(dbl(0), null, false)))))
+                .isEqualTo("(2 m)[0]");
+    }
+
+    @Test
+    void formatsAParsedUnitQuantityAsItWasTyped() {
+        var ast = uk.co.ryanharrison.mathengine.parser.MathEngine.create().compile("sin(45 degrees)").getAst();
+        assertThat(fmt.format(ast)).isEqualTo("sin(45 degrees)");
+    }
+
     @ParameterizedTest
     @CsvSource({
             "PLUS,     +",
@@ -589,6 +626,13 @@ class StringNodeFormatterTest {
 
     private static Token token(TokenType type, String lexeme) {
         return new Token(type, lexeme, 0, 0);
+    }
+
+    /**
+     * A multiplication the lexer supplied, as {@code 45 degrees} produces.
+     */
+    private static NodeBinary implied(Node left, Node right) {
+        return new NodeBinary(Token.implied(TokenType.MULTIPLY, "*", 0, 0), left, right);
     }
 
     private static NodeBinary binary(TokenType type, Node left, Node right) {

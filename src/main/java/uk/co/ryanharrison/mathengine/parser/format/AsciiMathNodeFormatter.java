@@ -111,7 +111,7 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
             case NodeFunction n -> "\"" + n.getFunction().name() + "\"";
 
             // --- NodeExpression subtypes ---
-            case NodeBinary n -> formatBinary(n);
+            case NodeBinary n -> n.getOperator().implicit() ? formatImplied(n) : formatBinary(n);
             case NodeUnary n -> formatUnary(n);
             case NodeCall n -> formatCall(n);
             case NodeVariable n -> mapVariable(n.getName());
@@ -229,6 +229,13 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
             return left + "^" + right;
         }
         return left + " " + op + " " + right;
+    }
+
+    /**
+     * A supplied multiplication prints as the juxtaposition it was written as.
+     */
+    private String formatImplied(NodeBinary binary) {
+        return format(binary.getLeft()) + " " + format(binary.getRight());
     }
 
     /**

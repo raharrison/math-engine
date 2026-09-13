@@ -24,14 +24,6 @@ public class ArityException extends EvaluationException {
         this.actual = actual;
     }
 
-    public int getExpected() {
-        return expected;
-    }
-
-    public int getActual() {
-        return actual;
-    }
-
     @Override
     public String formatMessage() {
         String baseMessage = super.formatMessage();

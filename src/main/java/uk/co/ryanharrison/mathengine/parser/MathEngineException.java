@@ -33,20 +33,6 @@ public abstract class MathEngineException extends RuntimeException {
         this.sourceCode = sourceCode;
     }
 
-    public MathEngineException(String message, Throwable cause) {
-        super(message, cause);
-        this.token = null;
-        this.sourceCode = null;
-    }
-
-    public Token getToken() {
-        return token;
-    }
-
-    public String getSourceCode() {
-        return sourceCode;
-    }
-
     /**
      * Format a detailed error message including position and source context.
      * <p>
@@ -54,7 +40,6 @@ public abstract class MathEngineException extends RuntimeException {
      * <ul>
      *     <li>Error type and message with position (if token available)</li>
      *     <li>Source code context with caret (if source available)</li>
-     *     <li>Cause information (if exception was chained)</li>
      * </ul>
      * Subclasses can override to provide custom formatting.
      * </p>
@@ -76,12 +61,6 @@ public abstract class MathEngineException extends RuntimeException {
         // Add source context if available
         if (sourceCode != null && token != null) {
             sb.append("\n").append(formatSourceContext(sourceCode, token.line(), token.column()));
-        }
-
-        // Add cause info if present
-        Throwable cause = getCause();
-        if (cause != null && cause.getMessage() != null) {
-            sb.append("\nCaused by: ").append(cause.getMessage());
         }
 
         return sb.toString();

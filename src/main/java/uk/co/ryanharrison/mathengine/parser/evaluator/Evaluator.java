@@ -74,7 +74,7 @@ public final class Evaluator {
 
             // Expressions
             case NodeVariable variable -> variableResolver.resolve(
-                    variable, ResolutionContext.GENERAL, context.operatorContext(functionCallHandler));
+                    variable, context.operatorContext(functionCallHandler));
             case NodeUnitRef unitRef -> variableResolver.resolveUnitRef(unitRef.getUnitName(), context);
             case NodeVarRef varRef -> variableResolver.resolveVarRef(varRef.getVarName(), context);
             case NodeConstRef constRef -> variableResolver.resolveConstRef(constRef.getConstName(), context);

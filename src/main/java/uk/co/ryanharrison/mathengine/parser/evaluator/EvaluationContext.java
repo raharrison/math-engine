@@ -90,11 +90,6 @@ public final class EvaluationContext {
         variables.put(name, value);
     }
 
-    /** Removes a variable from this scope. Parent bindings are unaffected. */
-    public void removeVariable(String name) {
-        variables.remove(name);
-    }
-
     /**
      * Assigns a variable in the scope that already defines it, so closures can
      * mutate variables from their defining scope. Defines locally if unknown.
@@ -163,10 +158,6 @@ public final class EvaluationContext {
 
     public AngleUnit getAngleUnit() {
         return config.angleUnit();
-    }
-
-    public boolean isForceDoubleArithmetic() {
-        return config.forceDoubleArithmetic();
     }
 
     /**

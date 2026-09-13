@@ -190,16 +190,6 @@ public final class GraphCoordinateSystem {
     }
 
     /**
-     * Converts a Cartesian x-coordinate to the corresponding screen x-coordinate.
-     *
-     * @param cartesianX the x-coordinate in graph space
-     * @return the corresponding x-coordinate in screen space
-     */
-    public double toScreenX(double cartesianX) {
-        return width / 2.0 + (cartesianX - originX) * scale;
-    }
-
-    /**
      * Pans the viewport by the given screen delta.
      * <p>
      * This is typically called during mouse drag operations. The delta values

@@ -146,8 +146,4 @@ public final class RoundingFunctions {
         return List.of(FLOOR, CEIL, ROUND, TRUNC, ROUNDN, ABS, SIGN, COPYSIGN, FMOD, REMAINDER, HYPOT);
     }
 
-    /** Gets only rounding functions. */
-    public static List<MathFunction> rounding() {
-        return List.of(FLOOR, CEIL, ROUND, TRUNC, ROUNDN);
-    }
 }

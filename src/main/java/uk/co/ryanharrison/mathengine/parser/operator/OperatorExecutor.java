@@ -47,15 +47,6 @@ public final class OperatorExecutor {
     // ==================== Factory Methods ====================
 
     /**
-     * Creates an empty operator executor.
-     *
-     * @return new empty executor
-     */
-    public static OperatorExecutor empty() {
-        return new OperatorExecutor(Map.of(), Map.of());
-    }
-
-    /**
      * Creates an operator executor with the given operators.
      *
      * @param binaryOperators the binary operators
@@ -162,19 +153,6 @@ public final class OperatorExecutor {
         }
 
         /**
-         * Adds multiple binary operators.
-         *
-         * @param operators map of token types to operators
-         * @return this builder
-         */
-        public Builder binaryAll(Map<TokenType, BinaryOperator> operators) {
-            for (var entry : operators.entrySet()) {
-                binary(entry.getKey(), entry.getValue());
-            }
-            return this;
-        }
-
-        /**
          * Adds a unary operator.
          *
          * @param tokenType the token type
@@ -189,19 +167,6 @@ public final class OperatorExecutor {
                 throw new IllegalArgumentException("Operator cannot be null");
             }
             unaryOperators.put(tokenType, operator);
-            return this;
-        }
-
-        /**
-         * Adds multiple unary operators.
-         *
-         * @param operators map of token types to operators
-         * @return this builder
-         */
-        public Builder unaryAll(Map<TokenType, UnaryOperator> operators) {
-            for (var entry : operators.entrySet()) {
-                unary(entry.getKey(), entry.getValue());
-            }
             return this;
         }
 

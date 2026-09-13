@@ -19,11 +19,6 @@ public final class NodeString extends NodeConstant {
     }
 
     @Override
-    public boolean isString() {
-        return true;
-    }
-
-    @Override
     public boolean isNumeric() {
         return false;
     }

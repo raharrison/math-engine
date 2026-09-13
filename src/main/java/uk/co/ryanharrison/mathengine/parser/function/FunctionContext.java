@@ -226,10 +226,6 @@ public final class FunctionContext {
         return value instanceof NodeString text ? text : new NodeString(toStringValue(value));
     }
 
-    public void requireNonEmpty(double[] values) {
-        requireMinSize(values, 1);
-    }
-
     public void requireMinSize(double[] values, int min) {
         if (values.length < min) {
             throw new TypeError(functionName + " requires at least " + min +

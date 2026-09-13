@@ -17,11 +17,6 @@ public final class NodeBoolean extends NodeNumber {
     }
 
     @Override
-    public boolean isBoolean() {
-        return true;
-    }
-
-    @Override
     public double doubleValue() {
         return value ? 1.0 : 0.0;
     }

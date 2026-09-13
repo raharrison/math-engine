@@ -109,21 +109,4 @@ public final class TrigonometricFunctions {
         return List.of(SIN, COS, TAN, SEC, CSC, COT, ASIN, ACOS, ATAN, ASEC, ACSC, ACOT, ATAN2);
     }
 
-    /**
-     * Gets the functions whose argument is an angle.
-     *
-     * @return sin, cos, tan and their reciprocals
-     */
-    public static List<MathFunction> standard() {
-        return List.of(SIN, COS, TAN, SEC, CSC, COT);
-    }
-
-    /**
-     * Gets the functions whose result is an angle.
-     *
-     * @return the inverses, including the two-argument arctangent
-     */
-    public static List<MathFunction> inverse() {
-        return List.of(ASIN, ACOS, ATAN, ASEC, ACSC, ACOT, ATAN2);
-    }
 }

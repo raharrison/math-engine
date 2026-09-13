@@ -47,15 +47,6 @@ public final class KeywordRegistry {
     // ==================== Factory Methods ====================
 
     /**
-     * Creates an empty keyword registry.
-     *
-     * @return new empty registry
-     */
-    public static KeywordRegistry empty() {
-        return new KeywordRegistry(Set.of(), Map.of());
-    }
-
-    /**
      * The standard registry. Immutable, so every engine shares one instance.
      */
     public static KeywordRegistry withDefaults() {

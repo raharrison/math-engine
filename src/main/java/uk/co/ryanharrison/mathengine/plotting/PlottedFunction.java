@@ -46,20 +46,6 @@ public record PlottedFunction(Function function, Color color, String name, boole
     }
 
     /**
-     * Creates a PlottedFunction with default visual properties.
-     *
-     * @param function the function to plot
-     * @param name     the display name for the function
-     * @return a new PlottedFunction with default color (black) and stroke width (2.0f)
-     */
-    public static PlottedFunction of(Function function, String name) {
-        return new Builder()
-                .function(function)
-                .name(name)
-                .build();
-    }
-
-    /**
      * Evaluates the function at the given x-coordinate.
      * <p>
      * This method handles potential evaluation errors by catching exceptions
@@ -100,22 +86,6 @@ public record PlottedFunction(Function function, Color color, String name, boole
                 .name(this.name)
                 .strokeWidth(this.strokeWidth)
                 .visible(visible)
-                .build();
-    }
-
-    /**
-     * Creates a copy of this PlottedFunction with a different color.
-     *
-     * @param color the new color
-     * @return a new PlottedFunction with updated color
-     */
-    public PlottedFunction withColor(Color color) {
-        return new Builder()
-                .function(this.function)
-                .color(color)
-                .name(this.name)
-                .strokeWidth(this.strokeWidth)
-                .visible(this.visible)
                 .build();
     }
 

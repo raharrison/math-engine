@@ -9,7 +9,9 @@ import uk.co.ryanharrison.mathengine.parser.function.trig.HyperbolicFunctions;
 import uk.co.ryanharrison.mathengine.parser.function.trig.TrigonometricFunctions;
 import uk.co.ryanharrison.mathengine.parser.function.vector.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Provides all standard built-in functions as a collection.
@@ -141,119 +143,4 @@ public final class StandardFunctions {
         return Collections.unmodifiableList(functions);
     }
 
-    /**
-     * Gets only trigonometric functions.
-     */
-    public static List<MathFunction> trigonometric() {
-        return TrigonometricFunctions.all();
-    }
-
-    /**
-     * Gets only hyperbolic functions.
-     */
-    public static List<MathFunction> hyperbolic() {
-        return HyperbolicFunctions.all();
-    }
-
-    /**
-     * Gets only exponential functions.
-     */
-    public static List<MathFunction> exponential() {
-        return ExponentialFunctions.exponential();
-    }
-
-    /**
-     * Gets only logarithmic functions.
-     */
-    public static List<MathFunction> logarithmic() {
-        return ExponentialFunctions.logarithmic();
-    }
-
-    /**
-     * Gets only rounding functions.
-     */
-    public static List<MathFunction> rounding() {
-        return RoundingFunctions.rounding();
-    }
-
-    /**
-     * Gets only vector functions.
-     */
-    public static List<MathFunction> vector() {
-        return VectorFunctions.all();
-    }
-
-    /**
-     * Gets only matrix functions.
-     */
-    public static List<MathFunction> matrix() {
-        return MatrixFunctions.all();
-    }
-
-    /**
-     * Gets only statistical functions.
-     */
-    public static List<MathFunction> statistical() {
-        return StatisticalFunctions.all();
-    }
-
-    /**
-     * Gets only number theory functions.
-     */
-    public static List<MathFunction> numberTheory() {
-        return NumberTheoryFunctions.all();
-    }
-
-    /**
-     * Gets only type functions.
-     */
-    public static List<MathFunction> type() {
-        return TypeFunctions.all();
-    }
-
-    /**
-     * Gets only bitwise functions.
-     */
-    public static List<MathFunction> bitwise() {
-        return BitwiseFunctions.all();
-    }
-
-    /**
-     * Gets only utility functions.
-     */
-    public static List<MathFunction> utility() {
-        return UtilityFunctions.all();
-    }
-
-    /**
-     * Gets only string functions.
-     */
-    public static List<MathFunction> string() {
-        return StringFunctions.all();
-    }
-
-    /**
-     * Gets only percentage functions.
-     */
-    public static List<MathFunction> percentage() {
-        return PercentageFunctions.all();
-    }
-
-    /**
-     * Gets function names as a set for quick lookup.
-     */
-    public static Set<String> names() {
-        var names = new HashSet<String>();
-        for (MathFunction func : all()) {
-            names.add(func.name().toLowerCase());
-        }
-        return Collections.unmodifiableSet(names);
-    }
-
-    /**
-     * Counts the total number of standard functions.
-     */
-    public static int count() {
-        return all().size();
-    }
 }

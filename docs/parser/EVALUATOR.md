@@ -109,7 +109,7 @@ public NodeConstant evaluate(Node node) {
 
     // NodeExpression subclasses require evaluation
     if (node instanceof NodeVariable variable) {
-        return variableResolver.resolve(variable, ResolutionContext.GENERAL, operatorContext);
+        return variableResolver.resolve(variable, operatorContext);
     }
 
     // Reference symbols (explicit disambiguation)
@@ -216,29 +216,20 @@ EvaluationContext captured = context.snapshot();
 
 **Key Features:**
 
-1. **Context-Aware Resolution** - Different priority based on syntactic position
+1. **One resolution order** - the same priority wherever the identifier appears
 2. **Reference Symbol Support** - Explicit disambiguation (`@unit`, `$var`, `#const`)
 3. **Smart Implicit Multiplication** - Splits compound identifiers into variables, constants, and functions
 
-#### Resolution Contexts
-
-**ResolutionContext Types:**
-
-```text
-enum ResolutionContext {
-    GENERAL,          // x + 1 (variable → function → unit → implicit mult)
-    CALL_TARGET,      // f(x) (function → variable)
-    POSTFIX_UNIT,     // 100m (unit → variable → implicit mult)
-    ASSIGNMENT_TARGET // x := (not resolved, just stored)
-}
-```
-
-#### General Context Resolution
+#### Resolution Order
 
 **Priority:** variable → user function → unit → implicit multiplication
 
+A name defined in the session therefore shadows a unit or a built-in of the same name, so
+`f := 5; 100f` is 500 and not 100 fahrenheit. A sigil is the way to override that: `@f` is
+the unit, `$f` the variable, `#f` the constant.
+
 ```java
-NodeConstant resolveAsGeneral(String name, EvaluationContext context, OperatorContext opCtx) {
+NodeConstant resolveName(String name, EvaluationContext context, OperatorContext opCtx) {
     // 1. Variables (highest priority - allows shadowing)
     if (context.isDefined(name)) {
         return context.resolve(name);
@@ -381,11 +372,7 @@ NodeConstant trySplitIntoVariables(String name, EvaluationContext context, Opera
 context.define("x", new NodeRational(2));
 
 // xpi → x * pi
-NodeConstant result = variableResolver.resolve(
-    new NodeVariable("xpi"),
-    ResolutionContext.GENERAL,
-    opCtx
-);
+NodeConstant result = variableResolver.resolve(new NodeVariable("xpi"), opCtx);
 // Returns: 2 * π ≈ 6.28
 ```
 

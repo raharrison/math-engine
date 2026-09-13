@@ -409,6 +409,15 @@ class AsciiMathNodeFormatterTest {
         assertThat(fmt.format(assignment)).isEqualTo("x = 42");
     }
 
+    @Test
+    void formatsAnImpliedProductAsJuxtaposition() {
+        var implied = new NodeBinary(Token.implied(TokenType.MULTIPLY, "*", 0, 0), dbl(45), var("degrees"));
+        assertThat(fmt.format(implied)).isEqualTo("45 degrees");
+        // Precedence is still multiplication's
+        assertThat(fmt.format(new NodeBinary(token(TokenType.POWER, "^"), implied, dbl(2))))
+                .isEqualTo("(45 degrees)^2");
+    }
+
     // ==================== NodeElementAssignment ====================
 
     @Test

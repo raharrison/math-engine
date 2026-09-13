@@ -55,25 +55,4 @@ public final class RecursionTracker {
         }
     }
 
-    /**
-     * Get the current recursion depth.
-     */
-    public int getCurrentDepth() {
-        return currentDepth;
-    }
-
-    /**
-     * Get the maximum allowed recursion depth.
-     */
-    public int getMaxDepth() {
-        return maxDepth;
-    }
-
-    /**
-     * Reset the recursion depth to zero.
-     * This should only be used in special cases like resetting the evaluator state.
-     */
-    public void reset() {
-        currentDepth = 0;
-    }
 }

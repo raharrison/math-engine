@@ -642,6 +642,10 @@ NodeBinary add = new NodeBinary(
 NodeConstant result = evaluator.evaluate(add);  // NodeDouble(5)
 ```
 
+**Juxtaposition:** an `implicit()` operator token means the lexer supplied the `*`, as in
+`45 degrees`. The formatters print it without the `*`, parenthesising only where that would
+bind differently: `(2 m) ^ 2`, `-(2 m)`, `(2 m)!`, `(2 m)[0]`, `2 * (3 m)`.
+
 ### NodeUnary
 
 **Purpose:** Unary operations (single operand)
@@ -687,15 +691,11 @@ NodeVariable x = new NodeVariable("x");
 ```
 
 **Resolution:**
-During evaluation, resolved by `VariableResolver` with context-aware priority:
+During evaluation, resolved by `VariableResolver`:
 
 ```text
-// General context: variable → function → unit → implicit mult
-NodeConstant value = variableResolver.resolve(
-    variable,
-    ResolutionContext.GENERAL,
-    operatorContext
-);
+// variable → user function → unit → implicit mult
+NodeConstant value = variableResolver.resolve(variable, operatorContext);
 ```
 
 **Resolution Contexts:**

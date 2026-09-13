@@ -1,6 +1,9 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
-import uk.co.ryanharrison.mathengine.parser.ast.*;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeFunction;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeMatrix;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeVector;
 import uk.co.ryanharrison.mathengine.parser.evaluator.TypeError;
 
 /**
@@ -39,11 +42,8 @@ public final class ArgTypes {
     private static final ArgType<Double> NUMBER = (node, ctx) -> ctx.toDouble(node);
     private static final ArgType<Integer> INTEGER = (node, ctx) -> ctx.requireInteger(node);
     private static final ArgType<Long> LONG = (node, ctx) -> ctx.requireLong(node);
-    private static final ArgType<Boolean> BOOLEAN = (node, ctx) -> ctx.toBoolean(node);
-    private static final ArgType<String> STRING = (node, ctx) -> ctx.requireString(node).getValue();
     private static final ArgType<NodeVector> VECTOR = (node, ctx) -> ctx.requireVector(node);
     private static final ArgType<NodeMatrix> MATRIX = (node, ctx) -> ctx.requireMatrix(node);
-    private static final ArgType<double[]> DOUBLE_ARRAY = (node, ctx) -> ctx.toDoubleArray(ctx.requireVector(node));
     private static final ArgType<NodeConstant> ANY = (node, ctx) -> node;
 
     private static final ArgType<NodeFunction> FUNCTION = (node, ctx) -> {
@@ -53,9 +53,6 @@ public final class ArgTypes {
         throw new TypeError("Function '" + ctx.functionName() + "' requires a function argument, got: " +
                 node.typeName());
     };
-
-    private static final ArgType<NodeVector> VECTOR_OR_SCALAR = (node, ctx) ->
-            node instanceof NodeVector vector ? vector : new NodeVector(new Node[]{node});
 
     // ==================== Scalar Types ====================
 
@@ -85,22 +82,6 @@ public final class ArgTypes {
         return LONG;
     }
 
-    /**
-     * Extracts a boolean value. Numbers are truthy if non-zero.
-     */
-    public static ArgType<Boolean> bool() {
-        return BOOLEAN;
-    }
-
-    /**
-     * Extracts a string value, requiring the node to be a NodeString.
-     *
-     * @throws TypeError if the value is not a string
-     */
-    public static ArgType<String> string() {
-        return STRING;
-    }
-
     // ==================== Collection Types ====================
 
     /**
@@ -119,15 +100,6 @@ public final class ArgTypes {
      */
     public static ArgType<NodeMatrix> matrix() {
         return MATRIX;
-    }
-
-    /**
-     * Extracts a double array from a vector.
-     *
-     * @throws TypeError if the value is not a vector
-     */
-    public static ArgType<double[]> doubleArray() {
-        return DOUBLE_ARRAY;
     }
 
     // ==================== Special Types ====================
@@ -151,10 +123,4 @@ public final class ArgTypes {
         return ANY;
     }
 
-    /**
-     * Accepts a vector OR wraps a scalar in a single-element vector.
-     */
-    public static ArgType<NodeVector> vectorOrScalar() {
-        return VECTOR_OR_SCALAR;
-    }
 }

@@ -7,18 +7,15 @@ package uk.co.ryanharrison.mathengine.parser.evaluator;
 public class StackOverflowException extends EvaluationException {
 
     private final String trace;
-    private final int maxDepth;
 
     public StackOverflowException(String functionName, int maxDepth) {
         super(String.format("Maximum recursion depth exceeded (%d): %s", maxDepth, functionName));
         this.trace = null;
-        this.maxDepth = maxDepth;
     }
 
     public StackOverflowException(String message, String trace) {
         super(message);
         this.trace = trace;
-        this.maxDepth = -1;
     }
 
     /**
@@ -30,14 +27,6 @@ public class StackOverflowException extends EvaluationException {
                 "Expression nests too deeply to process: the JVM stack ran out before any "
                         + "configured limit was reached. Simplify the expression, or run the "
                         + "engine on a thread with a larger stack.", null);
-    }
-
-    public String getTrace() {
-        return trace;
-    }
-
-    public int getMaxDepth() {
-        return maxDepth;
     }
 
     @Override

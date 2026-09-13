@@ -64,48 +64,4 @@ public final class StandardBinaryOperators {
         );
     }
 
-    /**
-     * Gets only arithmetic operators.
-     *
-     * @return map of arithmetic operators
-     */
-    public static Map<TokenType, BinaryOperator> arithmetic() {
-        return Map.of(
-                TokenType.PLUS, PlusOperator.INSTANCE,
-                TokenType.MINUS, MinusOperator.INSTANCE,
-                TokenType.MULTIPLY, MultiplyOperator.INSTANCE,
-                TokenType.DIVIDE, DivideOperator.INSTANCE,
-                TokenType.POWER, PowerOperator.INSTANCE,
-                TokenType.MOD, ModOperator.INSTANCE
-        );
-    }
-
-    /**
-     * Gets only comparison operators.
-     *
-     * @return map of comparison operators
-     */
-    public static Map<TokenType, BinaryOperator> comparison() {
-        return Map.of(
-                TokenType.LT, ComparisonOperators.LESS_THAN,
-                TokenType.GT, ComparisonOperators.GREATER_THAN,
-                TokenType.LTE, ComparisonOperators.LESS_THAN_OR_EQUAL,
-                TokenType.GTE, ComparisonOperators.GREATER_THAN_OR_EQUAL,
-                TokenType.EQ, ComparisonOperators.EQUAL,
-                TokenType.NEQ, ComparisonOperators.NOT_EQUAL
-        );
-    }
-
-    /**
-     * Gets only logical operators.
-     *
-     * @return map of logical operators
-     */
-    public static Map<TokenType, BinaryOperator> logical() {
-        return Map.of(
-                TokenType.AND, LogicalOperators.AND,
-                TokenType.OR, LogicalOperators.OR,
-                TokenType.XOR, LogicalOperators.XOR
-        );
-    }
 }

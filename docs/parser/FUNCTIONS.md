@@ -123,11 +123,8 @@ Broadcasting is disabled by design since these functions operate on specific typ
 | `ArgTypes.number()`         | `Double`       | Non-numeric          |
 | `ArgTypes.integer()`        | `Integer`      | Non-integer          |
 | `ArgTypes.longInt()`        | `Long`         | Non-integer          |
-| `ArgTypes.bool()`           | `Boolean`      | Non-convertible      |
-| `ArgTypes.string()`         | `String`       | Non-string           |
 | `ArgTypes.vector()`         | `NodeVector`   | Non-vector           |
 | `ArgTypes.matrix()`         | `NodeMatrix`   | Non-matrix           |
-| `ArgTypes.doubleArray()`    | `double[]`     | Non-vector           |
 | `ArgTypes.function()`       | `NodeFunction` | Non-function         |
 | `ArgTypes.any()`            | `NodeConstant` | Never                |
 | `ArgTypes.vectorOrScalar()` | `NodeVector`   | Never (wraps scalar) |

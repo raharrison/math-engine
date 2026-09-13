@@ -1,6 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.format;
 
 import uk.co.ryanharrison.mathengine.parser.ast.Node;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeBinary;
 import uk.co.ryanharrison.mathengine.parser.ast.NodeSequence;
 import uk.co.ryanharrison.mathengine.parser.ast.NodeSubscript;
 
@@ -46,8 +47,19 @@ final class FormatUtils {
     }
 
     static String formatSubscript(NodeSubscript subscript, NodeFormatter fmt) {
-        return fmt.format(subscript.getTarget()) +
+        return target(subscript.getTarget(), fmt) +
                 formatIndexGroups(List.of(subscript.getIndices()), fmt);
+    }
+
+    /**
+     * A subscript binds tighter than multiplication, so {@code (2 m)[0]} keeps its parentheses.
+     */
+    private static String target(Node target, NodeFormatter fmt) {
+        String text = fmt.format(target);
+        if (target instanceof NodeBinary binary && binary.getOperator().implicit()) {
+            return "(" + text + ")";
+        }
+        return text;
     }
 
     /**

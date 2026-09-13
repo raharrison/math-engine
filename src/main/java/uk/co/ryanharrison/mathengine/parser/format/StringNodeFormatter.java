@@ -31,6 +31,12 @@ public final class StringNodeFormatter implements NodeFormatter {
     private final int decimalPlaces;
     private final SymbolRegistry registry = SymbolRegistry.getDefault();
 
+    /**
+     * A juxtaposition binds at multiplication's precedence.
+     */
+    private static final int IMPLIED_PRECEDENCE =
+            SymbolRegistry.getDefault().getPrecedence(TokenType.MULTIPLY);
+
     private StringNodeFormatter(int decimalPlaces) {
         this.decimalPlaces = decimalPlaces;
     }
@@ -75,7 +81,7 @@ public final class StringNodeFormatter implements NodeFormatter {
             case NodeFunction n -> "<function:" + n.getFunction().name() + ">";
 
             // --- NodeExpression subtypes ---
-            case NodeBinary n -> formatBinary(n);
+            case NodeBinary n -> n.getOperator().implicit() ? formatImplied(n) : formatBinary(n);
             case NodeUnary n -> formatUnary(n);
             case NodeCall n -> formatCall(n);
             case NodeVariable n -> n.getName();
@@ -162,14 +168,32 @@ public final class StringNodeFormatter implements NodeFormatter {
     // ==================== Expression Helpers ====================
 
     private String formatBinary(NodeBinary binary) {
-        String left = format(binary.getLeft());
-        String right = format(binary.getRight());
+        int precedence = registry.getPrecedence(binary.getOperator().type());
+        // Left-associative, so the left of an equally binding operator needs no parentheses
+        String left = operand(binary.getLeft(), precedence > IMPLIED_PRECEDENCE);
+        String right = operand(binary.getRight(), precedence >= IMPLIED_PRECEDENCE);
         String op = binaryOperatorSymbol(binary.getOperator().type());
         return "(" + left + " " + op + " " + right + ")";
     }
 
+    /**
+     * A supplied multiplication prints as the juxtaposition it was written as.
+     */
+    private String formatImplied(NodeBinary binary) {
+        return format(binary.getLeft()) + " " + format(binary.getRight());
+    }
+
+    /**
+     * Parenthesises a juxtaposition that would otherwise bind differently.
+     */
+    private String operand(Node node, boolean bindsTighter) {
+        String text = format(node);
+        boolean implied = node instanceof NodeBinary binary && binary.getOperator().implicit();
+        return implied && bindsTighter ? "(" + text + ")" : text;
+    }
+
     private String formatUnary(NodeUnary unary) {
-        String operand = format(unary.getOperand());
+        String operand = operand(unary.getOperand(), true);
         if (unary.isPrefix()) {
             String op = prefixOperatorSymbol(unary.getOperator().type());
             return op + operand;
@@ -179,7 +203,7 @@ public final class StringNodeFormatter implements NodeFormatter {
     }
 
     private String formatCall(NodeCall call) {
-        String func = format(call.getFunction());
+        String func = operand(call.getFunction(), true);
         var sb = new StringBuilder(func);
         sb.append("(");
         FormatUtils.appendJoined(sb, call.getArguments(), this);

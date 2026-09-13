@@ -241,6 +241,10 @@ Insert `MULTIPLY` token between:
 - Identifier and Identifier: `x y` → `x * y` (same line only)
 - Postfix and Number: `5! 2` → `5! * 2`
 
+An inserted token is flagged `Token.implicit()`: an ordinary multiplication, flagged so the
+formatters print `45 degrees` rather than `(45 * degrees)`. A unit quantity is made this
+way, `45 degrees` being `45 * degrees` where the name resolves to one degree.
+
 **Critical: Function Call Detection**
 
 DO NOT insert multiplication before function calls:

@@ -1339,18 +1339,4 @@ public final class Matrix implements Cloneable {
 
     // ==================== Deprecated Static Method ====================
 
-    /**
-     * Creates an n×n identity matrix.
-     * <p>
-     * <b>Deprecated:</b> Use {@link #identity(int)} instead.
-     * </p>
-     *
-     * @param n the dimension of the identity matrix
-     * @return a new n×n identity Matrix
-     * @deprecated Use {@link #identity(int)} for better naming consistency
-     */
-    @Deprecated
-    public static Matrix getIdentityNxN(int n) {
-        return identity(n);
-    }
 }

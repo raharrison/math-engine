@@ -78,7 +78,7 @@ public final class TokenProcessor {
             // Add each processed token, inserting implicit multiplication as needed
             for (Token t : processed) {
                 if (implicitMultiplicationEnabled && prev != null && shouldInsertMultiply(prev, t)) {
-                    result.add(new Token(TokenType.MULTIPLY, "*", prev.line(), prev.column()));
+                    result.add(Token.implied(TokenType.MULTIPLY, "*", prev.line(), prev.column()));
                 }
                 result.add(t);
                 prev = t;

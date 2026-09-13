@@ -31,10 +31,6 @@ public final class FunctionExecutor {
         this.byName = Map.copyOf(byName);
     }
 
-    public static FunctionExecutor empty() {
-        return new FunctionExecutor(Map.of());
-    }
-
     public static FunctionExecutor of(Collection<MathFunction> functions) {
         return builder().addAll(functions).build();
     }

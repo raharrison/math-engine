@@ -44,29 +44,4 @@ public final class StandardUnaryOperators {
         );
     }
 
-    /**
-     * Gets only prefix operators.
-     *
-     * @return map of prefix operators
-     */
-    public static Map<TokenType, UnaryOperator> prefix() {
-        return Map.of(
-                TokenType.MINUS, NegateOperator.INSTANCE,
-                TokenType.PLUS, UnaryPlusOperator.INSTANCE,
-                TokenType.NOT, NotOperator.INSTANCE
-        );
-    }
-
-    /**
-     * Gets only postfix operators.
-     *
-     * @return map of postfix operators
-     */
-    public static Map<TokenType, UnaryOperator> postfix() {
-        return Map.of(
-                TokenType.FACTORIAL, FactorialOperator.INSTANCE,
-                TokenType.DOUBLE_FACTORIAL, DoubleFactorialOperator.INSTANCE,
-                TokenType.PERCENT, PercentOperator.INSTANCE
-        );
-    }
 }

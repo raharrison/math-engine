@@ -66,15 +66,6 @@ public final class TokenStream {
         return tokens.size();
     }
 
-    /**
-     * Gets the source code.
-     *
-     * @return the source code string
-     */
-    public String getSourceCode() {
-        return sourceCode;
-    }
-
     // ==================== Navigation ====================
 
     /**

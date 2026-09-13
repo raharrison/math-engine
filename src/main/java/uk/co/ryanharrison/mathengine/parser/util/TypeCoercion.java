@@ -193,17 +193,6 @@ public final class TypeCoercion {
     }
 
     /**
-     * Converts a constant to an integer value.
-     *
-     * @param value the value to convert
-     * @return the integer value
-     * @throws TypeError if the value cannot be converted
-     */
-    public static int toInt(NodeConstant value) {
-        return (int) toDouble(value);
-    }
-
-    /**
      * Converts a constant to a boolean value.
      * Numbers are truthy if non-zero.
      *

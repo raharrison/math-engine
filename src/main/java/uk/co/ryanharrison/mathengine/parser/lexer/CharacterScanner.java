@@ -58,13 +58,6 @@ public final class CharacterScanner {
     }
 
     /**
-     * Gets the source text.
-     */
-    public String getSource() {
-        return source;
-    }
-
-    /**
      * Gets a substring from the source.
      *
      * @param start start position (inclusive)
@@ -163,16 +156,6 @@ public final class CharacterScanner {
         column = 1;
     }
 
-    /**
-     * Sets the column to a specific value.
-     * Useful when resetting after consuming certain characters.
-     *
-     * @param col the new column value
-     */
-    public void setColumn(int col) {
-        this.column = col;
-    }
-
     // ==================== Character Classification ====================
 
     /**
@@ -246,17 +229,6 @@ public final class CharacterScanner {
      */
     public static boolean isAlphaNumeric(int c) {
         return isAlpha(c) || isDigit(c);
-    }
-
-    /**
-     * Checks if a character is whitespace (space, tab, carriage return).
-     * Note: newline is not included as it may need special handling.
-     *
-     * @param c the character to check
-     * @return true if whitespace
-     */
-    public static boolean isWhitespace(char c) {
-        return c == ' ' || c == '\t' || c == '\r';
     }
 
     /**

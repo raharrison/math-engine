@@ -99,18 +99,6 @@ public class UndefinedVariableException extends EvaluationException {
         return new UndefinedVariableException(name, Kind.CONSTANT);
     }
 
-    /**
-     * The bare name that could not be resolved, without any sigil.
-     */
-    public String getVariableName() {
-        return variableName;
-    }
-
-    /** What sort of name was being looked for. */
-    public Kind getKind() {
-        return kind;
-    }
-
     @Override
     public String formatMessage() {
         String baseMessage = super.formatMessage();

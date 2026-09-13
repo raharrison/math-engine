@@ -218,24 +218,4 @@ public final class ExponentialFunctions {
         return List.of(EXP, EXP2, EXP10, EXPM1, LN, LOG, LOG2, LOGN, LOG1P, SQRT, CBRT, NROOT, POW);
     }
 
-    /**
-     * Gets only exponential functions.
-     */
-    public static List<MathFunction> exponential() {
-        return List.of(EXP, EXP2, EXP10, EXPM1);
-    }
-
-    /**
-     * Gets only logarithmic functions.
-     */
-    public static List<MathFunction> logarithmic() {
-        return List.of(LN, LOG, LOG2, LOGN, LOG1P);
-    }
-
-    /**
-     * Gets power/root functions.
-     */
-    public static List<MathFunction> powerAndRoot() {
-        return List.of(SQRT, CBRT, NROOT, POW);
-    }
 }

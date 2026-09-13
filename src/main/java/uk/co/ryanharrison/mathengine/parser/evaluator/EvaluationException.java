@@ -41,27 +41,4 @@ public class EvaluationException extends MathEngineException {
     public EvaluationException(String message, Token token) {
         super(message, token);
     }
-
-    /**
-     * Creates an evaluation exception with token and source code.
-     *
-     * @param message    the error message
-     * @param token      the token where the error occurred
-     * @param sourceCode the source code being evaluated
-     */
-    public EvaluationException(String message, Token token, String sourceCode) {
-        super(message, token, sourceCode);
-    }
-
-    /**
-     * Creates an evaluation exception wrapping another exception.
-     *
-     * @param message the error message
-     * @param cause   the underlying cause
-     */
-    public EvaluationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    // Uses default formatMessage() implementation from MathEngineException
 }

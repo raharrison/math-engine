@@ -139,19 +139,6 @@ public final class FunctionListPanel extends JPanel {
     }
 
     /**
-     * Gets all functions in the list.
-     *
-     * @return list of all plotted functions
-     */
-    public List<PlottedFunction> getAllFunctions() {
-        List<PlottedFunction> result = new ArrayList<>();
-        for (int i = 0; i < listModel.size(); i++) {
-            result.add(listModel.get(i).function);
-        }
-        return result;
-    }
-
-    /**
      * Clears all functions from the list.
      */
     public void clearFunctions() {

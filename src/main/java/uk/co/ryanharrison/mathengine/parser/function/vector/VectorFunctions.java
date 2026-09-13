@@ -314,17 +314,4 @@ public final class VectorFunctions {
                 SORT, REVERSE, LEN, FIRST, LAST);
     }
 
-    /**
-     * Gets aggregation functions (sum, product, min, max).
-     */
-    public static List<MathFunction> aggregation() {
-        return List.of(SUM, PRODUCT, MIN, MAX);
-    }
-
-    /**
-     * Gets statistical functions.
-     */
-    public static List<MathFunction> statistical() {
-        return List.of(MEAN, MEDIAN, VARIANCE, STDDEV);
-    }
 }

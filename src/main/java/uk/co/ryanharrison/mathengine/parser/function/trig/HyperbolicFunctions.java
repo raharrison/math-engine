@@ -117,24 +117,6 @@ public final class HyperbolicFunctions {
                 ASINH, ACOSH, ATANH, ASECH, ACSCH, ACOTH);
     }
 
-    /**
-     * Gets standard hyperbolic functions (sinh, cosh, tanh) and their reciprocals.
-     *
-     * @return list of standard hyperbolic functions
-     */
-    public static List<MathFunction> standard() {
-        return List.of(SINH, COSH, TANH, SECH, CSCH, COTH);
-    }
-
-    /**
-     * Gets the inverse hyperbolic functions.
-     *
-     * @return list of inverse hyperbolic functions
-     */
-    public static List<MathFunction> inverse() {
-        return List.of(ASINH, ACOSH, ATANH, ASECH, ACSCH, ACOTH);
-    }
-
     private static MathFunction hyperbolic(String name, String description, DoubleUnaryOperator fn) {
         return FunctionBuilder
                 .named(name)

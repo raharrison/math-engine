@@ -103,17 +103,14 @@ public final class NodeSubscript extends NodeExpression {
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof SliceArg other)) return false;
-            boolean startEq = Objects.equals(start, other.start);
-            boolean endEq = Objects.equals(end, other.end);
-            return startEq && endEq;
+            return isSlice == other.isSlice
+                    && Objects.equals(start, other.start)
+                    && Objects.equals(end, other.end);
         }
 
         @Override
         public int hashCode() {
-            int hash = 1;
-            hash = hash * 31 + (start != null ? start.hashCode() : 0);
-            hash = hash * 31 + (end != null ? end.hashCode() : 0);
-            return hash;
+            return Objects.hash(start, end, isSlice);
         }
     }
 }
