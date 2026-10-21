@@ -79,15 +79,15 @@ The parser supports multiple statements separated by semicolons:
 
 ```text
 // Single statement
-"x := 5"           →NodeAssignment
+"x = 5"            →NodeAssignment
 
 // Multiple statements
-"x := 5; y := 10"  →
+"x = 5; y = 10"    →
 
 NodeSequence([NodeAssignment, NodeAssignment])
 
 // Trailing semicolon allowed
-"x := 5;"          →NodeAssignment
+"x = 5;"           →NodeAssignment
 ```
 
 ### TokenStream (Navigation)
@@ -162,8 +162,9 @@ ParseException error(Token token, String message)  // Create exception with cont
 **Structure:**
 
 ```
-parseExpression()        → Entry point
-parseAssignment()        → x := 5, v[0] := 5, f(x) := expr
+parseStatement()         → Entry point where '=' may assign
+parseExpression()        → Entry point where only ':=' may assign
+parseAssignment()        → x = 5, v[0] = 5, f(x) = expr
 parseLambda()            → x -> expr
 parseBinary(precedence)  → every binary operator, by precedence climbing
 parseUnary()             → -, +, not
@@ -241,49 +242,72 @@ List<SliceArg> parseSliceArgs()      // Parse [start:end] for subscripts
 
 ## Precedence Chain Details
 
-### Level 1: Expression (Entry Point)
+### Level 1: Statement and Expression (Entry Points)
 
-**Method:** `parseExpression()`
+**Methods:** `parseStatement()` and `parseExpression()`
 
-Simply delegates to assignment level:
+Both delegate to the assignment level, and differ only in whether `=` may assign:
 
 ```java
 public Node parseExpression() {
-    return parseAssignment();
+    return parseAssignment(false);   // an argument, element, index, lambda body or value
+}
+
+public Node parseStatement() {
+    return parseAssignment(true);    // a ';'-separated part of the input or of a group
 }
 ```
 
+`Parser.parse()` reads each top-level statement with `parseStatement()`, and so does a
+parenthesised group for each of its statements. Every other caller, including the
+`CollectionParser` supplier, uses `parseExpression()`. So `x = 5`, `(x = 5) + 1` and
+`f(y) = (t = y; t * 2)` assign, while `if(x = 5, 1, 2)` is a `ParseException`. `:=` is
+accepted in both, which is how an assignment inside an expression is written.
+
 ### Level 2: Assignment
 
-**Method:** `parseAssignment()`
+**Method:** `parseAssignment(boolean statement)`
 
 **Syntax:**
 
-- Variable assignment: `x := 5`
-- Element assignment: `v[0] := 5`, `m[1, 2] := 9`, `m[0][1] := 9`
-- Function definition: `f(x) := x + 1`
-- Multi-parameter: `add(a, b) := a + b`
+- Variable assignment: `x = 5`
+- Element assignment: `v[0] = 5`, `m[1, 2] = 9`, `m[0][1] = 9`
+- Function definition: `f(x) = x + 1`
+- Multi-parameter: `add(a, b) = a + b`
+
+Each may be written with `:=` (`INLINE_ASSIGN`) instead of `=` (`ASSIGN`). Both tokens
+answer `TokenType.isAssignment()`, which is what the lookahead scans test, so the two
+spellings build the same node. The only difference is `consumeAssignment`, which refuses
+`=` when `statement` is false.
 
 **Recognition Strategy:**
 
 Uses lookahead to distinguish between assignment and regular expressions:
 
 ```java
-private Node parseAssignment() {
+private Node parseAssignment(boolean statement) {
+    Node node = parseAssignmentOrExpression(statement);
+    if (stream.peek().type().isAssignment()) {     // '2 + 2 = 4', 'x = y = 5'
+        throw misplacedAssignment(node);
+    }
+    return node;
+}
+
+private Node parseAssignmentOrExpression(boolean statement) {
     int savepoint = stream.savePosition();
 
     if (stream.check(IDENTIFIER) || stream.check(UNIT) || stream.check(FUNCTION)) {
         Token id = stream.advance();
 
-        if (stream.check(LBRACKET) && isElementAssignment()) {  // lookahead for  id[...] :=
+        if (stream.check(LBRACKET) && isElementAssignment()) {  // lookahead for  id[...] =
             var groups = parseIndexGroups();
-            stream.expect(ASSIGN, "Expected ':=' after subscript in element assignment");
+            consumeAssignment(statement, id, Target.ELEMENT);
             return new NodeElementAssignment(id.lexeme(), groups, parseLambda());
         }
 
         List<String> params = null;
         if (stream.check(LPAREN)) {
-            if (isFunctionDefinition()) {          // lookahead for  id(...) :=
+            if (isFunctionDefinition()) {          // lookahead for  id(...) =
                 stream.advance();
                 params = parseParamList();
                 stream.expect(RPAREN, "Expected ')' after parameter list");
@@ -293,66 +317,83 @@ private Node parseAssignment() {
             }
         }
 
-        if (stream.check(ASSIGN)) {
-            stream.advance();
+        if (stream.peek().type().isAssignment()) {
+            consumeAssignment(statement, id, params != null ? Target.FUNCTION : Target.VARIABLE);
             Node value = parseLambda();
             return params != null
                     ? new NodeFunctionDef(id.lexeme(), params, value)
                     : new NodeAssignment(id.lexeme(), value);
         }
 
-        stream.restorePosition(savepoint);         // no ':=', so not an assignment
+        stream.restorePosition(savepoint);         // no '=' or ':=', so not an assignment
     }
 
     return parseLambda();
 }
 ```
 
+The value is parsed with `parseLambda()`, not `parseStatement()`, so assignment does not
+chain. Nothing else in the grammar follows an expression with an assignment token, which
+is why one left behind is always an error, and the check after the parse can say why:
+
+| Input              | Message                                                                     |
+|--------------------|-----------------------------------------------------------------------------|
+| `if(x = 5, 1, 2)`  | Use '==' to compare; '=' assigns only as a statement (use ':=' ... )        |
+| `x = y = 5`        | Assignments cannot be chained; assign each name in its own statement        |
+| `2 + 2 = 4`        | Cannot assign to this expression; only a name, a subscript or a function... |
+| `x += 1`           | Compound assignment '+=' is not supported; write 'x = x + value'            |
+| `sin(x) = 0`       | 'sin' is a built-in function; use ':=' to redefine it, or '==' to compare   |
+| `map(g(y) = y, v)` | '=' assigns only as a statement; use ':=' to define a function inside ...   |
+| `x === 5`          | Expected expression, not '=' (use '==' to compare)                          |
+
+The last two come from `parsePrimary()`, which finds the stray `=` where a value belongs
+and looks at the token before it.
+
 **Element Assignment Lookahead:**
 
 `isElementAssignment()` scans ahead over balanced brackets for the pattern
-`[...]...[...] :=`, and the subscripts are only parsed once the `:=` is known to follow.
+`[...]...[...] =` (or `:=`), and the subscripts are only parsed once an assignment is known
+to follow.
 
 A token scan rather than a speculative parse: subscript arguments are full expressions
-that re-enter `parseAssignment`, so backtracking when no `:=` turned up would parse
+that re-enter `parseAssignment`, so backtracking when no assignment turned up would parse
 `a[b[c[d[0]]]] + 1` once per level of nesting.
 
 **Function Definition Lookahead:**
 
-`isFunctionDefinition()` scans ahead to check for pattern `identifier(params) :=`:
+`isFunctionDefinition()` scans ahead for `(name, ...) =`, or `:=`. Only plain parameter
+names may sit between the parentheses, so `f(2) = 4` is a call followed by a mistyped
+comparison rather than a definition with a bad parameter:
 
 ```java
 private boolean isFunctionDefinition() {
-    int depth = 0;
-    int lookAhead = 0;
+    int position = stream.getPosition() + 1;           // just after '('
 
-    // Scan through balanced parentheses
-    while (lookAhead < remaining) {
-        Token token = stream.getTokenAt(current + lookAhead);
-
-        if (token is LPAREN)depth++;
-        else if (token is RPAREN){
-            depth--;
-            if (depth == 0) {
-                // Check if next token is :=
-                Token next = stream.getTokenAt(current + lookAhead + 1);
-                return next.type == ASSIGN;
-            }
+    if (isParameterNameAt(position)) {
+        position++;
+        while (typeAt(position) == COMMA && isParameterNameAt(position + 1)) {
+            position += 2;
         }
-
-        lookAhead++;
     }
 
-    return false;
+    return typeAt(position) == RPAREN && typeAt(position + 1).isAssignment();
 }
 ```
+
+**Built-in Functions:**
+
+A definition whose name is a built-in (`sin`, `dist`, `abs`) needs `:=`. Written with `=`,
+`sin(x) = 0` reads as a comparison, and replacing `sin` for the session would be a silent
+surprise, so `consumeAssignment` refuses it with "'sin' is a built-in function; use ':=' to
+redefine it, or '==' to compare". A variable may still take a built-in's name with `=`
+(`sum = 5`), because variables and functions are separate namespaces.
 
 **Parameter Names:**
 
 Accepts IDENTIFIER, UNIT, or KEYWORD tokens as parameter names:
 
 ```java
-// This allows: convert(x, from, to) := x from in to
+// This allows: convert(x, from, to) = x from in to
 // where 'from' and 'to' are keywords but valid param names
 ```
 
@@ -758,13 +799,13 @@ if (stream.match(LPAREN)) {
         return parseParenthesizedLambda();
     }
 
-    Node first = parseExpression();
+    Node first = parseStatement();                 // a group is a statement position
 
     if (stream.match(SEMICOLON)) {                 // (stmt1; stmt2; expr)
         List<Node> statements = new ArrayList<>();
         statements.add(first);
         while (!stream.check(RPAREN) && !stream.isAtEnd()) {
-            statements.add(parseExpression());
+            statements.add(parseStatement());
             if (!stream.match(SEMICOLON)) break;
         }
         stream.expect(RPAREN);
@@ -1261,7 +1302,7 @@ private String getSuggestion() {
     if (expected == RBRACKET) return "Check for missing closing bracket ']'";
 
     if (actual == ASSIGN && expected != ASSIGN) {
-        return "Did you mean '==' for comparison? ':=' is used for assignment.";
+        return "Did you mean '==' for comparison?";
     }
 
     return null;
@@ -1319,13 +1360,20 @@ Empty expression
 
 ```text
 parse("x =")
-→LexerException:
-Invalid operator '='(use ':='for assignment)
-
-parse("x := ")
 →ParseException:
 Expected expression
-after assignment
+
+parse("if(x = 5, 1, 2)")
+→ParseException:
+Use '==' to compare; '=' assigns only as a statement
+
+parse("x = y = 5")
+→ParseException:
+Assignments cannot be chained
+
+parse("2 + 2 = 4")
+→ParseException:
+Cannot assign to this expression
 ```
 
 **5. Matrix Size Mismatch:**
@@ -1361,7 +1409,7 @@ Node ast = parser.parse();
 ### Parsing a Function Definition
 
 ```java
-// Input: "f(x, y) := x^2 + y^2"
+// Input: "f(x, y) = x^2 + y^2"
 Node ast = parser.parse();
 
 // Result:
@@ -1436,7 +1484,7 @@ if (stream.check(IDENTIFIER)) {
     Token id = stream.advance();
     if (stream.check(LPAREN)) {
         if (isFunctionDefinition()) {
-            // A definition: x(y) := ...
+            // A definition: x(y) = ...
         } else {
             // A call, so put the tokens back and parse it as one
             stream.restorePosition(savepoint);
@@ -1706,7 +1754,7 @@ void testSimpleComprehension() {
 
 @Test
 void testMultiParameterFunctionDefinition() {
-    Node node = parse("add(a, b) := a + b");
+    Node node = parse("add(a, b) = a + b");
     assertThat(node).isInstanceOf(NodeFunctionDef.class);
 
     NodeFunctionDef funcDef = (NodeFunctionDef) node;

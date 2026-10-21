@@ -34,9 +34,9 @@ Node (abstract base class)
     ├─ NodeUnitRef           - Explicit unit reference (@unit, @"km/h")
     ├─ NodeVarRef            - Explicit variable reference ($var)
     ├─ NodeConstRef          - Explicit constant reference (#const)
-    ├─ NodeAssignment        - Variable assignment (x := value)
-    ├─ NodeElementAssignment - Element assignment (v[0] := value)
-    ├─ NodeFunctionDef       - Function definition (f(x) := expr)
+    ├─ NodeAssignment        - Variable assignment (x = value)
+    ├─ NodeElementAssignment - Element assignment (v[0] = value)
+    ├─ NodeFunctionDef       - Function definition (f(x) = expr)
     ├─ NodeRangeExpression   - Range before evaluation
     ├─ NodeUnitConversion    - Unit conversion (value in unit)
     ├─ NodeComprehension     - List comprehension
@@ -512,7 +512,7 @@ NodeVector vector = range.toVector();  // {1, 2, 3, 4, 5}
 
 **When Created:**
 
-- Function definition: `f(x) := x^2`
+- Function definition: `f(x) = x^2`
 
 **Fields:**
 
@@ -533,7 +533,7 @@ class FunctionDefinition {
 **Example:**
 
 ```java
-// f(x, y) := x^2 + y^2
+// f(x, y) = x^2 + y^2
 FunctionDefinition def = new FunctionDefinition(
     "f",
     List.of("x", "y"),
@@ -744,13 +744,13 @@ NodeConstant value = variableResolver.resolveUnitRef(unitName, context);
 **Use Cases:**
 
 ```java
-m := 5                  // Define variable 'm'
+m = 5                   // Define variable 'm'
 m                       // Returns 5 (variable)
 @m                      // Returns 1 meter (forced unit)
 100 * @m                // 100 meters
 
 @"km/h"                 // Units with spaces/special chars
-@"miles per hour"       // Multi-word units
+5 @"km/h" in mph        // Units with special characters in a conversion
 ```
 
 **Error:**
@@ -784,13 +784,13 @@ NodeConstant value = variableResolver.resolveVarRef(variableName, context);
 **Use Cases:**
 
 ```java
-m := 3
-100m                    // 100 meters (unit takes priority after number)
+m = 3
+100m                    // 300: the variable wins over the unit
 100$m                   // 100 * 3 = 300 (forced variable)
 
-f := 10
-f(x) := x^2            // Define function
-f                       // Function object
+f = 10
+f(x) = x^2              // Define function
+f                       // Still 10: outside a call the variable wins
 $f                      // 10 (forced variable)
 ```
 
@@ -825,11 +825,11 @@ NodeConstant value = variableResolver.resolveConstRef(constantName, context);
 **Use Cases:**
 
 ```java
-pi := 3.0               // Shadow pi constant with variable
+pi = 3.0                // Shadow pi constant with variable
 pi                      // Returns 3.0 (variable)
 #pi                     // Returns π ≈ 3.14159... (constant)
 
-e := 10
+e = 10
 2 * #e                  // Uses Euler's number, not variable
 ```
 
@@ -861,7 +861,7 @@ private final Node value;
 **Example:**
 
 ```java
-// x := 5
+// x = 5
 NodeAssignment assign = new NodeAssignment("x", new NodeDouble(5));
 ```
 
@@ -890,7 +890,7 @@ Each `[...]` group is held separately, so `m[0][1]` and `m[0, 1]` stay distingui
 **Example:**
 
 ```java
-// v[0] := 5
+// v[0] = 5
 new NodeElementAssignment("v",
         List.of(List.of(new NodeSubscript.SliceArg(new NodeDouble(0), null, false))),
         new NodeDouble(5));
@@ -915,7 +915,7 @@ private final Node body;
 **Example:**
 
 ```java
-// f(x, y) := x + y
+// f(x, y) = x + y
 NodeFunctionDef def = new NodeFunctionDef(
     "f",
     List.of("x", "y"),
@@ -1078,7 +1078,7 @@ private final List<Node> statements;
 **Example:**
 
 ```java
-// x := 5; y := 10; x + y
+// x = 5; y = 10; x + y
 NodeSequence seq = new NodeSequence(List.of(
     new NodeAssignment("x", new NodeDouble(5)),
     new NodeAssignment("y", new NodeDouble(10)),

@@ -39,10 +39,10 @@ double d = engine.evaluateDouble("2 + 3 * 4");
 // Stateful session: variables and functions persist across calls
 engine.
 
-evaluate("x := 10");
+evaluate("x = 10");
 engine.
 
-evaluate("f(n) := n^2");
+evaluate("f(n) = n^2");
 engine.
 
 evaluate("f(x)");                    // 100
@@ -70,7 +70,7 @@ engine.
 defineVariable("y",new NodeRational(1, 2));
         engine.
 
-defineFunction("f(n) := n^2");
+defineFunction("f(n) = n^2");
 
 // Read back what this session has defined
 Map<String, NodeConstant> variables = engine.getLocalVariables();
@@ -108,7 +108,7 @@ MathEngineConfig config = MathEngineConfig.builder()
         .unitsEnabled(true)
         .comprehensionsEnabled(true)            // {x^2 for x in 1..10}
         .lambdasEnabled(true)                   // x -> x^2
-        .userDefinedFunctionsEnabled(true)      // f(x) := x^2
+        .userDefinedFunctionsEnabled(true)      // f(x) = x^2
 
         .build();
 ```
@@ -142,14 +142,14 @@ Arithmetic:  + - * / ^ %
 Comparison:  == != < <= > >=
 Logical:     and or xor not
 Bitwise:     & | ~ << >>
-Assignment:  :=
+Assignment:  =  (as a statement), :=  (also inside an expression)
 ```
 
 ### Syntax
 
 ```
-Variables:      x := 10
-Functions:      f(x) := x^2
+Variables:      x = 10
+Functions:      f(x) = x^2
 Lambdas:        map(x -> x^2, {1,2,3})
 Comprehensions: {x^2 for x in 1..10}
 Conditionals:   if(x > 0, 1, -1)

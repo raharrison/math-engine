@@ -427,7 +427,7 @@ public final class MainFrame extends JFrame {
             doc.insertString(doc.getLength(), "  2 + 3 * 4                    →  14\n", normalStyle);
             doc.insertString(doc.getLength(), "  {1, 2, 3} + {4, 5, 6}        →  {5, 7, 9}\n", normalStyle);
             doc.insertString(doc.getLength(), "  100 meters in feet           →  328.084 feet\n", normalStyle);
-            doc.insertString(doc.getLength(), "  f(x) := x^2; f(5)            →  25\n\n", normalStyle);
+            doc.insertString(doc.getLength(), "  f(x) = x^2; f(5)             →  25\n\n", normalStyle);
 
             doc.insertString(doc.getLength(), "Commands: 'clear' (clear output), 'reset' (reset engine)\n", commentStyle);
             doc.insertString(doc.getLength(), "Shortcuts: Ctrl+L (clear), Ctrl+R (reset), Ctrl+B (toggle sidebar)\n\n", commentStyle);
@@ -633,7 +633,7 @@ public final class MainFrame extends JFrame {
             doc.insertString(doc.getLength(), "  Comparison:  <, >, <=, >=, ==, !=\n", normalStyle);
             doc.insertString(doc.getLength(), "  Logical:     &&, ||, xor, not\n", normalStyle);
             doc.insertString(doc.getLength(), "  Special:     @ (map/matrix multiply), of (percent), ! (factorial)\n", normalStyle);
-            doc.insertString(doc.getLength(), "  Assignment:  :=\n", normalStyle);
+            doc.insertString(doc.getLength(), "  Assignment:  = (statement), := (inside an expression)\n", normalStyle);
             doc.insertString(doc.getLength(), "  Lambda:      ->\n\n", normalStyle);
 
             doc.insertString(doc.getLength(), "REFERENCE SYMBOLS\n", keywordStyle);
@@ -648,13 +648,13 @@ public final class MainFrame extends JFrame {
             doc.insertString(doc.getLength(), "  50% of 200       → 100\n\n", commentStyle);
 
             doc.insertString(doc.getLength(), "VARIABLES & FUNCTIONS\n", keywordStyle);
-            doc.insertString(doc.getLength(), "  x := 5\n", commentStyle);
-            doc.insertString(doc.getLength(), "  f(x) := x^2 + 2*x\n", commentStyle);
+            doc.insertString(doc.getLength(), "  x = 5\n", commentStyle);
+            doc.insertString(doc.getLength(), "  f(x) = x^2 + 2*x\n", commentStyle);
             doc.insertString(doc.getLength(), "  f(3)             → 15\n\n", commentStyle);
 
             doc.insertString(doc.getLength(), "VECTORS & MATRICES\n", keywordStyle);
-            doc.insertString(doc.getLength(), "  v := {1, 2, 3}\n", commentStyle);
-            doc.insertString(doc.getLength(), "  m := [[1, 2], [3, 4]]\n", commentStyle);
+            doc.insertString(doc.getLength(), "  v = {1, 2, 3}\n", commentStyle);
+            doc.insertString(doc.getLength(), "  m = [[1, 2], [3, 4]]\n", commentStyle);
             doc.insertString(doc.getLength(), "  v[0]             → 1 (subscript)\n", commentStyle);
             doc.insertString(doc.getLength(), "  m[0,1]           → 2\n", commentStyle);
             doc.insertString(doc.getLength(), "  m @ m            → [[7, 10], [15, 22]] (matrix mult)\n\n", commentStyle);
@@ -821,7 +821,7 @@ public final class MainFrame extends JFrame {
         );
         panel.add(lambdasCB);
 
-        JCheckBox userVariablesCB = new JCheckBox("User-Defined Variables (x := 5)");
+        JCheckBox userVariablesCB = new JCheckBox("User-Defined Variables (x = 5)");
         userVariablesCB.setBackground(BG_PANEL);
         userVariablesCB.setAlignmentX(Component.LEFT_ALIGNMENT);
         userVariablesCB.setSelected(currentConfig.userDefinedVariablesEnabled());
@@ -830,7 +830,7 @@ public final class MainFrame extends JFrame {
         );
         panel.add(userVariablesCB);
 
-        JCheckBox userFunctionsCB = new JCheckBox("User-Defined Functions (f(x) := x^2)");
+        JCheckBox userFunctionsCB = new JCheckBox("User-Defined Functions (f(x) = x^2)");
         userFunctionsCB.setBackground(BG_PANEL);
         userFunctionsCB.setAlignmentX(Component.LEFT_ALIGNMENT);
         userFunctionsCB.setSelected(currentConfig.userDefinedFunctionsEnabled());
@@ -877,7 +877,7 @@ public final class MainFrame extends JFrame {
 
             if (variables.isEmpty()) {
                 doc.insertString(doc.getLength(), "No variables defined yet.\n\n", commentStyle);
-                doc.insertString(doc.getLength(), "Define variables with: x := 5\n", commentStyle);
+                doc.insertString(doc.getLength(), "Define variables with: x = 5\n", commentStyle);
             } else {
                 // Sort by name
                 List<String> names = new ArrayList<>(variables.keySet());

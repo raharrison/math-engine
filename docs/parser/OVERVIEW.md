@@ -66,7 +66,7 @@ Two-stage pipeline that converts text into classified tokens.
 - Decimal vs range disambiguation (`1.5` vs `1..5`)
 - Reference symbol recognition (`@unit`, `$var`, `#const`)
 - Position tracking for error reporting
-- Multi-character operator support (`==`, `!=`, `<=`, `>=`, `&&`, `||`, `!!`, `..`, `:=`, `->`)
+- Multi-character operator support (`==`, `!=`, `<=`, `>=`, `&&`, `||`, `!!`, `..`, `:=`, `->`), with a lone `=` read as assignment
 
 **TokenProcessor Features:**
 
@@ -164,7 +164,7 @@ Node (abstract AST base)
     ├─ NodeVarRef (explicit variable reference: $var)
     ├─ NodeConstRef (explicit constant reference: #const)
     ├─ NodeAssignment (variable assignment)
-    ├─ NodeElementAssignment (element assignment: v[0] := 5)
+    ├─ NodeElementAssignment (element assignment: v[0] = 5)
     ├─ NodeFunctionDef (function definition)
     ├─ NodeRangeExpression (range before evaluation)
     ├─ NodeUnitConversion (unit conversion)

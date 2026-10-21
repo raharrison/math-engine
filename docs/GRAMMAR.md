@@ -26,18 +26,22 @@ Natural mathematical language with:
 (* Top-level program *)
 program       := statement_list
 statement_list := statement (';' statement)* ';'?
-statement     := expression
+statement     := assignment | expression
 
 (* Expressions *)
-expression    := assignment | comprehension | lambda | pipeline
+expression    := inline_assignment | comprehension | lambda | pipeline
 
-assignment    := identifier params? ':=' expression
-               | identifier index_group+ ':=' expression
+(* '=' assigns only as a statement: at the top level or inside parentheses.
+   ':=' assigns anywhere, so inside an argument, element, index or lambda body
+   only ':=' does. Neither chains: 'x = y = 5' is a ParseException. *)
+assignment    := target ('=' | ':=') expression
+inline_assignment := target ':=' expression
+target        := identifier params?
+               | identifier index_group+
 params        := '(' identifier (',' identifier)* ')'
 index_group   := '[' slice_args ']'
 
-comprehension := '{' expression 'for' identifier 'in' iterable ('if' expression)? '}'
-               | '[' expression 'for' identifier 'in' iterable ('if' expression)? ']'
+comprehension := '{' expression ('for' identifier 'in' iterable)+ ('if' expression)? '}'
 
 lambda        := identifier '->' expression
                | '(' identifier (',' identifier)* ')' '->' expression
@@ -51,7 +55,7 @@ logical_xor   := logical_and ('xor' logical_and)*
 
 logical_and   := equality (('&&' | 'and') equality)*
 
-equality      := relational (('==' | '!=' | 'equals' | 'notequals') relational)*
+equality      := relational (('==' | '!=') relational)*
 
 relational    := range (('<' | '>' | '<=' | '>=') range)*
 
@@ -78,13 +82,14 @@ call          := primary ('(' args? ')')*
 args          := expression (',' expression)*
 
 (* Atomic expressions *)
-primary       := number | string | reference | identifier | vector | matrix | '(' expression ')'
+primary       := number | string | reference | identifier | vector | matrix | '(' statement_list ')'
 
 reference     := '@' (identifier | string)   (* Unit reference: @m or @"km/h" *)
                | '$' identifier              (* Variable reference: $m1 *)
                | '#' identifier              (* Constant reference: #pi *)
 
-number        := integer | based_integer | decimal | scientific | rational_literal
+number        := (integer | based_integer | decimal | scientific | rational_literal) 'd'?
+                 (* a trailing 'd' makes a floating-point double *)
 
 integer       := '-'? digits
 
@@ -158,8 +163,8 @@ char          := any character except quote
 | 11    | `==`, `!=`                    | Equality       | Left    | `a == b`, `a != b`         |
 | 12    | `&&`, `and`                   | Logical AND    | Left    | `a && b`                   |
 | 13    | `xor`                         | Logical XOR    | Left    | `a xor b`                  |
-| 14    | `                             |                | `, `or` | Logical OR                 | Left | `a || b` |
-| 15    | `:=`                          | Assignment     | Right   | `x := 5`                   |
+| 14    | `\|\|`, `or`                  | Logical OR     | Left    | `a \|\| b`                 |
+| 15    | `=`, `:=`                     | Assignment     | None    | `x = 5`, `sum(a := 3, a)`  |
 | 16    | `->`                          | Lambda         | Right   | `x -> x^2`                 |
 | 17    | `for`, `in`, `if`             | Comprehension  | N/A     | `{x for x in 1..10}`       |
 
@@ -213,7 +218,8 @@ Users of the library should also be able to define their own
 
 **Special:**
 
-- `@` - Matrix multiplication (true dot product, not element-wise)
+- `@` - Matrix multiplication (true dot product, not element-wise). With a function on the
+  right it maps instead: `{1, 2, 3} @ (x -> x * 2)` → `{2, 4, 6}`
 - `mod` - Modulo: `7 mod 3` → `1`
 - `of` - Percent: `50% of 200` → `100`
 
@@ -225,7 +231,7 @@ All return `NodeBoolean` (true=1.0, false=0.0)
 
 ### Logical
 
-**Binary:** `&&` (and), `||` (or), `xor`
+**Binary:** `&&` or `and`, `||` or `or`, `xor`
 **Unary:** `not`
 
 ### Range
@@ -302,15 +308,18 @@ Examples:
 - `{x^2 for x in 1..10}`
 - `{x for x in 1..20 if x mod 2 == 0}`
 - Nested: `{x*y for x in 1..3 for y in 1..3}`
+- A filter sees every loop variable: `{{x, y} for x in 1..3 for y in 1..3 if x < y}`
 
-Matrix form: `[ expression for ... ]`
+There is no bracketed form: `[x for x in 1..3]` is a parse error.
 
 ---
 
 ## Built-In Functions
 
-The expression parser includes **150+ built-in functions** organized into categories. Functions are **reserved identifiers** and
-cannot be redefined.
+The expression parser includes **150+ built-in functions** organized into categories. A user-defined function of the
+same name takes precedence in a call (`sin(x) := 1; sin(5)` is 1). Replacing a built-in takes `:=`: `sin(x) = 1` reads as a
+comparison and is a parse error, so a built-in is never replaced by accident. A variable may also share a function's name
+without hiding it from calls: `sum = 5; sum(1, 2)` is 3.
 
 ### Arithmetic Functions
 
@@ -477,6 +486,7 @@ error (NaN under silent validation).
 
 - `transpose(matrix)` - Transpose
 - `inverse(matrix)` - Matrix inverse
+- `adjugate(matrix)` - Adjugate (transpose of the cofactor matrix) (alias: `adj`)
 
 **Construction:**
 
@@ -575,7 +585,7 @@ error (NaN under silent validation).
 
 **Split/Join:**
 
-- `split(string, delimiter?)` - Split into vector (default: whitespace)
+- `split(string, delimiter?)` - Split into vector (no delimiter: individual characters)
 - `join(vector, delimiter?)` - Join vector into string (default: empty)
 
 **Utilities:**
@@ -613,7 +623,8 @@ error (NaN under silent validation).
 
 **Type Checking:**
 
-- `typeof(x)` - Get type name as string ("number", "vector", "matrix", "boolean", "string")
+- `typeof(x)` - Get type name as string: "rational", "double", "percent", "boolean", "string", "vector" (a range
+  is a vector), "matrix", "unit" or "function". Decimals are exact, so `typeof(3.14)` is "rational"
 - `isnan(x)` - Check if Not-a-Number
 - `isinf(x)` - Check if infinite
 - `isfinite(x)` - Check if finite number
@@ -668,28 +679,30 @@ error (NaN under silent validation).
 
 **Conversion:**
 
-- `percent(x)` - Convert to percent (0.5 → 50%)
-- `topercent(x)` - Alias for `percent`
-- `percentvalue(p)` - Extract numeric value (50% → 0.5)
+- `percent(x)` - Wrap a number as a percentage (50 → 50%) (alias: `pct`)
+- `topercent(p)` - Decimal value of a percentage (50% → 0.5)
+- `percentvalue(p)` - Number written before the % sign (50% → 50) (alias: `pctvalue`)
 - `ispercent(x)` - Check if value is percent type
 
 **Calculation:**
 
-- `percentof(percent, value)` - Calculate percentage of value (20% of 100 → 20)
-- `whatpercent(part, whole)` - What percent is part of whole (20 of 100 → 20%)
-- `percentchange(old, new)` - Percent change ((new-old)/old as percent)
+- `percentof(percent, value)` - Calculate percentage of value (20% of 100 → 20) (alias: `pctof`)
+- `whatpercent(part, whole)` - What percent is part of whole (20 of 100 → 20%) (alias: `whatpct`)
+- `percentchange(old, new)` - Percent change ((new-old)/old as percent) (aliases: `pctchange`, `pctdiff`)
 
 **Application:**
 
-- `addpercent(value, percent)` - Add percentage to value (100 + 20% → 120)
-- `subtractpercent(value, percent)` - Subtract percentage from value (100 - 20% → 80)
-- `reversepercent(result, percent)` - Original value before percent increase
+- `addpercent(value, percent)` - Add percentage to value (100 + 20% → 120) (aliases: `addpct`, `markup`)
+- `subtractpercent(value, percent)` - Subtract percentage from value (100 - 20% → 80) (aliases: `subpct`, `discount`)
+- `reversepercent(result, percent)` - Original value before percent increase (120, 20% → 100) (aliases: `reversepct`,
+  `unmarkup`)
 
 **Advanced:**
 
-- `ratiotopercent(ratio)` - Convert ratio to percent change (1.2 → 20%)
-- `percenttoratio(percent)` - Convert percent to ratio (20% → 0.2)
-- `percentpoints(p1, p2)` - Percentage point difference (50% - 30% → 20 points)
+- `ratiotopercent(ratio)` - Convert a growth ratio to a percent change (1.5 → 50%). Computed in floating point, so
+  1.2 shows as 19.999999999999996% (alias: `ratiopct`)
+- `percenttoratio(percent)` - Convert a percent change to a growth ratio, 1 + p (20% → 1.2) (alias: `pctratio`)
+- `percentpoints(a, b)` - Change from a to b in percentage points, b - a (30%, 50% → 20) (alias: `pp`)
 
 ### Utility Functions
 
@@ -742,6 +755,10 @@ error (NaN under silent validation).
 - `map(function, vector)` - Apply function to each element
 - `filter(function, vector)` - Keep elements where function returns true
 - `reduce(function, vector, initial)` - Fold/accumulate (e.g., sum, product)
+- `flatmap(function, vector)` - Map, then flatten one level
+- `partition(predicate, vector)` - Split into `{matching, rest}`
+- `takewhile(predicate, vector)` - Leading elements while the predicate holds
+- `dropwhile(predicate, vector)` - Everything after the leading run that matches
 
 **Examples:**
 
@@ -776,11 +793,15 @@ if(false, 1/0, 10)                            → 10 (no error)
 
 **Decimal:** `3.14`, `-0.5`, `0.001`
 
-- Parsed as `NodeDouble`
+- Held exactly as `NodeRational`, so `0.1 + 0.2 - 0.3` is 0
 
 **Scientific:** `1e3`, `2.5E-2`, `-3.2e2`
 
-- Parsed as `NodeDouble`
+- Held exactly as `NodeRational`, like a decimal
+
+**Double:** `2.5d`, `1e3d`, `1d/2`
+
+- A trailing `d` makes a `NodeDouble`, opting that value into floating-point arithmetic
 
 **Digit separators:** `1_000`, `1_000.000_1`, `0xFF_FF`
 
@@ -826,12 +847,12 @@ Elements can be any expression: `{x, y+1, sin(z)}`
 
 **Keywords and Operators:**
 
-- **Logical:** `and`, `or`, `not`, `xor`, `equals`, `notequals`
+- **Logical:** `and`, `or`, `not`, `xor`
 - **Control:** `for`, `in`, `if`, `step`
 - **Operators:** `of`, `mod`, `to`, `as`
 
 **Built-In Functions:**
-All 150+ built-in functions are reserved identifiers (see "Built-In Functions" section). Key categories include:
+Built-in function names can be shadowed (see "Built-In Functions" section). Key categories include:
 
 - **Math:** `sin`, `cos`, `tan`, `abs`, `ln`, `log`, `exp`, `sqrt`, `pow`, `floor`, `ceil`, `round`, etc.
 - **Vector:** `sum`, `product`, `min`, `max`, `mean`, `median`, `sort`, `length`, `map`, `filter`, `reduce`, etc.
@@ -865,7 +886,8 @@ All 150+ built-in functions are reserved identifiers (see "Built-In Functions" s
 - `infinity` or `inf` - Positive infinity
 - `nan` - Not-a-Number
 
-**Note:** All function names and constants are case-sensitive and cannot be redefined by users.
+**Note:** Function names and constants are case-sensitive. A variable can shadow a constant (`pi = 3`), and `#pi`
+still reaches the constant.
 
 ---
 
@@ -893,18 +915,18 @@ Reference symbols provide **explicit disambiguation** for identifiers that could
 
 ```javascript
 // Simple unit reference
-m := 5                  // Define variable 'm'
+m = 5                   // Define variable 'm'
 m                       // Returns 5 (variable has priority)
 @m                      // Returns 1 meter (forced unit resolution)
 100 * @m                // Returns 100 meters
 
 // Quoted unit reference for multi-word units
 @"km/h"                 // Force kilometers per hour unit
-@"miles per hour"       // Force miles per hour unit
+5 @"km/h" in mph        // 3.107 miles per hour
 100 * @"km/h"           // 100 kilometers per hour
 
 // Unit conversion with explicit reference
-m1 := 1000              // Variable named 'm1'
+m1 = 1000               // Variable named 'm1'
 m1                      // Returns 1000 (variable)
 @m in feet              // 1 meter in feet (forced unit)
 ```
@@ -924,18 +946,20 @@ m1                      // Returns 1000 (variable)
 
 ```javascript
 // Variable shadowing
-f := 10                 // Define variable 'f'
+f = 10                  // Define variable 'f'
 f                       // Returns 10 (variable)
-f(x) := x^2             // Define function 'f'
-f                       // Returns function object
+f(x) = x^2              // Define function 'f'
+f                       // Still 10: outside a call the variable wins
+f(3)                    // 9: in a call the function wins
 $f                      // Returns 10 (forced variable resolution)
 
 // Disambiguation in postfix position
-x := 2
+x = 2
 100x                    // 100 * x = 200 (implicit multiplication)
-m := 3
-100m                    // 100 meters (unit takes priority after number)
-100$m                   // 100 * m = 300 (forced variable)
+m = 3
+100m                    // 300: the variable wins over the unit
+100@m                   // 100 meters (forced unit)
+100 m in feet           // 328.08 feet: a conversion still reads m as a unit
 ```
 
 ### Constant References (`#`)
@@ -952,12 +976,12 @@ pi                      // Returns π ≈ 3.14159...
 e                       // Returns e ≈ 2.71828...
 
 // Constant shadowing by variables
-pi := 3.0               // Redefine pi as variable
+pi = 3.0                // Redefine pi as variable
 pi                      // Returns 3.0 (variable shadows constant)
 #pi                     // Returns π ≈ 3.14159... (forced constant)
 
 // Using constants in calculations
-tau := 10               // Shadow tau constant
+tau = 10                // Shadow tau constant
 2 * #pi                 // 2π (using constant, not variable)
 2 * pi                  // 6.0 (using variable)
 ```
@@ -978,9 +1002,11 @@ Understanding default resolution priority helps you know when reference symbols 
 3. Variable holding lambda
 
 **Postfix Unit Context** (e.g., `100m`):
-1. Unit (highest)
-2. Variable
+1. Variable (highest)
+2. Unit
 3. Implicit multiplication
+
+A conversion (`100 m in feet`) reads the name as a unit even when a variable shares it.
 
 **Reference symbols override these priorities**, forcing the specific resolution type regardless of context.
 
@@ -1001,9 +1027,9 @@ statement1; statement2; statement3
 **Examples:**
 
 ```
-x := 5; y := 10; x + y             → 15
-x := 1; x := x + 1; x := x + 1; x  → 3
-a := 10; b := 20;                  → 20 (trailing semicolon allowed)
+x = 5; y = 10; x + y               → 15
+x = 1; x = x + 1; x = x + 1; x     → 3
+a = 10; b = 20;                    → 20 (trailing semicolon allowed)
 ```
 
 ### Assignment
@@ -1011,40 +1037,89 @@ a := 10; b := 20;                  → 20 (trailing semicolon allowed)
 **Variable Assignment:**
 
 ```
-x := 5                             → Assign value to variable
+x = 5                              → Assign value to variable
 ```
 
 **Function Definition:**
 
 ```
-f(x) := x^2                        → Define single-parameter function
-f(x, y) := x + y                   → Define multi-parameter function
+f(x) = x^2                         → Define single-parameter function
+f(x, y) = x + y                    → Define multi-parameter function
 ```
 
 **Element Assignment:**
 
 ```
-v[0] := 99                         → Replace one element of a vector
-v[-1] := 99                        → Index from the end
-m[0, 1] := 9                       → Replace one element of a matrix
-m[0] := {7, 8}                     → Replace a whole row, keeping its width
-m[0][1] := 9                       → Chain of groups, reaching the same element as m[0, 1]
-s[0] := "H"                        → Replace one character of a string
+v[0] = 99                          → Replace one element of a vector
+v[-1] = 99                         → Index from the end
+m[0, 1] = 9                        → Replace one element of a matrix
+m[0] = {7, 8}                      → Replace a whole row, keeping its width
+m[0][1] = 9                        → Chain of groups, reaching the same element as m[0, 1]
+s[0] = "H"                         → Replace one character of a string
 ```
 
 The target must be a name that already has a value, and the assignment answers the value
 assigned. Nothing is mutated: the collection is rebuilt and the name rebound, so a second
 name for the same value is unaffected. A string element takes a single character. A slice
-target (`v[1:3] := ...`) is refused.
+target (`v[1:3] = ...`) is refused.
 
 **Function Assignment:**
 
 ```
-f := x -> x^2                      → Assign lambda to variable
-g := f                             → Copy function reference
+f = x -> x^2                       → Assign lambda to variable
+g = f                              → Copy function reference
 ```
 
 Functions are first-class values and can be passed to other functions.
+
+**Where `=` may stand, and `:=`:**
+
+`=` assigns only as a statement: a `;`-separated part of the input, or anything inside
+parentheses. Everywhere else an expression is expected, as in an argument, a vector or
+matrix element, an index, a comprehension, or a lambda body, `=` is a `ParseException`. A
+comparison mistyped as `=` therefore cannot assign by accident. `:=` assigns anywhere, and
+is the spelling to use when an assignment inside an expression is meant.
+
+```
+x = 5; x + 1                       → 6
+(x = 2) + x                        → 4      (parentheses are a statement position)
+f(y) = (t = y + 1; t * 2); f(5)    → 12     (a parenthesised body may assign)
+if((x = 5) > 3, x, 0)              → 5      (parentheses opt in inside an argument)
+if(x := 5, x * 2, 0)               → 10     (':=' assigns inside an argument)
+sum(a := 3, a)                     → 6
+{y for x in 1..3 if (y := x * 2) > 2}  → {4, 6}
+
+if(x = 5, 1, 2)                    → ParseException: Use '==' to compare
+{x for x in v if x = 2}            → ParseException
+filter(x -> x = 2, v)              → ParseException (a lambda body is an expression)
+```
+
+As a statement, `=` and `:=` mean the same thing: `x := 5` is `x = 5`.
+
+Neither chains, and only a name, a subscript or a function signature of plain parameter names
+can be assigned. `=` never replaces a built-in function; `:=` does. There is no compound
+assignment and no equation solving:
+
+```
+x = y = 5                          → ParseException: Assignments cannot be chained
+2 + 2 = 4                          → ParseException: Cannot assign to this expression (use '==' to compare)
+x^2 = 4                            → ParseException
+f(2) = 4                           → ParseException (a call, so use '==' to compare)
+sin(x) = 0                         → ParseException: 'sin' is a built-in function; use ':=' to redefine it, or '==' to compare
+sin(x) := 0                        → defines sin, replacing the built-in for the session
+x += 1                             → ParseException: Compound assignment '+=' is not supported
+x %= 2                             → ParseException: Compound assignment '%=' is not supported
+x === 5                            → ParseException (use '==' to compare)
+```
+
+A name once defined is read whole: after `pi2 = 3`, `pi2` is 3 rather than `pi * 2`, in the
+same input or a later one.
+
+Formatted output puts an assignment or a sequence in parentheses wherever it is not a
+statement, so it always parses back: `{a := 1, a + 1}` prints as `{(a = 1), (a + 1)}`.
+
+`!=`, `<=`, `>=` and `==` are lexed before a lone `=`, so `2!=2` is the inequality
+`2 != 2` (false), not `2! == 2`.
 
 ### Vectorization
 
@@ -1053,7 +1128,7 @@ Many built-in functions automatically apply element-wise to vectors:
 **Examples:**
 
 ```
-sin({0, pi/2, pi})                 → {0, 1, 0}
+sin({0, pi/2})                     → {0, 1}
 sqrt({4, 9, 16})                   → {2, 3, 4}
 abs({-1, -2, 3})                   → {1, 2, 3}
 iseven({1, 2, 3, 4})               → {false, true, false, true}
@@ -1134,9 +1209,10 @@ Boolean → Integer → Rational → Double → Percent
 
 ```
 true + 1                           → 2 (boolean→number)
-1 + 2.5                            → 3.5 (rational→double)
+1 + 2.5                            → 3.5 (exact: decimals are rational)
 1/3 + 1/3 + 1/3                    → 1 (exact rational)
-1/3 + 0.5                          → 0.833... (rational→double)
+1/3 + 0.5                          → 5/6 (exact)
+1/3 + 0.5d                         → 0.833... (a double operand makes a double)
 ```
 
 **Boolean Arithmetic:**
@@ -1179,7 +1255,7 @@ sin(cos(0))                        → sin(1)
 **With Lambdas:**
 
 ```
-map(x -> x^2, {1, 2, 3})           → {2, 4, 6}
+map(x -> x^2, {1, 2, 3})           → {1, 4, 9}
 filter(x -> x > 0, {-1, 0, 1, 2})  → {1, 2}
 ```
 
@@ -1209,7 +1285,7 @@ m[:, 1:]                           → All rows, columns 1 onward
 **Complete Example:**
 
 ```
-m := [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+m = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 m[0, 0]                            → 1
 m[1, 2]                            → 6
 m[0, :]                            → {1, 2, 3}
@@ -1230,8 +1306,8 @@ m[0:2, 1:3]                        → [[2, 3], [5, 6]]
 All variables exist in a single global scope:
 
 ```
-x := 10
-f(y) := x + y
+x = 10
+f(y) = x + y
 f(5)                               → 15 (accesses global x)
 ```
 
@@ -1239,52 +1315,53 @@ f(5)                               → 15 (accesses global x)
 Function parameters shadow global variables:
 
 ```
-x := 10
-f(x) := x * 2
+x = 10
+f(x) = x * 2
 f(3)                               → 6 (parameter x shadows global)
 x                                  → 10 (global unchanged)
 ```
 
-**Variable Capture (Reference, Not Value):**
-Lambdas and functions capture variables by reference:
+**Variable Capture:**
+A lambda captures the variables around it when it is created. A named function reads the
+global value each time it is called:
 
 ```
-a := 10
-f := x -> x + a
-f(5)                               → 15
-
-a := 20
-f(5)                               → 25 (uses current value of a)
+a = 10
+f = x -> x + a
+g(x) = x + a
+a = 20
+f(5)                               → 15 (captured a = 10)
+g(5)                               → 25 (reads the current a)
 ```
 
-**No Lexical Closures:**
-There are no local scopes - all variables are global:
+**Closures:**
+A lambda returned from a function keeps that call's parameters:
 
 ```
-makeCounter(n) := (x -> n + x)
-counter := makeCounter(100)
+makeCounter(n) = (x -> n + x)
+counter = makeCounter(100)
 counter(5)                         → 105
 
-n := 200                           # Modifies global n
-counter(5)                         → 205 (counter uses current global n)
+n = 200                            // A global n does not reach the closure
+counter(5)                         → 105
 ```
 
 **Recursion:**
 Functions can call themselves:
 
 ```
-fact(n) := if(n <= 1, 1, n * fact(n-1))
+fact(n) = if(n <= 1, 1, n * fact(n-1))
 fact(5)                            → 120
 ```
 
-Recursion depth is limited (default: 1000) to prevent stack overflow.
+Recursion depth is limited (default: 256, `maxRecursionDepth`) to prevent stack overflow.
 
 **Mutual Recursion:**
 Functions can call each other:
 
 ```
-even(n) := if(n == 0, true, odd(n-1))
-odd(n) := if(n == 0, false, even(n-1))
+even(n) = if(n == 0, true, odd(n-1))
+odd(n) = if(n == 0, false, even(n-1))
 even(4)                            → true
 ```
 
@@ -1300,7 +1377,8 @@ even(4)                            → true
 -2^2                   → -4
 (-2)^2                 → 4
 7 / 3                  → 7/3 (rational)
-7.0 / 3                → 2.333... (double)
+7.0 / 3                → 7/3 (decimals are exact too)
+7 / 3d                 → 2.333... (double)
 5!                     → 120
 binomial(10, 5)        → 252
 ```
@@ -1337,12 +1415,12 @@ sum(1..100)            → 5050
 ### Indexing and Slicing
 
 ```
-v := {10,20,30}
+v = {10,20,30}
 v[0]                   → 10
 v[1:3]                 → {20,30}
 v[-1]                  → 30
 
-m := [[1,2,3],[4,5,6],[7,8,9]]
+m = [[1,2,3],[4,5,6],[7,8,9]]
 m[0,0]                 → 1
 m[1,:]                 → {4,5,6}
 m[:,1]                 → {2,5,8}
@@ -1352,20 +1430,20 @@ m[0:2, 1:3]            → [[2,3],[5,6]]
 ### User-Defined Functions
 
 ```
-square(x) := x^2
+square(x) = x^2
 square(5)              → 25
 
-add(x, y) := x + y
+add(x, y) = x + y
 add(3, 4)              → 7
 
-fact(n) := if(n <= 1, 1, n * fact(n-1))
+fact(n) = if(n <= 1, 1, n * fact(n-1))
 fact(5)                → 120
 ```
 
 ### Lambda Functions
 
 ```
-f := x -> x^2 + 1
+f = x -> x^2 + 1
 f(3)                   → 10
 
 (x -> x * 2)(5)        → 10
@@ -1429,7 +1507,7 @@ percentile({1,2,3,4,5}, 50)   → 3
 ### Percentage Functions
 
 ```
-50%                    → 0.5
+50%                    → 50% (value 0.5)
 50% of 200             → 100
 whatpercent(20, 100)   → 20%
 percentchange(100, 120) → 20%
@@ -1456,15 +1534,15 @@ gcd(12, 18)            → 6
 ### Statement Sequences
 
 ```
-x := 5; y := 10; x + y                   → 15
-x := 1; x := x + 1; x := x + 1; x        → 3
-a := pi; r := 5; a * r^2                 → 78.54...
+x = 5; y = 10; x + y                     → 15
+x = 1; x = x + 1; x = x + 1; x           → 3
+a = pi; r = 5; a * r^2                   → 78.54...
 ```
 
 ### Vectorization
 
 ```
-sin({0, pi/2, pi})                       → {0, 1, 0}
+sin({0, pi/2})                           → {0, 1}
 sqrt({4, 9, 16})                         → {2, 3, 4}
 iseven({1,2,3,4})                        → {false,true,false,true}
 ```
@@ -1474,8 +1552,8 @@ iseven({1,2,3,4})                        → {false,true,false,true}
 ```
 sum({x^2 for x in 1..10})                → 385
 length(filter(x -> isprime(x), 1..100))  → 25
-v := {3,1,4,1,5,9}; max(v) - min(v)      → 8
-mean({x meters in centimeters for x in 1..5}) → 300 cm
+v = {3,1,4,1,5,9}; max(v) - min(v)       → 8
+mean({x meters in centimeters for x in 1..5}) → 300 centimeters
 ```
 
 ---
@@ -1512,15 +1590,22 @@ mean({x meters in centimeters for x in 1..5}) → 300 cm
 `5!` vs `5!!`
 **Rule:** Greedy matching - if second `!` present, parse as double factorial
 
+### Assignment vs Comparison
+
+`x = 5` vs `x == 5`, and `if(x = 5, ...)`
+**Rule:** `==` is always a comparison and `=` always an assignment; the lexer takes `==`, `!=`, `<=` and `>=`
+before a lone `=`. A lone `=` assigns only as a statement (top level, or inside parentheses), so in an argument,
+element, index or lambda body it is a parse error rather than a silent assignment. `:=` assigns anywhere.
+
 ---
 
 ## Critical Edge Cases
 
 ### Empty Expressions
 
-- `()` → Error: "Empty parentheses"
+- `()` → Parse error: "Expected expression"
 - `{}` → Empty vector (valid)
-- `[]` → Error: "Empty matrix literal" (ambiguous dimensions)
+- `[]` → Empty matrix (valid)
 
 ### Whitespace Handling
 
@@ -1540,7 +1625,7 @@ mean({x meters in centimeters for x in 1..5}) → 300 cm
 - A single `/` is still division; only `//` and `/*` start a comment
 
 ```text
-x := 5;          // set x
+x = 5;           // set x
 x * 2 /* and double it */
 ```
 
@@ -1553,13 +1638,13 @@ x * 2 /* and double it */
 
 ### Circular Dependencies
 
-- `f(x) := g(x)` and `g(x) := f(x)` → Stack overflow on evaluation
+- `f(x) = g(x)` and `g(x) = f(x)` → Stack overflow on evaluation
 - Detection: Track call stack depth, fail at configured limit
-- Error: "Maximum recursion depth exceeded (possible circular reference)"
+- Error: "Maximum recursion depth exceeded (256): f"
 
-### Partial Evaluation
+### Undefined Names
 
-- Undefined variables don't always error immediately
-- `x + 5` → Store as AST if `x` undefined (lazy evaluation)
-- Error only on actual evaluation attempt
-- Implementation choice: Eager vs lazy variable resolution
+- An undefined variable is an error as soon as it is evaluated: `x + 5` with no `x` fails with
+  "No value associated with 'x'"
+- Only code that is never evaluated escapes, such as the branch `if` does not take:
+  `if(true, 1, missing)` is 1

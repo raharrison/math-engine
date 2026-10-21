@@ -102,11 +102,11 @@ Multi-character operators require lookahead:
 
 ```text
 '=' → check next:
-    '=' → EQUALS (==)
-    else → ERROR (= is not valid, must use :=)
+    '=' → EQ (==)
+    else → ASSIGN (=)
 
 ':' → check next:
-    '=' → ASSIGN (:=)
+    '=' → INLINE_ASSIGN (:=)
     else → COLON (:)
 
 '!' → check next:
@@ -154,7 +154,7 @@ The scanner recognizes reference symbols for explicit disambiguation:
 
 - ✅ Split constants (pi, e) - fixed values, can't be redefined
 - ✅ Split functions (sin, cos) - unambiguous, can't be shadowed by variables
-- ❌ DON'T split units - they can be shadowed by variables (e.g., `m := 5`)
+- ❌ DON'T split units - they can be shadowed by variables (e.g., `m = 5`)
 - ❌ Runtime resolution needed for context-dependent priority
 
 **Three Responsibilities:**
@@ -169,7 +169,7 @@ The scanner recognizes reference symbols for explicit disambiguation:
 
 For each IDENTIFIER token:
 
-1. Check if it's a definition target (`m1 :=` or `f(...) :=`) - if so, don't split
+1. Check if it's a definition target (`m1 =` or `f(...) =`) - if so, don't split
 2. Try digit splitting: `pi2` → `pi`, `2` (only if prefix is constant/function)
 3. Try function suffix splitting: `xsin` → `x`, `sin` (only if prefix is single-char or constant)
 
@@ -219,7 +219,7 @@ Identifiers left as IDENTIFIER tokens are resolved by VariableResolver with cont
 
 **Why Not Classify Constants/Units at Lexer?**
 
-- **Shadowing**: `pi := 3` should work, but lexer doesn't know about variable assignments yet
+- **Shadowing**: `pi = 3` should work, but lexer doesn't know about variable assignments yet
 - **Context matters**: `100m` should be unit, but `m` alone might be a variable
 - **Flexibility**: User can redefine constants/units as variables
 
@@ -325,7 +325,14 @@ for each pair of adjacent tokens (prev, current):
 
 **Special:**
 
-- `RANGE` (..), `ASSIGN` (:=), `ARROW` (->), `AT` (@)
+- `RANGE` (..), `ASSIGN` (=), `INLINE_ASSIGN` (:=), `ARROW` (->), `AT` (@)
+
+The lexer does not decide where an assignment may stand: `=` and `:=` are both plain
+tokens, and the parser accepts `=` only as a statement (see PARSER.md).
+
+A name the user has defined is never split. `MathEngine` passes the session's variable and
+function names to `Lexer.tokenize(source, definedNames)`, and a name assigned earlier in
+the same input counts too, so after `pi2 = 3` a later `pi2` is the variable, not `pi * 2`.
 
 ### 5. Structural
 
@@ -425,7 +432,7 @@ throw new LexerException(
 ```
 Error: Unterminated string literal
 
-  line 2: x := "hello
+  line 2: x = "hello
              | ^^^^^^
 ```
 
@@ -452,7 +459,7 @@ List<Token> tokens = lexer.tokenize("sin(pi * x) + 2");
 
 ```java
 // Explicit disambiguation
-tokens = lexer.tokenize("m1 := 5; @m in feet");
+tokens = lexer.tokenize("m1 = 5; @m in feet");
 
 // Result:
 // [IDENTIFIER(m1), ASSIGN, INTEGER(5), SEMICOLON,
@@ -472,7 +479,7 @@ tokens = lexer.tokenize("m1 := 5; @m in feet");
 
 ### 2. Classifying Constants/Units at Lexer
 
-**Problem:** Marking `pi` as CONSTANT prevents user from defining `pi := 3`
+**Problem:** Marking `pi` as CONSTANT prevents user from defining `pi = 3`
 
 **Solution:** Leave as IDENTIFIER - VariableResolver handles runtime priority (variables shadow constants)
 

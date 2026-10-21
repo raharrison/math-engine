@@ -470,8 +470,8 @@ Input                        | Expected        | Notes
 ```test
 Input              | Effect                          | Notes
 -------------------|---------------------------------|-----------------
-x := 5             | Define variable x = 5           | Simple assignment
-y := x + 3         | Define y = 8 (if x = 5)         | Expression assignment
+x = 5              | Define variable x = 5           | Simple assignment
+y = x + 3          | Define y = 8 (if x = 5)         | Expression assignment
 ```
 
 ### 9.1.1 Element Assignment
@@ -479,12 +479,39 @@ y := x + 3         | Define y = 8 (if x = 5)         | Expression assignment
 ```test
 Input                                | Result       | Notes
 -------------------------------------|--------------|-----------------------------------
-v := {1, 2, 3}; v[0] := 9; v         | {9, 2, 3}    | Vector element
-m := [1, 2; 3, 4]; m[0, 1] := 9; m   | [1, 9; 3, 4] | Matrix element
-m := [1, 2; 3, 4]; m[0] := {7, 8}; m | [7, 8; 3, 4] | Whole row, width preserved
-s := "hello"; s[0] := "H"; s         | "Hello"      | One character of a string
-x := {1, 2}; y := x; x[0] := 9; y    | {1, 2}       | A copy leaves the other name alone
-v := {1, 2, 3}; v[1:2] := 9          | error        | A slice target is refused
+v = {1, 2, 3}; v[0] = 9; v           | {9, 2, 3}    | Vector element
+m = [1, 2; 3, 4]; m[0, 1] = 9; m     | [1, 9; 3, 4] | Matrix element
+m = [1, 2; 3, 4]; m[0] = {7, 8}; m   | [7, 8; 3, 4] | Whole row, width preserved
+s = "hello"; s[0] = "H"; s           | "Hello"      | One character of a string
+x = {1, 2}; y = x; x[0] = 9; y       | {1, 2}       | A copy leaves the other name alone
+v = {1, 2, 3}; v[1:2] = 9            | error        | A slice target is refused
+```
+
+### 9.1.2 Statement and Inline Assignment
+
+`=` assigns only as a statement, at the top level or inside parentheses; `:=` assigns
+anywhere. As a statement the two are the same.
+
+```test
+Input                                | Result       | Notes
+-------------------------------------|--------------|-----------------------------------
+x=5; x*2                             | 10           | No spaces needed
+x := 5; x + 1                        | 6            | ':=' as a statement is '='
+(x = 2) + x                          | 4            | A group is a statement position
+if((x = 5) > 3, x, 0)                | 5            | Parentheses opt in inside an argument
+if(x := 5, x * 2, 0)                 | 10           | ':=' assigns inside an argument
+sum(a := 3, a)                       | 6            | Arguments run left to right
+if(x = 5, 1, 2)                      | error        | '=' in an argument: use '==' to compare
+{x for x in 1..5 if x = 2}           | error        | '=' in a filter
+filter(x -> x = 2, {1, 2, 3})        | error        | '=' in a lambda body
+x = y = 5                            | error        | Assignment does not chain
+2 + 2 = 4                            | error        | Only a name, subscript or signature
+x = 1; x += 1                        | error        | No compound assignment
+f(2) = 4                             | error        | A call: use '==' to compare
+sin(x) = 0                           | error        | '=' does not replace a built-in
+sin(x) := 1; sin(5)                  | 1            | ':=' does
+pi2 = 3; pi2                         | 3            | A defined name is not split
+2!=2                                 | false        | '!=' is lexed first: 2 != 2
 ```
 
 ### 9.2 Function Definitions (One Argument)
@@ -492,9 +519,9 @@ v := {1, 2, 3}; v[1:2] := 9          | error        | A slice target is refused
 ```test
 Definition         | Invocation     | Expected | Notes
 -------------------|----------------|----------|--------------------
-square(x) := x^2   | square(5)      | 25       | Basic function
-double(n) := 2*n   | double(3)      | 6        | Function with multiplication
-neg(x) := -x       | neg(5)         | -5       | Unary operator in function
+square(x) = x^2    | square(5)      | 25       | Basic function
+double(n) = 2*n    | double(3)      | 6        | Function with multiplication
+neg(x) = -x        | neg(5)         | -5       | Unary operator in function
 ```
 
 ### 9.3 Function Definitions (Multiple Arguments)
@@ -502,8 +529,8 @@ neg(x) := -x       | neg(5)         | -5       | Unary operator in function
 ```test
 Definition                                          | Invocation          | Expected | Notes
 ----------------------------------------------------|---------------------|----------|--------------------
-add(a,b) := a + b                                   | add(3,4)            | 7        | Two arguments
-dist(x1,y1,x2,y2) := sqrt((x2-x1)^2 + (y2-y1)^2)    | dist(0,0,3,4)       | 5.0      | Four arguments
+add(a,b) = a + b                                    | add(3,4)            | 7        | Two arguments
+d(x1,y1,x2,y2) = sqrt((x2-x1)^2 + (y2-y1)^2)        | d(0,0,3,4)          | 5.0      | Four arguments
 ```
 
 ### 9.4 Recursive Functions
@@ -511,8 +538,8 @@ dist(x1,y1,x2,y2) := sqrt((x2-x1)^2 + (y2-y1)^2)    | dist(0,0,3,4)       | 5.0 
 ```test
 Definition                                          | Invocation     | Expected | Notes
 ----------------------------------------------------|----------------|----------|--------------------
-fib(n) := if(n <= 1, n, fib(n-1) + fib(n-2))        | fib(5)         | 5        | Fibonacci
-fact(n) := if(n <= 1, 1, n * fact(n-1))             | fact(5)        | 120      | Factorial
+fib(n) = if(n <= 1, n, fib(n-1) + fib(n-2))         | fib(5)         | 5        | Fibonacci
+fact(n) = if(n <= 1, 1, n * fact(n-1))              | fact(5)        | 120      | Factorial
 ```
 
 ### 9.5 Function Composition
@@ -520,9 +547,9 @@ fact(n) := if(n <= 1, 1, n * fact(n-1))             | fact(5)        | 120      
 ```test
 Definitions              | Invocation     | Expected | Notes
 -------------------------|----------------|----------|--------------------
-f(x) := x^2              | f(5)           | 25       | Define f
-g(x) := x + 1            | g(5)           | 6        | Define g
-h(x) := f(g(x))          | h(2)           | 9        | Composition: f(g(2)) = f(3) = 9
+f(x) = x^2               | f(5)           | 25       | Define f
+g(x) = x + 1             | g(5)           | 6        | Define g
+h(x) = f(g(x))           | h(2)           | 9        | Composition: f(g(2)) = f(3) = 9
 ```
 
 ### 9.6 Function Scope
@@ -530,8 +557,8 @@ h(x) := f(g(x))          | h(2)           | 9        | Composition: f(g(2)) = f(
 ```test
 Definitions              | Invocation     | Expected | Notes
 -------------------------|----------------|----------|--------------------
-x := 5                   | x              | 5        | Global variable
-f(x) := x^2              | f(3)           | 9        | Parameter shadows global
+x = 5                    | x              | 5        | Global variable
+f(x) = x^2               | f(3)           | 9        | Parameter shadows global
 f(x) (then check x)      | x              | 5        | Global x unchanged
 ```
 
@@ -542,8 +569,8 @@ f(x) (then check x)      | x              | 5        | Global x unchanged
 ```test
 Input                      | Expected | Notes
 ---------------------------|----------|--------------------
-f := x -> x^2; f(5)        | 25       | Single-parameter lambda
-add := (a,b) -> a+b; add(3,4) | 7     | Multi-parameter lambda
+f = x -> x^2; f(5)         | 25       | Single-parameter lambda
+add = (a,b) -> a+b; add(3,4) | 7      | Multi-parameter lambda
 (x -> x*2)(3)              | 6        | Immediate invocation
 ```
 
@@ -714,7 +741,7 @@ Input              | Error Type           | Error Message (approximate)
 2 + + 3            | Unexpected operator  | "Unexpected token '+'"
 {1, 2,             | Incomplete vector    | "Expected expression or '}'"
 [1, 2; 3]          | Matrix row mismatch  | "Inconsistent row sizes"
-()                 | Empty parentheses    | "Empty parentheses not allowed"
+()                 | Empty parentheses    | "Expected expression"
 ```
 
 ### 15.2 Undefined Variables
@@ -741,7 +768,7 @@ det([1,2;3])       | Invalid matrix       | "Matrix must be square" OR "Inconsis
 ```test
 Input              | Error Type           | Error Message (approximate)
 -------------------|----------------------|--------------------------------
-sin(x) := x + 2    | Redefine operator    | "Cannot redefine system operator: sin"
+sin(x) = x + 2     | Redefine built-in    | "'sin' is a built-in function; use ':=' to redefine it, or '==' to compare"
 ```
 
 ### 15.5 Function Arity Errors
@@ -749,8 +776,8 @@ sin(x) := x + 2    | Redefine operator    | "Cannot redefine system operator: si
 ```test
 Input                       | Error Type           | Error Message (approximate)
 ----------------------------|----------------------|--------------------------------
-add(a,b) := a + b; add(5)   | Wrong argument count | "Function 'add' expects 2 arguments, got 1"
-f(x) := x^2; f(1, 2)        | Wrong argument count | "Function 'f' expects 1 argument, got 2"
+add(a,b) = a + b; add(5)    | Wrong argument count | "Function 'add' expects 2 arguments, got 1"
+f(x) = x^2; f(1, 2)         | Wrong argument count | "Function 'f' expects 1 argument, got 2"
 ```
 
 ### 15.6 Domain Errors (Runtime)
@@ -768,7 +795,7 @@ log(0)             | Domain error         | May return -Infinity
 ```test
 Input                                   | Error Type           | Behavior
 ----------------------------------------|----------------------|--------------------------------
-f(x) := g(x); g(x) := f(x); f(1)        | Circular reference   | Stack overflow or recursion limit
+f(x) = g(x); g(x) = f(x); f(1)          | Circular reference   | Stack overflow or recursion limit
 fib(10000)                              | Too deep recursion   | Stack overflow or recursion limit
 ```
 
@@ -779,7 +806,7 @@ fib(10000)                              | Too deep recursion   | Stack overflow 
 ### 16.1 Physics Calculation
 
 ```test
-Input: F(m, a) := m * a
+Input: F(m, a) = m * a
        F(10, 9.8)
 
 Expected: 98.0
@@ -790,11 +817,11 @@ Notes: Force = mass × acceleration
 ### 16.2 Quadratic Formula
 
 ```test
-Input: a := 1
-       b := -5
-       c := 6
-       x1 := (-b + sqrt(b^2 - 4*a*c)) / (2*a)
-       x2 := (-b - sqrt(b^2 - 4*a*c)) / (2*a)
+Input: a = 1
+       b = -5
+       c = 6
+       x1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)
+       x2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)
 
 Expected: x1 = 3.0, x2 = 2.0
 Notes: Solving x^2 - 5x + 6 = 0
@@ -803,9 +830,9 @@ Notes: Solving x^2 - 5x + 6 = 0
 ### 16.3 Vector Dot Product
 
 ```test
-Input: v1 := {1, 2, 3}
-       v2 := {4, 5, 6}
-       dot := sum(v1 * v2)
+Input: v1 = {1, 2, 3}
+       v2 = {4, 5, 6}
+       dot = sum(v1 * v2)
 
 Expected: 32
 Type: NodeNumber
@@ -815,9 +842,9 @@ Notes: Dot product via element-wise multiply + sum
 ### 16.4 Statistical Mean
 
 ```test
-Input: values := {10, 20, 30, 40, 50}
-       count := 5
-       mean := sum(values) / count
+Input: values = {10, 20, 30, 40, 50}
+       count = 5
+       mean = sum(values) / count
 
 Expected: 30.0
 Notes: Mean calculation
@@ -826,11 +853,11 @@ Notes: Mean calculation
 ### 16.5 Compound Interest
 
 ```test
-Input: P := 1000
-       r := 0.05
-       n := 12
-       t := 10
-       A := P * (1 + r/n)^(n*t)
+Input: P = 1000
+       r = 0.05
+       n = 12
+       t = 10
+       A = P * (1 + r/n)^(n*t)
 
 Expected: ~1647.01
 Notes: Compound interest formula
@@ -839,7 +866,7 @@ Notes: Compound interest formula
 ### 16.6 Recursive Fibonacci
 
 ```test
-Input: fib(n) := if(n <= 1, n, fib(n-1) + fib(n-2))
+Input: fib(n) = if(n <= 1, n, fib(n-1) + fib(n-2))
        fib(10)
 
 Expected: 55
@@ -849,9 +876,9 @@ Notes: 10th Fibonacci number
 ### 16.7 Vector Normalization
 
 ```test
-Input: v := {3, 4}
-       magnitude := sqrt(sum(v * v))
-       normalized := v / magnitude
+Input: v = {3, 4}
+       magnitude = sqrt(sum(v * v))
+       normalized = v / magnitude
 
 Expected: {0.6, 0.8}
 Notes: Unit vector
@@ -860,9 +887,9 @@ Notes: Unit vector
 ### 16.8 Matrix Element-wise Operations
 
 ```test
-Input: m1 := [1, 2; 3, 4]
-       m2 := [2, 0; 1, 2]
-       sum := m1 + m2
+Input: m1 = [1, 2; 3, 4]
+       m2 = [2, 0; 1, 2]
+       sum = m1 + m2
 
 Expected: [3, 2; 4, 6]
 Notes: Element-wise matrix addition

@@ -163,7 +163,7 @@ statement is the result.
 ```json
 {
     "id": "parameter_leaves_global_alone",
-    "input": "f(x) := x * 2; x := 5; f(3); x",
+    "input": "f(x) = x * 2; x = 5; f(3); x",
     "expected": 5,
     "expectedType": "NodeRational",
     "notes": "A parameter shadows a global for the length of the call and then gives it back"

@@ -79,18 +79,23 @@ rounded for display only. Nothing reads the rounded text back, so chained work s
 MathEngine engine = MathEngine.create();
 
 // Define variables
-engine.evaluate("x := 10");
-engine.evaluate("y := 20");
+engine.evaluate("x = 10");
+engine.evaluate("y = 20");
 NodeConstant result = engine.evaluate("x + y");  // 30
 
 // Define custom functions
-engine.evaluate("square(n) := n^2");
+engine.evaluate("square(n) = n^2");
 result = engine.evaluate("square(5)");  // 25
 
 // Multi-parameter functions
-engine.evaluate("add(a, b) := a + b");
+engine.evaluate("add(a, b) = a + b");
 result = engine.evaluate("add(3, 7)");  // 10
 ```
+
+`=` assigns as a statement, at the top level or inside parentheses. Inside an argument, a
+vector or a lambda body it is refused, so `if(x = 5, ...)` cannot assign by mistake. Use
+`==` to compare, or `:=` when you do mean to assign inside an expression:
+`if(x := 5, x * 2, 0)` is 10.
 
 ### Vectors and Matrices
 
@@ -98,13 +103,13 @@ result = engine.evaluate("add(3, 7)");  // 10
 MathEngine engine = MathEngine.create();
 
 // Vector operations
-engine.evaluate("v1 := {1, 2, 3}");
-engine.evaluate("v2 := {4, 5, 6}");
+engine.evaluate("v1 = {1, 2, 3}");
+engine.evaluate("v2 = {4, 5, 6}");
 NodeConstant result = engine.evaluate("v1 + v2");  // {5, 7, 9}
 
 // Matrix operations
-engine.evaluate("m1 := [[1, 2], [3, 4]]");
-engine.evaluate("m2 := [[5, 6], [7, 8]]");
+engine.evaluate("m1 = [[1, 2], [3, 4]]");
+engine.evaluate("m2 = [[5, 6], [7, 8]]");
 result = engine.evaluate("m1 + m2");  // [6, 8; 10, 12]
 
 // Matrix multiplication (@ operator)
@@ -131,7 +136,7 @@ result = engine.evaluate("filter(x -> x > 3, {1, 2, 3, 4, 5})");
 
 // Reduce (fold)
 result = engine.evaluate("reduce((a, b) -> a + b, {1, 2, 3, 4}, 10)");
-// 10
+// 20
 
 // Inline lambda call
 result = engine.evaluate("(x -> x * 2)(5)");
@@ -184,28 +189,28 @@ result = engine.evaluate("sum(1..100)");
 MathEngine engine = MathEngine.create();
 
 // Recursive factorial
-engine.evaluate("fact(n) := if(n <= 1, 1, n * fact(n-1))");
+engine.evaluate("fact(n) = if(n <= 1, 1, n * fact(n-1))");
 NodeConstant result = engine.evaluate("fact(5)");  // 120
 
 // Recursive fibonacci
-engine.evaluate("fib(n) := if(n <= 1, n, fib(n-1) + fib(n-2))");
+engine.evaluate("fib(n) = if(n <= 1, n, fib(n-1) + fib(n-2))");
 result = engine.evaluate("fib(10)");  // 55
 
 // Mutual recursion
-engine.evaluate("even(n) := if(n == 0, true, odd(n-1))");
-engine.evaluate("odd(n) := if(n == 0, false, even(n-1))");
-result = engine.evaluate("even(4)");  // true (as 1.0)
+engine.evaluate("even(n) = if(n == 0, true, odd(n-1))");
+engine.evaluate("odd(n) = if(n == 0, false, even(n-1))");
+result = engine.evaluate("even(4)");  // true
 
 // Higher-order functions (functions returning functions)
-engine.evaluate("makeAdder(n) := (x -> n + x)");
-engine.evaluate("add10 := makeAdder(10)");
+engine.evaluate("makeAdder(n) = (x -> n + x)");
+engine.evaluate("add10 = makeAdder(10)");
 result = engine.evaluate("add10(5)");  // 15
 
 // Function composition
-engine.evaluate("compose(f, g) := (x -> f(g(x)))");
-engine.evaluate("double(x) := x * 2");
-engine.evaluate("square(x) := x^2");
-engine.evaluate("doubleSquare := compose(double, square)");
+engine.evaluate("compose(f, g) = (x -> f(g(x)))");
+engine.evaluate("double(x) = x * 2");
+engine.evaluate("square(x) = x^2");
+engine.evaluate("doubleSquare = compose(double, square)");
 result = engine.evaluate("doubleSquare(5)");  // 50 (2 * 5^2)
 ```
 

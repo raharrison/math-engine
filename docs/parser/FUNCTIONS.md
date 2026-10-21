@@ -22,7 +22,7 @@ Result (NodeConstant)
 **Function Types:**
 
 1. **Built-in functions** - Defined via `FunctionBuilder` DSL, registered in `FunctionExecutor`
-2. **User-defined functions** - Defined in expressions (`f(x) := x^2`)
+2. **User-defined functions** - Defined in expressions (`f(x) = x^2`)
 3. **Lambda functions** - Anonymous functions (`x -> x^2`)
 
 ---
@@ -649,8 +649,8 @@ substring(s,i,j) // Substring
 **Syntax:**
 
 ```
-f(x) := x^2
-g(x, y) := x + y
+f(x) = x^2
+g(x, y) = x + y
 ```
 
 **Storage:**
@@ -678,7 +678,7 @@ class FunctionDefinition {
 **Supported with depth tracking:**
 
 ```
-factorial(n) := if(n <= 1, 1, n * factorial(n-1))
+fact(n) = if(n <= 1, 1, n * fact(n-1))
 ```
 
 **Depth Limit:**
@@ -715,7 +715,7 @@ reduce((acc, x) -> acc + x, {1,2,3,4}, 0)
 **Assigned to variable:**
 
 ```
-f := x -> x^2
+f = x -> x^2
 f(5)  // 25
 ```
 

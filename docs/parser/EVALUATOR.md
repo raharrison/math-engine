@@ -225,7 +225,7 @@ EvaluationContext captured = context.snapshot();
 **Priority:** variable → user function → unit → implicit multiplication
 
 A name defined in the session therefore shadows a unit or a built-in of the same name, so
-`f := 5; 100f` is 500 and not 100 fahrenheit. A sigil is the way to override that: `@f` is
+`f = 5; 100f` is 500 and not 100 fahrenheit. A sigil is the way to override that: `@f` is
 the unit, `$f` the variable, `#f` the constant.
 
 ```java
@@ -368,7 +368,7 @@ NodeConstant trySplitIntoVariables(String name, EvaluationContext context, Opera
 **Example:**
 
 ```text
-// x := 2
+// x = 2
 context.define("x", new NodeRational(2));
 
 // xpi → x * pi
@@ -423,11 +423,11 @@ m[1:3,2:4]    // Sub-matrix
 
 **Operations:**
 
-- Vector element: `v[0] := 5`, `v[-1] := 5`
-- Matrix element: `m[1, 2] := 9`
-- Matrix row: `m[0] := {7, 8}`, keeping the width
-- String character: `s[0] := "H"`, a single character
-- Chains: `m[0][1] := 9`, `v[0][0] := "A"`
+- Vector element: `v[0] = 5`, `v[-1] = 5`
+- Matrix element: `m[1, 2] = 9`
+- Matrix row: `m[0] = {7, 8}`, keeping the width
+- String character: `s[0] = "H"`, a single character
+- Chains: `m[0][1] = 9`, `v[0][0] = "A"`
 
 A value is immutable, so the write is a copy:
 
@@ -465,7 +465,7 @@ NodeConstant result = functionExecutor.execute("sin", List.of(arg), context);
 **User-Defined Functions:**
 
 ```java
-// f(x) := x^2; f(5)
+// f(x) = x^2; f(5)
 FunctionDefinition def = context.resolveFunction("f").orElseThrow();
 
 // A child scope holding the arguments, with the caller as its parent
@@ -684,7 +684,7 @@ MathEngineConfig config = MathEngineConfig.builder()
 **Variable Assignment:**
 
 ```java
-// x := 5
+// x = 5
 private NodeConstant evaluateAssignment(NodeAssignment node) {
     NodeConstant value = evaluate(node.getValue());
     context.assign(node.getIdentifier(), value);
@@ -695,7 +695,7 @@ private NodeConstant evaluateAssignment(NodeAssignment node) {
 **Element Assignment:**
 
 ```java
-// v[0] := 5
+// v[0] = 5
 private NodeConstant evaluate(NodeElementAssignment node, EvaluationContext context) {
     NodeConstant target = context.resolve(node.getIdentifier()).orElseThrow(...);
     NodeConstant value = evaluate(node.getValue(), context);
@@ -707,7 +707,7 @@ private NodeConstant evaluate(NodeElementAssignment node, EvaluationContext cont
 **Function Definition:**
 
 ```java
-// f(x) := x^2
+// f(x) = x^2
 private NodeConstant evaluateFunctionDef(NodeFunctionDef node) {
     FunctionDefinition def = new FunctionDefinition(
             node.getName(),
@@ -737,7 +737,7 @@ throw new TypeError("Cannot add string and number");
 throw new ArityException("Function 'max' expects 2 arguments, got 3");
 
 // Stack overflow
-throw new StackOverflowException("Max recursion depth (1000) exceeded");
+throw new StackOverflowException("Maximum recursion depth exceeded (256): f");
 
 // General evaluation error
 throw new EvaluationException("Division by zero");
@@ -789,8 +789,8 @@ void typePromotion() {
 @Test
 void variableScoping() {
     MathEngine engine = MathEngine.create();
-    engine.evaluate("x := 10");
-    engine.evaluate("f(x) := x^2");
+    engine.evaluate("x = 10");
+    engine.evaluate("f(x) = x^2");
 
     // Call with different x
     NodeConstant result = engine.evaluate("f(5)");
@@ -809,9 +809,9 @@ void variableScoping() {
 @Test
 void recursiveFunction() {
     MathEngine engine = MathEngine.create();
-    engine.evaluate("factorial(n) := if(n <= 1, 1, n * factorial(n-1))");
+    engine.evaluate("fact(n) = if(n <= 1, 1, n * fact(n-1))");
 
-    NodeConstant result = engine.evaluate("factorial(5)");
+    NodeConstant result = engine.evaluate("fact(5)");
     assertThat(result.doubleValue()).isEqualTo(120.0);
 }
 ```
