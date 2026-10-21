@@ -1,0 +1,171 @@
+{
+    "category": "Functions: probability",
+    "description": "Density, cumulative probability and quantile of the normal, binomial and Student's t distributions. The point or probability broadcasts over a vector.",
+    "tests": [
+        {
+            "id": "normpdf_peak",
+            "input": "normpdf(0)",
+            "expected": 0.3989422804014327,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-15,
+            "notes": "The standard normal density at its mean, 1/sqrt(2 pi)"
+        },
+        {
+            "id": "normpdf_scaled",
+            "input": "normpdf(100, 100, 15)",
+            "expected": 0.02659615202676218,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-15,
+            "notes": "A wider distribution has a lower peak, divided by the standard deviation"
+        },
+        {
+            "id": "normcdf_at_mean",
+            "input": "normcdf(0)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-15,
+            "notes": "Exactly a half; the former erf approximation gave 0.4999999995"
+        },
+        {
+            "id": "normcdf_196",
+            "input": "normcdf(1.96)",
+            "expected": 0.9750021048517795,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-14,
+            "notes": "The familiar 97.5% point"
+        },
+        {
+            "id": "normcdf_iq",
+            "input": "normcdf(130, 100, 15)",
+            "expected": 0.9772498680518208,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-14,
+            "notes": "An IQ of 130 or less, two standard deviations above the mean"
+        },
+        {
+            "id": "normcdf_far_tail",
+            "input": "normcdf(-6)",
+            "expected": 9.865876450376946e-10,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-22,
+            "notes": "Six standard deviations out keeps its relative accuracy"
+        },
+        {
+            "id": "normcdf_broadcasts",
+            "input": "normcdf({-1, 0, 1})",
+            "expected": [
+                0.15865525393145707,
+                0.5,
+                0.8413447460685429
+            ],
+            "expectedType": "NodeVector",
+            "tolerance": 1e-14,
+            "notes": "A vector of points gives a vector of probabilities"
+        },
+        {
+            "id": "norminv_95",
+            "input": "norminv(0.95)",
+            "expected": 1.6448536269514722,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-13,
+            "notes": "The one-sided 95% critical value; the former approximation gave 1.64521"
+        },
+        {
+            "id": "norminv_scaled",
+            "input": "norminv(0.5, 100, 15)",
+            "expected": 100,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "The median is the mean"
+        },
+        {
+            "id": "norminv_inverts_normcdf",
+            "input": "normcdf(norminv(0.3))",
+            "expected": 0.3,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-14,
+            "notes": "The quantile and the cumulative probability undo each other"
+        },
+        {
+            "id": "binompdf_fair_coin",
+            "input": "binompdf(10, 0.5, 5)",
+            "expected": 0.24609375,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "Exactly five heads in ten tosses, 252/1024"
+        },
+        {
+            "id": "binompdf_percent_probability",
+            "input": "binompdf(10, 50%, 5)",
+            "expected": 0.24609375,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "The probability may be written as a percentage"
+        },
+        {
+            "id": "binomcdf_fair_coin",
+            "input": "binomcdf(10, 0.5, 5)",
+            "expected": 0.623046875,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "At most five heads in ten tosses, 638/1024"
+        },
+        {
+            "id": "binompdf_outside_range",
+            "input": "binompdf(10, 0.5, {-1, 11})",
+            "expected": [
+                0,
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "No chance of fewer than none or more successes than trials"
+        },
+        {
+            "id": "binomcdf_certain",
+            "input": "binomcdf(10, 0.3, 10)",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "notes": "At most every trial succeeding is certain"
+        },
+        {
+            "id": "tpdf_peak",
+            "input": "tpdf(0, 10)",
+            "expected": 0.38910838396603054,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-14,
+            "notes": "Lower than the normal peak, for the heavier tails"
+        },
+        {
+            "id": "tcdf_symmetric",
+            "input": "tcdf(0, 10)",
+            "expected": 0.5,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-15,
+            "notes": "Half the distribution lies below zero"
+        },
+        {
+            "id": "tcdf_cauchy",
+            "input": "tcdf(1, 1)",
+            "expected": 0.75,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-14,
+            "notes": "One degree of freedom is the Cauchy distribution"
+        },
+        {
+            "id": "tinv_critical_value",
+            "input": "tinv(0.975, 10)",
+            "expected": 2.228138851986274,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "The two-sided 95% critical value with ten degrees of freedom"
+        },
+        {
+            "id": "tinv_lower_tail",
+            "input": "tinv(0.025, 30)",
+            "expected": -2.042272456301238,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-12,
+            "notes": "The lower critical value is the negated upper one"
+        }
+    ]
+}

@@ -1,0 +1,130 @@
+{
+    "category": "Functions: financial",
+    "description": "Loans, savings and cash flows. A rate is per period, as a percentage or a decimal; amounts are positive, except for the flows in and out given to npv and irr.",
+    "tests": [
+        {
+            "id": "pmt_mortgage",
+            "input": "pmt(6% / 12, 360, 200000)",
+            "expected": 1199.1010503055138,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-08,
+            "notes": "The monthly repayment on 200,000 over thirty years at 6% a year"
+        },
+        {
+            "id": "pmt_decimal_rate",
+            "input": "pmt(0.005, 360, 200000)",
+            "expected": 1199.1010503055138,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-08,
+            "notes": "A rate written as a decimal means the same as the percentage"
+        },
+        {
+            "id": "pmt_zero_rate_stays_exact",
+            "input": "pmt(0, 10, 1000)",
+            "expected": 100,
+            "expectedType": "NodeRational",
+            "notes": "With no interest the payment is an exact share of the principal"
+        },
+        {
+            "id": "pmt_keeps_unit",
+            "input": "pmt(1%, 12, 1200 m)",
+            "expected": "106.61854641400994 meters",
+            "expectedType": "NodeUnit",
+            "tolerance": 1e-08,
+            "notes": "A unit on the principal rides through to the payment"
+        },
+        {
+            "id": "fv_savings",
+            "input": "fv(5% / 12, 120, 100)",
+            "expected": 15528.227944566719,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-08,
+            "notes": "Saving 100 a month for ten years at 5% a year"
+        },
+        {
+            "id": "fv_with_starting_amount",
+            "input": "fv(5% / 12, 120, 100, 1000)",
+            "expected": 17175.237442257,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-08,
+            "notes": "A starting amount grows alongside the payments"
+        },
+        {
+            "id": "fv_zero_rate_stays_exact",
+            "input": "fv(0, 10, 100, 50)",
+            "expected": 1050,
+            "expectedType": "NodeRational",
+            "notes": "With no interest the value is the payments plus the starting amount, exactly"
+        },
+        {
+            "id": "pv_annuity",
+            "input": "pv(5% / 12, 120, 100)",
+            "expected": 9428.135032823473,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-08,
+            "notes": "What 100 a month for ten years is worth today at 5% a year"
+        },
+        {
+            "id": "pv_zero_rate_stays_exact",
+            "input": "pv(0, 10, 100)",
+            "expected": 1000,
+            "expectedType": "NodeRational",
+            "notes": "With no discounting, the payments' total"
+        },
+        {
+            "id": "pmt_inverts_pv",
+            "input": "pmt(1%, 24, pv(1%, 24, 250))",
+            "expected": 250,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-09,
+            "notes": "The payment that repays a loan's present value is the payment it was valued from"
+        },
+        {
+            "id": "npv_vector",
+            "input": "npv(10%, {-1000, 500, 500, 500})",
+            "expected": 243.42599549211099,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-08,
+            "notes": "The first flow is now, undiscounted; each later one a period further off"
+        },
+        {
+            "id": "npv_variadic",
+            "input": "npv(10%, -1000, 500, 500, 500)",
+            "expected": 243.42599549211099,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-08,
+            "notes": "Flows may be given as separate arguments"
+        },
+        {
+            "id": "npv_single_flow",
+            "input": "npv(50%, {100})",
+            "expected": 100,
+            "expectedType": "NodeRational",
+            "notes": "A single flow is now, so it is not discounted at all"
+        },
+        {
+            "id": "irr_three_years",
+            "input": "irr({-1000, 500, 500, 500})",
+            "expected": "23.37519285282616%",
+            "expectedType": "NodePercent",
+            "tolerance": 1e-06,
+            "notes": "The rate comes back as a percentage"
+        },
+        {
+            "id": "irr_one_period",
+            "input": "irr({-100, 110})",
+            "expected": "10%",
+            "expectedType": "NodePercent",
+            "tolerance": 1e-06,
+            "notes": "Paying 100 to get 110 a period later is a 10% return"
+        },
+        {
+            "id": "irr_zeroes_npv",
+            "input": "npv(irr({-1000, 300, 400, 500}), {-1000, 300, 400, 500})",
+            "expected": 0,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-06,
+            "notes": "At the internal rate of return the net present value is zero"
+        }
+    ]
+}

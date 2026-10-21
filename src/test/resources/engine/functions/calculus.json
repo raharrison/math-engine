@@ -1,0 +1,159 @@
+{
+    "category": "Functions: calculus",
+    "description": "Numerical calculus on a lambda or a user function of one variable: integration by Simpson's rule, derivatives by Richardson extrapolation, and roots by Brent's method. Every answer is a double.",
+    "tests": [
+        {
+            "id": "integrate_polynomial",
+            "input": "integrate(x -> x^2, 0, 3)",
+            "expected": 9,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "notes": "The integral of x^2 from 0 to 3"
+        },
+        {
+            "id": "integrate_sin",
+            "input": "integrate(x -> sin(x), 0, pi)",
+            "expected": 2,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "notes": "The area under one arch of sine"
+        },
+        {
+            "id": "integrate_reversed_bounds",
+            "input": "integrate(x -> x^2, 3, 0)",
+            "expected": -9,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "notes": "Swapping the bounds negates the integral"
+        },
+        {
+            "id": "integrate_empty_interval",
+            "input": "integrate(x -> x, 1, 1)",
+            "expected": 0,
+            "expectedType": "NodeDouble",
+            "notes": "No width, no area"
+        },
+        {
+            "id": "integrate_user_function",
+            "input": "f(t) = exp(-t^2); integrate(f, -10, 10)",
+            "expected": 1.7724538509055159,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "notes": "A user function works as well as a lambda; this is the Gaussian integral, root pi"
+        },
+        {
+            "id": "integrate_closure",
+            "input": "k = 3; integrate(x -> k * x, 0, 2)",
+            "expected": 6,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "notes": "A lambda sees the session's variables"
+        },
+        {
+            "id": "integrate_follows_angle_unit",
+            "input": "integrate(x -> sin(x), 0, 180)",
+            "expected": 114.59155902616465,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-08,
+            "config": {
+                "angleUnit": "DEGREES"
+            },
+            "notes": "The function is evaluated in the session, so sin reads degrees here: 360/pi"
+        },
+        {
+            "id": "deriv_cubic",
+            "input": "deriv(x -> x^3, 2)",
+            "expected": 12,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-08,
+            "notes": "The slope of x^3 at 2 is 3 * 2^2"
+        },
+        {
+            "id": "deriv_sin_at_zero",
+            "input": "deriv(x -> sin(x), 0)",
+            "expected": 1,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-10,
+            "notes": "The slope of sine at 0 is cos(0)"
+        },
+        {
+            "id": "deriv_second_order",
+            "input": "deriv(x -> x^3, 2, 2)",
+            "expected": 12,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-06,
+            "notes": "The second derivative of x^3 is 6x"
+        },
+        {
+            "id": "deriv_third_order",
+            "input": "deriv(x -> x^3, 2, 3)",
+            "expected": 6,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-06,
+            "notes": "The third derivative of x^3 is 6"
+        },
+        {
+            "id": "deriv_fourth_order",
+            "input": "deriv(x -> x^4, 1, 4)",
+            "expected": 24,
+            "expectedType": "NodeDouble",
+            "tolerance": 0.0001,
+            "notes": "The fourth derivative of x^4 is 24"
+        },
+        {
+            "id": "solve_root_two",
+            "input": "solve(x -> x^2 - 2, 0, 2)",
+            "expected": 1.4142135623730951,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-11,
+            "notes": "The positive root of x^2 - 2"
+        },
+        {
+            "id": "solve_reversed_bounds",
+            "input": "solve(x -> x^2 - 2, 2, 0)",
+            "expected": 1.4142135623730951,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-11,
+            "notes": "The bounds may be given either way round"
+        },
+        {
+            "id": "solve_fixed_point",
+            "input": "solve(x -> cos(x) - x, 0, 1)",
+            "expected": 0.7390851332151607,
+            "expectedType": "NodeDouble",
+            "tolerance": 1e-11,
+            "notes": "Where cos(x) = x, the Dottie number"
+        },
+        {
+            "id": "roots_of_cubic",
+            "input": "roots(x -> x^3 - x, -2, 2)",
+            "expected": [
+                -1,
+                0,
+                1
+            ],
+            "expectedType": "NodeVector",
+            "tolerance": 1e-10,
+            "notes": "Every root in the interval, in ascending order"
+        },
+        {
+            "id": "roots_of_sine",
+            "input": "roots(x -> sin(x), 1, 10)",
+            "expected": [
+                3.141592653589793,
+                6.283185307179586,
+                9.42477796076938
+            ],
+            "expectedType": "NodeVector",
+            "tolerance": 1e-10,
+            "notes": "The multiples of pi between 1 and 10"
+        },
+        {
+            "id": "roots_none",
+            "input": "roots(x -> x^2 + 1, -5, 5)",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "A function that never crosses zero has no roots"
+        }
+    ]
+}

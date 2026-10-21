@@ -1,7 +1,9 @@
 package uk.co.ryanharrison.mathengine.parser.spec;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import uk.co.ryanharrison.mathengine.utils.ResourceScanner;
 
 import java.io.IOException;
@@ -24,8 +26,9 @@ public final class SpecLoader {
      */
     public static final String ROOT = "engine";
 
-    private static final ObjectMapper MAPPER = new ObjectMapper()
-            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    private static final ObjectMapper MAPPER = JsonMapper.builder()
+            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     private static List<LoadedSuite> cached;
 
@@ -102,6 +105,8 @@ public final class SpecLoader {
                 throw new IllegalStateException("Spec file disappeared from the classpath: " + resourcePath);
             }
             return MAPPER.readValue(is, SpecSuite.class);
+        } catch (JacksonException e) {
+            throw new IllegalStateException("Cannot parse spec file " + resourcePath, e);
         } catch (IOException e) {
             throw new UncheckedIOException("Cannot parse spec file " + resourcePath, e);
         }
