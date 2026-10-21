@@ -104,6 +104,7 @@ public final class SpecialFunctions {
      */
     public static final MathFunction BINOMIAL = FunctionBuilder
             .named("binomial")
+            .alias("ncr", "comb")
             .describedAs("Returns the binomial coefficient n choose k")
             .withParams("n", "k")
             .inCategory(SPECIAL)
@@ -125,6 +126,7 @@ public final class SpecialFunctions {
      */
     public static final MathFunction RANDOM = FunctionBuilder
             .named("random")
+            .alias("rand")
             .describedAs("Returns a random number uniformly distributed in [0, 1)")
             .withParams()
             .inCategory(SPECIAL)

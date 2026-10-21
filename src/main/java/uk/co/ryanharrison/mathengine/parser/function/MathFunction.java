@@ -194,6 +194,18 @@ public interface MathFunction {
          */
         BITWISE,
         /**
+         * Financial functions: pmt, fv, pv, npv, irr.
+         */
+        FINANCIAL,
+        /**
+         * Calculus on a function argument: integrate, deriv, solve, roots.
+         */
+        CALCULUS,
+        /**
+         * Probability distributions: normcdf, binompdf, tinv, etc.
+         */
+        PROBABILITY,
+        /**
          * Utility functions: frac, map, distance, etc.
          */
         UTILITY,

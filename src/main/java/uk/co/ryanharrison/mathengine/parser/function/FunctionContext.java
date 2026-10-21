@@ -10,6 +10,7 @@ import uk.co.ryanharrison.mathengine.parser.util.BroadcastingEngine;
 import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 import uk.co.ryanharrison.mathengine.parser.util.TypeCoercion;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleBinaryOperator;
@@ -182,6 +183,19 @@ public final class FunctionContext {
 
     public long requireLong(NodeConstant value) {
         return (long) requireWholeNumber(value);
+    }
+
+    /**
+     * A whole number of any size. An exact rational keeps every digit, so {@code 2^80}
+     * is not rounded through a double on the way in.
+     *
+     * @throws TypeError if the value is not a whole number
+     */
+    public BigInteger requireBigInteger(NodeConstant value) {
+        if (value instanceof NodeRational rational && rational.getValue().isInteger()) {
+            return rational.getValue().getNumerator();
+        }
+        return BigInteger.valueOf(requireLong(value));
     }
 
     private double requireWholeNumber(NodeConstant value) {

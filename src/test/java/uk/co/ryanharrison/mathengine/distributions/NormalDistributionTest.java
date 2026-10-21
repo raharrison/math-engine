@@ -210,19 +210,34 @@ class NormalDistributionTest {
 
     @ParameterizedTest
     @CsvSource({
-            "0.001, -3.090522225780171",
-            "0.01, -2.326785332558966",
-            "0.1, -1.281728756502709",
-            "0.25, -0.6741891400433162",
+            "0.001, -3.090232306167813",    // p, true quantile
+            "0.01, -2.326347874040841",
+            "0.1, -1.281551565544601",
+            "0.25, -0.6744897501960817",
             "0.5, 0.0",
-            "0.75, 0.6741891400433162",
-            "0.9, 1.281728756502709",
-            "0.99, 2.326785332558966",
-            "0.999, 3.090522225780171"
+            "0.75, 0.6744897501960817",
+            "0.9, 1.281551565544601",
+            "0.99, 2.326347874040841",
+            "0.999, 3.090232306167813"
     })
     void standardNormalInverseCumulativeValues(double p, double expected) {
+        // These used to be the starting approximation's own output, out by up to 4.5e-4
         NormalDistribution dist = NormalDistribution.standard();
-        assertThat(dist.inverseCumulative(p)).isCloseTo(expected, within(RELAXED_TOLERANCE));
+        assertThat(dist.inverseCumulative(p)).isCloseTo(expected, within(1e-13));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1e-10",
+            "1e-5",
+            "0.3",
+            "0.5",
+            "0.975",
+            "0.99999"
+    })
+    void inverseCumulativeInvertsCumulative(double p) {
+        NormalDistribution dist = NormalDistribution.of(100.0, 15.0);
+        assertThat(dist.cumulative(dist.inverseCumulative(p))).isCloseTo(p, within(p * 1e-12));
     }
 
     @Test

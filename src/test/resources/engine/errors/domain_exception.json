@@ -285,6 +285,126 @@
             "expectError": true,
             "expectedErrorType": "DomainException",
             "notes": "Zeros dimensions must be positive"
+        },
+        {
+            "id": "frombase_invalid_digit",
+            "input": "frombase(\"12\", 2)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "not a base 2 integer",
+            "notes": "2 is not a binary digit"
+        },
+        {
+            "id": "tobase_base_too_small",
+            "input": "tobase(5, 1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "between 2 and 36",
+            "notes": "There is no base 1 positional notation"
+        },
+        {
+            "id": "sigfig_zero_figures",
+            "input": "sigfig(5, 0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "at least 1 significant figure",
+            "notes": "Rounding to no significant figures has no meaning"
+        },
+        {
+            "id": "isqrt_negative",
+            "input": "isqrt(-1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "non-negative",
+            "notes": "No real square root"
+        },
+        {
+            "id": "digits_base_one",
+            "input": "digits(10, 1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "at least 2",
+            "notes": "Base 1 has no digits"
+        },
+        {
+            "id": "irr_no_outflow",
+            "input": "irr({100, 200})",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "one payment in and one out",
+            "notes": "Without money both in and out no rate can balance the flows"
+        },
+        {
+            "id": "pmt_rate_total_loss",
+            "input": "pmt(-150%, 10, 100)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "greater than -100%",
+            "notes": "Losing more than everything each period is not a rate"
+        },
+        {
+            "id": "solve_no_sign_change",
+            "input": "solve(x -> x^2 + 1, -1, 1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "do not bracket a root",
+            "notes": "Brent's method needs the function to change sign between the bounds"
+        },
+        {
+            "id": "deriv_order_too_high",
+            "input": "deriv(x -> x, 0, 5)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "between 1 and 4",
+            "notes": "Only the first four derivatives are available"
+        },
+        {
+            "id": "integrate_through_pole",
+            "input": "integrate(x -> 1/x, -1, 1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "non-finite",
+            "notes": "The integrand is infinite at zero, so the integral does not exist"
+        },
+        {
+            "id": "normcdf_mean_without_sd",
+            "input": "normcdf(1, 0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "or neither",
+            "notes": "A mean alone does not define a normal distribution"
+        },
+        {
+            "id": "normcdf_negative_sd",
+            "input": "normcdf(1, 0, -1)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "positive",
+            "notes": "A standard deviation must be positive"
+        },
+        {
+            "id": "norminv_probability_above_one",
+            "input": "norminv(1.5)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "(0, 1)",
+            "notes": "A probability is between 0 and 1"
+        },
+        {
+            "id": "binompdf_probability_above_one",
+            "input": "binompdf(10, 1.5, 5)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "(0, 1)",
+            "notes": "A trial's probability of success is between 0 and 1"
+        },
+        {
+            "id": "tinv_zero_degrees_of_freedom",
+            "input": "tinv(0.975, 0)",
+            "expectError": true,
+            "expectedErrorType": "DomainException",
+            "expectedErrorMessage": "Degrees of freedom",
+            "notes": "Student's t needs at least some degrees of freedom"
         }
     ]
 }

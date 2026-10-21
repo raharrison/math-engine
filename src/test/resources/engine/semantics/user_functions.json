@@ -144,7 +144,7 @@
         },
         {
             "id": "udf_multiarg_003",
-            "input": "avg(a, b, c) = (a + b + c) / 3; avg(3, 6, 9)",
+            "input": "mean3(a, b, c) = (a + b + c) / 3; mean3(3, 6, 9)",
             "expected": 6.0,
             "expectedType": "NodeRational",
             "notes": "Three argument average"

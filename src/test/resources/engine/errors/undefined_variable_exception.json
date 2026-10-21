@@ -126,6 +126,14 @@
             "expectedErrorType": "UndefinedVariableException",
             "notes": "Writing into an unknown name is a name error, not a new vector",
             "expectedErrorMessage": "No value associated with 'v'"
+        },
+        {
+            "id": "ans_before_any_result",
+            "input": "ans",
+            "expectError": true,
+            "expectedErrorType": "UndefinedVariableException",
+            "expectedErrorMessage": "No previous result",
+            "notes": "Nothing has been evaluated yet, so there is no previous result to read"
         }
     ]
 }

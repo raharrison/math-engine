@@ -233,6 +233,7 @@ result = engine.evaluate("floor(3.7)");     // 3
 result = engine.evaluate("ceil(3.2)");      // 4
 result = engine.evaluate("round(3.5)");     // 4
 result = engine.evaluate("roundn(3.14159, 2)");  // 3.14
+result = engine.evaluate("sigfig(123456, 2)");    // 120000
 
 // Vector operations
 result = engine.evaluate("sum({1, 2, 3, 4})");     // 10
@@ -240,6 +241,32 @@ result = engine.evaluate("mean({1, 2, 3, 4})");    // 2.5
 result = engine.evaluate("max({5, 2, 8, 1})");     // 8
 result = engine.evaluate("sort({3, 1, 4, 2})");    // {1, 2, 3, 4}
 result = engine.evaluate("reverse({1, 2, 3})");    // {3, 2, 1}
+result = engine.evaluate("cumsum({1, 2, 3, 4})");  // {1, 3, 6, 10}
+result = engine.evaluate("argmax({5, 2, 8, 1})");  // 2
+
+// Number bases
+result = engine.evaluate("hex(255)");              // "0xff"
+result = engine.evaluate("frombase(\"ff\", 16)");  // 255
+
+// Loans and cash flows (rate per period)
+result = engine.evaluate("pmt(6% / 12, 360, 200000)");      // 1199.10 a month
+result = engine.evaluate("irr({-1000, 500, 500, 500})");    // 23.38%
+
+// Calculus on a lambda or user function
+result = engine.evaluate("integrate(x -> x^2, 0, 3)");      // 9
+result = engine.evaluate("deriv(x -> sin(x), 0)");          // 1
+result = engine.evaluate("solve(x -> x^2 - 2, 0, 2)");      // 1.41421356...
+
+// Probability
+result = engine.evaluate("normcdf(1.96)");         // 0.975
+result = engine.evaluate("tinv(0.975, 10)");       // 2.228
+```
+
+`ans` is the previous result, so a session can carry on from where it left off:
+
+```java
+engine.evaluate("100 m in feet");   // 328.084 feet
+engine.evaluate("ans * 2");         // 656.168 feet
 ```
 
 ### Unit Conversions

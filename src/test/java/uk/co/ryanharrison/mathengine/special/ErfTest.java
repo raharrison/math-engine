@@ -211,6 +211,29 @@ class ErfTest {
         assertThat(Erf.erfc(x)).isCloseTo(expected, within(TOLERANCE));
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            "0.5, 0.5204998778130465",              // x, erf(x) to machine precision
+            "1.0, 0.8427007929497149",
+            "2.0, 0.9953222650189527",
+            "2.5, 0.9995930479825550",              // where the series hands over
+            "3.5, 0.9999992569016276"
+    })
+    void erfMatchesReferenceToMachinePrecision(double x, double expected) {
+        // The former Abramowitz and Stegun approximation was good only to 1.5e-7
+        assertThat(Erf.erf(x)).isCloseTo(expected, within(1e-15));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "3.0, 2.209049699858544e-5",            // x, erfc(x)
+            "5.0, 1.537459794428035e-12",
+            "10.0, 2.088487583762545e-45"
+    })
+    void erfcKeepsRelativeAccuracyInTheTail(double x, double expected) {
+        assertThat(Erf.erfc(x)).isCloseTo(expected, within(expected * 1e-13));
+    }
+
     // ==================== Range Validation ====================
 
     /**

@@ -443,6 +443,8 @@ floor(x)     // Round down
 ceil(x)      // Round up
 round(x)     // Round to nearest
 trunc(x)     // Truncate to integer
+roundn(x, n) // Round to n decimal places
+sigfig(x, n) // Round to n significant figures; exact input stays exact
 ```
 
 **Utility** (`math/UtilityFunctions.java`):
@@ -454,6 +456,31 @@ frac(x)      // Fractional part
 hypot(x, y)  // Hypotenuse
 clamp(x,a,b) // Clamp to range
 lerp(a,b,t)  // Linear interpolation
+```
+
+**Financial** (`math/FinancialFunctions.java`):
+
+A rate is per period, as a percentage or a decimal. Amounts are positive; only the flows
+given to `npv` and `irr` carry a sign.
+
+```
+pmt(rate, n, principal)     // Repayment per period: pmt(6% / 12, 360, 200000) = 1199.10
+fv(rate, n, payment[, pv])  // Value after n payments, plus a starting amount
+pv(rate, n, payment)        // What n payments are worth today
+npv(rate, flows)            // Net present value; the first flow is now
+irr(flows)                  // Rate, as a percentage, at which npv is zero
+```
+
+**Calculus** (`math/CalculusFunctions.java`):
+
+The first argument is a lambda or user function of one variable. These hand it to the
+library's numerical methods through `Function.of`, and every answer is a double.
+
+```
+integrate(f, a, b)   // Simpson's rule: integrate(x -> x^2, 0, 3) = 9
+deriv(f, x[, order]) // Richardson extrapolation, orders 1 to 4
+solve(f, a, b)       // One root by Brent's method; f(a) and f(b) must differ in sign
+roots(f, a, b)       // Every root found where f changes sign, ascending
 ```
 
 ### Trigonometric Functions
@@ -490,9 +517,18 @@ the operation. A restricted domain lives with the maths in `TrigUtils`, and
 mean(vec)        // Average
 median(vec)      // Median
 mode(vec)        // Most common value
-variance(vec)    // Variance
-stddev(vec)      // Standard deviation
+variance(vec)    // Variance (alias: var)
+stddev(vec)      // Standard deviation (aliases: std, sd)
 percentile(vec, p)
+```
+
+**Aggregation** (`vector/VectorFunctions.java`), besides `sum`, `product`, `min` and `max`:
+
+```
+argmin(vec)      // Zero-based index of the smallest element, the first on a tie
+argmax(vec)      // Zero-based index of the largest element, the first on a tie
+cumsum(vec)      // Running totals: cumsum({1, 2, 3}) = {1, 3, 6}
+diff(vec)        // Differences between neighbours: diff({1, 4, 9}) = {3, 5}
 ```
 
 The same three rules apply outside this package. `UtilityFunctions` and
@@ -607,6 +643,9 @@ gcd(a, b)        // Greatest common divisor
 lcm(a, b)        // Least common multiple
 isprime(n)       // Check if prime
 factorial(n)     // n!
+isqrt(n)         // Integer square root, exact at any size
+digits(n[, b])   // Digits as a vector, most significant first
+digitsum(n[, b]) // Sum of the digits
 ```
 
 **Bitwise** (`special/BitwiseFunctions.java`):
@@ -618,6 +657,22 @@ bitxor(a, b)     // Bitwise XOR
 bitnot(n)        // Bitwise NOT
 lshift(n, s)     // Left shift
 rshift(n, s)     // Right shift
+hex(n)           // "0xff", which reads back as a literal; any size of integer
+bin(n)           // "0b1010"
+oct(n)           // "0o17"
+tobase(n, b)     // Digits in base 2 to 36, without a prefix
+frombase(s, b)   // The integer a string of digits denotes
+```
+
+**Probability** (`special/ProbabilityFunctions.java`):
+
+The point or probability broadcasts over a vector. Normal functions are standard unless a
+mean and standard deviation are both given.
+
+```
+normpdf(x[, mean, sd])  normcdf(x[, mean, sd])  norminv(p[, mean, sd])
+binompdf(n, p, k)       binomcdf(n, p, k)
+tpdf(x, df)             tcdf(x, df)             tinv(p, df)
 ```
 
 **Type** (`special/TypeFunctions.java`):

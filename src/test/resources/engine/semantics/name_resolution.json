@@ -428,6 +428,48 @@
             "expected": 15,
             "expectedType": "NodeRational",
             "notes": "Variable as compound identifier with existing functions"
+        },
+        {
+            "id": "ans_reads_previous_statement",
+            "input": "1 + 2; ans * 2",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "'ans' is the value of the previous statement"
+        },
+        {
+            "id": "ans_after_assignment",
+            "input": "x = 5; ans + 1",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "An assignment's value is the value assigned, so ans reads it"
+        },
+        {
+            "id": "ans_keeps_unit",
+            "input": "1 m + 50 cm; ans in cm",
+            "expected": "150 centimeters",
+            "expectedType": "NodeUnit",
+            "notes": "ans is the value itself, unit and all"
+        },
+        {
+            "id": "ans_shadowed_by_variable",
+            "input": "ans = 7; 1 + 1; ans",
+            "expected": 7,
+            "expectedType": "NodeRational",
+            "notes": "A variable the user calls 'ans' wins over the previous result, as any variable shadows"
+        },
+        {
+            "id": "ans_captured_by_lambda",
+            "input": "10; f = x -> x + ans; 100; f(1)",
+            "expected": 11,
+            "expectedType": "NodeRational",
+            "notes": "A lambda captures ans when it is defined, as it captures any variable"
+        },
+        {
+            "id": "ans_read_by_function_at_call",
+            "input": "g(x) = x + ans; 5; g(1)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "A user function reads ans when it is called, as it reads any global"
         }
     ]
 }

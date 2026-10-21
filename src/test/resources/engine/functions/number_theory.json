@@ -274,6 +274,99 @@
             "expected": 97,
             "expectedType": "NodeRational",
             "notes": "Previous prime before 100"
+        },
+        {
+            "id": "isqrt_rounds_down",
+            "input": "isqrt(17)",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "The largest integer whose square does not exceed 17"
+        },
+        {
+            "id": "isqrt_perfect_square",
+            "input": "isqrt(144)",
+            "expected": 12,
+            "expectedType": "NodeRational",
+            "notes": "A perfect square has an exact root"
+        },
+        {
+            "id": "isqrt_beyond_double",
+            "input": "isqrt(10^40) == 10^20",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "Exact for integers too large for a double to hold exactly"
+        },
+        {
+            "id": "isqrt_broadcasts",
+            "input": "isqrt({4, 10})",
+            "expected": [
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A vector is rooted element by element"
+        },
+        {
+            "id": "digits_decimal",
+            "input": "digits(1234)",
+            "expected": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Most significant digit first"
+        },
+        {
+            "id": "digits_hex",
+            "input": "digits(255, 16)",
+            "expected": [
+                15,
+                15
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Digits in another base"
+        },
+        {
+            "id": "digits_zero",
+            "input": "digits(0)",
+            "expected": [
+                0
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Zero has one digit"
+        },
+        {
+            "id": "digits_ignores_sign",
+            "input": "digits(-42)",
+            "expected": [
+                4,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "The sign is not a digit"
+        },
+        {
+            "id": "digits_big_integer",
+            "input": "len(digits(2^100))",
+            "expected": 31,
+            "expectedType": "NodeRational",
+            "notes": "2^100 has 31 decimal digits, counted exactly"
+        },
+        {
+            "id": "digitsum_decimal",
+            "input": "digitsum(1234)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "1 + 2 + 3 + 4"
+        },
+        {
+            "id": "digitsum_binary_is_popcount",
+            "input": "digitsum(255, 2) == popcount(255)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The binary digit sum is the number of set bits"
         }
     ]
 }

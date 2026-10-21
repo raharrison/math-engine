@@ -596,6 +596,62 @@
             "expected": true,
             "expectedType": "NodeBoolean",
             "notes": "'accumulate' is another spelling of 'scan' and must give the same answer"
+        },
+        {
+            "id": "alias_avg",
+            "input": "mean({1, 2, 6}) == avg({1, 2, 6})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'avg' is another spelling of 'mean' and must give the same answer"
+        },
+        {
+            "id": "alias_average",
+            "input": "mean({1, 2, 6}) == average({1, 2, 6})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'average' is another spelling of 'mean' and must give the same answer"
+        },
+        {
+            "id": "alias_var",
+            "input": "variance({1, 2, 3, 4}) == var({1, 2, 3, 4})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'var' is another spelling of 'variance' and must give the same answer"
+        },
+        {
+            "id": "alias_std",
+            "input": "stddev({1, 2, 3, 4}) == std({1, 2, 3, 4})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'std' is another spelling of 'stddev' and must give the same answer"
+        },
+        {
+            "id": "alias_sd",
+            "input": "stddev({1, 2, 3, 4}) == sd({1, 2, 3, 4})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'sd' is another spelling of 'stddev' and must give the same answer"
+        },
+        {
+            "id": "alias_ncr",
+            "input": "binomial(5, 2) == ncr(5, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'ncr' is another spelling of 'binomial' and must give the same answer"
+        },
+        {
+            "id": "alias_comb",
+            "input": "binomial(5, 2) == comb(5, 2)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'comb' is another spelling of 'binomial' and must give the same answer"
+        },
+        {
+            "id": "alias_rand",
+            "input": "r = rand(); r >= 0 && r < 1",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'rand' is another spelling of 'random', so it falls in [0, 1)"
         }
     ]
 }

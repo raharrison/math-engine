@@ -1,5 +1,6 @@
 package uk.co.ryanharrison.mathengine.distributions;
 
+import uk.co.ryanharrison.mathengine.special.Beta;
 import uk.co.ryanharrison.mathengine.special.Gamma;
 
 import java.util.Objects;
@@ -200,25 +201,68 @@ public final class StudentTDistribution implements ContinuousProbabilityDistribu
                 / (Math.sqrt(Math.PI * degreesOfFreedom) * scale);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * For the standardised value z = (x - μ)/σ, the tail beyond |z| is
+     * ½ I_(ν/(ν+z²))(ν/2, ½), from the regularized incomplete beta function.
+     * </p>
+     */
     @Override
     public double cumulative(double x) {
-        // The cumulative distribution function requires the regularized incomplete
-        // beta function or numerical integration.
-        throw new UnsupportedOperationException(
-                "Cumulative distribution function not yet implemented for Student's t-distribution. " +
-                        "Requires implementation of the regularized incomplete beta function or numerical integration.");
+        double z = (x - location) / scale;
+        if (Double.isInfinite(z)) {
+            return z > 0 ? 1.0 : 0.0;
+        }
+        double tail = 0.5 * Beta.regularizedIncomplete(
+                degreesOfFreedom / (degreesOfFreedom + z * z), 0.5 * degreesOfFreedom, 0.5);
+        return z > 0 ? 1.0 - tail : tail;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Found by Newton's method on {@link #cumulative(double)} from the normal quantile,
+     * falling back to bisection within a bracket whenever a step would leave it, which the
+     * heavy tails of a few degrees of freedom can otherwise cause.
+     * </p>
+     */
     @Override
     public double inverseCumulative(double p) {
         if (p <= 0.0 || p >= 1.0) {
             throw new IllegalArgumentException("Probability must be in (0, 1), got: " + p);
         }
+        if (p > 0.5) {
+            return 2.0 * location - inverseCumulative(1.0 - p);
+        }
 
-        // The inverse CDF requires numerical inversion.
-        throw new UnsupportedOperationException(
-                "Inverse cumulative distribution function not yet implemented for Student's t-distribution. " +
-                        "Requires numerical inversion methods.");
+        // Work on the standardised variable, in the lower tail, where z <= 0
+        StudentTDistribution standard = location == 0.0 && scale == 1.0 ? this : of(degreesOfFreedom);
+        double lower = -1.0;
+        while (standard.cumulative(lower) > p) {
+            lower *= 2.0;
+        }
+        double upper = 0.0;
+        double z = Math.max(lower, Math.min(upper, NormalDistribution.standardQuantile(p)));
+
+        for (int i = 0; i < 200; i++) {
+            double error = standard.cumulative(z) - p;
+            if (error > 0) {
+                upper = z;
+            } else {
+                lower = z;
+            }
+            double next = z - error / standard.density(z);
+            if (!(next > lower && next < upper)) {
+                next = 0.5 * (lower + upper);
+            }
+            if (Math.abs(next - z) <= 1e-15 * Math.max(1.0, Math.abs(z))) {
+                z = next;
+                break;
+            }
+            z = next;
+        }
+        return location + scale * z;
     }
 
     @Override

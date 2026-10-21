@@ -157,16 +157,42 @@ public final class NormalDistribution implements ContinuousProbabilityDistributi
             throw new IllegalArgumentException("Probability must be in (0, 1), got: " + p);
         }
 
-        // Use rational approximation for standard normal quantile
-        double z = approximateStandardNormalQuantile(p);
+        // Transform the standard quantile to this distribution: x = μ + σz
+        return mean + standardDeviation * standardQuantile(p);
+    }
 
-        // Transform to this distribution: x = μ + σz
-        return mean + standardDeviation * z;
+    /**
+     * The quantile of the standard normal distribution, to near machine precision.
+     * <p>
+     * The rational approximation below starts within 4.5 × 10⁻⁴, and Newton's method on
+     * the cumulative distribution function, which converges quadratically, finishes it in a
+     * few steps. The upper half is found by symmetry, so the iteration always works in the
+     * lower tail, where the cumulative probability keeps its relative accuracy.
+     * </p>
+     *
+     * @param p the probability, in (0, 1)
+     * @return z such that Φ(z) = p
+     */
+    static double standardQuantile(double p) {
+        if (p > 0.5) {
+            return -standardQuantile(1.0 - p);
+        }
+        double z = approximateStandardNormalQuantile(p);
+        for (int i = 0; i < 50; i++) {
+            double error = 0.5 * Erf.erfc(-SQRT_ONE_HALF * z) - p;
+            double step = error / (ONE_OVER_SQRT_2PI * Math.exp(-0.5 * z * z));
+            z -= step;
+            if (Math.abs(step) <= 1e-15 * Math.max(1.0, Math.abs(z))) {
+                break;
+            }
+        }
+        return z;
     }
 
     /**
      * Approximates the quantile function of the standard normal distribution
-     * using the Abramowitz and Stegun formula 26.2.23.
+     * using the Abramowitz and Stegun formula 26.2.23, as the starting point for
+     * {@link #standardQuantile(double)}.
      * <p>
      * The absolute error is less than 4.5 × 10⁻⁴.
      * </p>

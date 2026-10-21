@@ -27,8 +27,11 @@ package uk.co.ryanharrison.mathengine.special;
  *     <li>erfc(x) + erf(x) = 1 for all x</li>
  * </ul>
  * <p>
- * <b>Implementation:</b> This implementation uses the Abramowitz and Stegun approximation
- * (formula 7.1.26) which provides accuracy to approximately 1.5 × 10⁻⁷ for all x.
+ * <b>Implementation:</b> near zero, the series
+ * erf(x) = (2/√π) e^(-x²) Σ 2ⁿ x^(2n+1) / (1·3·5···(2n+1)), whose terms are all positive and
+ * so lose nothing to cancellation; further out, the continued fraction for erfc, which
+ * converges quickly there and keeps its relative accuracy far into the tail. Both are
+ * accurate to around 1e-15, which the normal distribution's probabilities depend on.
  * </p>
  *
  * <h2>Usage Examples:</h2>
@@ -48,40 +51,33 @@ package uk.co.ryanharrison.mathengine.special;
  * }</pre>
  *
  * @author Ryan Harrison
- * @see <a href="http://www.johndcook.com/csharp_erf.html">Original C# implementation by John D. Cook</a>
  * @see <a href="https://en.wikipedia.org/wiki/Error_function">Error function - Wikipedia</a>
  */
 public final class Erf {
 
     /**
-     * Coefficient a₁ in the Abramowitz and Stegun approximation formula 7.1.26.
+     * Where the series hands over to the continued fraction. Below it the series needs few
+     * terms; above it the continued fraction does.
      */
-    private static final double A1 = 0.254829592;
+    private static final double SERIES_LIMIT = 2.5;
 
     /**
-     * Coefficient a₂ in the Abramowitz and Stegun approximation formula 7.1.26.
+     * Relative size of the last term or correction at which a sum is taken as converged.
      */
-    private static final double A2 = -0.284496736;
+    private static final double EPSILON = 1e-16;
 
     /**
-     * Coefficient a₃ in the Abramowitz and Stegun approximation formula 7.1.26.
+     * Guard on the number of terms, far beyond what convergence needs.
      */
-    private static final double A3 = 1.421413741;
+    private static final int MAX_TERMS = 1000;
 
     /**
-     * Coefficient a₄ in the Abramowitz and Stegun approximation formula 7.1.26.
+     * Stands in for a zero denominator in the continued fraction.
      */
-    private static final double A4 = -1.453152027;
+    private static final double TINY = 1e-300;
 
-    /**
-     * Coefficient a₅ in the Abramowitz and Stegun approximation formula 7.1.26.
-     */
-    private static final double A5 = 1.061405429;
-
-    /**
-     * Coefficient p in the Abramowitz and Stegun approximation formula 7.1.26.
-     */
-    private static final double P = 0.3275911;
+    private static final double TWO_OVER_SQRT_PI = 2.0 / Math.sqrt(Math.PI);
+    private static final double ONE_OVER_SQRT_PI = 1.0 / Math.sqrt(Math.PI);
 
     /**
      * Private constructor to prevent instantiation of this utility class.
@@ -96,8 +92,7 @@ public final class Erf {
      * <pre>
      * erf(x) = (2/√π) ∫₀ˣ e^(-t²) dt
      * </pre>
-     * This implementation uses the Abramowitz and Stegun approximation formula 7.1.26,
-     * which provides accuracy to approximately 1.5 × 10⁻⁷.
+     * accurate to around 1e-15.
      * </p>
      * <p>
      * The error function has the following properties:
@@ -111,21 +106,14 @@ public final class Erf {
      *
      * @param x the point at which to evaluate the error function
      * @return the value of erf(x), in the range [-1, 1]
-     * @see <a href="http://www.johndcook.com/csharp_erf.html">Implementation reference</a>
      */
     public static double erf(double x) {
-        // Save the sign of x (erf is an odd function)
-        int sign = 1;
-        if (x < 0) {
-            sign = -1;
+        if (Double.isNaN(x)) {
+            return Double.NaN;
         }
-        x = Math.abs(x);
-
-        // Abramowitz and Stegun formula 7.1.26
-        double t = 1.0 / (1.0 + P * x);
-        double y = 1.0 - (((((A5 * t + A4) * t) + A3) * t + A2) * t + A1) * t * Math.exp(-x * x);
-
-        return sign * y;
+        double magnitude = Math.abs(x);
+        double value = magnitude < SERIES_LIMIT ? series(magnitude) : 1.0 - continuedFraction(magnitude);
+        return Math.copySign(value, x);
     }
 
     /**
@@ -135,8 +123,8 @@ public final class Erf {
      * <pre>
      * erfc(x) = 1 - erf(x) = (2/√π) ∫ₓ^∞ e^(-t²) dt
      * </pre>
-     * This is useful for computing probabilities in the tail of the normal distribution
-     * and provides better numerical stability for large positive values of x.
+     * This is useful for computing probabilities in the tail of the normal distribution:
+     * for large x it keeps its relative accuracy, where {@code 1 - erf(x)} would round to zero.
      * </p>
      * <p>
      * Properties:
@@ -153,6 +141,60 @@ public final class Erf {
      * @see #erf(double)
      */
     public static double erfc(double x) {
-        return 1.0 - erf(x);
+        if (Double.isNaN(x)) {
+            return Double.NaN;
+        }
+        if (x < 0) {
+            return 2.0 - erfc(-x);
+        }
+        return x < SERIES_LIMIT ? 1.0 - series(x) : continuedFraction(x);
+    }
+
+    /**
+     * erf(x) for x &ge; 0 by the series (2/√π) e^(-x²) Σ 2ⁿ x^(2n+1) / (2n+1)!!.
+     */
+    private static double series(double x) {
+        double twoXSquared = 2.0 * x * x;
+        double term = x;
+        double sum = x;
+        for (int n = 1; n < MAX_TERMS; n++) {
+            term *= twoXSquared / (2 * n + 1);
+            sum += term;
+            if (term < EPSILON * sum) {
+                break;
+            }
+        }
+        return TWO_OVER_SQRT_PI * Math.exp(-x * x) * sum;
+    }
+
+    /**
+     * erfc(x) for x &gt; 0 by the continued fraction
+     * (e^(-x²)/√π) / (x + (1/2) / (x + 1 / (x + (3/2) / (x + ...)))), evaluated by Lentz's method.
+     */
+    private static double continuedFraction(double x) {
+        if (Double.isInfinite(x)) {
+            return 0.0;
+        }
+        double f = x;
+        double c = x;
+        double d = 0.0;
+        for (int n = 1; n < MAX_TERMS; n++) {
+            double a = n / 2.0;
+            d = x + a * d;
+            if (d == 0.0) {
+                d = TINY;
+            }
+            c = x + a / c;
+            if (c == 0.0) {
+                c = TINY;
+            }
+            d = 1.0 / d;
+            double delta = c * d;
+            f *= delta;
+            if (Math.abs(delta - 1.0) < EPSILON) {
+                break;
+            }
+        }
+        return ONE_OVER_SQRT_PI * Math.exp(-x * x) / f;
     }
 }

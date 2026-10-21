@@ -2,6 +2,7 @@ package uk.co.ryanharrison.mathengine.parser;
 
 import uk.co.ryanharrison.mathengine.parser.ast.Node;
 import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeSequence;
 import uk.co.ryanharrison.mathengine.parser.evaluator.*;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
@@ -191,6 +192,7 @@ public final class MathEngine {
         MathEngine newEngine = MathEngine.create(newConfig);
         context.getLocalVariables().forEach(newEngine.context::define);
         context.getLocalFunctions().forEach(newEngine.context::defineFunction);
+        context.getLastResult().ifPresent(newEngine.context::setLastResult);
         return newEngine;
     }
 
@@ -212,6 +214,10 @@ public final class MathEngine {
 
     /**
      * Evaluates a mathematical expression and returns the result.
+     * <p>
+     * Each {@code ;}-separated statement that succeeds becomes the previous result, which
+     * {@code ans} reads, so {@code 1 + 2; ans * 2} is 6 and a later call can start from
+     * where this one left off.
      *
      * @param expression the expression to evaluate
      * @return the result as a NodeConstant
@@ -255,12 +261,21 @@ public final class MathEngine {
     }
 
     /**
-     * Evaluates an already-parsed expression in the session scope.
+     * Evaluates an already-parsed expression in the session scope, as input to the session:
+     * each statement that succeeds becomes the previous result that {@code ans} reads, just as
+     * {@link #evaluate(String)} does. Use it to show a parse tree and then evaluate that same
+     * tree. {@link CompiledExpression}, built for repeated evaluation, leaves {@code ans} alone.
      *
      * @throws MathEngineException if evaluation fails
      */
     public NodeConstant evaluate(Node node) {
-        return onGuardedStack(() -> evaluator.evaluate(node));
+        List<Node> statements = node instanceof NodeSequence sequence ? sequence.getStatements() : List.of(node);
+        NodeConstant result = null;
+        for (Node statement : statements) {
+            result = onGuardedStack(() -> evaluator.evaluate(statement));
+            context.setLastResult(result);
+        }
+        return result;
     }
 
     /**

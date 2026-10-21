@@ -90,11 +90,72 @@ public final class VectorFunctions {
                 return extreme(ctx.flattenArguments(args), "max", 1);
             });
 
+    /** Index of the smallest value, the first one on a tie. */
+    public static final MathFunction ARGMIN = FunctionBuilder
+            .named("argmin")
+            .describedAs("Returns the zero-based index of the smallest value, the first on a tie")
+            .withParams("values")
+            .inCategory(MathFunction.Category.VECTOR)
+            .takingVariadic(1)
+            .noBroadcasting()
+            .implementedByAggregate((args, ctx) ->
+                    new NodeRational(extremeIndex(ctx.flattenArguments(args), "argmin", -1)));
+
+    /** Index of the largest value, the first one on a tie. */
+    public static final MathFunction ARGMAX = FunctionBuilder
+            .named("argmax")
+            .describedAs("Returns the zero-based index of the largest value, the first on a tie")
+            .withParams("values")
+            .inCategory(MathFunction.Category.VECTOR)
+            .takingVariadic(1)
+            .noBroadcasting()
+            .implementedByAggregate((args, ctx) ->
+                    new NodeRational(extremeIndex(ctx.flattenArguments(args), "argmax", 1)));
+
+    // ==================== Running Totals ====================
+
+    /** Running totals, so the last element is the sum. */
+    public static final MathFunction CUMSUM = FunctionBuilder
+            .named("cumsum")
+            .describedAs("Returns the running totals of the collection, so the last element is the sum")
+            .withParams("values")
+            .inCategory(MathFunction.Category.VECTOR)
+            .takingVariadic(1)
+            .noBroadcasting()
+            .implementedByAggregate((args, ctx) -> {
+                List<NodeConstant> elements = ctx.flattenArguments(args);
+                var totals = new ArrayList<NodeConstant>(elements.size());
+                NodeConstant total = null;
+                for (NodeConstant element : elements) {
+                    total = total == null ? element : total.add(element);
+                    totals.add(total);
+                }
+                return Callbacks.vectorOf(totals);
+            });
+
+    /** Differences between neighbours, one fewer than the elements. */
+    public static final MathFunction DIFF = FunctionBuilder
+            .named("diff")
+            .describedAs("Returns the difference between each element and the one before it")
+            .withParams("values")
+            .inCategory(MathFunction.Category.VECTOR)
+            .takingVariadic(1)
+            .noBroadcasting()
+            .implementedByAggregate((args, ctx) -> {
+                List<NodeConstant> elements = ctx.flattenArguments(args);
+                var differences = new ArrayList<NodeConstant>(Math.max(0, elements.size() - 1));
+                for (int i = 1; i < elements.size(); i++) {
+                    differences.add(elements.get(i).subtract(elements.get(i - 1)));
+                }
+                return Callbacks.vectorOf(differences);
+            });
+
     // ==================== Statistical Functions ====================
 
     /** Arithmetic mean. */
     public static final MathFunction MEAN = FunctionBuilder
             .named("mean")
+            .alias("avg", "average")
             .describedAs("Returns the arithmetic mean of all values in the collection")
             .withParams("values")
             .inCategory(MathFunction.Category.STATISTICAL)
@@ -142,6 +203,7 @@ public final class VectorFunctions {
      */
     public static final MathFunction VARIANCE = FunctionBuilder
             .named("variance")
+            .alias("var")
             .describedAs("Returns the sample variance of the collection")
             .withParams("values")
             .inCategory(MathFunction.Category.STATISTICAL)
@@ -160,6 +222,7 @@ public final class VectorFunctions {
      */
     public static final MathFunction STDDEV = FunctionBuilder
             .named("stddev")
+            .alias("std", "sd")
             .describedAs("Returns the sample standard deviation of the collection")
             .withParams("values")
             .inCategory(MathFunction.Category.STATISTICAL)
@@ -297,21 +360,28 @@ public final class VectorFunctions {
      * Picks the element that compares furthest in {@code direction}, which is -1 for min and 1 for max.
      */
     private static NodeConstant extreme(List<NodeConstant> elements, String name, int direction) {
+        return elements.get(extremeIndex(elements, name, direction));
+    }
+
+    /**
+     * The index of the element {@link #extreme} picks, the earliest on a tie.
+     */
+    private static int extremeIndex(List<NodeConstant> elements, String name, int direction) {
         if (elements.isEmpty()) {
             throw new TypeError(name + " requires at least one element");
         }
-        NodeConstant best = elements.getFirst();
-        for (NodeConstant element : elements.subList(1, elements.size())) {
-            if (Integer.signum(element.compareTo(best)) == direction) {
-                best = element;
+        int best = 0;
+        for (int i = 1; i < elements.size(); i++) {
+            if (Integer.signum(elements.get(i).compareTo(elements.get(best))) == direction) {
+                best = i;
             }
         }
         return best;
     }
 
     public static List<MathFunction> all() {
-        return List.of(SUM, PRODUCT, MIN, MAX, MEAN, MEDIAN, VARIANCE, STDDEV,
-                SORT, REVERSE, LEN, FIRST, LAST);
+        return List.of(SUM, PRODUCT, MIN, MAX, ARGMIN, ARGMAX, CUMSUM, DIFF,
+                MEAN, MEDIAN, VARIANCE, STDDEV, SORT, REVERSE, LEN, FIRST, LAST);
     }
 
 }

@@ -64,7 +64,7 @@ public final class CompiledExpression {
      * Evaluates using only the variables already defined in the engine session.
      */
     public NodeConstant evaluate() {
-        return engine.evaluate(ast);
+        return engine.evaluate(ast, engine.getContext());
     }
 
     public double evaluateDouble(Map<String, ? extends Number> bindings) {

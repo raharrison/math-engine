@@ -225,6 +225,93 @@
             "expected": 1,
             "expectedType": "NodeRational",
             "notes": "Unsigned right shift"
+        },
+        {
+            "id": "hex_of_255",
+            "input": "hex(255)",
+            "expected": "0xff",
+            "expectedType": "NodeString",
+            "notes": "Hexadecimal comes back with the 0x prefix, so it can be typed straight back in as a literal"
+        },
+        {
+            "id": "hex_of_negative",
+            "input": "hex(-255)",
+            "expected": "-0xff",
+            "expectedType": "NodeString",
+            "notes": "A negative number keeps its sign in front of the prefix"
+        },
+        {
+            "id": "hex_beyond_long",
+            "input": "hex(2^80)",
+            "expected": "0x100000000000000000000",
+            "expectedType": "NodeString",
+            "notes": "An exact integer past 64 bits keeps every digit rather than rounding through a double"
+        },
+        {
+            "id": "hex_broadcasts",
+            "input": "hex({10, 11})",
+            "expected": [
+                "0xa",
+                "0xb"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A vector is converted element by element"
+        },
+        {
+            "id": "bin_of_10",
+            "input": "bin(10)",
+            "expected": "0b1010",
+            "expectedType": "NodeString",
+            "notes": "Binary comes back with the 0b prefix the lexer reads"
+        },
+        {
+            "id": "oct_of_15",
+            "input": "oct(15)",
+            "expected": "0o17",
+            "expectedType": "NodeString",
+            "notes": "Octal comes back with the 0o prefix the lexer reads"
+        },
+        {
+            "id": "tobase_36",
+            "input": "tobase(255, 36)",
+            "expected": "73",
+            "expectedType": "NodeString",
+            "notes": "Any base up to 36 uses digits then letters, with no prefix"
+        },
+        {
+            "id": "tobase_2",
+            "input": "tobase(10, 2)",
+            "expected": "1010",
+            "expectedType": "NodeString",
+            "notes": "Base 2 without a prefix, unlike bin"
+        },
+        {
+            "id": "frombase_hex",
+            "input": "frombase(\"ff\", 16)",
+            "expected": 255,
+            "expectedType": "NodeRational",
+            "notes": "Hex digits read back to an exact integer"
+        },
+        {
+            "id": "frombase_accepts_prefix",
+            "input": "frombase(\"0xFF\", 16)",
+            "expected": 255,
+            "expectedType": "NodeRational",
+            "notes": "The prefix matching the base is accepted, and case does not matter"
+        },
+        {
+            "id": "frombase_negative_binary",
+            "input": "frombase(\"-1010\", 2)",
+            "expected": -10,
+            "expectedType": "NodeRational",
+            "notes": "A leading minus sign is read"
+        },
+        {
+            "id": "frombase_round_trips_tobase",
+            "input": "frombase(tobase(123456789, 36), 36)",
+            "expected": 123456789,
+            "expectedType": "NodeRational",
+            "notes": "Writing a number in a base and reading it back gives the number"
         }
     ]
 }

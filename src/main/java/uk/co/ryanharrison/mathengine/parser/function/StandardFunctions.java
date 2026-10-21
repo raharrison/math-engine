@@ -1,6 +1,8 @@
 package uk.co.ryanharrison.mathengine.parser.function;
 
+import uk.co.ryanharrison.mathengine.parser.function.math.CalculusFunctions;
 import uk.co.ryanharrison.mathengine.parser.function.math.ExponentialFunctions;
+import uk.co.ryanharrison.mathengine.parser.function.math.FinancialFunctions;
 import uk.co.ryanharrison.mathengine.parser.function.math.RoundingFunctions;
 import uk.co.ryanharrison.mathengine.parser.function.math.UtilityFunctions;
 import uk.co.ryanharrison.mathengine.parser.function.special.*;
@@ -28,9 +30,10 @@ import java.util.List;
  *     <li>Exponential: exp, exp2, exp10, expm1</li>
  *     <li>Logarithmic: ln, log, log2, logn, log1p</li>
  *     <li>Power/Root: sqrt, cbrt, nroot, pow</li>
- *     <li>Rounding: floor, ceil, round, trunc, roundn</li>
+ *     <li>Rounding: floor, ceil, round, trunc, roundn, sigfig</li>
  *     <li>Basic: abs, sign, copysign, fmod, remainder, hypot</li>
- *     <li>Vector: sum, product, min, max, mean, median, sort, reverse, len, first, last</li>
+ *     <li>Vector: sum, product, min, max, argmin, argmax, cumsum, diff, mean, median,
+ *         variance, stddev, sort, reverse, len, first, last</li>
  *     <li>Vector Manipulation: take, drop, slice, get, indexof, contains, unique, concat,
  *         flatten, zip, repeat, count, any, all, none, seq, linspace, fill</li>
  *     <li>Statistical: range, percentile, iqr, gmean, hmean, rms, skewness, kurtosis,
@@ -41,12 +44,13 @@ import java.util.List;
  *     <li>Special: gamma, lgamma, factorial, gcd, lcm, binomial, random, randint,
  *         beta, erf, erfc, digamma</li>
  *     <li>Number Theory: isprime, nextprime, prevprime, factors, distinctfactors,
- *         divisorcount, divisorsum, modpow, iscoprime</li>
+ *         divisorcount, divisorsum, modpow, iscoprime, isqrt, digits, digitsum</li>
  *     <li>Type: isnan, isinf, isfinite, isint, iseven, isodd, ispositive, isnegative,
  *         iszero, int, float, bool, numerator, denominator, typeof, isnumber, isvector,
  *         ismatrix, isboolean</li>
  *     <li>Bitwise: bitand, bitor, bitxor, bitnot, lshift, rshift, urshift, popcount,
- *         clz, ctz, rotl, rotr, bitreverse</li>
+ *         clz, ctz, rotl, rotr, bitreverse, and the radix functions hex, bin, oct,
+ *         tobase, frombase</li>
  *     <li>Utility: frac, mod, permutation, doublefactorial, inverselerp, map, smoothstep,
  *         distance, distance3d, manhattan, approxeq, compare, compound, wrap, normalize,
  *         deg2rad, rad2deg</li>
@@ -57,6 +61,9 @@ import java.util.List;
  *     <li>Percentage: percent, topercent, percentvalue, percentof, whatpercent, percentchange,
  *         addpercent, subtractpercent, reversepercent, ratiotopercent, percenttoratio,
  *         percentpoints, ispercent</li>
+ *     <li>Financial: pmt, fv, pv, npv, irr</li>
+ *     <li>Calculus: integrate, deriv, solve, roots</li>
+ *     <li>Probability: normpdf, normcdf, norminv, binompdf, binomcdf, tpdf, tcdf, tinv</li>
  * </ul>
  *
  * <h2>Usage:</h2>
@@ -120,6 +127,11 @@ public final class StandardFunctions {
 
         // Percentage functions
         functions.addAll(PercentageFunctions.all());
+
+        // Financial, calculus and probability
+        functions.addAll(FinancialFunctions.all());
+        functions.addAll(CalculusFunctions.all());
+        functions.addAll(ProbabilityFunctions.all());
 
         return Collections.unmodifiableList(functions);
     }

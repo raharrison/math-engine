@@ -447,7 +447,8 @@ public final class MainFrame extends JFrame {
             displayTokens(expression);
             displayAst(ast);
 
-            NodeConstant result = compiled.evaluate();
+            // Evaluated as session input, so it becomes the result 'ans' reads
+            NodeConstant result = mathEngine.evaluate(ast);
 
             // Display in output
             StyledDocument doc = outputPane.getStyledDocument();
@@ -650,7 +651,8 @@ public final class MainFrame extends JFrame {
             doc.insertString(doc.getLength(), "VARIABLES & FUNCTIONS\n", keywordStyle);
             doc.insertString(doc.getLength(), "  x = 5\n", commentStyle);
             doc.insertString(doc.getLength(), "  f(x) = x^2 + 2*x\n", commentStyle);
-            doc.insertString(doc.getLength(), "  f(3)             → 15\n\n", commentStyle);
+            doc.insertString(doc.getLength(), "  f(3)             → 15\n", commentStyle);
+            doc.insertString(doc.getLength(), "  ans * 2          → 30 (ans is the previous result)\n\n", commentStyle);
 
             doc.insertString(doc.getLength(), "VECTORS & MATRICES\n", keywordStyle);
             doc.insertString(doc.getLength(), "  v = {1, 2, 3}\n", commentStyle);

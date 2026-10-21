@@ -39,7 +39,11 @@ public class UndefinedVariableException extends EvaluationException {
         /**
          * An explicit {@code #name} reference.
          */
-        CONSTANT("Undefined constant '#%s'");
+        CONSTANT("Undefined constant '#%s'"),
+        /**
+         * {@code ans} read before anything has been evaluated.
+         */
+        RESULT("No previous result for '%s' to refer to");
 
         private final String template;
 
@@ -97,6 +101,13 @@ public class UndefinedVariableException extends EvaluationException {
      */
     public static UndefinedVariableException constant(String name) {
         return new UndefinedVariableException(name, Kind.CONSTANT);
+    }
+
+    /**
+     * {@code ans} read before any statement has produced a value.
+     */
+    public static UndefinedVariableException noPreviousResult(String name) {
+        return new UndefinedVariableException(name, Kind.RESULT);
     }
 
     @Override

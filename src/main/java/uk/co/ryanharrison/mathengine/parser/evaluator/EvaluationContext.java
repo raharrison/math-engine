@@ -21,6 +21,11 @@ import java.util.Set;
  */
 public final class EvaluationContext {
 
+    /**
+     * The name that reads the previous result, as a calculator's answer key does.
+     */
+    public static final String LAST_RESULT_NAME = "ans";
+
     private final MathEngineConfig config;
     private final Map<String, NodeConstant> variables;
     private final EvaluationContext parent;
@@ -37,6 +42,11 @@ public final class EvaluationContext {
      * Cached operator context; created on first use and reused for this scope.
      */
     private OperatorContext operatorContext;
+
+    /**
+     * The value of the last statement evaluated at the top level. Held by the root scope only.
+     */
+    private NodeConstant lastResult;
 
     public EvaluationContext(MathEngineConfig config, RecursionTracker recursionTracker) {
         this(config, new HashMap<>(), null, null, recursionTracker);
@@ -71,8 +81,10 @@ public final class EvaluationContext {
         var allVariables = new HashMap<String, NodeConstant>();
         var allFunctions = new HashMap<String, FunctionDefinition>();
         collectInto(allVariables, allFunctions);
-        return new EvaluationContext(config, allVariables,
+        var snapshot = new EvaluationContext(config, allVariables,
                 allFunctions.isEmpty() ? null : allFunctions, null, recursionTracker);
+        snapshot.lastResult = root().lastResult;
+        return snapshot;
     }
 
     private void collectInto(Map<String, NodeConstant> targetVars, Map<String, FunctionDefinition> targetFuncs) {
@@ -115,6 +127,30 @@ public final class EvaluationContext {
             }
         }
         return config.constantRegistry().getValue(name);
+    }
+
+    // ==================== Last result ====================
+
+    /**
+     * Records the value of a statement evaluated at the top level, which {@code ans} reads.
+     */
+    public void setLastResult(NodeConstant value) {
+        root().lastResult = value;
+    }
+
+    /**
+     * The value of the last top-level statement, or empty before the first.
+     */
+    public Optional<NodeConstant> getLastResult() {
+        return Optional.ofNullable(root().lastResult);
+    }
+
+    private EvaluationContext root() {
+        EvaluationContext ctx = this;
+        while (ctx.parent != null) {
+            ctx = ctx.parent;
+        }
+        return ctx;
     }
 
     // ==================== User functions ====================

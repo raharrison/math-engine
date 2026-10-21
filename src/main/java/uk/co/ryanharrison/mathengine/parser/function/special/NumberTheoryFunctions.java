@@ -1,15 +1,20 @@
 package uk.co.ryanharrison.mathengine.parser.function.special;
 
+import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.ast.Node;
 import uk.co.ryanharrison.mathengine.parser.ast.NodeBoolean;
+import uk.co.ryanharrison.mathengine.parser.ast.NodeConstant;
 import uk.co.ryanharrison.mathengine.parser.ast.NodeRational;
 import uk.co.ryanharrison.mathengine.parser.ast.NodeVector;
 import uk.co.ryanharrison.mathengine.parser.evaluator.DomainException;
 import uk.co.ryanharrison.mathengine.parser.function.ArgTypes;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
+import uk.co.ryanharrison.mathengine.parser.function.FunctionContext;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 import uk.co.ryanharrison.mathengine.special.Primes;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.co.ryanharrison.mathengine.parser.function.MathFunction.Category.NUMBER_THEORY;
@@ -163,6 +168,71 @@ public final class NumberTheoryFunctions {
             .takingTyped(ArgTypes.longInt(), ArgTypes.longInt())
             .implementedBy((a, b, ctx) -> new NodeBoolean(gcd(a, b) == 1));
 
+    /**
+     * Integer square root, exact for integers of any size
+     */
+    public static final MathFunction ISQRT = FunctionBuilder
+            .named("isqrt")
+            .describedAs("Returns the largest integer whose square does not exceed n")
+            .withParams("n")
+            .inCategory(NUMBER_THEORY)
+            .takingUnary()
+            .implementedBy((n, ctx) -> {
+                BigInteger value = ctx.requireBigInteger(n);
+                if (value.signum() < 0) {
+                    throw ctx.error("requires non-negative value, got: " + value);
+                }
+                return new NodeRational(BigRational.of(value.sqrt()));
+            });
+
+    /**
+     * Digits of an integer, most significant first
+     */
+    public static final MathFunction DIGITS = FunctionBuilder
+            .named("digits")
+            .describedAs("Returns the digits of integer n as a vector, most significant first, in base 10 or the given base")
+            .withParams("n")
+            .withParams("n", "base")
+            .inCategory(NUMBER_THEORY)
+            .takingBetween(1, 2)
+            .noBroadcasting()
+            .implementedByAggregate((args, ctx) -> new NodeVector(digitsOf(args, ctx).stream()
+                    .map(digit -> new NodeRational(digit))
+                    .toArray(Node[]::new)));
+
+    /**
+     * Sum of the digits of an integer
+     */
+    public static final MathFunction DIGITSUM = FunctionBuilder
+            .named("digitsum")
+            .describedAs("Returns the sum of the digits of integer n, in base 10 or the given base")
+            .withParams("n")
+            .withParams("n", "base")
+            .inCategory(NUMBER_THEORY)
+            .takingBetween(1, 2)
+            .noBroadcasting()
+            .implementedByAggregate((args, ctx) ->
+                    new NodeRational(digitsOf(args, ctx).stream().mapToLong(Long::longValue).sum()));
+
+    /**
+     * The digits of {@code args[0]} in the base {@code args[1]}, or 10. The sign is ignored.
+     */
+    private static List<Long> digitsOf(List<NodeConstant> args, FunctionContext ctx) {
+        BigInteger value = ctx.requireBigInteger(args.getFirst()).abs();
+        int base = args.size() > 1 ? ctx.requireInteger(args.get(1)) : 10;
+        if (base < 2) {
+            throw ctx.error("base must be at least 2, got: " + base);
+        }
+        BigInteger radix = BigInteger.valueOf(base);
+        var digits = new ArrayList<Long>();
+        do {
+            BigInteger[] quotientAndRemainder = value.divideAndRemainder(radix);
+            digits.addFirst(quotientAndRemainder[1].longValue());
+            value = quotientAndRemainder[0];
+        } while (value.signum() > 0);
+        return digits;
+    }
+
     private static long gcd(long a, long b) {
         a = Math.abs(a);
         b = Math.abs(b);
@@ -178,6 +248,7 @@ public final class NumberTheoryFunctions {
      * Gets all number theory functions.
      */
     public static List<MathFunction> all() {
-        return List.of(ISPRIME, NEXTPRIME, PREVPRIME, FACTORS, DISTINCTFACTORS, DIVISORCOUNT, DIVISORSUM, MODPOW, ISCOPRIME);
+        return List.of(ISPRIME, NEXTPRIME, PREVPRIME, FACTORS, DISTINCTFACTORS, DIVISORCOUNT, DIVISORSUM, MODPOW, ISCOPRIME,
+                ISQRT, DIGITS, DIGITSUM);
     }
 }

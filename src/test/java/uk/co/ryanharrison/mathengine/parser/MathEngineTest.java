@@ -114,6 +114,50 @@ class MathEngineTest {
         }
 
         @Test
+        void ansReadsThePreviousEvaluation() {
+            engine.evaluate("6 * 7");
+
+            assertThat(engine.evaluateDouble("ans + 1")).isEqualTo(43.0);
+            assertThat(engine.evaluateDouble("ans * 2")).isEqualTo(86.0);
+        }
+
+        @Test
+        void aFailedEvaluationLeavesAnsAlone() {
+            engine.evaluate("5");
+
+            assertThatThrownBy(() -> engine.evaluate("undefinedName + 1"))
+                    .isInstanceOf(MathEngineException.class);
+            assertThat(engine.evaluateDouble("ans")).isEqualTo(5.0);
+        }
+
+        @Test
+        void ansIsNotListedAsAVariable() {
+            engine.evaluate("5");
+
+            assertThat(engine.getLocalVariables()).doesNotContainKey("ans");
+        }
+
+        @Test
+        void evaluatingAParsedTreeSetsAns() {
+            // How the GUI shows a tree and then evaluates that same tree
+            Node tree = engine.compile("6 * 7").getAst();
+
+            engine.evaluate(tree);
+
+            assertThat(engine.evaluateDouble("ans")).isEqualTo(42.0);
+        }
+
+        @Test
+        void compiledEvaluationsLeaveAnsAlone() {
+            engine.evaluate("5");
+            CompiledExpression square = engine.compile("x^2");
+
+            square.evaluate("x", 3);
+
+            assertThat(engine.evaluateDouble("ans")).isEqualTo(5.0);
+        }
+
+        @Test
         void separateEnginesDoNotShareASession() {
             engine.evaluate("x = 10");
 
@@ -144,6 +188,18 @@ class MathEngineTest {
 
             assertThat(degrees.evaluateDouble("sin(x)")).isCloseTo(1.0, within(1e-12));
             assertThat(degrees.evaluateDouble("twice(4)")).isEqualTo(8.0);
+        }
+
+        @Test
+        void withConfigCarriesThePreviousResultOver() {
+            MathEngine engine = MathEngine.create();
+            engine.evaluate("21");
+
+            MathEngine degrees = engine.withConfig(MathEngineConfig.builder()
+                    .angleUnit(AngleUnit.DEGREES)
+                    .build());
+
+            assertThat(degrees.evaluateDouble("ans * 2")).isEqualTo(42.0);
         }
 
         @Test

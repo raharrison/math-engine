@@ -261,6 +261,46 @@
             "expectError": true,
             "expectedErrorType": "TypeError",
             "notes": "Cannot subscript scalar"
+        },
+        {
+            "id": "hex_fractional",
+            "input": "hex(1.5)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "expectedErrorMessage": "whole-number",
+            "notes": "Only integers have a hexadecimal form"
+        },
+        {
+            "id": "argmax_empty",
+            "input": "argmax({})",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "expectedErrorMessage": "at least one element",
+            "notes": "An empty vector has no largest element"
+        },
+        {
+            "id": "integrate_two_parameter_function",
+            "input": "integrate((a, b) -> a, 0, 1)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "expectedErrorMessage": "exactly 1 parameter",
+            "notes": "The integrand must be a function of one variable"
+        },
+        {
+            "id": "integrate_number_not_function",
+            "input": "integrate(5, 0, 1)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "expectedErrorMessage": "function argument",
+            "notes": "A number is not a function to integrate"
+        },
+        {
+            "id": "binompdf_fractional_successes",
+            "input": "binompdf(10, 0.5, 2.5)",
+            "expectError": true,
+            "expectedErrorType": "TypeError",
+            "expectedErrorMessage": "whole-number",
+            "notes": "A count of successes is whole"
         }
     ]
 }

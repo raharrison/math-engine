@@ -92,4 +92,104 @@ public final class Beta {
         return Math.exp(Gamma.gammaLn(z) + Gamma.gammaLn(w) - Gamma.gammaLn(z + w));
     }
 
+    /**
+     * Calculates the regularized incomplete beta function I_x(a, b).
+     * <p>
+     * The regularized incomplete beta function is the cumulative distribution function of
+     * the Beta(a, b) distribution, and from it follow those of Student's t and the F
+     * distribution:
+     * <pre>
+     * I_x(a, b) = B(x; a, b) / B(a, b) = (1 / B(a, b)) ∫₀ˣ t^(a-1) (1-t)^(b-1) dt
+     * </pre>
+     * It is evaluated by its continued fraction, using the symmetry
+     * I_x(a, b) = 1 - I_(1-x)(b, a) on whichever side the fraction converges faster.
+     * </p>
+     *
+     * @param x the upper limit of integration, in [0, 1]
+     * @param a the first shape parameter, positive
+     * @param b the second shape parameter, positive
+     * @return I_x(a, b), in [0, 1]
+     * @throws IllegalArgumentException if x is outside [0, 1] or either parameter is not positive
+     */
+    public static double regularizedIncomplete(double x, double a, double b) {
+        if (!(x >= 0.0 && x <= 1.0)) {
+            throw new IllegalArgumentException("x must be in [0, 1], got: " + x);
+        }
+        if (!(a > 0.0)) {
+            throw new IllegalArgumentException("First parameter must be positive, got: " + a);
+        }
+        if (!(b > 0.0)) {
+            throw new IllegalArgumentException("Second parameter must be positive, got: " + b);
+        }
+        if (x == 0.0 || x == 1.0) {
+            return x;
+        }
+
+        // x^a (1-x)^b / B(a, b), the factor in front of the continued fraction
+        double front = Math.exp(Gamma.gammaLn(a + b) - Gamma.gammaLn(a) - Gamma.gammaLn(b)
+                + a * Math.log(x) + b * Math.log1p(-x));
+
+        if (x < (a + 1.0) / (a + b + 2.0)) {
+            return front * continuedFraction(x, a, b) / a;
+        }
+        return 1.0 - front * continuedFraction(1.0 - x, b, a) / b;
+    }
+
+    /**
+     * The continued fraction for the incomplete beta function, by Lentz's method.
+     */
+    private static double continuedFraction(double x, double a, double b) {
+        final double epsilon = 1e-16;
+        final double tiny = 1e-300;
+        final int maxIterations = 10_000;
+
+        double sum = a + b;
+        double aPlusOne = a + 1.0;
+        double aMinusOne = a - 1.0;
+
+        double c = 1.0;
+        double d = 1.0 - sum * x / aPlusOne;
+        if (Math.abs(d) < tiny) {
+            d = tiny;
+        }
+        d = 1.0 / d;
+        double result = d;
+
+        for (int m = 1; m <= maxIterations; m++) {
+            int twoM = 2 * m;
+
+            // Even step
+            double coefficient = m * (b - m) * x / ((aMinusOne + twoM) * (a + twoM));
+            d = 1.0 + coefficient * d;
+            if (Math.abs(d) < tiny) {
+                d = tiny;
+            }
+            c = 1.0 + coefficient / c;
+            if (Math.abs(c) < tiny) {
+                c = tiny;
+            }
+            d = 1.0 / d;
+            result *= d * c;
+
+            // Odd step
+            coefficient = -(a + m) * (sum + m) * x / ((a + twoM) * (aPlusOne + twoM));
+            d = 1.0 + coefficient * d;
+            if (Math.abs(d) < tiny) {
+                d = tiny;
+            }
+            c = 1.0 + coefficient / c;
+            if (Math.abs(c) < tiny) {
+                c = tiny;
+            }
+            d = 1.0 / d;
+            double delta = d * c;
+            result *= delta;
+
+            if (Math.abs(delta - 1.0) < epsilon) {
+                break;
+            }
+        }
+        return result;
+    }
+
 }

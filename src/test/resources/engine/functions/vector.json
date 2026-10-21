@@ -639,6 +639,126 @@
             "expectError": true,
             "expectedErrorType": "TypeError",
             "notes": "No element matches, which is as much an error as an empty vector is"
+        },
+        {
+            "id": "cumsum_running_totals",
+            "input": "cumsum({1, 2, 3, 4})",
+            "expected": [
+                1,
+                3,
+                6,
+                10
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Each element is the total so far"
+        },
+        {
+            "id": "cumsum_of_range",
+            "input": "cumsum(1..4)",
+            "expected": [
+                1,
+                3,
+                6,
+                10
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A range is summed like the vector it stands for"
+        },
+        {
+            "id": "cumsum_keeps_units",
+            "input": "cumsum({1 m, 50 cm})",
+            "expected": [
+                "1 meter",
+                "1.5 meters"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Totals are added with unit conversion, in the first element's unit"
+        },
+        {
+            "id": "cumsum_empty",
+            "input": "cumsum({})",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "No elements, no totals"
+        },
+        {
+            "id": "cumsum_ends_at_sum",
+            "input": "last(cumsum({3, 1, 4})) == sum({3, 1, 4})",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The last running total is the sum"
+        },
+        {
+            "id": "diff_of_squares",
+            "input": "diff({1, 4, 9, 16})",
+            "expected": [
+                3,
+                5,
+                7
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Differences between neighbours, one fewer than the elements"
+        },
+        {
+            "id": "diff_single_element",
+            "input": "diff({5})",
+            "expected": [],
+            "expectedType": "NodeVector",
+            "notes": "One element has no neighbour to differ from"
+        },
+        {
+            "id": "diff_stays_exact",
+            "input": "diff({1/3, 1})",
+            "expected": [
+                "2/3"
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Exact elements give exact differences"
+        },
+        {
+            "id": "diff_undoes_cumsum",
+            "input": "diff(cumsum({5, 2, 8}))",
+            "expected": [
+                2,
+                8
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Differencing the running totals recovers every element but the first"
+        },
+        {
+            "id": "argmax_index",
+            "input": "argmax({3, 1, 4, 1, 5})",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "The zero-based index of the largest element"
+        },
+        {
+            "id": "argmin_first_on_tie",
+            "input": "argmin({3, 1, 4, 1, 5})",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Two elements tie for smallest; the first wins"
+        },
+        {
+            "id": "argmax_variadic",
+            "input": "argmax(3, 9, 2)",
+            "expected": 1,
+            "expectedType": "NodeRational",
+            "notes": "Separate arguments are treated as one collection, as max does"
+        },
+        {
+            "id": "argmax_compares_units",
+            "input": "argmax({1 km, 900 m})",
+            "expected": 0,
+            "expectedType": "NodeRational",
+            "notes": "Units are converted before comparing"
+        },
+        {
+            "id": "argmax_indexes_max",
+            "input": "v = {7, 2, 9}; v[argmax(v)] == max(v)",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "The index points at the element max returns"
         }
     ]
 }

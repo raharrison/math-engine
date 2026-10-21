@@ -344,6 +344,47 @@ class BetaTest {
         assertThat(result).isPositive();
     }
 
+    // ==================== Regularized Incomplete Beta ====================
+
+    @ParameterizedTest
+    @CsvSource({
+            "0.3, 1.0, 1.0, 0.3",                   // x, a, b, expected: I_x(1, 1) = x
+            "0.3, 3.0, 1.0, 0.027",                 // I_x(a, 1) = x^a
+            "0.3, 1.0, 3.0, 0.657",                 // I_x(1, b) = 1 - (1 - x)^b
+            "0.5, 2.5, 2.5, 0.5",                   // I_(1/2)(a, a) = 1/2
+            "0.2, 2.0, 3.0, 0.1808"                 // the Beta(2, 3) CDF, 6x^2 - 8x^3 + 3x^4
+    })
+    void regularizedIncompleteKnownValues(double x, double a, double b, double expected) {
+        assertThat(Beta.regularizedIncomplete(x, a, b)).isCloseTo(expected, within(1e-14));
+    }
+
+    @Test
+    void regularizedIncompleteIsSymmetric() {
+        for (double x = 0.05; x < 1.0; x += 0.1) {
+            assertThat(Beta.regularizedIncomplete(x, 2.5, 7.0))
+                    .isCloseTo(1.0 - Beta.regularizedIncomplete(1.0 - x, 7.0, 2.5), within(1e-14));
+        }
+    }
+
+    @Test
+    void regularizedIncompleteAtTheEndsIsZeroAndOne() {
+        assertThat(Beta.regularizedIncomplete(0.0, 2.0, 3.0)).isEqualTo(0.0);
+        assertThat(Beta.regularizedIncomplete(1.0, 2.0, 3.0)).isEqualTo(1.0);
+    }
+
+    @Test
+    void regularizedIncompleteRejectsInvalidArguments() {
+        assertThatThrownBy(() -> Beta.regularizedIncomplete(-0.1, 1.0, 1.0))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("[0, 1]");
+        assertThatThrownBy(() -> Beta.regularizedIncomplete(0.5, 0.0, 1.0))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("positive");
+        assertThatThrownBy(() -> Beta.regularizedIncomplete(0.5, 1.0, -2.0))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("positive");
+    }
+
     // ==================== Monotonicity Properties ====================
 
     /**

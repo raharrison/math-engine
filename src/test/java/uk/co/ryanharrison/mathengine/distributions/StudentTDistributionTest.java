@@ -208,24 +208,82 @@ class StudentTDistributionTest {
 
     // ==================== Cumulative Distribution Function Tests ====================
 
-    @Test
-    void cumulativeThrowsUnsupportedOperation() {
-        StudentTDistribution dist = StudentTDistribution.of(10.0);
+    @ParameterizedTest
+    @CsvSource({
+            "10.0, 0.0, 0.5",                       // degrees of freedom, x, expected cumulative
+            "10.0, 2.228138851986274, 0.975",
+            "1.0, 1.0, 0.75",                       // Cauchy: 1/2 + atan(x) / pi
+            "1.0, -1.0, 0.25",
+            "2.0, 1.0, 0.7886751345948129",         // 1/2 + x / (2 sqrt(2 + x^2))
+            "30.0, -2.042272456301238, 0.025"
+    })
+    void cumulativeKnownValues(double degreesOfFreedom, double x, double expected) {
+        StudentTDistribution dist = StudentTDistribution.of(degreesOfFreedom);
+        assertThat(dist.cumulative(x)).isCloseTo(expected, within(1e-12));
+    }
 
-        assertThatThrownBy(() -> dist.cumulative(0.0))
-                .isInstanceOf(UnsupportedOperationException.class)
-                .hasMessageContaining("not yet implemented");
+    @Test
+    void cumulativeIsMonotonicallyIncreasing() {
+        StudentTDistribution dist = StudentTDistribution.of(3.0);
+
+        double previous = 0.0;
+        for (double x = -20.0; x <= 20.0; x += 0.25) {
+            double current = dist.cumulative(x);
+            assertThat(current).isGreaterThanOrEqualTo(previous);
+            previous = current;
+        }
+    }
+
+    @Test
+    void cumulativeUsesLocationAndScale() {
+        StudentTDistribution standard = StudentTDistribution.of(5.0);
+        StudentTDistribution shifted = StudentTDistribution.of(5.0, 10.0, 2.0);
+
+        assertThat(shifted.cumulative(10.0)).isCloseTo(0.5, within(1e-15));
+        assertThat(shifted.cumulative(13.0)).isCloseTo(standard.cumulative(1.5), within(1e-15));
+    }
+
+    @Test
+    void cumulativeAtInfinityIsZeroOrOne() {
+        StudentTDistribution dist = StudentTDistribution.of(4.0);
+
+        assertThat(dist.cumulative(Double.NEGATIVE_INFINITY)).isEqualTo(0.0);
+        assertThat(dist.cumulative(Double.POSITIVE_INFINITY)).isEqualTo(1.0);
     }
 
     // ==================== Inverse Cumulative Tests ====================
 
-    @Test
-    void inverseCumulativeThrowsUnsupportedOperation() {
-        StudentTDistribution dist = StudentTDistribution.of(10.0);
+    @ParameterizedTest
+    @CsvSource({
+            "10.0, 0.975, 2.228138851986274",       // degrees of freedom, p, expected quantile
+            "1.0, 0.975, 12.706204736174707",
+            "2.0, 0.995, 9.924843200918298",
+            "30.0, 0.025, -2.042272456301238",
+            "5.0, 0.5, 0.0"
+    })
+    void inverseCumulativeKnownValues(double degreesOfFreedom, double p, double expected) {
+        StudentTDistribution dist = StudentTDistribution.of(degreesOfFreedom);
+        assertThat(dist.inverseCumulative(p))
+                .isCloseTo(expected, within(1e-9 * Math.max(1.0, Math.abs(expected))));
+    }
 
-        assertThatThrownBy(() -> dist.inverseCumulative(0.5))
-                .isInstanceOf(UnsupportedOperationException.class)
-                .hasMessageContaining("not yet implemented");
+    @Test
+    void inverseCumulativeReachesHeavyTails() {
+        // Cauchy quantile: tan(pi (p - 1/2))
+        StudentTDistribution cauchy = StudentTDistribution.of(1.0);
+        double p = 0.999999;
+
+        assertThat(cauchy.inverseCumulative(p))
+                .isCloseTo(Math.tan(Math.PI * (p - 0.5)), within(1e-4));
+    }
+
+    @Test
+    void inverseCumulativeInvertsCumulative() {
+        StudentTDistribution dist = StudentTDistribution.of(7.0, -3.0, 0.5);
+
+        for (double p = 0.01; p < 1.0; p += 0.07) {
+            assertThat(dist.cumulative(dist.inverseCumulative(p))).isCloseTo(p, within(1e-12));
+        }
     }
 
     @Test

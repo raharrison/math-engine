@@ -5,6 +5,9 @@ import uk.co.ryanharrison.mathengine.parser.MathEngine;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
 import uk.co.ryanharrison.mathengine.parser.ast.Node;
 
+import java.util.Objects;
+import java.util.function.DoubleUnaryOperator;
+
 /**
  * Class representing a function of one variable that can be evaluated.
  * <p>
@@ -25,7 +28,14 @@ import uk.co.ryanharrison.mathengine.parser.ast.Node;
  * // With custom variable name
  * Function g = new Function("t^2", "t");
  * double result = g.evaluateAt(5);  // 25.0
+ *
+ * // Backed by code rather than an equation, for the numerical methods
+ * Function h = Function.of(x -> x * x, "x^2");
+ * double area = SimpsonIntegrator.of(h, 0, 1).integrate();  // 1/3
  * }</pre>
+ * <p>
+ * A function made by {@link #of} has no expression tree, so it suits the numerical
+ * methods, which only evaluate it, and not the symbolic ones.
  *
  * @author Ryan Harrison
  */
@@ -34,6 +44,11 @@ public final class Function {
     private final String equation;
     private final String variable;
     private final AngleUnit angleUnit;
+
+    /**
+     * The evaluation, when this function is backed by code rather than an equation.
+     */
+    private final DoubleUnaryOperator evaluator;
 
     // Lazily initialized engine and compiled expression for efficient evaluation
     private MathEngine engine;
@@ -79,9 +94,31 @@ public final class Function {
      * @param angleUnit the angle unit for trigonometric functions
      */
     public Function(String equation, String variable, AngleUnit angleUnit) {
+        this(equation, variable, angleUnit, null);
+    }
+
+    private Function(String equation, String variable, AngleUnit angleUnit, DoubleUnaryOperator evaluator) {
         this.equation = equation;
         this.variable = variable;
         this.angleUnit = angleUnit;
+        this.evaluator = evaluator;
+    }
+
+    /**
+     * Creates a function evaluated by code, so the numerical methods can integrate,
+     * differentiate or solve something that is not written as an equation, such as a
+     * lambda from the expression parser.
+     *
+     * @param evaluator   computes the function at a point
+     * @param description how the function reads, used by {@link #getEquation()} and
+     *                    {@link #toString()}
+     * @return a function that evaluates through {@code evaluator}
+     * @throws NullPointerException if either argument is null
+     */
+    public static Function of(DoubleUnaryOperator evaluator, String description) {
+        Objects.requireNonNull(evaluator, "Evaluator cannot be null");
+        Objects.requireNonNull(description, "Description cannot be null");
+        return new Function(description, "x", AngleUnit.RADIANS, evaluator);
     }
 
     /**
@@ -114,6 +151,9 @@ public final class Function {
      * @return the function evaluated at the specified point
      */
     public double evaluateAt(double at) {
+        if (evaluator != null) {
+            return evaluator.applyAsDouble(at);
+        }
         if (compiledExpression == null) {
             initEngine();
         }
@@ -129,6 +169,9 @@ public final class Function {
      * @return the function evaluated at the specified point
      */
     public double evaluateAt(String at) {
+        if (evaluator != null) {
+            return evaluator.applyAsDouble(MathEngine.create().evaluateDouble(at));
+        }
         if (compiledExpression == null) {
             initEngine();
         }
@@ -159,8 +202,14 @@ public final class Function {
      * Get this function compiled into a Node expression tree.
      *
      * @return an expression tree of nodes representing this function
+     * @throws UnsupportedOperationException if this function was made by {@link #of}, and
+     *                                       so has no equation to compile
      */
     public Node getCompiledExpression() {
+        if (evaluator != null) {
+            throw new UnsupportedOperationException(
+                    "Function '" + equation + "' is evaluated by code and has no expression tree");
+        }
         if (compiledExpression == null) {
             initEngine();
         }

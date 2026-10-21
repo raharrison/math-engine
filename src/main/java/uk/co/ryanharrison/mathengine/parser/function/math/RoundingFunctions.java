@@ -1,10 +1,14 @@
 package uk.co.ryanharrison.mathengine.parser.function.math;
 
+import uk.co.ryanharrison.mathengine.core.BigRational;
 import uk.co.ryanharrison.mathengine.parser.ast.NodeDouble;
 import uk.co.ryanharrison.mathengine.parser.ast.NodeRational;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionBuilder;
 import uk.co.ryanharrison.mathengine.parser.function.MathFunction;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.List;
 
 import static uk.co.ryanharrison.mathengine.parser.function.MathFunction.Category.ROUNDING;
@@ -70,6 +74,33 @@ public final class RoundingFunctions {
                 int places = (int) ctx.toDouble(n);
                 double factor = Math.pow(10, places);
                 return new NodeDouble(Math.round(xVal * factor) / factor);
+            });
+
+    /**
+     * Round to significant figures. An exact value stays exact, so {@code sigfig(1/3, 3)}
+     * is 333/1000; anything else keeps its unit or percentage.
+     */
+    public static final MathFunction SIGFIG = FunctionBuilder
+            .named("sigfig")
+            .describedAs("Rounds x to the given number of significant figures")
+            .withParams("x", "figures")
+            .inCategory(ROUNDING)
+            .takingBinary()
+            .implementedBy((x, n, ctx) -> {
+                int figures = ctx.requireInteger(n);
+                if (figures < 1) {
+                    throw ctx.error("requires at least 1 significant figure, got: " + figures);
+                }
+                var context = new MathContext(figures, RoundingMode.HALF_UP);
+                if (x instanceof NodeRational rational) {
+                    BigRational value = rational.getValue();
+                    BigDecimal rounded = new BigDecimal(value.getNumerator())
+                            .divide(new BigDecimal(value.getDenominator()), context);
+                    return new NodeRational(BigRational.of(rounded));
+                }
+                return ctx.mapMagnitude(x, value -> Double.isFinite(value)
+                        ? BigDecimal.valueOf(value).round(context).doubleValue()
+                        : value);
             });
 
     // ==================== Sign and Absolute Value ====================
@@ -143,7 +174,7 @@ public final class RoundingFunctions {
 
     /** Gets all rounding and basic math functions. */
     public static List<MathFunction> all() {
-        return List.of(FLOOR, CEIL, ROUND, TRUNC, ROUNDN, ABS, SIGN, COPYSIGN, FMOD, REMAINDER, HYPOT);
+        return List.of(FLOOR, CEIL, ROUND, TRUNC, ROUNDN, SIGFIG, ABS, SIGN, COPYSIGN, FMOD, REMAINDER, HYPOT);
     }
 
 }

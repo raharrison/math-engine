@@ -8,8 +8,9 @@ import uk.co.ryanharrison.mathengine.parser.operator.OperatorContext;
 import uk.co.ryanharrison.mathengine.parser.operator.binary.MultiplyOperator;
 
 /**
- * Resolves a bare identifier: variable → user function → unit → implicit multiplication.
- * A session name therefore shadows a unit of the same name. The sigils {@code @unit},
+ * Resolves a bare identifier: variable → {@code ans} → user function → unit → implicit
+ * multiplication. A session name therefore shadows a unit of the same name, and a variable
+ * the user calls {@code ans} shadows the previous result. The sigils {@code @unit},
  * {@code $var} and {@code #const} each resolve one kind only.
  */
 public final class VariableResolver {
@@ -32,6 +33,12 @@ public final class VariableResolver {
         var varOpt = context.resolve(name);
         if (varOpt.isPresent()) {
             return varOpt.get();
+        }
+
+        // The previous result
+        if (EvaluationContext.LAST_RESULT_NAME.equals(name)) {
+            return context.getLastResult()
+                    .orElseThrow(() -> UndefinedVariableException.noPreviousResult(name));
         }
 
         // User-defined functions (for first-class function support)
