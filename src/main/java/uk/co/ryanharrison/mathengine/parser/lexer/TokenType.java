@@ -61,8 +61,9 @@ public enum TokenType {
     // Level 14: Logical OR
     OR,
 
-    // Level 15: Assignment
+    // Level 15: Assignment. '=' stands only as a statement; ':=' also works inside an expression
     ASSIGN,
+    INLINE_ASSIGN,
 
     // Level 16: Lambda
     LAMBDA,
@@ -89,5 +90,14 @@ public enum TokenType {
     VAR_REF,
 
     // Explicit constant reference: #pi
-    CONST_REF
+    CONST_REF;
+
+    /**
+     * Whether this token binds a name, as {@code =} and {@code :=} both do.
+     *
+     * @return true for {@link #ASSIGN} and {@link #INLINE_ASSIGN}
+     */
+    public boolean isAssignment() {
+        return this == ASSIGN || this == INLINE_ASSIGN;
+    }
 }

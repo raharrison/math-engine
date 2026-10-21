@@ -12,13 +12,13 @@ package uk.co.ryanharrison.mathengine.parser.ast;
  * <h2>Example Usage:</h2>
  * <pre>{@code
  * // Force constant resolution:
- * pi := 100;           // Define variable 'pi' (shadows constant)
+ * pi = 100;            // Define variable 'pi' (shadows constant)
  * pi                   // Returns 100 (variable takes priority)
  * #pi                  // Returns 3.14159... (explicit constant reference)
  * $pi                  // Returns 100 (explicit variable reference)
  *
  * // Useful in complex expressions:
- * e := 2;              // Variable 'e'
+ * e = 2;               // Variable 'e'
  * e^2                  // Returns 4 (variable used)
  * #e^2                 // Returns 7.389... (constant used)
  * }</pre>

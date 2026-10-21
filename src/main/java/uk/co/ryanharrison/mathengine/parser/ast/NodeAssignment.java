@@ -1,7 +1,7 @@
 package uk.co.ryanharrison.mathengine.parser.ast;
 
 /**
- * Node representing a variable assignment (identifier := expression).
+ * Node representing a variable assignment (identifier = expression).
  * Evaluating an assignment stores the value in the evaluation context and returns it.
  */
 public final class NodeAssignment extends NodeExpression {
@@ -29,7 +29,7 @@ public final class NodeAssignment extends NodeExpression {
 
     @Override
     public String toString() {
-        return identifier + " := " + value;
+        return identifier + " = " + value;
     }
 
     @Override

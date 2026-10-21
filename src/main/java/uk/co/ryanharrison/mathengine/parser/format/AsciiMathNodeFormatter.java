@@ -92,13 +92,38 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
         return new AsciiMathNodeFormatter(decimalPlaces);
     }
 
+    /**
+     * Formats a node standing as a statement, which is how the whole input is read.
+     * <p>
+     * An assignment, a definition or a sequence prints bare here and in parentheses
+     * anywhere else, since only a statement may hold a bare {@code =}: so
+     * {@code {a := 1, a + 1}} prints as {@code {(a = 1), (a + 1)}}, which parses back.
+     */
     @Override
     public String format(Node node) {
+        return formatStatement(node);
+    }
+
+    private String formatStatement(Node node) {
+        String assign = " " + registry.getAsciiMathFormat(TokenType.ASSIGN) + " ";
+        return switch (node) {
+            case NodeAssignment n -> n.getIdentifier() + assign + formatExpression(n.getValue());
+            case NodeElementAssignment n -> n.getIdentifier()
+                    + FormatUtils.formatIndexGroups(n.getIndexGroups(), this::formatExpression)
+                    + assign + formatExpression(n.getValue());
+            case NodeFunctionDef n -> n.getName() + "(" + String.join(", ", n.getParameters()) + ")"
+                    + assign + formatExpression(n.getBody());
+            case NodeSequence n -> FormatUtils.formatSequence(n, this::formatStatement);
+            default -> formatExpression(node);
+        };
+    }
+
+    private String formatExpression(Node node) {
         return switch (node) {
             // --- NodeNumber subtypes ---
             case NodeDouble n -> formatDouble(n.getValue());
             case NodeRational n -> formatRational(n);
-            case NodePercent n -> format(n.getPercent()) + "%";
+            case NodePercent n -> formatExpression(n.getPercent()) + "%";
             case NodeBoolean n -> "\"" + n.getValue() + "\"";
 
             // --- Other NodeConstant subtypes ---
@@ -115,14 +140,13 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
             case NodeUnary n -> formatUnary(n);
             case NodeCall n -> formatCall(n);
             case NodeVariable n -> mapVariable(n.getName());
-            case NodeAssignment n -> n.getIdentifier() + " = " + format(n.getValue());
-            case NodeElementAssignment n -> n.getIdentifier() +
-                    FormatUtils.formatIndexGroups(n.getIndexGroups(), this) + " = " + format(n.getValue());
-            case NodeFunctionDef n -> formatFunctionDef(n);
-            case NodeSubscript n -> FormatUtils.formatSubscript(n, this);
+            case NodeAssignment n -> "(" + formatStatement(n) + ")";
+            case NodeElementAssignment n -> "(" + formatStatement(n) + ")";
+            case NodeFunctionDef n -> "(" + formatStatement(n) + ")";
+            case NodeSubscript n -> FormatUtils.formatSubscript(n, this::formatExpression);
             case NodeRangeExpression n -> formatRangeExpr(n);
-            case NodeUnitConversion n -> format(n.getValue()) + " \"in\" \"" + n.getTargetUnit() + "\"";
-            case NodeSequence n -> FormatUtils.formatSequence(n, this);
+            case NodeUnitConversion n -> formatExpression(n.getValue()) + " \"in\" \"" + n.getTargetUnit() + "\"";
+            case NodeSequence n -> "(" + formatStatement(n) + ")";
             case NodeComprehension n -> formatComprehension(n);
             case NodeUnitRef n -> "\"" + n.getUnitName() + "\"";
             case NodeVarRef n -> n.getVarName();
@@ -156,7 +180,7 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
 
     private String formatVector(NodeVector vector) {
         var sb = new StringBuilder("(");
-        FormatUtils.appendJoined(sb, java.util.List.of(vector.getElements()), this);
+        FormatUtils.appendJoined(sb, java.util.List.of(vector.getElements()), this::formatExpression);
         sb.append(")");
         return sb.toString();
     }
@@ -169,7 +193,7 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
             else sb.append("[");
             for (int j = 0; j < elements[i].length; j++) {
                 if (j > 0) sb.append(", ");
-                sb.append(format(elements[i][j]));
+                sb.append(formatExpression(elements[i][j]));
             }
         }
         sb.append("]]");
@@ -177,23 +201,23 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
     }
 
     private String formatUnit(NodeUnit unit) {
-        String formattedValue = format(unit.getMagnitude());
+        String formattedValue = formatExpression(unit.getMagnitude());
         String unitName = unit.getUnit().getDisplayName(unit.getValue());
         return formattedValue + " \"" + unitName + "\"";
     }
 
     private String formatRange(NodeRange range) {
-        String start = format(range.getStart());
-        String end = format(range.getEnd());
+        String start = formatExpression(range.getStart());
+        String end = formatExpression(range.getEnd());
         if (range.getStep().doubleValue() == 1.0) {
             return start + ".." + end;
         }
-        return start + ".." + end + " \"step\" " + format(range.getStep());
+        return start + ".." + end + " \"step\" " + formatExpression(range.getStep());
     }
 
     private String formatLambda(NodeLambda lambda) {
         var params = lambda.getParameters();
-        String body = format(lambda.getBody());
+        String body = formatExpression(lambda.getBody());
         if (params.size() == 1) {
             return params.getFirst() + " |-> " + body;
         }
@@ -209,11 +233,11 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
         // children in parens to ensure clean numerator/denominator grouping.
         if (opType == TokenType.DIVIDE) {
             String left = binary.getLeft() instanceof NodeBinary
-                    ? "(" + format(binary.getLeft()) + ")"
-                    : format(binary.getLeft());
+                    ? "(" + formatExpression(binary.getLeft()) + ")"
+                    : formatExpression(binary.getLeft());
             String right = binary.getRight() instanceof NodeBinary
-                    ? "(" + format(binary.getRight()) + ")"
-                    : format(binary.getRight());
+                    ? "(" + formatExpression(binary.getRight()) + ")"
+                    : formatExpression(binary.getRight());
             return left + "/" + right;
         }
 
@@ -235,7 +259,7 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
      * A supplied multiplication prints as the juxtaposition it was written as.
      */
     private String formatImplied(NodeBinary binary) {
-        return format(binary.getLeft()) + " " + format(binary.getRight());
+        return formatExpression(binary.getLeft()) + " " + formatExpression(binary.getRight());
     }
 
     /**
@@ -244,7 +268,7 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
      */
     private String formatBinaryChild(Node child, int parentPrec, boolean isRight,
                                      boolean parentIsRightAssoc) {
-        String formatted = format(child);
+        String formatted = formatExpression(child);
 
         if (child instanceof NodeBinary childBinary) {
             int childPrec = precedence(childBinary.getOperator().type());
@@ -270,7 +294,7 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
     }
 
     private String formatUnary(NodeUnary unary) {
-        String operand = format(unary.getOperand());
+        String operand = formatExpression(unary.getOperand());
         boolean operandIsCompound = unary.getOperand() instanceof NodeBinary;
 
         if (unary.isPrefix()) {
@@ -307,10 +331,10 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
 
             // Special: nroot(n, x) -> root(n)(x)
             if (name.equals("nroot") && args.size() == 2) {
-                return "root(" + format(args.get(0)) + ")(" + format(args.get(1)) + ")";
+                return "root(" + formatExpression(args.get(0)) + ")(" + formatExpression(args.get(1)) + ")";
             }
 
-            String formattedArgs = FormatUtils.joinFormatted(args, this);
+            String formattedArgs = FormatUtils.joinFormatted(args, this::formatExpression);
 
             if (ASCIIMATH_FUNCTIONS.contains(mapped)) {
                 return mapped + "(" + formattedArgs + ")";
@@ -326,32 +350,27 @@ public final class AsciiMathNodeFormatter implements NodeFormatter {
         }
 
         // Lambda or other callable expression
-        return "(" + format(call.getFunction()) + ")(" + FormatUtils.joinFormatted(args, this) + ")";
-    }
-
-    private String formatFunctionDef(NodeFunctionDef def) {
-        return def.getName() + "(" + String.join(", ", def.getParameters())
-                + ") = " + format(def.getBody());
+        return "(" + formatExpression(call.getFunction()) + ")(" + FormatUtils.joinFormatted(args, this::formatExpression) + ")";
     }
 
     private String formatRangeExpr(NodeRangeExpression range) {
-        String start = format(range.getStart());
-        String end = format(range.getEnd());
+        String start = formatExpression(range.getStart());
+        String end = formatExpression(range.getEnd());
         if (range.hasStep()) {
-            return start + ".." + end + " \"step\" " + format(range.getStep());
+            return start + ".." + end + " \"step\" " + formatExpression(range.getStep());
         }
         return start + ".." + end;
     }
 
     private String formatComprehension(NodeComprehension comp) {
         var sb = new StringBuilder("{");
-        sb.append(format(comp.getExpression()));
+        sb.append(formatExpression(comp.getExpression()));
         for (var iter : comp.getIterators()) {
             sb.append(" | ").append(iter.variable())
-                    .append(" in ").append(format(iter.iterable()));
+                    .append(" in ").append(formatExpression(iter.iterable()));
         }
         if (comp.hasCondition()) {
-            sb.append(", ").append(format(comp.getCondition()));
+            sb.append(", ").append(formatExpression(comp.getCondition()));
         }
         sb.append("}");
         return sb.toString();

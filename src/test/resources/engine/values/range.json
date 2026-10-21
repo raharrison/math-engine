@@ -150,7 +150,7 @@
         },
         {
             "id": "range_variable_001",
-            "input": "r := 1..5; sum(r)",
+            "input": "r = 1..5; sum(r)",
             "expected": 15,
             "expectedType": "NodeRational",
             "notes": "Range assigned to variable"

@@ -3,6 +3,7 @@ package uk.co.ryanharrison.mathengine.parser.format;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import uk.co.ryanharrison.mathengine.parser.MathEngine;
 import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.evaluator.FunctionDefinition;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
@@ -399,7 +400,7 @@ class StringNodeFormatterTest {
     @Test
     void formatsAssignment() {
         var assignment = new NodeAssignment("x", dbl(42));
-        assertThat(fmt.format(assignment)).isEqualTo("x := 42");
+        assertThat(fmt.format(assignment)).isEqualTo("x = 42");
     }
 
     // ==================== NodeElementAssignment ====================
@@ -408,7 +409,7 @@ class StringNodeFormatterTest {
     void formatsElementAssignment() {
         var assignment = new NodeElementAssignment("v",
                 List.of(List.of(new NodeSubscript.SliceArg(dbl(0), null, false))), dbl(5));
-        assertThat(fmt.format(assignment)).isEqualTo("v[0] := 5");
+        assertThat(fmt.format(assignment)).isEqualTo("v[0] = 5");
     }
 
     @Test
@@ -416,7 +417,7 @@ class StringNodeFormatterTest {
         var assignment = new NodeElementAssignment("m",
                 List.of(List.of(new NodeSubscript.SliceArg(dbl(1), null, false),
                         new NodeSubscript.SliceArg(dbl(2), null, false))), dbl(9));
-        assertThat(fmt.format(assignment)).isEqualTo("m[1, 2] := 9");
+        assertThat(fmt.format(assignment)).isEqualTo("m[1, 2] = 9");
     }
 
     @Test
@@ -424,7 +425,7 @@ class StringNodeFormatterTest {
         var assignment = new NodeElementAssignment("m",
                 List.of(List.of(new NodeSubscript.SliceArg(dbl(0), null, false)),
                         List.of(new NodeSubscript.SliceArg(dbl(1), null, false))), dbl(9));
-        assertThat(fmt.format(assignment)).isEqualTo("m[0][1] := 9");
+        assertThat(fmt.format(assignment)).isEqualTo("m[0][1] = 9");
     }
 
     // ==================== NodeFunctionDef ====================
@@ -433,7 +434,48 @@ class StringNodeFormatterTest {
     void formatsFunctionDef() {
         var def = new NodeFunctionDef("f", List.of("x", "y"),
                 binary(TokenType.PLUS, var("x"), var("y")));
-        assertThat(fmt.format(def)).isEqualTo("f(x, y) := (x + y)");
+        assertThat(fmt.format(def)).isEqualTo("f(x, y) = (x + y)");
+    }
+
+    // ==================== Statements Inside Expressions ====================
+
+    @Test
+    void assignmentInsideAnExpressionIsParenthesised() {
+        var vector = new NodeVector(new Node[]{new NodeAssignment("a", dbl(1)), var("a")});
+        assertThat(fmt.format(vector)).isEqualTo("{(a = 1), a}");
+    }
+
+    @Test
+    void sequenceInsideADefinitionIsParenthesised() {
+        var body = new NodeSequence(List.of(new NodeAssignment("t", var("y")), var("t")));
+        var def = new NodeFunctionDef("f", List.of("y"), body);
+        assertThat(fmt.format(def)).isEqualTo("f(y) = (t = y; t)");
+    }
+
+    @Test
+    void assignedValueThatIsAnAssignmentIsParenthesised() {
+        var assignment = new NodeAssignment("x", new NodeAssignment("y", dbl(3)));
+        assertThat(fmt.format(assignment)).isEqualTo("x = (y = 3)");
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "{a := 1, a + 1}",
+            "sum(a := 3, a)",
+            "g(x) = if(y := x, y, 0)",
+            "f(y) = (t = y + 1; t * 2)",
+            "(x = 2) + x",
+            "x = (y := 3)",
+            "f = i -> v[i] := 99",
+            "{y for x in 1..3 if (y := x * 2) > 2}",
+            "x = 5; y = 10; x + y"
+    })
+    void formattedStatementsParseBackToTheSameText(String input) {
+        MathEngine engine = MathEngine.create();
+        String once = fmt.format(engine.compile(input).getAst());
+        String twice = fmt.format(engine.compile(once).getAst());
+
+        assertThat(twice).isEqualTo(once);
     }
 
     // ==================== NodeSubscript ====================
@@ -497,7 +539,7 @@ class StringNodeFormatterTest {
                 new NodeAssignment("y", dbl(10)),
                 binary(TokenType.PLUS, var("x"), var("y"))
         ));
-        assertThat(fmt.format(seq)).isEqualTo("x := 5; y := 10; (x + y)");
+        assertThat(fmt.format(seq)).isEqualTo("x = 5; y = 10; (x + y)");
     }
 
     // ==================== NodeComprehension ====================
@@ -605,13 +647,13 @@ class StringNodeFormatterTest {
 
     @Test
     void formatsSequenceWithFunctionDefAndCall() {
-        // f(x) := x^2; f(5)
+        // f(x) = x^2; f(5)
         var funcDef = new NodeFunctionDef("f", List.of("x"),
                 binary(TokenType.POWER, var("x"), dbl(2)));
         var funcCall = new NodeCall(var("f"), List.of(dbl(5)));
         var seq = new NodeSequence(List.of(funcDef, funcCall));
 
-        assertThat(fmt.format(seq)).isEqualTo("f(x) := (x ^ 2); f(5)");
+        assertThat(fmt.format(seq)).isEqualTo("f(x) = (x ^ 2); f(5)");
     }
 
     // ==================== Test Helpers ====================

@@ -15,7 +15,7 @@ package uk.co.ryanharrison.mathengine.parser.ast;
  * 100@fahrenheit        // 100 fahrenheit (explicit unit reference)
  *
  * // Compare with ambiguous case:
- * f := 5;              // Variable 'f'
+ * f = 5;               // Variable 'f'
  * f                    // Returns 5 (variable takes priority)
  * @f // Returns fahrenheit unit (explicit override)
  * }</pre>

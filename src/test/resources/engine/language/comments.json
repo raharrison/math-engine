@@ -39,14 +39,14 @@
         },
         {
             "id": "comment_line_in_sequence",
-            "input": "x := 5; // set x\nx * 2",
+            "input": "x = 5; // set x\nx * 2",
             "expected": 10,
             "expectedType": "NodeRational",
             "notes": "Annotating one statement of a multi-statement script"
         },
         {
             "id": "comment_line_before_separator",
-            "input": "f(x) := x^2 // square\n; f(4)",
+            "input": "f(x) = x^2 // square\n; f(4)",
             "expected": 16,
             "expectedType": "NodeRational",
             "notes": "The ';' on the next line still separates the statements"

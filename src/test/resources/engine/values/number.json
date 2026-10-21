@@ -270,14 +270,14 @@
         },
         {
             "id": "base_prefix_needs_a_digit",
-            "input": "x := 3; 0x",
+            "input": "x = 3; 0x",
             "expected": 0,
             "expectedType": "NodeRational",
             "notes": "'0x' with nothing after it is a zero times a variable named x, not a literal"
         },
         {
             "id": "base_ends_at_a_letter",
-            "input": "x := 3; 0b10x",
+            "input": "x = 3; 0b10x",
             "expected": 6,
             "expectedType": "NodeRational",
             "notes": "A letter that is not a digit of the base ends the literal, so this is binary two times x"

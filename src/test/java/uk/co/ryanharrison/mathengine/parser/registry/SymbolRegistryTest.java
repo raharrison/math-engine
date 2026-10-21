@@ -47,7 +47,8 @@ class SymbolRegistryTest {
             "xor, XOR",
             "of, OF",
             "@, AT",
-            ":=, ASSIGN",
+            "=, ASSIGN",
+            ":=, INLINE_ASSIGN",
             "->, LAMBDA",
             ".., RANGE",
             "!, FACTORIAL",
@@ -116,7 +117,8 @@ class SymbolRegistryTest {
             "XOR, 'xor'",
             "OF, 'of'",
             "AT, '@'",
-            "ASSIGN, ':='",
+            "ASSIGN, '='",
+            "INLINE_ASSIGN, ':='",
             "LAMBDA, '->'",
             "RANGE, '..'",
             "FACTORIAL, '!'",
@@ -151,6 +153,7 @@ class SymbolRegistryTest {
             "OF, '\"of\"'",
             "AT, '@'",
             "ASSIGN, '='",
+            "INLINE_ASSIGN, ':='",
             "LAMBDA, '->'",
             "RANGE, '..'",
             "FACTORIAL, '!'",
@@ -168,6 +171,7 @@ class SymbolRegistryTest {
     @ParameterizedTest
     @CsvSource({
             "ASSIGN, 1",
+            "INLINE_ASSIGN, 1",
             "LAMBDA, 1",
             "OR, 2",
             "XOR, 3",
@@ -220,6 +224,8 @@ class SymbolRegistryTest {
 
         // Not binary operators
         assertThat(registry.isBinaryOperator(TokenType.FACTORIAL)).isFalse();
+        assertThat(registry.isBinaryOperator(TokenType.ASSIGN)).isFalse();
+        assertThat(registry.isBinaryOperator(TokenType.INLINE_ASSIGN)).isFalse();
         assertThat(registry.isBinaryOperator(TokenType.LPAREN)).isFalse();
         assertThat(registry.isBinaryOperator(TokenType.INTEGER)).isFalse();
     }
@@ -344,6 +350,7 @@ class SymbolRegistryTest {
         assertThat(registry.getMetadata(TokenType.OF)).isPresent();
         assertThat(registry.getMetadata(TokenType.AT)).isPresent();
         assertThat(registry.getMetadata(TokenType.ASSIGN)).isPresent();
+        assertThat(registry.getMetadata(TokenType.INLINE_ASSIGN)).isPresent();
         assertThat(registry.getMetadata(TokenType.LAMBDA)).isPresent();
         assertThat(registry.getMetadata(TokenType.RANGE)).isPresent();
 

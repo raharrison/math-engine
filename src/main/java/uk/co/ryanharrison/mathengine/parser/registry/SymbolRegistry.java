@@ -262,14 +262,23 @@ public final class SymbolRegistry {
                 .isBinaryOperator(true)
                 .build());
 
+        // Assignment is parsed ahead of the binary loop, so it is not a binary operator here
         metadata.put(TokenType.ASSIGN, SymbolMetadata.builder()
                 .tokenType(TokenType.ASSIGN)
-                .inputSymbol(":=")
+                .inputSymbol("=")
                 .displayName("assignment")
-                .stringFormat(":=")
+                .stringFormat("=")
                 .asciiMathFormat("=")
                 .precedence(1)
-                .isBinaryOperator(true)
+                .build());
+
+        metadata.put(TokenType.INLINE_ASSIGN, SymbolMetadata.builder()
+                .tokenType(TokenType.INLINE_ASSIGN)
+                .inputSymbol(":=")
+                .displayName("inline assignment")
+                .stringFormat(":=")
+                .asciiMathFormat(":=")
+                .precedence(1)
                 .build());
 
         metadata.put(TokenType.LAMBDA, SymbolMetadata.builder()

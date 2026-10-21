@@ -69,8 +69,9 @@ class SpecCoverageTest {
     @Test
     @DisplayName("every operator symbol is exercised by at least one case")
     void everyOperatorIsExercised() {
+        // A plain '=' is looked for with its spaces, since every '==' would contain it
         List<String> symbols = List.of(
-                "+", "-", "*", "/", "^", "mod", "of", "@", "..", ":=", "->",
+                "+", "-", "*", "/", "^", "mod", "of", "@", "..", " = ", ":=", "->",
                 "==", "!=", "<", ">", "<=", ">=", "and", "or", "xor", "not",
                 "!", "!!", "%", "in");
 

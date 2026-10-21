@@ -62,13 +62,38 @@ public final class StringNodeFormatter implements NodeFormatter {
         return new StringNodeFormatter(decimalPlaces);
     }
 
+    /**
+     * Formats a node standing as a statement, which is how the whole input is read.
+     * <p>
+     * An assignment, a definition or a sequence prints bare here and in parentheses
+     * anywhere else, since only a statement may hold a bare {@code =}: so
+     * {@code {a := 1, a + 1}} prints as {@code {(a = 1), (a + 1)}}, which parses back.
+     */
     @Override
     public String format(Node node) {
+        return formatStatement(node);
+    }
+
+    private String formatStatement(Node node) {
+        String assign = " " + registry.getStringFormat(TokenType.ASSIGN) + " ";
+        return switch (node) {
+            case NodeAssignment n -> n.getIdentifier() + assign + formatExpression(n.getValue());
+            case NodeElementAssignment n -> n.getIdentifier()
+                    + FormatUtils.formatIndexGroups(n.getIndexGroups(), this::formatExpression)
+                    + assign + formatExpression(n.getValue());
+            case NodeFunctionDef n -> n.getName() + "(" + String.join(", ", n.getParameters()) + ")"
+                    + assign + formatExpression(n.getBody());
+            case NodeSequence n -> FormatUtils.formatSequence(n, this::formatStatement);
+            default -> formatExpression(node);
+        };
+    }
+
+    private String formatExpression(Node node) {
         return switch (node) {
             // --- NodeNumber subtypes ---
             case NodeDouble n -> formatDouble(n.getValue());
             case NodeRational n -> formatRational(n);
-            case NodePercent n -> format(n.getPercent()) + "%";
+            case NodePercent n -> formatExpression(n.getPercent()) + "%";
             case NodeBoolean n -> String.valueOf(n.getValue());
 
             // --- Other NodeConstant subtypes ---
@@ -85,14 +110,13 @@ public final class StringNodeFormatter implements NodeFormatter {
             case NodeUnary n -> formatUnary(n);
             case NodeCall n -> formatCall(n);
             case NodeVariable n -> n.getName();
-            case NodeAssignment n -> n.getIdentifier() + " := " + format(n.getValue());
-            case NodeElementAssignment n -> n.getIdentifier() +
-                    FormatUtils.formatIndexGroups(n.getIndexGroups(), this) + " := " + format(n.getValue());
-            case NodeFunctionDef n -> formatFunctionDef(n);
-            case NodeSubscript n -> FormatUtils.formatSubscript(n, this);
+            case NodeAssignment n -> "(" + formatStatement(n) + ")";
+            case NodeElementAssignment n -> "(" + formatStatement(n) + ")";
+            case NodeFunctionDef n -> "(" + formatStatement(n) + ")";
+            case NodeSubscript n -> FormatUtils.formatSubscript(n, this::formatExpression);
             case NodeRangeExpression n -> formatRangeExpr(n);
-            case NodeUnitConversion n -> format(n.getValue()) + " in " + n.getTargetUnit();
-            case NodeSequence n -> FormatUtils.formatSequence(n, this);
+            case NodeUnitConversion n -> formatExpression(n.getValue()) + " in " + n.getTargetUnit();
+            case NodeSequence n -> "(" + formatStatement(n) + ")";
             case NodeComprehension n -> formatComprehension(n);
             case NodeUnitRef n -> "@" + n.getUnitName();
             case NodeVarRef n -> "$" + n.getVarName();
@@ -122,7 +146,7 @@ public final class StringNodeFormatter implements NodeFormatter {
 
     private String formatVector(NodeVector vector) {
         var sb = new StringBuilder("{");
-        FormatUtils.appendJoined(sb, java.util.List.of(vector.getElements()), this);
+        FormatUtils.appendJoined(sb, java.util.List.of(vector.getElements()), this::formatExpression);
         sb.append("}");
         return sb.toString();
     }
@@ -134,7 +158,7 @@ public final class StringNodeFormatter implements NodeFormatter {
             if (i > 0) sb.append("; ");
             for (int j = 0; j < elements[i].length; j++) {
                 if (j > 0) sb.append(", ");
-                sb.append(format(elements[i][j]));
+                sb.append(formatExpression(elements[i][j]));
             }
         }
         sb.append("]");
@@ -142,23 +166,23 @@ public final class StringNodeFormatter implements NodeFormatter {
     }
 
     private String formatUnit(NodeUnit unit) {
-        String formattedValue = format(unit.getMagnitude());
+        String formattedValue = formatExpression(unit.getMagnitude());
         String unitName = unit.getUnit().getDisplayName(unit.getValue());
         return formattedValue + " " + unitName;
     }
 
     private String formatRange(NodeRange range) {
-        String start = format(range.getStart());
-        String end = format(range.getEnd());
+        String start = formatExpression(range.getStart());
+        String end = formatExpression(range.getEnd());
         if (range.getStep().doubleValue() == 1.0) {
             return start + ".." + end;
         }
-        return start + ".." + end + " step " + format(range.getStep());
+        return start + ".." + end + " step " + formatExpression(range.getStep());
     }
 
     private String formatLambda(NodeLambda lambda) {
         var params = lambda.getParameters();
-        String body = format(lambda.getBody());
+        String body = formatExpression(lambda.getBody());
         if (params.size() == 1) {
             return params.getFirst() + " -> " + body;
         }
@@ -180,14 +204,14 @@ public final class StringNodeFormatter implements NodeFormatter {
      * A supplied multiplication prints as the juxtaposition it was written as.
      */
     private String formatImplied(NodeBinary binary) {
-        return format(binary.getLeft()) + " " + format(binary.getRight());
+        return formatExpression(binary.getLeft()) + " " + formatExpression(binary.getRight());
     }
 
     /**
      * Parenthesises a juxtaposition that would otherwise bind differently.
      */
     private String operand(Node node, boolean bindsTighter) {
-        String text = format(node);
+        String text = formatExpression(node);
         boolean implied = node instanceof NodeBinary binary && binary.getOperator().implicit();
         return implied && bindsTighter ? "(" + text + ")" : text;
     }
@@ -206,34 +230,29 @@ public final class StringNodeFormatter implements NodeFormatter {
         String func = operand(call.getFunction(), true);
         var sb = new StringBuilder(func);
         sb.append("(");
-        FormatUtils.appendJoined(sb, call.getArguments(), this);
+        FormatUtils.appendJoined(sb, call.getArguments(), this::formatExpression);
         sb.append(")");
         return sb.toString();
     }
 
-    private String formatFunctionDef(NodeFunctionDef def) {
-        return def.getName() + "(" + String.join(", ", def.getParameters())
-                + ") := " + format(def.getBody());
-    }
-
     private String formatRangeExpr(NodeRangeExpression range) {
-        String start = format(range.getStart());
-        String end = format(range.getEnd());
+        String start = formatExpression(range.getStart());
+        String end = formatExpression(range.getEnd());
         if (range.hasStep()) {
-            return start + ".." + end + " step " + format(range.getStep());
+            return start + ".." + end + " step " + formatExpression(range.getStep());
         }
         return start + ".." + end;
     }
 
     private String formatComprehension(NodeComprehension comp) {
         var sb = new StringBuilder("{");
-        sb.append(format(comp.getExpression()));
+        sb.append(formatExpression(comp.getExpression()));
         for (var iter : comp.getIterators()) {
             sb.append(" for ").append(iter.variable())
-                    .append(" in ").append(format(iter.iterable()));
+                    .append(" in ").append(formatExpression(iter.iterable()));
         }
         if (comp.hasCondition()) {
-            sb.append(" if ").append(format(comp.getCondition()));
+            sb.append(" if ").append(formatExpression(comp.getCondition()));
         }
         sb.append("}");
         return sb.toString();

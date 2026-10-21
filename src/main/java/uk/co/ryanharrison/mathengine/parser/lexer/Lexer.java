@@ -22,7 +22,7 @@ import java.util.Set;
  *     <li>Position tracking for error reporting</li>
  *     <li>Support for implicit multiplication (2x, 2(x+1))</li>
  *     <li>Compound identifier splitting (pi2e → pi * 2 * e)</li>
- *     <li>Assignment target protection (sumrange := 100 works)</li>
+ *     <li>Assignment target protection (sumrange = 100 works)</li>
  * </ul>
  *
  * <h2>Usage:</h2>
@@ -86,7 +86,23 @@ public final class Lexer {
      * @throws LexerException if a lexical error occurs
      */
     public List<Token> tokenize(String source) {
+        return tokenize(source, Set.of());
+    }
+
+    /**
+     * Tokenizes the input, leaving the given user-defined names whole.
+     * <p>
+     * A name the user has defined is never split, so after {@code pi2 = 3} a later
+     * {@code pi2} reads the variable rather than {@code pi * 2}. Names assigned earlier
+     * in the same input count too.
+     *
+     * @param source       the source code to tokenize
+     * @param definedNames names of the variables and functions already defined
+     * @return list of tokens ready for parsing
+     * @throws LexerException if a lexical error occurs
+     */
+    public List<Token> tokenize(String source, Set<String> definedNames) {
         List<Token> rawTokens = tokenScanner.scan(source);
-        return tokenProcessor.process(rawTokens);
+        return tokenProcessor.process(rawTokens, definedNames);
     }
 }

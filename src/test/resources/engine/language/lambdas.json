@@ -25,14 +25,14 @@
         },
         {
             "id": "lambda_004",
-            "input": "f := (x -> x * 3); f(7)",
+            "input": "f = (x -> x * 3); f(7)",
             "expected": 21.0,
             "expectedType": "NodeRational",
             "notes": "Lambda assigned to variable"
         },
         {
             "id": "lambda_005",
-            "input": "double := (x -> x * 2); triple := (x -> x * 3); double(5) + triple(5)",
+            "input": "double = (x -> x * 2); triple = (x -> x * 3); double(5) + triple(5)",
             "expected": 25.0,
             "expectedType": "NodeRational",
             "notes": "Multiple lambda assignments"
@@ -53,7 +53,7 @@
         },
         {
             "id": "lambda_008",
-            "input": "apply := ((f, x) -> f(x)); square := (n -> n^2); apply(square, 4)",
+            "input": "apply = ((f, x) -> f(x)); square = (n -> n^2); apply(square, 4)",
             "expected": 16.0,
             "expectedType": "NodeRational",
             "notes": "Higher-order function with lambda"
@@ -67,7 +67,7 @@
         },
         {
             "id": "lambda_010",
-            "input": "add := (x -> (y -> x + y)); add5 := add(5); add5(10)",
+            "input": "add = (x -> (y -> x + y)); add5 = add(5); add5(10)",
             "expected": 15.0,
             "expectedType": "NodeRational",
             "notes": "Partial application with nested lambdas"
@@ -94,7 +94,7 @@
         },
         {
             "id": "lambda_013",
-            "input": "const := (x -> (y -> x)); const(5)(99)",
+            "input": "const = (x -> (y -> x)); const(5)(99)",
             "expected": 5.0,
             "expectedType": "NodeRational",
             "notes": "Constant combinator (K combinator)"
@@ -108,14 +108,14 @@
         },
         {
             "id": "lambda_015",
-            "input": "compose := ((f, g) -> (x -> f(g(x)))); inc := (n -> n + 1); double := (n -> n * 2); composed := compose(inc, double); composed(5)",
+            "input": "compose = ((f, g) -> (x -> f(g(x)))); inc = (n -> n + 1); double = (n -> n * 2); composed = compose(inc, double); composed(5)",
             "expected": 11.0,
             "expectedType": "NodeRational",
             "notes": "Function composition with lambdas"
         },
         {
             "id": "lambda_016",
-            "input": "f := (x -> {x, x*2, x*3}); f(5)",
+            "input": "f = (x -> {x, x*2, x*3}); f(5)",
             "expected": [
                 5,
                 10,
@@ -126,84 +126,84 @@
         },
         {
             "id": "lambda_017",
-            "input": "sumVec := (v -> v[0] + v[1] + v[2]); sumVec({1, 2, 3})",
+            "input": "sumVec = (v -> v[0] + v[1] + v[2]); sumVec({1, 2, 3})",
             "expected": 6.0,
             "expectedType": "NodeRational",
             "notes": "Lambda accepting vector argument"
         },
         {
             "id": "lambda_018",
-            "input": "a := 10; f := (x -> x + a); f(5)",
+            "input": "a = 10; f = (x -> x + a); f(5)",
             "expected": 15.0,
             "expectedType": "NodeRational",
             "notes": "Lambda closure over global variable"
         },
         {
             "id": "lambda_019",
-            "input": "x := 100; f := (x -> x^2); f(5)",
+            "input": "x = 100; f = (x -> x^2); f(5)",
             "expected": 25.0,
             "expectedType": "NodeRational",
             "notes": "Lambda parameter shadows global variable"
         },
         {
             "id": "lambda_020",
-            "input": "neg := (x -> -x); neg(5)",
+            "input": "neg = (x -> -x); neg(5)",
             "expected": -5.0,
             "expectedType": "NodeRational",
             "notes": "Lambda with unary operator"
         },
         {
             "id": "lambda_021",
-            "input": "f := (x -> 2*x + 3); f(5)",
+            "input": "f = (x -> 2*x + 3); f(5)",
             "expected": 13.0,
             "expectedType": "NodeRational",
             "notes": "Lambda with multiple operations"
         },
         {
             "id": "lambda_022",
-            "input": "f := (x -> sin(x)); f(0)",
+            "input": "f = (x -> sin(x)); f(0)",
             "expected": 0.0,
             "expectedType": "NodeDouble",
             "notes": "Lambda with builtin function"
         },
         {
             "id": "lambda_023",
-            "input": "f := (x -> x*2); g := (x -> x+1); f(g(f(3)))",
+            "input": "f = (x -> x*2); g = (x -> x+1); f(g(f(3)))",
             "expected": 14.0,
             "expectedType": "NodeRational",
             "notes": "Nested lambda calls"
         },
         {
             "id": "lambda_024",
-            "input": "f := (x -> x*2); f(2 + 3)",
+            "input": "f = (x -> x*2); f(2 + 3)",
             "expected": 10.0,
             "expectedType": "NodeRational",
             "notes": "Lambda arguments evaluated before call"
         },
         {
             "id": "lambda_025",
-            "input": "f := (x -> (x + 1) * (x - 1)); f(5)",
+            "input": "f = (x -> (x + 1) * (x - 1)); f(5)",
             "expected": 24.0,
             "expectedType": "NodeRational",
             "notes": "Lambda with complex expression"
         },
         {
             "id": "lambda_basic_001",
-            "input": "f := x -> x + 1; f(5)",
+            "input": "f = x -> x + 1; f(5)",
             "expected": 6,
             "expectedType": "NodeRational",
             "notes": "Basic lambda"
         },
         {
             "id": "lambda_basic_002",
-            "input": "f := x -> x * 2; f(10)",
+            "input": "f = x -> x * 2; f(10)",
             "expected": 20,
             "expectedType": "NodeRational",
             "notes": "Lambda multiplication"
         },
         {
             "id": "lambda_basic_003",
-            "input": "f := x -> x^2; f(4)",
+            "input": "f = x -> x^2; f(4)",
             "expected": 16,
             "expectedType": "NodeRational",
             "notes": "Lambda power"
@@ -224,42 +224,42 @@
         },
         {
             "id": "lambda_multiarg_001",
-            "input": "f := (x, y) -> x + y; f(3, 4)",
+            "input": "f = (x, y) -> x + y; f(3, 4)",
             "expected": 7,
             "expectedType": "NodeRational",
             "notes": "Two argument lambda"
         },
         {
             "id": "lambda_multiarg_002",
-            "input": "f := (a, b, c) -> a + b + c; f(1, 2, 3)",
+            "input": "f = (a, b, c) -> a + b + c; f(1, 2, 3)",
             "expected": 6,
             "expectedType": "NodeRational",
             "notes": "Three argument lambda"
         },
         {
             "id": "lambda_multiarg_003",
-            "input": "f := (x, y) -> x * y; f(5, 6)",
+            "input": "f = (x, y) -> x * y; f(5, 6)",
             "expected": 30,
             "expectedType": "NodeRational",
             "notes": "Product lambda"
         },
         {
             "id": "lambda_nested_001",
-            "input": "f := x -> x + 1; g := x -> f(x) * 2; g(5)",
+            "input": "f = x -> x + 1; g = x -> f(x) * 2; g(5)",
             "expected": 12,
             "expectedType": "NodeRational",
             "notes": "Lambda calling lambda"
         },
         {
             "id": "lambda_predicate_001",
-            "input": "isPositive := x -> x > 0; isPositive(5)",
+            "input": "isPositive = x -> x > 0; isPositive(5)",
             "expected": true,
             "expectedType": "NodeBoolean",
             "notes": "Predicate lambda"
         },
         {
             "id": "lambda_predicate_002",
-            "input": "isPositive := x -> x > 0; isPositive(-3)",
+            "input": "isPositive = x -> x > 0; isPositive(-3)",
             "expected": false,
             "expectedType": "NodeBoolean",
             "notes": "Predicate lambda false"

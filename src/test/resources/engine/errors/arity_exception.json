@@ -18,35 +18,35 @@
         },
         {
             "id": "err_eval_009",
-            "input": "f(x) := x; f()",
+            "input": "f(x) = x; f()",
             "expectError": true,
             "expectedErrorType": "ArityException",
             "notes": "User function called with wrong number of arguments"
         },
         {
             "id": "function_arity_001",
-            "input": "f := (x, y) -> x + y; f(5)",
+            "input": "f = (x, y) -> x + y; f(5)",
             "expectError": true,
             "expectedErrorType": "ArityException",
             "notes": "Function expects 2 args, got 1"
         },
         {
             "id": "function_arity_002",
-            "input": "f := (x) -> x * 2; f(1, 2, 3)",
+            "input": "f = (x) -> x * 2; f(1, 2, 3)",
             "expectError": true,
             "expectedErrorType": "ArityException",
             "notes": "Function expects 1 arg, got 3"
         },
         {
             "id": "lambda_err_001",
-            "input": "f := (x -> x^2); f(1, 2)",
+            "input": "f = (x -> x^2); f(1, 2)",
             "expectError": true,
             "expectedErrorType": "ArityException",
             "notes": "Lambda called with too many arguments"
         },
         {
             "id": "lambda_err_002",
-            "input": "add := (a, b) -> a + b; add(5)",
+            "input": "add = (a, b) -> a + b; add(5)",
             "expectError": true,
             "expectedErrorType": "ArityException",
             "notes": "Lambda called with too few arguments"
@@ -69,7 +69,7 @@
         },
         {
             "id": "user_function_wrong_arity",
-            "input": "f(x, y) := x + y; f(1)",
+            "input": "f(x, y) = x + y; f(1)",
             "expectError": true,
             "expectedErrorType": "ArityException",
             "notes": "A user-defined function is held to its parameter list too"

@@ -11,7 +11,7 @@
         },
         {
             "id": "element_assign_copy_leaves_other_name_alone",
-            "input": "x := {1, 2, 3}; y := x; x[0] := 9; y",
+            "input": "x = {1, 2, 3}; y = x; x[0] = 9; y",
             "expected": [
                 1,
                 2,
@@ -22,7 +22,7 @@
         },
         {
             "id": "element_assign_reaches_outer_scope",
-            "input": "v := {1, 2, 3}; f(i) := (v[i] := 99); f(0); v",
+            "input": "v = {1, 2, 3}; f(i) = (v[i] = 99); f(0); v",
             "expected": [
                 99,
                 2,
@@ -33,7 +33,7 @@
         },
         {
             "id": "element_assign_string_copy_leaves_other_name_alone",
-            "input": "s := \"ab\"; t := s; s[0] := \"X\"; t",
+            "input": "s = \"ab\"; t = s; s[0] = \"X\"; t",
             "expected": "ab",
             "expectedType": "NodeString",
             "notes": "The same holds for a string, which stays immutable"
@@ -58,126 +58,126 @@
         },
         {
             "id": "parameter_leaves_global_alone",
-            "input": "f(x) := x * 2; x := 5; f(3); x",
+            "input": "f(x) = x * 2; x = 5; f(3); x",
             "expected": 5,
             "expectedType": "NodeRational",
             "notes": "A parameter shadows a global for the length of the call and then gives it back"
         },
         {
             "id": "parameter_shadow_then_global",
-            "input": "f(x) := x * 2; x := 5; f(3) + x",
+            "input": "f(x) = x * 2; x = 5; f(3) + x",
             "expected": 11,
             "expectedType": "NodeRational",
             "notes": "The global is still there in the same expression as the call"
         },
         {
             "id": "recursive_parameter_restores_global",
-            "input": "n := 5; fact(n) := if(n <= 1, 1, n * fact(n - 1)); fact(5); n",
+            "input": "n = 5; fact(n) = if(n <= 1, 1, n * fact(n - 1)); fact(5); n",
             "expected": 5,
             "expectedType": "NodeRational",
             "notes": "Recursion binds the parameter once per call without disturbing the global"
         },
         {
             "id": "scope_001_scoping",
-            "input": "x := 10; f(x) := x + 5; f(3)",
+            "input": "x = 10; f(x) = x + 5; f(3)",
             "expected": 8.0,
             "expectedType": "NodeRational",
             "notes": "Parameter shadows global variable"
         },
         {
             "id": "scope_002",
-            "input": "x := 10; f(y) := x + y; f(5)",
+            "input": "x = 10; f(y) = x + y; f(5)",
             "expected": 15.0,
             "expectedType": "NodeRational",
             "notes": "Function uses global variable"
         },
         {
             "id": "scope_003",
-            "input": "x := 5; f(y) := x + y; x := 10; f(3)",
+            "input": "x = 5; f(y) = x + y; x = 10; f(3)",
             "expected": 13.0,
             "expectedType": "NodeRational",
             "notes": "Regular function uses dynamic scoping - looks up x at call time"
         },
         {
             "id": "scope_004",
-            "input": "makeCounter(n) := (x -> n + x); counter := makeCounter(100); counter(5)",
+            "input": "makeCounter(n) = (x -> n + x); counter = makeCounter(100); counter(5)",
             "expected": 105.0,
             "expectedType": "NodeRational",
             "notes": "Closure captures parameter"
         },
         {
             "id": "scope_005",
-            "input": "a := 1; b := 2; f(a) := a + b; f(10)",
+            "input": "a = 1; b = 2; f(a) = a + b; f(10)",
             "expected": 12.0,
             "expectedType": "NodeRational",
             "notes": "Parameter shadows global 'a', uses global 'b'"
         },
         {
             "id": "scope_006",
-            "input": "x := 100; f(y) := (z -> x + y + z); g := f(10); g(1)",
+            "input": "x = 100; f(y) = (z -> x + y + z); g = f(10); g(1)",
             "expected": 111.0,
             "expectedType": "NodeRational",
             "notes": "Nested closure captures multiple scopes"
         },
         {
             "id": "scope_007",
-            "input": "x := 5; y := 10; f(x, y) := x * y; f(2, 3)",
+            "input": "x = 5; y = 10; f(x, y) = x * y; f(2, 3)",
             "expected": 6.0,
             "expectedType": "NodeRational",
             "notes": "Both parameters shadow globals"
         },
         {
             "id": "scope_008",
-            "input": "outer := 100; makeFunc(x) := (y -> outer + x + y); func := makeFunc(10); outer := 200; func(5)",
+            "input": "outer = 100; makeFunc(x) = (y -> outer + x + y); func = makeFunc(10); outer = 200; func(5)",
             "expected": 115.0,
             "expectedType": "NodeRational",
             "notes": "Closure captures at definition, not call time"
         },
         {
             "id": "scope_009",
-            "input": "f(x) := g(x) + 1; g(x) := x * 2; f(5)",
+            "input": "f(x) = g(x) + 1; g(x) = x * 2; f(5)",
             "expected": 11.0,
             "expectedType": "NodeRational",
             "notes": "Reference to function defined later on"
         },
         {
             "id": "scope_010",
-            "input": "a := 10; f(x) := a + x; a := 20; b := f(5); a := 30; b",
+            "input": "a = 10; f(x) = a + x; a = 20; b = f(5); a = 30; b",
             "expected": 25.0,
             "expectedType": "NodeRational",
             "notes": "Regular function uses dynamic scoping - a=20 when f(5) is called"
         },
         {
             "id": "scope_011",
-            "input": "x := 1; f() := x; x := 2; f()",
+            "input": "x = 1; f() = x; x = 2; f()",
             "expected": 2.0,
             "expectedType": "NodeRational",
             "notes": "Regular function uses dynamic scoping - uses x at call time"
         },
         {
             "id": "scope_012",
-            "input": "makeAdders() := (a := (x -> x + 1); b := (x -> x + 2); {a, b}); funcs := makeAdders(); funcs[0](10)",
+            "input": "makeAdders() = (a = (x -> x + 1); b = (x -> x + 2); {a, b}); funcs = makeAdders(); funcs[0](10)",
             "expected": 11.0,
             "expectedType": "NodeRational",
             "notes": "Return multiple functions in vector"
         },
         {
             "id": "scope_013",
-            "input": "n := 5; fib(n) := if(n <= 1, n, fib(n-1) + fib(n-2)); fib(n)",
+            "input": "n = 5; fib(n) = if(n <= 1, n, fib(n-1) + fib(n-2)); fib(n)",
             "expected": 5.0,
             "expectedType": "NodeRational",
             "notes": "Recursive function parameter shadows global"
         },
         {
             "id": "scope_014",
-            "input": "x := 99; f(y) := (x := y + 1; x * 2); f(5)",
+            "input": "x = 99; f(y) = (x = y + 1; x * 2); f(5)",
             "expected": 12.0,
             "expectedType": "NodeRational",
             "notes": "Local assignment in function body"
         },
         {
             "id": "scope_015",
-            "input": "counter := 0; inc() := (counter := counter + 1; counter); inc(); inc(); inc()",
+            "input": "counter = 0; inc() = (counter = counter + 1; counter); inc(); inc(); inc()",
             "expected": 3.0,
             "expectedType": "NodeRational",
             "notes": "Function modifies global state"

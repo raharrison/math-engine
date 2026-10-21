@@ -162,7 +162,7 @@
         },
         {
             "id": "user_functions_disabled_001",
-            "input": "f(x) := x^2; f(5)",
+            "input": "f(x) = x^2; f(5)",
             "expectError": true,
             "expectedErrorType": "EvaluationException",
             "config": {
@@ -171,8 +171,19 @@
             "notes": "User-defined functions produce error when disabled"
         },
         {
-            "id": "user_functions_enabled_001",
+            "id": "user_functions_disabled_inline_001",
             "input": "f(x) := x^2; f(5)",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "config": {
+                "userDefinedFunctionsEnabled": false
+            },
+            "expectedErrorMessage": "User-defined functions are disabled",
+            "notes": "The ':=' spelling of a definition is refused by the flag as '=' is"
+        },
+        {
+            "id": "user_functions_enabled_001",
+            "input": "f(x) = x^2; f(5)",
             "expected": 25.0,
             "expectedType": "NodeRational",
             "config": {
@@ -182,7 +193,7 @@
         },
         {
             "id": "user_functions_enabled_multi_param_001",
-            "input": "add(a, b) := a + b; add(3, 4)",
+            "input": "add(a, b) = a + b; add(3, 4)",
             "expected": 7.0,
             "expectedType": "NodeRational",
             "config": {
@@ -192,7 +203,7 @@
         },
         {
             "id": "user_variables_disabled_001",
-            "input": "x := 5; x",
+            "input": "x = 5; x",
             "expectError": true,
             "expectedErrorType": "EvaluationException",
             "config": {
@@ -201,8 +212,30 @@
             "notes": "User-defined variables produce error when disabled"
         },
         {
+            "id": "user_variables_disabled_element_001",
+            "input": "v[0] = 5",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "config": {
+                "userDefinedVariablesEnabled": false
+            },
+            "expectedErrorMessage": "User-defined variables are disabled",
+            "notes": "Writing an element is assignment as well"
+        },
+        {
+            "id": "user_variables_disabled_inline_001",
+            "input": "sum(x := 5, 1)",
+            "expectError": true,
+            "expectedErrorType": "EvaluationException",
+            "config": {
+                "userDefinedVariablesEnabled": false
+            },
+            "expectedErrorMessage": "User-defined variables are disabled",
+            "notes": "':=' inside an argument is the same assignment, so the flag refuses it too"
+        },
+        {
             "id": "user_variables_enabled_001",
-            "input": "x := 5; x",
+            "input": "x = 5; x",
             "expected": 5.0,
             "expectedType": "NodeRational",
             "config": {
@@ -212,7 +245,7 @@
         },
         {
             "id": "user_variables_enabled_expr_001",
-            "input": "y := 3 + 4; y * 2",
+            "input": "y = 3 + 4; y * 2",
             "expected": 14.0,
             "expectedType": "NodeRational",
             "config": {

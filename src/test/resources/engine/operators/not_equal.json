@@ -38,6 +38,13 @@
             "notes": "Negative not equal to positive"
         },
         {
+            "id": "neq_after_factorial_without_spaces",
+            "input": "2!=2",
+            "expected": false,
+            "expectedType": "NodeBoolean",
+            "notes": "'!=' is lexed before '!' and '=', so this is 2 != 2 and not 2! == 2, which would be true"
+        },
+        {
             "id": "not_equal_types_boolean_boolean",
             "input": "(true) != (true)",
             "expected": false,

@@ -142,7 +142,7 @@ public final class TokenScanner {
 
     private void scanColon() {
         if (scanner.match('=')) {
-            addToken(TokenType.ASSIGN, ":=");
+            addToken(TokenType.INLINE_ASSIGN, ":=");
         } else {
             addToken(TokenType.COLON, ":");
         }
@@ -162,7 +162,7 @@ public final class TokenScanner {
         if (scanner.match('=')) {
             addToken(TokenType.EQ, "==");
         } else {
-            throw scanner.error("Unexpected character '=' (use '==' for equality or ':=' for assignment)");
+            addToken(TokenType.ASSIGN, "=");
         }
     }
 

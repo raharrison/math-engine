@@ -1,45 +1,87 @@
 {
     "category": "Language: assignment",
-    "description": "Binding a name to a value with ':=', what the assignment itself evaluates to, and which names are legal.",
+    "description": "Binding a name to a value with '=', what the assignment itself evaluates to, which names are legal, and where ':=' assigns inside an expression.",
     "tests": [
         {
             "id": "assign_003",
-            "input": "x := 5; x + 3",
+            "input": "x = 5; x + 3",
             "expected": 8,
             "expectedType": "NodeRational",
             "notes": "Assignment and use in expression"
         },
         {
             "id": "assign_005",
-            "input": "x := 5; x := x + 1; x",
+            "input": "x = 5; x = x + 1; x",
             "expected": 6,
             "expectedType": "NodeRational",
             "notes": "Reassignment"
         },
         {
             "id": "assign_computed_001",
-            "input": "x := 5; y := x^2; z := y + x; z",
+            "input": "x = 5; y = x^2; z = y + x; z",
             "expected": 30,
             "expectedType": "NodeRational",
             "notes": "Chain of computed assignments"
         },
         {
+            "id": "assign_equals_negative_without_spaces",
+            "input": "x=-5; x + 1",
+            "expected": -4,
+            "expectedType": "NodeRational",
+            "notes": "'=-' is assignment followed by a negation, not an operator of its own"
+        },
+        {
+            "id": "assign_equals_without_spaces",
+            "input": "x=5; x*2",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "'=' needs no surrounding spaces"
+        },
+        {
             "id": "assign_expr_001",
-            "input": "x := 2 + 3",
+            "input": "x = 2 + 3",
             "expected": 5,
             "expectedType": "NodeRational",
             "notes": "Assign expression result"
         },
         {
             "id": "assign_expr_002",
-            "input": "x := 10; y := x * 2; y",
+            "input": "x = 10; y = x * 2; y",
             "expected": 20,
             "expectedType": "NodeRational",
             "notes": "Use variable in assignment expression"
         },
         {
+            "id": "assign_function_def_without_spaces",
+            "input": "f(x)=x^2;f(3)",
+            "expected": 9,
+            "expectedType": "NodeRational",
+            "notes": "A function definition needs no spaces either"
+        },
+        {
+            "id": "assign_in_group_is_a_statement",
+            "input": "(x = 2) + x",
+            "expected": 4,
+            "expectedType": "NodeRational",
+            "notes": "A parenthesised group is a statement position, so '=' assigns there and answers the value"
+        },
+        {
+            "id": "assign_in_group_opts_in_inside_argument",
+            "input": "if((x = 5) > 3, x, 0)",
+            "expected": 5,
+            "expectedType": "NodeRational",
+            "notes": "Parentheses are the deliberate way to assign with '=' inside an argument"
+        },
+        {
+            "id": "assign_in_group_sequence",
+            "input": "(a = 1; b = 2; a + b)",
+            "expected": 3,
+            "expectedType": "NodeRational",
+            "notes": "Every statement of a parenthesised sequence may assign with '='"
+        },
+        {
             "id": "assign_matrix_001",
-            "input": "m := [[1, 2], [3, 4]]; m",
+            "input": "m = [[1, 2], [3, 4]]; m",
             "expected": [
                 [
                     1,
@@ -54,8 +96,15 @@
             "notes": "Assign matrix"
         },
         {
+            "id": "assign_value_is_a_comparison",
+            "input": "b = 3 == 3; b",
+            "expected": true,
+            "expectedType": "NodeBoolean",
+            "notes": "'==' binds tighter than '=', so the comparison is the value assigned"
+        },
+        {
             "id": "assign_vector_001",
-            "input": "v := {1, 2, 3}; v",
+            "input": "v = {1, 2, 3}; v",
             "expected": [
                 1,
                 2,
@@ -66,49 +115,49 @@
         },
         {
             "id": "assign_vector_002",
-            "input": "v := {1, 2, 3}; v[1]",
+            "input": "v = {1, 2, 3}; v[1]",
             "expected": 2,
             "expectedType": "NodeRational",
             "notes": "Access element of vector variable"
         },
         {
             "id": "assign_vector_003",
-            "input": "v := {1, 2, 3}; sum(v)",
+            "input": "v = {1, 2, 3}; sum(v)",
             "expected": 6,
             "expectedType": "NodeRational",
             "notes": "Function on vector variable"
         },
         {
             "id": "assignment_001",
-            "input": "x := 5",
+            "input": "x = 5",
             "expected": 5,
             "expectedType": "NodeRational",
             "notes": "Simple assignment returns value"
         },
         {
             "id": "assignment_002",
-            "input": "foo := 5; 1/foo",
+            "input": "foo = 5; 1/foo",
             "expected": 0.2,
             "expectedType": "NodeRational",
             "notes": "Simple assignment and variable usage"
         },
         {
             "id": "complex_expr_001",
-            "input": "a := 2; b := 3; c := 4; a*b + c",
+            "input": "a = 2; b = 3; c = 4; a*b + c",
             "expected": 10,
             "expectedType": "NodeRational",
             "notes": "Multiple variables in expression"
         },
         {
             "id": "complex_expr_002",
-            "input": "r := 5; area := pi * r^2; area",
+            "input": "r = 5; area = pi * r^2; area",
             "expected": 78.53981633974483,
             "expectedType": "NodeDouble",
             "notes": "Circle area formula"
         },
         {
             "id": "element_matrix_chain_001",
-            "input": "m := [1, 2; 3, 4]; m[0][1] := 9; m",
+            "input": "m = [1, 2; 3, 4]; m[0][1] = 9; m",
             "expected": [
                 [
                     1,
@@ -124,7 +173,7 @@
         },
         {
             "id": "element_matrix_element_001",
-            "input": "m := [1, 2; 3, 4]; m[0, 1] := 9; m",
+            "input": "m = [1, 2; 3, 4]; m[0, 1] = 9; m",
             "expected": [
                 [
                     1,
@@ -140,7 +189,7 @@
         },
         {
             "id": "element_matrix_element_negative_001",
-            "input": "m := [1, 2; 3, 4]; m[-1, -1] := 0; m",
+            "input": "m = [1, 2; 3, 4]; m[-1, -1] = 0; m",
             "expected": [
                 [
                     1,
@@ -156,7 +205,7 @@
         },
         {
             "id": "element_matrix_row_001",
-            "input": "m := [1, 2; 3, 4]; m[0] := {7, 8}; m",
+            "input": "m = [1, 2; 3, 4]; m[0] = {7, 8}; m",
             "expected": [
                 [
                     7,
@@ -172,7 +221,7 @@
         },
         {
             "id": "element_nested_vector_001",
-            "input": "v := {{1, 2}, {3, 4}}; v[0][1] := 9; v",
+            "input": "v = {{1, 2}, {3, 4}}; v[0][1] = 9; v",
             "expected": [
                 [
                     1,
@@ -188,7 +237,7 @@
         },
         {
             "id": "element_nested_vector_deep_001",
-            "input": "a := {{{1, 2}}}; a[0][0][1] := 7; a",
+            "input": "a = {{{1, 2}}}; a[0][0][1] = 7; a",
             "expected": [
                 [
                     [
@@ -202,35 +251,35 @@
         },
         {
             "id": "element_returns_assigned_value_001",
-            "input": "v := {10, 20, 30}; v[0] := 5",
+            "input": "v = {10, 20, 30}; v[0] = 5",
             "expected": 5,
             "expectedType": "NodeRational",
-            "notes": "Answers the value assigned, not the rebuilt vector, as 'x := 5' does"
+            "notes": "Answers the value assigned, not the rebuilt vector, as 'x = 5' does"
         },
         {
             "id": "element_string_001",
-            "input": "s := \"hello\"; s[0] := \"H\"; s",
+            "input": "s = \"hello\"; s[0] = \"H\"; s",
             "expected": "Hello",
             "expectedType": "NodeString",
             "notes": "One character of a string is replaced"
         },
         {
             "id": "element_string_chain_on_character_001",
-            "input": "s := \"abc\"; s[0][0] := \"Z\"; s",
+            "input": "s = \"abc\"; s[0][0] = \"Z\"; s",
             "expected": "Zbc",
             "expectedType": "NodeString",
             "notes": "'s[0]' is itself a one-character string, so indexing it again lands on the same character"
         },
         {
             "id": "element_string_from_variable_001",
-            "input": "s := \"cat\"; c := \"C\"; s[0] := c; s",
+            "input": "s = \"cat\"; c = \"C\"; s[0] = c; s",
             "expected": "Cat",
             "expectedType": "NodeString",
             "notes": "The right side is any expression answering a single character"
         },
         {
             "id": "element_string_in_vector_001",
-            "input": "v := {\"ab\", \"cd\"}; v[0][0] := \"A\"; v",
+            "input": "v = {\"ab\", \"cd\"}; v[0][0] = \"A\"; v",
             "expected": [
                 "Ab",
                 "cd"
@@ -240,21 +289,21 @@
         },
         {
             "id": "element_string_negative_001",
-            "input": "s := \"hello\"; s[-1] := \"O\"; s",
+            "input": "s = \"hello\"; s[-1] = \"O\"; s",
             "expected": "hellO",
             "expectedType": "NodeString",
             "notes": "A negative string index counts from the end"
         },
         {
             "id": "element_string_returns_character_001",
-            "input": "s := \"abc\"; s[1] := \"B\"",
+            "input": "s = \"abc\"; s[1] = \"B\"",
             "expected": "B",
             "expectedType": "NodeString",
             "notes": "The value is the character assigned, not the whole string"
         },
         {
             "id": "element_value_keeps_its_type_001",
-            "input": "v := {1, 2, 3}; v[0] := 5 m; v",
+            "input": "v = {1, 2, 3}; v[0] = 5 m; v",
             "expected": [
                 "5 meters",
                 2,
@@ -265,7 +314,7 @@
         },
         {
             "id": "element_vector_001",
-            "input": "v := {10, 20, 30}; v[0] := 99; v",
+            "input": "v = {10, 20, 30}; v[0] = 99; v",
             "expected": [
                 99,
                 20,
@@ -276,7 +325,7 @@
         },
         {
             "id": "element_vector_computed_index_001",
-            "input": "v := {1, 2, 3}; i := 1; v[i + 1] := 7; v",
+            "input": "v = {1, 2, 3}; i = 1; v[i + 1] = 7; v",
             "expected": [
                 1,
                 2,
@@ -287,7 +336,7 @@
         },
         {
             "id": "element_vector_negative_001",
-            "input": "v := {10, 20, 30}; v[-1] := 99; v",
+            "input": "v = {10, 20, 30}; v[-1] = 99; v",
             "expected": [
                 10,
                 20,
@@ -298,7 +347,7 @@
         },
         {
             "id": "element_vector_reads_old_value_001",
-            "input": "v := {1, 2, 3}; v[0] := v[0] + 10; v",
+            "input": "v = {1, 2, 3}; v[0] = v[0] + 10; v",
             "expected": [
                 11,
                 2,
@@ -309,7 +358,7 @@
         },
         {
             "id": "element_vector_twice_001",
-            "input": "v := {1, 2, 3}; v[0] := 9; v[1] := 8; v",
+            "input": "v = {1, 2, 3}; v[0] = 9; v[1] = 8; v",
             "expected": [
                 9,
                 8,
@@ -319,36 +368,112 @@
             "notes": "Two writes in a session accumulate"
         },
         {
+            "id": "inline_assign_element",
+            "input": "v = {1, 2}; v[0] := 9; v",
+            "expected": [
+                9,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "':=' still writes an element"
+        },
+        {
+            "id": "inline_assign_function_def",
+            "input": "f(x) := x + 1; f(1)",
+            "expected": 2,
+            "expectedType": "NodeRational",
+            "notes": "':=' still defines a function"
+        },
+        {
+            "id": "inline_assign_in_argument",
+            "input": "sum(a := 3, a)",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "Inside an argument only ':=' assigns; the arguments are evaluated left to right"
+        },
+        {
+            "id": "inline_assign_in_comprehension_filter",
+            "input": "{y for x in 1..3 if (y := x * 2) > 2}",
+            "expected": [
+                4,
+                6
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A filter may bind a name the element expression then reads"
+        },
+        {
+            "id": "inline_assign_in_condition",
+            "input": "if(x := 5, x * 2, 0)",
+            "expected": 10,
+            "expectedType": "NodeRational",
+            "notes": "':=' in a condition assigns on purpose; the same with '=' is a ParseException"
+        },
+        {
+            "id": "inline_assign_in_lambda_body",
+            "input": "v = {1, 2, 3}; f = i -> v[i] := 99; f(0); v",
+            "expected": [
+                1,
+                2,
+                3
+            ],
+            "expectedType": "NodeVector",
+            "notes": "A lambda body is an expression, so ':=' assigns there without parentheses; the write lands in the lambda's captured copy"
+        },
+        {
+            "id": "inline_assign_in_subscript",
+            "input": "v = {10, 20, 30}; v[i := 1] + i",
+            "expected": 21,
+            "expectedType": "NodeRational",
+            "notes": "An index may bind a name with ':='"
+        },
+        {
+            "id": "inline_assign_in_vector",
+            "input": "{a := 1, a + 1}",
+            "expected": [
+                1,
+                2
+            ],
+            "expectedType": "NodeVector",
+            "notes": "Inside a vector only ':=' assigns"
+        },
+        {
+            "id": "inline_assign_statement",
+            "input": "x := 5; x + 1",
+            "expected": 6,
+            "expectedType": "NodeRational",
+            "notes": "':=' is still accepted as a statement, and means the same as '='"
+        },
+        {
             "id": "naming_001",
-            "input": "myVar := 42; myVar",
+            "input": "myVar = 42; myVar",
             "expected": 42,
             "expectedType": "NodeRational",
             "notes": "CamelCase variable name"
         },
         {
             "id": "naming_002",
-            "input": "my_var := 42; my_var",
+            "input": "my_var = 42; my_var",
             "expected": 42,
             "expectedType": "NodeRational",
             "notes": "Snake case variable name"
         },
         {
             "id": "naming_003",
-            "input": "x1 := 10; x2 := 20; x1 + x2",
+            "input": "x1 = 10; x2 = 20; x1 + x2",
             "expected": 30,
             "expectedType": "NodeRational",
             "notes": "Variable names with numbers"
         },
         {
             "id": "scope_001",
-            "input": "x := 1; y := 2; x + y",
+            "input": "x = 1; y = 2; x + y",
             "expected": 3,
             "expectedType": "NodeRational",
             "notes": "Multiple variables in scope"
         },
         {
             "id": "shadow_001",
-            "input": "x := 5; x := 10; x",
+            "input": "x = 5; x = 10; x",
             "expected": 10,
             "expectedType": "NodeRational",
             "notes": "Variable shadowing"

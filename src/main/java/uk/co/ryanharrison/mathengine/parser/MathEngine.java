@@ -49,14 +49,14 @@ import java.util.function.Supplier;
  * MathEngine engine = MathEngine.create();
  *
  * // Define variables
- * engine.evaluate("x := 10");
- * engine.evaluate("y := 20");
+ * engine.evaluate("x = 10");
+ * engine.evaluate("y = 20");
  *
  * // Use them in subsequent evaluations
  * NodeConstant result = engine.evaluate("x + y"); // 30
  *
  * // Define custom functions
- * engine.evaluate("square(n) := n^2");
+ * engine.evaluate("square(n) = n^2");
  * engine.evaluate("square(5)"); // 25
  * }</pre>
  *
@@ -225,7 +225,7 @@ public final class MathEngine {
         if (expression == null || expression.isBlank()) {
             throw new IllegalArgumentException("Expression cannot be null or empty");
         }
-        List<Token> tokens = lexer.tokenize(expression);
+        List<Token> tokens = lexer.tokenize(expression, context.getLocalNames());
         return onGuardedStack(() -> new Parser(tokens, expression, config.maxExpressionDepth(),
                 config.forceDoubleArithmetic(), config.maxLiteralDigits()).parse());
     }
@@ -276,7 +276,7 @@ public final class MathEngine {
      * Defines a variable in the current session.
      */
     public void defineVariable(String name, double value) {
-        evaluate(name + " := " + value);
+        evaluate(name + " = " + value);
     }
 
     /**
@@ -287,7 +287,7 @@ public final class MathEngine {
     }
 
     /**
-     * Defines a function in the current session (e.g., "f(x) := x^2").
+     * Defines a function in the current session (e.g., "f(x) = x^2").
      */
     public void defineFunction(String definition) {
         evaluate(definition);
@@ -357,6 +357,6 @@ public final class MathEngine {
      * Tokenizes an expression (for debugging/display).
      */
     public List<Token> tokenize(String expression) {
-        return lexer.tokenize(expression);
+        return lexer.tokenize(expression, context.getLocalNames());
     }
 }

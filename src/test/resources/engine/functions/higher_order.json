@@ -4,14 +4,14 @@
     "tests": [
         {
             "id": "compose_001",
-            "input": "f := x -> x + 1; g := x -> x * 2; g(f(5))",
+            "input": "f = x -> x + 1; g = x -> x * 2; g(f(5))",
             "expected": 12,
             "expectedType": "NodeRational",
             "notes": "Function composition"
         },
         {
             "id": "compose_002",
-            "input": "f := x -> x^2; g := x -> x + 1; f(g(3))",
+            "input": "f = x -> x^2; g = x -> x + 1; f(g(3))",
             "expected": 16,
             "expectedType": "NodeRational",
             "notes": "Square of (x+1)"

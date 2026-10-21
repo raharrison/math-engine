@@ -60,7 +60,7 @@
         },
         {
             "id": "complex_007",
-            "input": "v := {3, 1, 4, 1, 5, 9}; max(v) - min(v)",
+            "input": "v = {3, 1, 4, 1, 5, 9}; max(v) - min(v)",
             "expected": 8.0,
             "expectedType": "NodeRational",
             "notes": "Range calculation"
@@ -74,7 +74,7 @@
         },
         {
             "id": "complex_008",
-            "input": "m := [[1, 2], [3, 4]]; trace(m) + det(m)",
+            "input": "m = [[1, 2], [3, 4]]; trace(m) + det(m)",
             "expected": 3,
             "expectedType": "NodeRational",
             "notes": "Trace plus determinant"
@@ -88,7 +88,7 @@
         },
         {
             "id": "complex_009",
-            "input": "v := 1..5; sum(v^2) - sum(v)^2 / length(v)",
+            "input": "v = 1..5; sum(v^2) - sum(v)^2 / length(v)",
             "expected": 10.0,
             "expectedType": "NodeRational",
             "notes": "Variance numerator"
@@ -102,7 +102,7 @@
         },
         {
             "id": "complex_010",
-            "input": "f := x -> x^2 + 2*x + 1; f(5)",
+            "input": "f = x -> x^2 + 2*x + 1; f(5)",
             "expected": 36,
             "expectedType": "NodeRational",
             "notes": "Lambda polynomial"
@@ -123,7 +123,7 @@
         },
         {
             "id": "complex_012",
-            "input": "sorted := sort({5, 2, 8, 1, 9}); sorted[0] + sorted[-1]",
+            "input": "sorted = sort({5, 2, 8, 1, 9}); sorted[0] + sorted[-1]",
             "expected": 10,
             "expectedType": "NodeRational",
             "notes": "Min + max via sort"
@@ -137,21 +137,21 @@
         },
         {
             "id": "complex_013",
-            "input": "v := {1, 2, 3, 4}; w := {5, 6, 7, 8}; sum(v * w)",
+            "input": "v = {1, 2, 3, 4}; w = {5, 6, 7, 8}; sum(v * w)",
             "expected": 70,
             "expectedType": "NodeRational",
             "notes": "Dot product via sum of element-wise"
         },
         {
             "id": "complex_014",
-            "input": "n := 6; sum({(-1)^k * binomial(n, k) for k in 0..n})",
+            "input": "n = 6; sum({(-1)^k * binomial(n, k) for k in 0..n})",
             "expected": 0,
             "expectedType": "NodeRational",
             "notes": "Binomial identity (1-1)^n = 0"
         },
         {
             "id": "complex_015",
-            "input": "n := 5; sum({binomial(n, k) for k in 0..n})",
+            "input": "n = 5; sum({binomial(n, k) for k in 0..n})",
             "expected": 32,
             "expectedType": "NodeRational",
             "notes": "Sum of binomial row = 2^n"
@@ -281,7 +281,7 @@
         },
         {
             "id": "complex_030",
-            "input": "x := 5; y := 10; z := x^2 + y^2; sqrt(z)",
+            "input": "x = 5; y = 10; z = x^2 + y^2; sqrt(z)",
             "expected": 11.180339887498949,
             "expectedType": "NodeDouble",
             "notes": "Multi-statement complex calculation"

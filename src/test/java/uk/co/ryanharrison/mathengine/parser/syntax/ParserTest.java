@@ -2,11 +2,15 @@ package uk.co.ryanharrison.mathengine.parser.syntax;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.co.ryanharrison.mathengine.parser.MathEngineConfig;
 import uk.co.ryanharrison.mathengine.parser.ast.*;
 import uk.co.ryanharrison.mathengine.parser.function.FunctionExecutor;
 import uk.co.ryanharrison.mathengine.parser.lexer.Lexer;
 import uk.co.ryanharrison.mathengine.parser.lexer.Token;
+import uk.co.ryanharrison.mathengine.parser.lexer.TokenType;
 import uk.co.ryanharrison.mathengine.parser.registry.ConstantRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.KeywordRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
@@ -491,7 +495,7 @@ class ParserTest {
 
     @Test
     void testVariableAssignment() {
-        Node node = parse("x := 5");
+        Node node = parse("x = 5");
         assertThat(node).isInstanceOf(NodeAssignment.class);
         NodeAssignment assignment = (NodeAssignment) node;
         assertThat(assignment.getIdentifier()).isEqualTo("x");
@@ -500,7 +504,7 @@ class ParserTest {
 
     @Test
     void testElementAssignment() {
-        Node node = parse("v[0] := 5");
+        Node node = parse("v[0] = 5");
         assertThat(node).isInstanceOf(NodeElementAssignment.class);
         NodeElementAssignment assignment = (NodeElementAssignment) node;
         assertThat(assignment.getIdentifier()).isEqualTo("v");
@@ -511,7 +515,7 @@ class ParserTest {
 
     @Test
     void testMatrixElementAssignment() {
-        Node node = parse("m[1, 2] := 9");
+        Node node = parse("m[1, 2] = 9");
         assertThat(node).isInstanceOf(NodeElementAssignment.class);
         NodeElementAssignment assignment = (NodeElementAssignment) node;
         assertThat(assignment.getIndexGroups()).hasSize(1);
@@ -520,7 +524,7 @@ class ParserTest {
 
     @Test
     void testChainedElementAssignment() {
-        Node node = parse("m[0][1] := 9");
+        Node node = parse("m[0][1] = 9");
         assertThat(node).isInstanceOf(NodeElementAssignment.class);
         NodeElementAssignment assignment = (NodeElementAssignment) node;
         assertThat(assignment.getIndexGroups()).hasSize(2);
@@ -533,18 +537,18 @@ class ParserTest {
         assertThat(parse("v[0] + 1")).isInstanceOf(NodeBinary.class);
         assertThat(parse("v[0]")).isInstanceOf(NodeSubscript.class);
         assertThat(parse("v[0] == 1")).isInstanceOf(NodeBinary.class);
-        assertThat(parse("v[0]; x := 1")).isInstanceOf(NodeSequence.class);
+        assertThat(parse("v[0]; x = 1")).isInstanceOf(NodeSequence.class);
     }
 
     @Test
     void testElementAssignmentTargetMustBeAName() {
-        assertThatThrownBy(() -> parse("sin(1)[0] := 5")).isInstanceOf(ParseException.class);
-        assertThatThrownBy(() -> parse("{1, 2}[0] := 5")).isInstanceOf(ParseException.class);
+        assertThatThrownBy(() -> parse("sin(1)[0] = 5")).isInstanceOf(ParseException.class);
+        assertThatThrownBy(() -> parse("{1, 2}[0] = 5")).isInstanceOf(ParseException.class);
     }
 
     @Test
     void testFunctionDefinition() {
-        Node node = parse("f(x) := x^2");
+        Node node = parse("f(x) = x^2");
         assertThat(node).isInstanceOf(NodeFunctionDef.class);
         NodeFunctionDef funcDef = (NodeFunctionDef) node;
         assertThat(funcDef.getName()).isEqualTo("f");
@@ -554,12 +558,317 @@ class ParserTest {
 
     @Test
     void testMultiParameterFunctionDefinition() {
-        Node node = parse("add(a, b) := a + b");
+        Node node = parse("add(a, b) = a + b");
         assertThat(node).isInstanceOf(NodeFunctionDef.class);
         NodeFunctionDef funcDef = (NodeFunctionDef) node;
         assertThat(funcDef.getName()).isEqualTo("add");
         assertThat(funcDef.getParameters()).containsExactly("a", "b");
         assertThat(funcDef.getBody()).isInstanceOf(NodeBinary.class);
+    }
+
+    // ==================== Assignment Context Tests ====================
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "x = 5         | x := 5",
+            "v[0] = 5      | v[0] := 5",
+            "m[1, 2] = 9   | m[1, 2] := 9",
+            "m[0][1] = 9   | m[0][1] := 9",
+            "f(x) = x^2    | f(x) := x^2",
+            "f() = 1       | f() := 1",
+            "g = x -> x^2  | g := x -> x^2"
+    })
+    void bothSpellingsBuildTheSameStatement(String equals, String inline) {
+        Node withEquals = parse(equals);
+        Node withInline = parse(inline);
+
+        assertThat(withEquals).isInstanceOf(withInline.getClass());
+        assertThat(withEquals.toString()).isEqualTo(withInline.toString());
+    }
+
+    @Test
+    void equalsAssignsInEveryStatementOfASequence() {
+        Node node = parse("x = 1; y = 2; x + y");
+
+        assertThat(node).isInstanceOf(NodeSequence.class);
+        List<Node> statements = ((NodeSequence) node).getStatements();
+        assertThat(statements).hasSize(3);
+        assertThat(statements.get(0)).isInstanceOf(NodeAssignment.class);
+        assertThat(statements.get(1)).isInstanceOf(NodeAssignment.class);
+        assertThat(statements.get(2)).isInstanceOf(NodeBinary.class);
+    }
+
+    @Test
+    void equalsAssignsInsideParentheses() {
+        assertThat(parse("(x = 5)")).isInstanceOf(NodeAssignment.class);
+
+        Node group = parse("(x = 2) + 1");
+        assertThat(group).isInstanceOf(NodeBinary.class);
+        assertThat(((NodeBinary) group).getLeft()).isInstanceOf(NodeAssignment.class);
+
+        Node sequence = parse("(a = 1; b = 2; a + b)");
+        assertThat(sequence).isInstanceOf(NodeSequence.class);
+        assertThat(((NodeSequence) sequence).getStatements().get(1)).isInstanceOf(NodeAssignment.class);
+    }
+
+    @Test
+    void parenthesesOptIntoAssignmentInsideAnArgument() {
+        Node node = parse("if((x = 5), 1, 2)");
+
+        assertThat(node).isInstanceOf(NodeCall.class);
+        assertThat(((NodeCall) node).getArguments().getFirst()).isInstanceOf(NodeAssignment.class);
+    }
+
+    @Test
+    void functionBodyInParenthesesMayAssign() {
+        Node node = parse("f(y) = (x = y + 1; x * 2)");
+
+        assertThat(node).isInstanceOf(NodeFunctionDef.class);
+        Node body = ((NodeFunctionDef) node).getBody();
+        assertThat(body).isInstanceOf(NodeSequence.class);
+        assertThat(((NodeSequence) body).getStatements().getFirst()).isInstanceOf(NodeAssignment.class);
+    }
+
+    @Test
+    void lambdaBodyInParenthesesMayAssign() {
+        Node node = parse("f = i -> (v[i] = 99)");
+
+        assertThat(node).isInstanceOf(NodeAssignment.class);
+        Node lambda = ((NodeAssignment) node).getValue();
+        assertThat(lambda).isInstanceOf(NodeLambda.class);
+        assertThat(((NodeLambda) lambda).getBody()).isInstanceOf(NodeElementAssignment.class);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "if(x = 5, 1, 2)",
+            "sum(a = 3, a)",
+            "{a = 1}",
+            "{1, a = 2}",
+            "[a = 1]",
+            "[1, 2; a = 3, 4]",
+            "v[i = 1]",
+            "v[0][i = 1] = 2",
+            "{x for x in v if x = 2}",
+            "{y = x for x in v}",
+            "x -> y = x",
+            "f = x -> y = x",
+            "(x, y) -> z = x",
+            "1..sum(n = 3)",
+            "x = sum(a = 1)"
+    })
+    void equalsIsRefusedInsideAnExpression(String input) {
+        assertThatThrownBy(() -> parse(input))
+                .isInstanceOf(ParseException.class)
+                .hasMessageContaining("Use '==' to compare")
+                .hasMessageContaining("'=' assigns only as a statement");
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "map(f(x) = x, v)       | use ':=' to define a function inside an expression",
+            "g(f(x) = 1)            | use ':=' to define a function inside an expression",
+            "f = i -> v[i] = 99     | use ':=' to write an element inside an expression",
+            "sum(v[0] = 1)          | use ':=' to write an element inside an expression"
+    })
+    void misplacedDefinitionOrElementWriteSuggestsInlineAssignment(String input, String advice) {
+        assertThatThrownBy(() -> parse(input))
+                .isInstanceOf(ParseException.class)
+                .hasMessageContaining("'=' assigns only as a statement")
+                .hasMessageContaining(advice)
+                .hasMessageNotContaining("==");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"sin(x) = 0", "abs(x) = x", "dist(a, b, c, d) = 1", "if(sin(x) = 0, 1, 2)"})
+    void equalsDoesNotRedefineABuiltInFunction(String input) {
+        String name = input.startsWith("if(") ? "sin" : input.substring(0, input.indexOf('('));
+
+        assertThatThrownBy(() -> parse(input))
+                .isInstanceOf(ParseException.class)
+                .hasMessageContaining("'" + name + "' is a built-in function")
+                .hasMessageContaining("use ':=' to redefine it, or '==' to compare");
+    }
+
+    @Test
+    void inlineAssignmentStillRedefinesABuiltInFunction() {
+        Node node = parse("sin(x) := 0");
+
+        assertThat(node).isInstanceOf(NodeFunctionDef.class);
+        assertThat(((NodeFunctionDef) node).getName()).isEqualTo("sin");
+    }
+
+    @Test
+    void equalsMayStillNameAVariableAfterABuiltInFunction() {
+        Node node = parse("sum = 5");
+
+        assertThat(node).isInstanceOf(NodeAssignment.class);
+        assertThat(((NodeAssignment) node).getIdentifier()).isEqualTo("sum");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"f(2) = 4", "sqrt(4) = 2", "f(x, 2) = 1", "f(x + 1) = 2", "f(-x) = 1"})
+    void callFollowedByEqualsIsAComparisonNotADefinition(String input) {
+        assertThatThrownBy(() -> parse(input))
+                .isInstanceOf(ParseException.class)
+                .hasMessageContaining("Cannot assign to this expression")
+                .hasMessageContaining("use '==' to compare");
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "f() = 1                       | 0",
+            "f(x) = x                      | 1",
+            "f(x, y, z) = x                | 3",
+            "f(m) = m                      | 1",
+            "convert(x, from, to) = x      | 3"
+    })
+    void signatureOfPlainNamesIsADefinition(String input, int parameters) {
+        Node node = parse(input);
+
+        assertThat(node).isInstanceOf(NodeFunctionDef.class);
+        assertThat(((NodeFunctionDef) node).getParameters()).hasSize(parameters);
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "x %= 2   | '%=' is not supported; write 'x = x mod value'",
+            "x mod= 2 | 'mod=' is not supported; write 'x = x mod value'"
+    })
+    void compoundModuloIsRefusedWithAReason(String input, String message) {
+        assertThatThrownBy(() -> parse(input))
+                .isInstanceOf(ParseException.class)
+                .hasMessageContaining("Compound assignment " + message);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"if(x = 5, 1, 2)", "2 + 2 = 4", "x = y = 5", "x += 1"})
+    void misplacedEqualsIsReportedAtTheEqualsSign(String input) {
+        int column = input.lastIndexOf('=') + 1;
+
+        assertThatThrownBy(() -> parse(input))
+                .isInstanceOfSatisfying(ParseException.class,
+                        e -> assertThat(e.formatMessage()).contains("line 1, column " + column + ":"));
+    }
+
+    @Test
+    void inlineAssignmentWorksInsideAnExpression() {
+        Node call = parse("if(x := 5, 1, 2)");
+        assertThat(((NodeCall) call).getArguments().getFirst()).isInstanceOf(NodeAssignment.class);
+
+        Node vector = parse("{a := 1, a + 1}");
+        assertThat(vector).isInstanceOf(NodeVector.class);
+
+        Node comprehension = parse("{x for x in v if x := 2}");
+        assertThat(((NodeComprehension) comprehension).getCondition()).isInstanceOf(NodeAssignment.class);
+
+        Node lambda = parse("x -> y := x");
+        assertThat(((NodeLambda) lambda).getBody()).isInstanceOf(NodeAssignment.class);
+
+        Node subscript = parse("v[i := 1]");
+        assertThat(subscript).isInstanceOf(NodeSubscript.class);
+
+        Node element = parse("f = i -> v[i] := 99");
+        assertThat(((NodeLambda) ((NodeAssignment) element).getValue()).getBody())
+                .isInstanceOf(NodeElementAssignment.class);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "x = y = 5",
+            "x := y := 5",
+            "x = y := 5",
+            "x := y = 5",
+            "v[0] = w[0] = 1",
+            "f(x) = g(x) = 1",
+            "(x = y = 5)",
+            "sum(a := b := 1)"
+    })
+    void assignmentsCannotBeChained(String input) {
+        assertThatThrownBy(() -> parse(input))
+                .isInstanceOf(ParseException.class)
+                .hasMessageContaining("cannot be chained");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "2 + 2 = 4",
+            "x^2 = 4",
+            "2x = 10",
+            "x! = 2",
+            "5! = 120",
+            "-x = 1",
+            "(x) = 1",
+            "x + 1 = 2",
+            "#pi = 3",
+            "$x = 1",
+            "@m = 1",
+            "\"s\" = 1",
+            "in = 3",
+            "sin(1)[0] = 5",
+            "{1, 2}[0] = 5",
+            "x == 1 = 2"
+    })
+    void onlyANameSubscriptOrSignatureCanBeAssigned(String input) {
+        assertThatThrownBy(() -> parse(input))
+                .isInstanceOf(ParseException.class)
+                .hasMessageContaining("Cannot assign to this expression")
+                .hasMessageContaining("use '==' to compare");
+    }
+
+    @Test
+    void inlineAssignmentToAnExpressionHasNoComparisonHint() {
+        assertThatThrownBy(() -> parse("2 + x := 5"))
+                .isInstanceOf(ParseException.class)
+                .hasMessageContaining("Cannot assign to this expression")
+                .hasMessageNotContaining("==");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"+", "-", "*", "/", "^"})
+    void compoundAssignmentIsRefusedWithAReason(String operator) {
+        assertThatThrownBy(() -> parse("x " + operator + "= 1"))
+                .isInstanceOf(ParseException.class)
+                .hasMessageContaining("Compound assignment '" + operator + "=' is not supported");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"x = = 5", "x === 5", "x + = 1", "x := = 5", "x; = 5"})
+    void strayEqualsWhereAValueBelongsSuggestsComparison(String input) {
+        assertThatThrownBy(() -> parse(input))
+                .isInstanceOf(ParseException.class)
+                .hasMessageContaining("Expected expression, not '='")
+                .hasMessageContaining("use '==' to compare");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"x =", "= 5", "f(x) ="})
+    void missingSideOfAnAssignmentIsAnError(String input) {
+        assertThatThrownBy(() -> parse(input)).isInstanceOf(ParseException.class);
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "x == 5 | EQ",
+            "x != 5 | NEQ",
+            "x <= 5 | LTE",
+            "x >= 5 | GTE",
+            "5!=120 | NEQ"
+    })
+    void comparisonsAreUnaffectedByAssignment(String input, TokenType operator) {
+        Node node = parse(input);
+
+        assertThat(node).isInstanceOf(NodeBinary.class);
+        assertThat(((NodeBinary) node).getOperator().type()).isEqualTo(operator);
+    }
+
+    @Test
+    void assignedValueMayBeAComparison() {
+        Node node = parse("x = 5 == 5");
+
+        assertThat(node).isInstanceOf(NodeAssignment.class);
+        Node value = ((NodeAssignment) node).getValue();
+        assertThat(((NodeBinary) value).getOperator().type()).isEqualTo(TokenType.EQ);
     }
 
     // ==================== Lambda Tests ====================
@@ -578,7 +887,7 @@ class ParserTest {
         // Multi-parameter lambdas are only supported through function definitions
         // (a, b) -> expr is parsed as a parenthesized expression followed by error
         // Use function definition syntax instead
-        Node node = parse("f(a, b) := a + b");
+        Node node = parse("f(a, b) = a + b");
         assertThat(node).isInstanceOf(NodeFunctionDef.class);
         NodeFunctionDef funcDef = (NodeFunctionDef) node;
         assertThat(funcDef.getParameters()).containsExactly("a", "b");

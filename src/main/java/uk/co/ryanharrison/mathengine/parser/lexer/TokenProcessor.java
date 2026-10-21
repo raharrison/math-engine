@@ -5,6 +5,7 @@ import uk.co.ryanharrison.mathengine.parser.registry.KeywordRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -22,8 +23,8 @@ import java.util.Set;
  *
  * <h2>Processing Rules:</h2>
  * <ul>
- *     <li>Assignment targets ({@code name :=}) are never split</li>
- *     <li>Function definitions ({@code name(...) :=}) are never split</li>
+ *     <li>Assignment targets ({@code name =} or {@code name :=}) are never split</li>
+ *     <li>Function definitions ({@code name(...) =}) are never split</li>
  *     <li>Digit boundaries always trigger splits ({@code pi2e})</li>
  *     <li>Function suffixes split only for single-char/constant/unit prefixes</li>
  *     <li>Implicit multiplication inserted between compatible adjacent tokens</li>
@@ -66,14 +67,27 @@ public final class TokenProcessor {
      * @return fully processed tokens ready for parsing
      */
     public List<Token> process(List<Token> rawTokens) {
+        return process(rawTokens, Set.of());
+    }
+
+    /**
+     * Processes raw tokens, never splitting a user-defined name: one in {@code definedNames},
+     * or one assigned earlier in these tokens.
+     *
+     * @param rawTokens    tokens from TokenScanner
+     * @param definedNames names of the variables and functions already defined
+     * @return fully processed tokens ready for parsing
+     */
+    public List<Token> process(List<Token> rawTokens, Set<String> definedNames) {
         var result = new ArrayList<Token>(rawTokens.size() * 2); // Pre-size for potential expansions
+        var userNames = new HashSet<>(definedNames);
         Token prev = null;
 
         for (int i = 0; i < rawTokens.size(); i++) {
             Token token = rawTokens.get(i);
 
             // Process token (may produce multiple tokens if split)
-            List<Token> processed = processToken(token, rawTokens, i);
+            List<Token> processed = processToken(token, rawTokens, i, userNames);
 
             // Add each processed token, inserting implicit multiplication as needed
             for (Token t : processed) {
@@ -93,13 +107,17 @@ public final class TokenProcessor {
     /**
      * Processes a single token: splits if identifier, then classifies.
      */
-    private List<Token> processToken(Token token, List<Token> allTokens, int index) {
+    private List<Token> processToken(Token token, List<Token> allTokens, int index, Set<String> userNames) {
         if (token.type() != TokenType.IDENTIFIER) {
             return List.of(token);
         }
 
-        // Don't split definition targets
+        // Don't split definition targets, nor a name once it has been defined
         if (isDefinitionTarget(allTokens, index)) {
+            userNames.add(token.lexeme());
+            return List.of(classifyIdentifier(token));
+        }
+        if (userNames.contains(token.lexeme())) {
             return List.of(classifyIdentifier(token));
         }
 
@@ -177,7 +195,8 @@ public final class TokenProcessor {
     // ==================== Definition Target Detection ====================
 
     /**
-     * Checks if identifier is an assignment target (name :=) or function definition (name(...) :=).
+     * Checks if identifier is an assignment target ({@code name =}) or function definition
+     * ({@code name(...) =}). Either spelling of assignment counts.
      */
     private boolean isDefinitionTarget(List<Token> tokens, int i) {
         if (i + 1 >= tokens.size()) {
@@ -186,12 +205,12 @@ public final class TokenProcessor {
 
         Token next = tokens.get(i + 1);
 
-        // Direct assignment: name :=
-        if (next.type() == TokenType.ASSIGN) {
+        // Direct assignment: name =
+        if (next.type().isAssignment()) {
             return true;
         }
 
-        // Function definition: name(...) :=
+        // Function definition: name(...) =
         if (next.type() == TokenType.LPAREN) {
             return isFunctionDefinition(tokens, i);
         }
@@ -200,7 +219,7 @@ public final class TokenProcessor {
     }
 
     private boolean isFunctionDefinition(List<Token> tokens, int i) {
-        // Find matching RPAREN, then check for :=
+        // Find matching RPAREN, then check for an assignment
         int depth = 1;
         int j = i + 2;
 
@@ -211,7 +230,7 @@ public final class TokenProcessor {
             j++;
         }
 
-        return depth == 0 && j < tokens.size() && tokens.get(j).type() == TokenType.ASSIGN;
+        return depth == 0 && j < tokens.size() && tokens.get(j).type().isAssignment();
     }
 
     // ==================== Identifier Splitting ====================
@@ -237,7 +256,7 @@ public final class TokenProcessor {
      * </ul>
      * <p>
      * <b>Rationale:</b> Units must be resolved at runtime because variable precedence is context-dependent.
-     * In general expressions, variables take precedence over units (e.g., {@code m1 := 2; m1} returns 2).
+     * In general expressions, variables take precedence over units (e.g., {@code m1 = 2; m1} returns 2).
      * In unit contexts, units are explicit (e.g., {@code 100 m in feet} uses spaces).
      */
     private List<Token> trySplitAtDigits(Token token) {

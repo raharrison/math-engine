@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Writes one element of a collection: {@code v[0] := 5}, {@code m[1, 2] := 9},
- * {@code m[0] := {7, 8}}, {@code m[0][1] := 9}, {@code s[0] := "H"}.
+ * Writes one element of a collection: {@code v[0] = 5}, {@code m[1, 2] = 9},
+ * {@code m[0] = {7, 8}}, {@code m[0][1] = 9}, {@code s[0] = "H"}.
  * <p>
  * Values are immutable, so the write rebuilds the target and rebinds the name through
  * {@link EvaluationContext#assign}, which finds the scope that defines it.
@@ -29,7 +29,7 @@ public final class ElementAssignmentHandler {
     }
 
     /**
-     * @return the value assigned, so {@code v[0] := 5} yields 5 as {@code x := 5} does
+     * @return the value assigned, so {@code v[0] = 5} yields 5 as {@code x = 5} does
      * @throws UndefinedVariableException if the target name has no value
      * @throws TypeError                  if the target, or a step of the chain, holds no elements
      * @throws EvaluationException        if an index is outside the collection
@@ -121,7 +121,7 @@ public final class ElementAssignmentHandler {
     }
 
     /**
-     * Writes a whole row, {@code m[0] := {7, 8}}. The row keeps its width.
+     * Writes a whole row, {@code m[0] = {7, 8}}. The row keeps its width.
      */
     private NodeConstant updateMatrixRow(NodeMatrix matrix, NodeSubscript.SliceArg rowArg,
                                          List<List<NodeSubscript.SliceArg>> groups, int groupIndex,
@@ -167,7 +167,7 @@ public final class ElementAssignmentHandler {
     // ==================== Strings ====================
 
     /**
-     * Writes one character, {@code s[0] := "H"}. The right side is a single-character
+     * Writes one character, {@code s[0] = "H"}. The right side is a single-character
      * string, which is what {@code s[0]} reads back, so the length is preserved.
      */
     private NodeConstant updateString(NodeString text, List<NodeSubscript.SliceArg> group,

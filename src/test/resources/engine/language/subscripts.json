@@ -4,7 +4,7 @@
     "tests": [
         {
             "id": "chain_access_001",
-            "input": "v := {{1, 2, 3}, {4, 5, 6}}; v[0][2]",
+            "input": "v = {{1, 2, 3}, {4, 5, 6}}; v[0][2]",
             "expected": 3,
             "expectedType": "NodeRational",
             "notes": "Chained access on variable"
@@ -346,21 +346,21 @@
         },
         {
             "id": "subscript_expr_001",
-            "input": "v := {10, 20, 30}; v[0]",
+            "input": "v = {10, 20, 30}; v[0]",
             "expected": 10,
             "expectedType": "NodeRational",
             "notes": "Access via variable"
         },
         {
             "id": "subscript_expr_002",
-            "input": "v := {10, 20, 30}; i := 1; v[i]",
+            "input": "v = {10, 20, 30}; i = 1; v[i]",
             "expected": 20,
             "expectedType": "NodeRational",
             "notes": "Index from variable"
         },
         {
             "id": "subscript_expr_003",
-            "input": "v := {10, 20, 30}; v[1 + 1]",
+            "input": "v = {10, 20, 30}; v[1 + 1]",
             "expected": 30,
             "expectedType": "NodeRational",
             "notes": "Computed index"
@@ -522,7 +522,7 @@
         },
         {
             "id": "subscript_read_then_operator",
-            "input": "v := {5, 6, 7}; v[0] + 1",
+            "input": "v = {5, 6, 7}; v[0] + 1",
             "expected": 6,
             "expectedType": "NodeRational",
             "notes": "A subscript followed by an operator is still a read"

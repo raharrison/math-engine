@@ -369,7 +369,7 @@ public final class MathEngineConfig {
 
     /**
      * Whether user-defined variables are enabled.
-     * When disabled, expressions like "x := 5" will cause an error.
+     * When disabled, expressions like "x = 5" will cause an error.
      */
     public boolean userDefinedVariablesEnabled() {
         return userDefinedVariablesEnabled;
@@ -377,7 +377,7 @@ public final class MathEngineConfig {
 
     /**
      * Whether user-defined functions are enabled.
-     * When disabled, expressions like "f(x) := x^2" will cause an error.
+     * When disabled, expressions like "f(x) = x^2" will cause an error.
      */
     public boolean userDefinedFunctionsEnabled() {
         return userDefinedFunctionsEnabled;

@@ -81,14 +81,14 @@
         },
         {
             "id": "if_007",
-            "input": "x := 7; if(x > 5, x * 2, x / 2)",
+            "input": "x = 7; if(x > 5, x * 2, x / 2)",
             "expected": 14,
             "expectedType": "NodeRational",
             "notes": "if using variables"
         },
         {
             "id": "if_008",
-            "input": "x := 3; if(x > 5, x * 2, x / 2)",
+            "input": "x = 3; if(x > 5, x * 2, x / 2)",
             "expected": 1.5,
             "expectedType": "NodeRational",
             "notes": "if false branch with variables"

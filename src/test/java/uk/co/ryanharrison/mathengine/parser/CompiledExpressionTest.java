@@ -29,7 +29,7 @@ class CompiledExpressionTest {
 
     @Test
     void bindingsShadowSessionVariablesOnlyForTheCall() {
-        engine.evaluate("x := 100");
+        engine.evaluate("x = 100");
         CompiledExpression expression = engine.compile("x + 1");
 
         assertThat(expression.evaluateDouble("x", 1.0)).isCloseTo(2.0, within(TOLERANCE));
@@ -47,7 +47,7 @@ class CompiledExpressionTest {
 
     @Test
     void anExpressionWithNoBindingsUsesTheSession() {
-        engine.evaluate("k := 6");
+        engine.evaluate("k = 6");
         CompiledExpression expression = engine.compile("k * 7");
 
         assertThat(expression.evaluate().doubleValue()).isCloseTo(42.0, within(TOLERANCE));

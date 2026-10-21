@@ -67,8 +67,8 @@ class MathEngineTest {
 
         @Test
         void variablesSurviveBetweenEvaluations() {
-            engine.evaluate("x := 10");
-            engine.evaluate("y := 20");
+            engine.evaluate("x = 10");
+            engine.evaluate("y = 20");
 
             assertThat(engine.evaluateDouble("x + y")).isEqualTo(30.0);
         }
@@ -90,15 +90,32 @@ class MathEngineTest {
 
         @Test
         void functionsSurviveBetweenEvaluations() {
-            engine.defineFunction("square(n) := n^2");
+            engine.defineFunction("square(n) = n^2");
 
             assertThat(engine.getLocalFunctions()).containsKey("square");
             assertThat(engine.evaluateDouble("square(5)")).isEqualTo(25.0);
         }
 
         @Test
+        void aDefinedNameIsNotSplitInALaterEvaluation() {
+            // 'pi2' would otherwise read as pi * 2
+            engine.evaluate("pi2 = 3");
+
+            assertThat(engine.evaluateDouble("pi2")).isEqualTo(3.0);
+            assertThat(engine.evaluateDouble("pi2 + 1")).isEqualTo(4.0);
+            assertThat(MathEngine.create().evaluateDouble("pi2")).isCloseTo(2 * Math.PI, within(1e-12));
+        }
+
+        @Test
+        void aDefinedFunctionNameIsNotSplitInALaterEvaluation() {
+            engine.evaluate("pi2(n) = n + 1");
+
+            assertThat(engine.evaluateDouble("pi2(1)")).isEqualTo(2.0);
+        }
+
+        @Test
         void separateEnginesDoNotShareASession() {
-            engine.evaluate("x := 10");
+            engine.evaluate("x = 10");
 
             assertThatThrownBy(() -> MathEngine.create().evaluate("x"))
                     .isInstanceOf(MathEngineException.class);
@@ -118,8 +135,8 @@ class MathEngineTest {
         @Test
         void withConfigCarriesTheSessionOver() {
             MathEngine engine = MathEngine.create();
-            engine.evaluate("x := 90");
-            engine.defineFunction("twice(n) := n * 2");
+            engine.evaluate("x = 90");
+            engine.defineFunction("twice(n) = n * 2");
 
             MathEngine degrees = engine.withConfig(MathEngineConfig.builder()
                     .angleUnit(AngleUnit.DEGREES)
@@ -132,7 +149,7 @@ class MathEngineTest {
         @Test
         void withConfigLeavesTheOriginalEngineAlone() {
             MathEngine engine = MathEngine.create();
-            engine.evaluate("x := 90");
+            engine.evaluate("x = 90");
 
             engine.withConfig(MathEngineConfig.builder().angleUnit(AngleUnit.DEGREES).build());
 
@@ -202,7 +219,7 @@ class MathEngineTest {
                     .userDefinedVariablesEnabled(false)
                     .build(), "v", vector);
 
-            assertThatThrownBy(() -> engine.evaluate("v[0] := 5"))
+            assertThatThrownBy(() -> engine.evaluate("v[0] = 5"))
                     .isInstanceOf(MathEngineException.class)
                     .hasMessageContaining("User-defined variables are disabled");
         }
@@ -213,7 +230,7 @@ class MathEngineTest {
                     .vectorsEnabled(false)
                     .build(), "v", vector);
 
-            assertThatThrownBy(() -> engine.evaluate("v[0] := 5"))
+            assertThatThrownBy(() -> engine.evaluate("v[0] = 5"))
                     .isInstanceOf(MathEngineException.class)
                     .hasMessageContaining("Vectors are disabled");
         }
@@ -225,7 +242,7 @@ class MathEngineTest {
                     .matricesEnabled(false)
                     .build(), "s", new NodeString("hello"));
 
-            engine.evaluate("s[0] := \"H\"");
+            engine.evaluate("s[0] = \"H\"");
             assertThat(engine.evaluate("s")).isEqualTo(new NodeString("Hello"));
         }
     }

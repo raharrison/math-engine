@@ -410,6 +410,12 @@ class AsciiMathNodeFormatterTest {
     }
 
     @Test
+    void groupsAnAssignmentInsideAnExpression() {
+        var sum = binary(TokenType.PLUS, new NodeAssignment("x", dbl(2)), var("x"));
+        assertThat(fmt.format(sum)).isEqualTo("(x = 2) + x");
+    }
+
+    @Test
     void formatsAnImpliedProductAsJuxtaposition() {
         var implied = new NodeBinary(Token.implied(TokenType.MULTIPLY, "*", 0, 0), dbl(45), var("degrees"));
         assertThat(fmt.format(implied)).isEqualTo("45 degrees");
@@ -574,7 +580,7 @@ class AsciiMathNodeFormatterTest {
 
     @Test
     void formatsExpressionWithAllNodeCategories() {
-        // f(x) := sqrt(x^2 + 1); f(3) + 50%
+        // f(x) = sqrt(x^2 + 1); f(3) + 50%
         var funcBody = new NodeCall(var("sqrt"), List.of(
                 binary(TokenType.PLUS,
                         binary(TokenType.POWER, var("x"), dbl(2)),

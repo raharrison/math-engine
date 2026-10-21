@@ -96,17 +96,161 @@
         },
         {
             "id": "element_assign_call_target",
-            "input": "sin(1)[0] := 5",
+            "input": "sin(1)[0] = 5",
             "expectError": true,
             "expectedErrorType": "ParseException",
             "notes": "Only a name can be rebound, so a subscripted call is not a target"
         },
         {
             "id": "element_assign_literal_target",
-            "input": "{1, 2}[0] := 5",
+            "input": "{1, 2}[0] = 5",
             "expectError": true,
             "expectedErrorType": "ParseException",
             "notes": "A literal has no name to rebind"
+        },
+        {
+            "id": "assign_equals_in_condition",
+            "input": "if(x = 5, 1, 2)",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "'=' assigns only as a statement",
+            "notes": "Used to be a LexerException. Inside an argument '=' is refused rather than assigning, so a comparison typed as '=' cannot silently assign"
+        },
+        {
+            "id": "assign_equals_in_argument",
+            "input": "sum(a = 3, a)",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "'=' assigns only as a statement",
+            "notes": "Used to be a LexerException. ':=' is the spelling that assigns inside an argument"
+        },
+        {
+            "id": "assign_equals_in_vector",
+            "input": "{a = 1}",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "'=' assigns only as a statement",
+            "notes": "Used to be a LexerException. A vector element is an expression, not a statement"
+        },
+        {
+            "id": "assign_equals_in_subscript",
+            "input": "v = {1, 2}; v[i = 0]",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "'=' assigns only as a statement",
+            "notes": "Used to be a LexerException. An index is an expression, not a statement"
+        },
+        {
+            "id": "assign_equals_in_comprehension_filter",
+            "input": "{x for x in 1..5 if x = 2}",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "'=' assigns only as a statement",
+            "notes": "Used to be a LexerException. With ':=' this filter rebinds x and answers {2, 2, 2, 2, 2}; with '=' it is refused"
+        },
+        {
+            "id": "assign_equals_in_lambda_body",
+            "input": "filter(x -> x = 2, {1, 2, 3})",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "Use '==' to compare",
+            "notes": "Used to be a LexerException. A lambda body is an expression, so '=' there is almost certainly a comparison"
+        },
+        {
+            "id": "assign_chained",
+            "input": "x = y = 5",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "cannot be chained",
+            "notes": "Used to be a LexerException. Assignment is not an expression, so it does not chain"
+        },
+        {
+            "id": "assign_chained_inline",
+            "input": "x := y := 5",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "cannot be chained",
+            "notes": "Used to be the bare 'Unexpected token after expression'"
+        },
+        {
+            "id": "assign_to_expression",
+            "input": "2 + 2 = 4",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "Cannot assign to this expression",
+            "notes": "Used to be a LexerException. Only a name, a subscript or a signature can be assigned, and the message points at '=='"
+        },
+        {
+            "id": "assign_to_power",
+            "input": "x^2 = 4",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "use '==' to compare",
+            "notes": "Used to be a LexerException. There is no equation solving: this is an assignment to an expression"
+        },
+        {
+            "id": "assign_to_factorial",
+            "input": "5! = 120",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "Cannot assign to this expression",
+            "notes": "Used to be a LexerException. Written without spaces, '5!=120' is the inequality 5 != 120 instead"
+        },
+        {
+            "id": "assign_inline_to_expression",
+            "input": "2 + x := 5",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "Cannot assign to this expression",
+            "notes": "Used to be the bare 'Unexpected token after expression'"
+        },
+        {
+            "id": "assign_compound_add",
+            "input": "x = 1; x += 1",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "Compound assignment '+=' is not supported",
+            "notes": "Used to be a LexerException. Compound assignment is not part of the language; the message says so"
+        },
+        {
+            "id": "assign_triple_equals",
+            "input": "x === 5",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "use '==' to compare",
+            "notes": "Used to be a LexerException. Lexes as '==' then '=', which has nothing to assign"
+        },
+        {
+            "id": "assign_equals_redefines_builtin",
+            "input": "sin(x) = 0; sin(1)",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "'sin' is a built-in function",
+            "notes": "Reads like checking the identity sin(x) = 0, so '=' refuses to replace a built-in rather than silently making every later sin(...) answer 0; ':=' still does it"
+        },
+        {
+            "id": "assign_to_call",
+            "input": "f(2) = 4",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "use '==' to compare",
+            "notes": "A call followed by '=' is a mistyped comparison, not a definition. Used to report the unhelpful 'Expected parameter name'"
+        },
+        {
+            "id": "assign_compound_modulo",
+            "input": "x = 7; x %= 2",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "Compound assignment '%=' is not supported",
+            "notes": "'%' lexes as a percentage, so this used to report only 'Cannot assign to this expression'"
+        },
+        {
+            "id": "assign_equals_defines_in_argument",
+            "input": "map(g(y) = y, {1})",
+            "expectError": true,
+            "expectedErrorType": "ParseException",
+            "expectedErrorMessage": "use ':=' to define a function inside an expression",
+            "notes": "A definition in an argument is told to use ':=', not '==', which used to be suggested"
         }
     ]
 }

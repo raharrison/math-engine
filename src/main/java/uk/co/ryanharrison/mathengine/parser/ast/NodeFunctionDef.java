@@ -3,7 +3,7 @@ package uk.co.ryanharrison.mathengine.parser.ast;
 import java.util.List;
 
 /**
- * Node representing a function definition (name(params) := body).
+ * Node representing a function definition (name(params) = body).
  * Evaluating a function definition stores the function in the evaluation context.
  */
 public final class NodeFunctionDef extends NodeExpression {
@@ -37,7 +37,7 @@ public final class NodeFunctionDef extends NodeExpression {
 
     @Override
     public String toString() {
-        return name + "(" + String.join(", ", parameters) + ") := " + body;
+        return name + "(" + String.join(", ", parameters) + ") = " + body;
     }
 
     @Override

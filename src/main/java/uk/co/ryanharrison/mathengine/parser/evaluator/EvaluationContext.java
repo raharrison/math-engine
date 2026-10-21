@@ -8,8 +8,10 @@ import uk.co.ryanharrison.mathengine.parser.registry.UnitDefinition;
 import uk.co.ryanharrison.mathengine.parser.util.FunctionCaller;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * A single variable/function scope, linked to its parent to form a scope chain.
@@ -192,5 +194,14 @@ public final class EvaluationContext {
     /** Functions defined directly in this scope, excluding parents. */
     public Map<String, FunctionDefinition> getLocalFunctions() {
         return functions == null ? Map.of() : Map.copyOf(functions);
+    }
+
+    /** Names of the variables and functions defined directly in this scope. */
+    public Set<String> getLocalNames() {
+        var names = new HashSet<>(variables.keySet());
+        if (functions != null) {
+            names.addAll(functions.keySet());
+        }
+        return names;
     }
 }

@@ -108,6 +108,6 @@ public class UndefinedVariableException extends EvaluationException {
         return baseMessage
                 + "\n\nHint: '" + variableName + "' is not defined."
                 + "\n  - Check spelling and case sensitivity"
-                + "\n  - Use ':=' to assign variables (e.g., '" + variableName + " := 5')";
+                + "\n  - Use '=' to assign variables (e.g., '" + variableName + " = 5')";
     }
 }

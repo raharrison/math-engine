@@ -4,7 +4,7 @@
     "tests": [
         {
             "id": "deep_but_terminating_recursion",
-            "input": "countdown(n) := if(n <= 0, 0, countdown(n - 1)); countdown(500)",
+            "input": "countdown(n) = if(n <= 0, 0, countdown(n - 1)); countdown(500)",
             "expectError": true,
             "expectedErrorType": "StackOverflowException",
             "config": {
@@ -14,7 +14,7 @@
         },
         {
             "id": "mutual_recursion",
-            "input": "even(n) := odd(n); odd(n) := even(n); even(1)",
+            "input": "even(n) = odd(n); odd(n) = even(n); even(1)",
             "expectError": true,
             "expectedErrorType": "StackOverflowException",
             "config": {
@@ -24,7 +24,7 @@
         },
         {
             "id": "unbounded_recursion",
-            "input": "loop(n) := loop(n + 1); loop(1)",
+            "input": "loop(n) = loop(n + 1); loop(1)",
             "expectError": true,
             "expectedErrorType": "StackOverflowException",
             "config": {

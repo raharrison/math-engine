@@ -11,11 +11,15 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Turns a token stream into an expression tree.
  * <p>
- * Assignment and lambda are recognised first, since they need lookahead. Everything
+ * Assignment and lambda are recognised first, since they need lookahead. Assignment has
+ * two spellings: {@code =} stands only as a statement, at the top level or inside
+ * parentheses, so that {@code if(x = 5, ...)} cannot assign by accident; {@code :=}
+ * assigns anywhere, inside an argument or a vector too. Everything
  * from logical OR down to multiplication is one precedence-climbing loop reading the
  * precedence table in {@link SymbolRegistry}. Unary, power, postfix, call and subscript
  * bind tighter still and are parsed by dedicated methods, because each has a shape the
@@ -40,6 +44,13 @@ public final class PrecedenceParser {
     private static final int UNIT_CONVERSION_PRECEDENCE = 9;
 
     private static final int NOT_AN_OPERATOR = Integer.MIN_VALUE;
+
+    /**
+     * Operators that, written straight before {@code =}, look like compound assignment.
+     */
+    private static final Set<TokenType> COMPOUND_ASSIGNMENT_OPERATORS = Set.of(
+            TokenType.PLUS, TokenType.MINUS, TokenType.MULTIPLY, TokenType.DIVIDE, TokenType.POWER,
+            TokenType.MOD, TokenType.PERCENT);
 
     private final TokenStream stream;
     private final CollectionParser collectionParser;
@@ -106,12 +117,23 @@ public final class PrecedenceParser {
     // ==================== Top-Level Expression ====================
 
     /**
-     * Parses an expression (top level of precedence chain).
+     * Parses an expression: an argument, an element, an index, a lambda body or the
+     * value of an assignment. Only {@code :=} may assign here.
      *
      * @return the parsed expression node
      */
     public Node parseExpression() {
-        return parseAssignment();
+        return parseAssignment(false);
+    }
+
+    /**
+     * Parses a statement: one of the {@code ;}-separated parts of the input, or of a
+     * parenthesised group. Both {@code =} and {@code :=} may assign here.
+     *
+     * @return the parsed statement node
+     */
+    public Node parseStatement() {
+        return parseAssignment(true);
     }
 
     // ==================== Assignment ====================
@@ -121,15 +143,30 @@ public final class PrecedenceParser {
      * <p>
      * Syntax:
      * <ul>
-     *     <li>Variable assignment: {@code x := 5}</li>
-     *     <li>Element assignment: {@code v[0] := 5}, {@code m[1, 2] := 9}, {@code m[0][1] := 9}</li>
-     *     <li>Function definition: {@code f(x) := x + 1}</li>
+     *     <li>Variable assignment: {@code x = 5}</li>
+     *     <li>Element assignment: {@code v[0] = 5}, {@code m[1, 2] = 9}, {@code m[0][1] = 9}</li>
+     *     <li>Function definition: {@code f(x) = x + 1}</li>
      * </ul>
      * <p>
-     * Accepts IDENTIFIER, UNIT, and FUNCTION tokens as names.
-     * FUNCTION tokens allow shadowing of built-in functions.
+     * Each may be spelled with {@code :=} instead, which is the only spelling accepted
+     * when {@code statement} is false. Accepts IDENTIFIER, UNIT, and FUNCTION tokens as
+     * names. FUNCTION tokens allow shadowing of built-in functions.
+     * <p>
+     * Whatever is parsed, an assignment token left behind is an error: nothing else in
+     * the grammar follows an expression with one, so {@code 2 + 2 = 4} and
+     * {@code x = y = 5} are refused here, with a reason, rather than later as a stray token.
+     *
+     * @param statement whether this is a statement position, where {@code =} may assign
      */
-    private Node parseAssignment() {
+    private Node parseAssignment(boolean statement) {
+        Node node = parseAssignmentOrExpression(statement);
+        if (stream.peek().type().isAssignment()) {
+            throw misplacedAssignment(node);
+        }
+        return node;
+    }
+
+    private Node parseAssignmentOrExpression(boolean statement) {
         int savepoint = stream.savePosition();
 
         if (stream.check(TokenType.IDENTIFIER) || stream.check(TokenType.UNIT) || stream.check(TokenType.FUNCTION)) {
@@ -137,7 +174,7 @@ public final class PrecedenceParser {
 
             if (stream.check(TokenType.LBRACKET) && isElementAssignment()) {
                 List<List<NodeSubscript.SliceArg>> indexGroups = parseIndexGroups();
-                stream.expect(TokenType.ASSIGN, "Expected ':=' after subscript in element assignment");
+                consumeAssignment(statement, id, Target.ELEMENT);
                 return new NodeElementAssignment(id.lexeme(), indexGroups, parseLambda());
             }
 
@@ -154,8 +191,8 @@ public final class PrecedenceParser {
                 }
             }
 
-            if (stream.check(TokenType.ASSIGN)) {
-                stream.advance(); // consume ASSIGN
+            if (stream.peek().type().isAssignment()) {
+                consumeAssignment(statement, id, params != null ? Target.FUNCTION : Target.VARIABLE);
                 Node value = parseLambda();
 
                 if (params != null) {
@@ -172,43 +209,111 @@ public final class PrecedenceParser {
     }
 
     /**
+     * What an assignment writes, which decides the advice when {@code =} is misplaced.
+     */
+    private enum Target {
+        VARIABLE, ELEMENT, FUNCTION
+    }
+
+    /**
+     * Consumes the assignment token after a target. {@code =} is refused outside a statement,
+     * and may not redefine a built-in function, since {@code sin(x) = 0} is far more likely
+     * a comparison than a redefinition; {@code :=} still does either.
+     */
+    private void consumeAssignment(boolean statement, Token name, Target target) {
+        Token operator = stream.advance();
+        if (operator.type() != TokenType.ASSIGN) {
+            return;
+        }
+        if (target == Target.FUNCTION && name.type() == TokenType.FUNCTION) {
+            throw stream.error(operator, "'" + name.lexeme() + "' is a built-in function; "
+                    + "use ':=' to redefine it, or '==' to compare");
+        }
+        if (statement) {
+            return;
+        }
+        throw stream.error(operator, switch (target) {
+            case VARIABLE -> "Use '==' to compare; '=' assigns only as a statement "
+                    + "(use ':=' to assign inside an expression, or wrap the assignment in parentheses)";
+            case ELEMENT -> "'=' assigns only as a statement; use ':=' to write an element "
+                    + "inside an expression, or wrap the assignment in parentheses";
+            case FUNCTION -> "'=' assigns only as a statement; use ':=' to define a function "
+                    + "inside an expression, or wrap the definition in parentheses";
+        });
+    }
+
+    /**
+     * The error for an assignment token left after {@code left}, which cannot take one.
+     */
+    private ParseException misplacedAssignment(Node left) {
+        Token operator = stream.peek();
+        if (left instanceof NodeAssignment || left instanceof NodeElementAssignment
+                || left instanceof NodeFunctionDef) {
+            return stream.error(operator, "Assignments cannot be chained; assign each name in its own statement");
+        }
+        String compound = compoundAssignmentMessage();
+        if (compound != null) {
+            return stream.error(operator, compound);
+        }
+        String hint = operator.type() == TokenType.ASSIGN ? " (use '==' to compare)" : "";
+        return stream.error(operator, "Cannot assign to this expression; only a name, a subscript "
+                + "or a function signature can be assigned" + hint);
+    }
+
+    /**
+     * The message for {@code x += 1} and its kin, when the cursor is on a {@code =} written
+     * straight after an arithmetic operator, or null. {@code x %= 2} lexes as a percentage
+     * followed by {@code =}, so it is caught after the expression rather than inside it.
+     */
+    private String compoundAssignmentMessage() {
+        Token token = stream.peek();
+        if (token.type() != TokenType.ASSIGN || stream.getPosition() == 0) {
+            return null;
+        }
+        Token before = stream.previous();
+        boolean adjacent = before.line() == token.line()
+                && before.column() + before.lexeme().length() == token.column();
+        if (!adjacent || before.implicit() || !COMPOUND_ASSIGNMENT_OPERATORS.contains(before.type())) {
+            return null;
+        }
+        String operator = before.type() == TokenType.PERCENT ? "mod" : before.lexeme();
+        return "Compound assignment '" + before.lexeme() + "=' is not supported; "
+                + "write 'x = x " + operator + " value'";
+    }
+
+    /**
      * Checks if current position is at a function definition.
      * <p>
-     * Looks for pattern: identifier(params) :=
+     * Looks for {@code (name, ...) =}, or {@code :=}, from the parenthesis after a name. Only
+     * plain names may appear between the parentheses, so {@code f(2) = 4} is a call compared
+     * with the wrong operator rather than a definition with a bad parameter.
      */
     private boolean isFunctionDefinition() {
-        int depth = 0;
-        int lookAhead = 0;
+        int position = stream.getPosition() + 1;
 
-        while (stream.getPosition() + lookAhead < stream.size()) {
-            Token token = stream.getTokenAt(stream.getPosition() + lookAhead);
-            TokenType type = token.type();
-
-            if (type == TokenType.LPAREN) {
-                depth++;
-            } else if (type == TokenType.RPAREN) {
-                depth--;
-                if (depth == 0) {
-                    if (stream.getPosition() + lookAhead + 1 < stream.size()) {
-                        Token next = stream.getTokenAt(stream.getPosition() + lookAhead + 1);
-                        return next.type() == TokenType.ASSIGN;
-                    }
-                    return false;
-                }
-            } else if (type == TokenType.EOF) {
-                return false;
+        if (isParameterNameAt(position)) {
+            position++;
+            while (typeAt(position) == TokenType.COMMA && isParameterNameAt(position + 1)) {
+                position += 2;
             }
-
-            lookAhead++;
         }
 
-        return false;
+        return typeAt(position) == TokenType.RPAREN && typeAt(position + 1).isAssignment();
+    }
+
+    private boolean isParameterNameAt(int position) {
+        TokenType type = typeAt(position);
+        return type == TokenType.IDENTIFIER || type == TokenType.UNIT || type == TokenType.KEYWORD;
+    }
+
+    private TokenType typeAt(int position) {
+        return position < stream.size() ? stream.getTokenAt(position).type() : TokenType.EOF;
     }
 
     /**
      * Checks if current position is at an element assignment target.
      * <p>
-     * Looks for pattern: {@code [...]...[...] :=}, from the bracket after a name. A token
+     * Looks for pattern: {@code [...]...[...] =}, from the bracket after a name. A token
      * scan, not a speculative parse: subscript arguments re-enter {@code parseExpression},
      * so backtracking would parse {@code a[b[c[0]]]} once per level of nesting.
      */
@@ -224,12 +329,12 @@ public final class PrecedenceParser {
             } else if (type == TokenType.RBRACKET) {
                 depth--;
                 if (depth == 0) {
-                    // Another group continues the chain, ':=' ends it
+                    // Another group continues the chain, an assignment ends it
                     if (stream.getPosition() + lookAhead + 1 >= stream.size()) {
                         return false;
                     }
                     TokenType next = stream.getTokenAt(stream.getPosition() + lookAhead + 1).type();
-                    if (next == TokenType.ASSIGN) {
+                    if (next.isAssignment()) {
                         return true;
                     }
                     if (next != TokenType.LBRACKET) {
@@ -285,7 +390,7 @@ public final class PrecedenceParser {
      * Expects a parameter name (IDENTIFIER, UNIT, or KEYWORD token).
      * <p>
      * Keywords are allowed as parameter names in function definitions to support
-     * cases like {@code convert(x, from, to) := x from in to}.
+     * cases like {@code convert(x, from, to) = x from in to}.
      * </p>
      */
     private Token expectParameterName() {
@@ -678,7 +783,19 @@ public final class PrecedenceParser {
             }
         }
 
-        throw stream.error(stream.peek(), "Expected expression");
+        throw stream.error(stream.peek(), expectedExpressionMessage());
+    }
+
+    /**
+     * "Expected expression", with the likely intent when the cursor is on a stray {@code =}:
+     * {@code x += 1} is not supported, and {@code x = = 5} or {@code x === 5} meant a comparison.
+     */
+    private String expectedExpressionMessage() {
+        if (stream.peek().type() != TokenType.ASSIGN || stream.getPosition() == 0) {
+            return "Expected expression";
+        }
+        String compound = compoundAssignmentMessage();
+        return compound != null ? compound : "Expected expression, not '=' (use '==' to compare)";
     }
 
     /**
@@ -733,8 +850,8 @@ public final class PrecedenceParser {
                 return parseParenthesizedLambda();
             }
 
-            // Parse first expression
-            Node firstExpr = parseExpression();
+            // A group is a statement position, so '(x = 5)' and '(a = 1; a + 1)' assign
+            Node firstExpr = parseStatement();
 
             // Check for statement sequence
             if (stream.match(TokenType.SEMICOLON)) {
@@ -742,7 +859,7 @@ public final class PrecedenceParser {
                 statements.add(firstExpr);
 
                 while (!stream.check(TokenType.RPAREN) && !stream.isAtEnd()) {
-                    statements.add(parseExpression());
+                    statements.add(parseStatement());
                     if (!stream.match(TokenType.SEMICOLON)) {
                         break;
                     }

@@ -3,8 +3,8 @@ package uk.co.ryanharrison.mathengine.parser.ast;
 import java.util.List;
 
 /**
- * Node representing a write into one element of a collection: {@code v[0] := 5},
- * {@code m[1, 2] := 9}, {@code m[0][1] := 9}, {@code s[0] := "H"}.
+ * Node representing a write into one element of a collection: {@code v[0] = 5},
+ * {@code m[1, 2] = 9}, {@code m[0][1] = 9}, {@code s[0] = "H"}.
  * <p>
  * Each {@code [...]} group is held separately, so {@code m[0][1]} and {@code m[0, 1]}
  * stay distinguishable.
@@ -55,7 +55,7 @@ public final class NodeElementAssignment extends NodeExpression {
             }
             sb.append("]");
         }
-        return sb.append(" := ").append(value).toString();
+        return sb.append(" = ").append(value).toString();
     }
 
     @Override

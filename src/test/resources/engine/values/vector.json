@@ -226,7 +226,7 @@
         },
         {
             "id": "vector_expr_001",
-            "input": "v := {1, 2, 3}; v * 2",
+            "input": "v = {1, 2, 3}; v * 2",
             "expected": [
                 2,
                 4,
@@ -237,7 +237,7 @@
         },
         {
             "id": "vector_expr_002",
-            "input": "v := {1, 2, 3}; v[0] + v[1] + v[2]",
+            "input": "v = {1, 2, 3}; v[0] + v[1] + v[2]",
             "expected": 6,
             "expectedType": "NodeRational",
             "notes": "Sum vector elements via access"

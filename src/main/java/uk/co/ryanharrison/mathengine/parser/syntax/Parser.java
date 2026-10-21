@@ -101,14 +101,14 @@ public final class Parser {
         var statements = new ArrayList<Node>();
 
         // Parse first statement
-        statements.add(precedenceParser.parseExpression());
+        statements.add(precedenceParser.parseStatement());
 
         // Parse additional statements separated by semicolons
         while (stream.match(TokenType.SEMICOLON)) {
             if (stream.isAtEnd()) {
                 break;
             }
-            statements.add(precedenceParser.parseExpression());
+            statements.add(precedenceParser.parseStatement());
         }
 
         if (!stream.isAtEnd()) {

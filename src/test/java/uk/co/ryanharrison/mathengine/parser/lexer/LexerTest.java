@@ -11,6 +11,7 @@ import uk.co.ryanharrison.mathengine.parser.registry.KeywordRegistry;
 import uk.co.ryanharrison.mathengine.parser.registry.UnitRegistry;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -554,11 +555,58 @@ class LexerTest {
 
     @Test
     void tokenizeAssignmentAndLambda() {
-        List<Token> tokens = lexer.tokenize(":= ->");
+        List<Token> tokens = lexer.tokenize("= := ->");
 
-        assertThat(tokens).hasSize(3); // ASSIGN + LAMBDA + EOF
+        assertThat(tokens).hasSize(4); // ASSIGN + INLINE_ASSIGN + LAMBDA + EOF
         assertThat(tokens.get(0).type()).isEqualTo(TokenType.ASSIGN);
-        assertThat(tokens.get(1).type()).isEqualTo(TokenType.LAMBDA);
+        assertThat(tokens.get(0).lexeme()).isEqualTo("=");
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.INLINE_ASSIGN);
+        assertThat(tokens.get(1).lexeme()).isEqualTo(":=");
+        assertThat(tokens.get(2).type()).isEqualTo(TokenType.LAMBDA);
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "=    | ASSIGN",
+            ":=   | INLINE_ASSIGN",
+            "==   | EQ",
+            "!=   | NEQ",
+            "<=   | LTE",
+            ">=   | GTE",
+            "===  | EQ ASSIGN",
+            "= =  | ASSIGN ASSIGN",
+            "!==  | NEQ ASSIGN",
+            "=-   | ASSIGN MINUS",
+            "=>   | ASSIGN GT",
+            "=<   | ASSIGN LT",
+            "+=   | PLUS ASSIGN",
+            "-=   | MINUS ASSIGN",
+            "*=   | MULTIPLY ASSIGN",
+            "/=   | DIVIDE ASSIGN",
+            ": =  | COLON ASSIGN",
+            "::=  | COLON INLINE_ASSIGN",
+            ":==  | INLINE_ASSIGN ASSIGN",
+            "->=  | LAMBDA ASSIGN"
+    })
+    void equalsSignCombinationsTokenizeLongestFirst(String input, String expectedTypes) {
+        List<TokenType> types = lexer.tokenize(input).stream()
+                .map(Token::type)
+                .filter(type -> type != TokenType.EOF)
+                .toList();
+
+        List<TokenType> expected = Arrays.stream(expectedTypes.split(" "))
+                .map(TokenType::valueOf)
+                .toList();
+        assertThat(types).isEqualTo(expected);
+    }
+
+    @Test
+    void bothAssignmentTokensCountAsAssignment() {
+        assertThat(TokenType.ASSIGN.isAssignment()).isTrue();
+        assertThat(TokenType.INLINE_ASSIGN.isAssignment()).isTrue();
+        assertThat(TokenType.EQ.isAssignment()).isFalse();
+        assertThat(TokenType.LAMBDA.isAssignment()).isFalse();
+        assertThat(TokenType.COLON.isAssignment()).isFalse();
     }
 
     @Test
@@ -688,14 +736,95 @@ class LexerTest {
         assertThat(tokens.get(4).lexeme()).isEqualTo("4");
     }
 
-    @Test
-    void tokenizeAssignmentExpression() {
-        List<Token> tokens = lexer.tokenize("x := 5");
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "x = 5  | ASSIGN",
+            "x=5    | ASSIGN",
+            "x := 5 | INLINE_ASSIGN",
+            "x:=5   | INLINE_ASSIGN"
+    })
+    void tokenizeAssignmentExpression(String input, TokenType assignment) {
+        List<Token> tokens = lexer.tokenize(input);
 
-        assertThat(tokens).hasSize(4); // IDENTIFIER + ASSIGN + INTEGER + EOF
+        assertThat(tokens).hasSize(4); // IDENTIFIER + assignment + INTEGER + EOF
         assertThat(tokens.get(0).type()).isEqualTo(TokenType.IDENTIFIER);
-        assertThat(tokens.get(1).type()).isEqualTo(TokenType.ASSIGN);
+        assertThat(tokens.get(1).type()).isEqualTo(assignment);
         assertThat(tokens.get(2).type()).isEqualTo(TokenType.INTEGER);
+    }
+
+    @Test
+    void tokenizeAssignmentOfNegativeValueWithoutSpaces() {
+        List<Token> tokens = lexer.tokenize("x=-5");
+
+        assertThat(tokens).extracting(Token::type).containsExactly(
+                TokenType.IDENTIFIER, TokenType.ASSIGN, TokenType.MINUS, TokenType.INTEGER, TokenType.EOF);
+    }
+
+    @Test
+    void tokenizeFunctionDefinitionWithoutSpaces() {
+        List<Token> tokens = lexer.tokenize("f(x)=x^2");
+
+        assertThat(tokens).extracting(Token::type).containsExactly(
+                TokenType.IDENTIFIER, TokenType.LPAREN, TokenType.IDENTIFIER, TokenType.RPAREN,
+                TokenType.ASSIGN, TokenType.IDENTIFIER, TokenType.POWER, TokenType.INTEGER, TokenType.EOF);
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "sumrange = 100",
+            "sumrange := 100",
+            "sumrange=100"
+    })
+    void assignmentTargetIsNeverSplit(String input) {
+        List<Token> tokens = lexer.tokenize(input);
+
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.IDENTIFIER);
+        assertThat(tokens.get(0).lexeme()).isEqualTo("sumrange");
+        assertThat(tokens.get(1).type().isAssignment()).isTrue();
+    }
+
+    @Test
+    void definedNameIsNeverSplit() {
+        List<Token> tokens = lexer.tokenize("pi2 + 1", Set.of("pi2"));
+
+        assertThat(tokens.get(0).type()).isEqualTo(TokenType.IDENTIFIER);
+        assertThat(tokens.get(0).lexeme()).isEqualTo("pi2");
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.PLUS);
+    }
+
+    @Test
+    void undefinedNameStillSplits() {
+        List<Token> tokens = lexer.tokenize("pi2");
+
+        assertThat(tokens).extracting(Token::lexeme).startsWith("pi");
+        assertThat(tokens.size()).isGreaterThan(2);
+    }
+
+    @Test
+    void nameAssignedEarlierInTheInputIsNotSplitLater() {
+        List<Token> tokens = lexer.tokenize("pi2 = 3; pi2");
+
+        assertThat(tokens).extracting(Token::lexeme)
+                .containsExactly("pi2", "=", "3", ";", "pi2", "");
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "sumrange(a) = a",
+            "sumrange(a) := a"
+    })
+    void functionDefinitionTargetIsNeverSplit(String input) {
+        List<Token> tokens = lexer.tokenize(input);
+
+        assertThat(tokens.get(0).lexeme()).isEqualTo("sumrange");
+        assertThat(tokens.get(1).type()).isEqualTo(TokenType.LPAREN);
+    }
+
+    @Test
+    void equalsInsideStringIsNotAnOperator() {
+        List<Token> tokens = lexer.tokenize("\"a = b\"");
+
+        assertThat(tokens).extracting(Token::type).containsExactly(TokenType.STRING, TokenType.EOF);
     }
 
     @Test
@@ -739,7 +868,7 @@ class LexerTest {
 
     @Test
     void handleMultilineInput() {
-        List<Token> tokens = lexer.tokenize("x := 5\ny := 10");
+        List<Token> tokens = lexer.tokenize("x = 5\ny = 10");
 
         assertThat(tokens).hasSize(7); // IDENTIFIER + ASSIGN + INTEGER + IDENTIFIER + ASSIGN + INTEGER + EOF (no implicit mult across lines)
         assertThat(tokens.get(0).line()).isEqualTo(1);
@@ -823,10 +952,9 @@ class LexerTest {
     }
 
     @Test
-    void singleEqualsThrowsException() {
-        assertThatThrownBy(() -> lexer.tokenize("x = 5"))
-                .isInstanceOf(LexerException.class)
-                .hasMessageContaining("Unexpected character '='");
+    void singleEqualsIsAssignmentNotAnError() {
+        // Used to be a LexerException; the parser now decides where '=' may stand
+        assertThatCode(() -> lexer.tokenize("x = 5")).doesNotThrowAnyException();
     }
 
     @Test

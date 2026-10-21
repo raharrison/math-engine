@@ -170,10 +170,10 @@
         },
         {
             "id": "prec_assignment_is_loosest",
-            "input": "total := 4 * 5 + 2",
+            "input": "total = 4 * 5 + 2",
             "expected": 22,
             "expectedType": "NodeRational",
-            "evaluationOrder": "total := ((4 * 5) + 2)",
+            "evaluationOrder": "total = ((4 * 5) + 2)",
             "notes": "Assignment takes the whole expression on its right"
         },
         {

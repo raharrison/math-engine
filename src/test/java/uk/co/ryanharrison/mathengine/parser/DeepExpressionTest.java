@@ -105,11 +105,11 @@ class DeepExpressionTest {
         @Test
         void theEngineStillWorksAfterwards() {
             MathEngine engine = MathEngine.create();
-            assertThat(catching(() -> engine.evaluate("loop(n) := loop(n + 1); loop(1)")))
+            assertThat(catching(() -> engine.evaluate("loop(n) = loop(n + 1); loop(1)")))
                     .isInstanceOf(MathEngineException.class);
 
             // A leaked recursion count would show up as a spurious failure here
-            assertThat(engine.evaluate("f(n) := if(n <= 0, 0, f(n - 1) + 1); f(200)").doubleValue())
+            assertThat(engine.evaluate("f(n) = if(n <= 0, 0, f(n - 1) + 1); f(200)").doubleValue())
                     .isCloseTo(200, within(1e-9));
         }
     }

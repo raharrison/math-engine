@@ -373,7 +373,7 @@
         },
         {
             "id": "matrix_expr_001",
-            "input": "M := [[1, 2], [3, 4]]; M + M",
+            "input": "M = [[1, 2], [3, 4]]; M + M",
             "expected": [
                 [
                     2,
@@ -389,14 +389,14 @@
         },
         {
             "id": "matrix_expr_002",
-            "input": "M := [[1, 2], [3, 4]]; M[0][0] + M[1][1]",
+            "input": "M = [[1, 2], [3, 4]]; M[0][0] + M[1][1]",
             "expected": 5,
             "expectedType": "NodeRational",
             "notes": "Sum of diagonal elements"
         },
         {
             "id": "matrix_expr_003",
-            "input": "A := [[1, 2]]; B := [[3], [4]]; A @ B",
+            "input": "A = [[1, 2]]; B = [[3], [4]]; A @ B",
             "expected": [
                 [
                     11
@@ -407,7 +407,7 @@
         },
         {
             "id": "matrix_expr_004",
-            "input": "M := [[2, 0], [0, 2]]; M ^ 3",
+            "input": "M = [[2, 0], [0, 2]]; M ^ 3",
             "expected": [
                 [
                     8,

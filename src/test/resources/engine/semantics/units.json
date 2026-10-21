@@ -123,14 +123,14 @@
         },
         {
             "id": "units_assignment_001",
-            "input": "distance := 100 meters in centimeters; distance",
+            "input": "distance = 100 meters in centimeters; distance",
             "expected": "10000.0 centimeters",
             "expectedType": "NodeUnit",
             "notes": "Assign converted value"
         },
         {
             "id": "units_assignment_002",
-            "input": "temp := 100 celsius in fahrenheit; temp - 32",
+            "input": "temp = 100 celsius in fahrenheit; temp - 32",
             "expected": "180.0 fahrenheit",
             "expectedType": "NodeUnit",
             "notes": "Arithmetic on assigned unit"
@@ -183,7 +183,7 @@
         },
         {
             "id": "units_conditional_002",
-            "input": "temp := 25 celsius; if(temp in fahrenheit > 70, \"hot\", \"cold\")",
+            "input": "temp = 25 celsius; if(temp in fahrenheit > 70, \"hot\", \"cold\")",
             "expected": "hot",
             "expectedType": "NodeString",
             "notes": "Temperature-based conditional"
@@ -434,28 +434,28 @@
         },
         {
             "id": "units_with_lambdas_001",
-            "input": "f := x -> x meters in centimeters; f(100)",
+            "input": "f = x -> x meters in centimeters; f(100)",
             "expected": "10000.0 centimeters",
             "expectedType": "NodeUnit",
             "notes": "Lambda with unit conversion"
         },
         {
             "id": "units_with_variables_001",
-            "input": "distance := 100 meters; distance in centimeters",
+            "input": "distance = 100 meters; distance in centimeters",
             "expected": "10000.0 centimeters",
             "expectedType": "NodeUnit",
             "notes": "Variable storing unit value"
         },
         {
             "id": "units_with_variables_002",
-            "input": "d := 100; d meters in centimeters",
+            "input": "d = 100; d meters in centimeters",
             "expected": "10000.0 centimeters",
             "expectedType": "NodeUnit",
             "notes": "Variable as numeric value with unit"
         },
         {
             "id": "variable_with_unit_001",
-            "input": "x := 100; x meters in centimeters",
+            "input": "x = 100; x meters in centimeters",
             "expected": "10000.0 centimeters",
             "expectedType": "NodeUnit",
             "notes": "Variable value with unit conversion"

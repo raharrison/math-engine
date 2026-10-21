@@ -12,14 +12,14 @@ package uk.co.ryanharrison.mathengine.parser.ast;
  * <h2>Example Usage:</h2>
  * <pre>{@code
  * // Force variable resolution:
- * pi := 100;           // Define variable 'pi' (shadows constant)
+ * pi = 100;            // Define variable 'pi' (shadows constant)
  * pi                   // Returns 100 (variable takes priority)
  * $pi                  // Returns 100 (explicit variable reference)
  * #pi                  // Returns 3.14159... (explicit constant reference)
  *
  * // With functions:
- * f := 5;              // Variable 'f'
- * f(x) := x^2;         // Function 'f' (separate namespace)
+ * f = 5;               // Variable 'f'
+ * f(x) = x^2;          // Function 'f' (separate namespace)
  * $f                   // Returns 5 (explicit variable access)
  * f(3)                 // Returns 9 (function call)
  * }</pre>

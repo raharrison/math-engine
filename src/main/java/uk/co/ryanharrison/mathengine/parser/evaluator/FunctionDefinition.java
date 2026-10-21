@@ -9,7 +9,7 @@ import java.util.List;
  * <p>
  * Two scoping modes are supported:
  * <ul>
- *     <li><b>Dynamic scoping</b> (closure = null): For regular function definitions (f(x) := ...).
+ *     <li><b>Dynamic scoping</b> (closure = null): For regular function definitions (f(x) = ...).
  *         Free variables are looked up in the global context at call time.</li>
  *     <li><b>Lexical scoping</b> (closure != null): For lambdas (x -> ...).
  *         Free variables are captured at definition time.</li>

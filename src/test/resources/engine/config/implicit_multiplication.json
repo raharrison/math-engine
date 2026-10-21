@@ -4,7 +4,7 @@
     "tests": [
         {
             "id": "implicit_mult_disabled_001",
-            "input": "x := 5; 2x",
+            "input": "x = 5; 2x",
             "expectError": true,
             "expectedErrorType": "ParseException",
             "config": {
@@ -14,7 +14,7 @@
         },
         {
             "id": "implicit_mult_disabled_002",
-            "input": "x := 3; y := 4; xy",
+            "input": "x = 3; y = 4; xy",
             "expectError": true,
             "expectedErrorType": "UndefinedVariableException",
             "config": {
@@ -34,7 +34,7 @@
         },
         {
             "id": "implicit_mult_disabled_explicit_works_001",
-            "input": "x := 5; 2*x",
+            "input": "x = 5; 2*x",
             "expected": 10.0,
             "expectedType": "NodeRational",
             "config": {
@@ -64,7 +64,7 @@
         },
         {
             "id": "implicit_mult_enabled_001",
-            "input": "x := 5; 2x",
+            "input": "x = 5; 2x",
             "expected": 10.0,
             "expectedType": "NodeRational",
             "config": {
@@ -74,7 +74,7 @@
         },
         {
             "id": "implicit_mult_enabled_002",
-            "input": "x := 3; y := 4; xy",
+            "input": "x = 3; y = 4; xy",
             "expected": 12.0,
             "expectedType": "NodeRational",
             "config": {
@@ -84,7 +84,7 @@
         },
         {
             "id": "implicit_mult_enabled_complex_001",
-            "input": "x := 2; y := 3; z := 4; xyz",
+            "input": "x = 2; y = 3; z = 4; xyz",
             "expected": 24.0,
             "expectedType": "NodeRational",
             "config": {
@@ -104,7 +104,7 @@
         },
         {
             "id": "implicit_mult_enabled_function_001",
-            "input": "x := pi/2; 2sin(x)",
+            "input": "x = pi/2; 2sin(x)",
             "expected": 2.0,
             "expectedType": "NodeDouble",
             "config": {
